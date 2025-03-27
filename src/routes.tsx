@@ -4,7 +4,7 @@ const routes = Object.keys(pages).map((path) => {
     const routePath = path
         .replace("./pages", "")
         .replace(/\.tsx$/, "")
-        .replace(/\/index$/, "")
+        .replace(/\/page$/, "")
         .replace(/\[(\w+)\]/, ":$1");
 
     return {
