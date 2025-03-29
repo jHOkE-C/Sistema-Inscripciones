@@ -46,7 +46,7 @@ const Admin = () => {
                   Gestionar Areas
                 </Button>
               </Link>
-              <Link to="/admin/area">
+              <Link to="/admin/categorias">
                 <Button
                   className="ml-auto text-sm font-medium w-44"
                   variant={"outline"}
