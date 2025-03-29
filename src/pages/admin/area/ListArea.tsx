@@ -34,6 +34,7 @@ const ListArea = () => {
             await request("/api/areas");
         };
         getAreas();
+        console.log("data", data);
     }, [request]);
 
     const eliminarArea = async () => {

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { ChevronRight, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
+import GestionRegistration from "./RegistrarGestion";
 
 const Admin = () => {
     return (
@@ -37,12 +38,7 @@ const Admin = () => {
                         </p>
                     </CardContent>
                     <CardFooter>
-                        <Link to="/admin/olimpiada/registrar" className="w-full">
-                            <Button className="w-full">
-                                Registrar Gestion de Olimpiada
-                                <ChevronRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </Link>
+                        <GestionRegistration />
                     </CardFooter>
                 </Card>
             </div>
