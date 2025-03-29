@@ -21,16 +21,16 @@ import {
 interface DatePickerProps {
     startYear?: number;
     endYear?: number;
-    date: Date | undefined;
-    id: string;
-    setDate: (date: Date) => void;
+    value: Date | undefined;
+    id?: string;
+    onChange: (date: Date) => void;
 }
 
 export function DatePicker({
     startYear = getYear(new Date()) - 100,
     endYear = getYear(new Date()) + 100,
-    date,
-    setDate,
+    value: date,
+    onChange: setDate,
     id,
 }: DatePickerProps) {
     const months = [

@@ -28,9 +28,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import FormPostulante from "@/components/FormPostulante";
+
 import PostulanteDetalle from "./postulante-detalle";
 import Sidebar from "./Sidebar";
+import FormPostulante from "./FormPostulante";
 
 // Datos de ejemplo para los postulantes
 const postulantes = [

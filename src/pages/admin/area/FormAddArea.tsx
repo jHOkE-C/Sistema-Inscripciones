@@ -21,7 +21,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { log } from "console";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
