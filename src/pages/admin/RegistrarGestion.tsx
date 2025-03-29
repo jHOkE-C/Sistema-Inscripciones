@@ -34,11 +34,17 @@ export default function GestionRegistration() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    const start = startDate
+      ? format(startDate, "yyyy-MM-dd")
+      : null;
+    const end = endDate ? format(endDate, "yyyy-MM-dd") : null;
+
     console.log({
       name,
-      managementPeriod,
-      startDate,
-      endDate,
+      gestion: managementPeriod,
+      startDate: start,
+      endDate: end,
     })
     setName("");
     setManagementPeriod("");
@@ -51,7 +57,7 @@ export default function GestionRegistration() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Crear nueva Gestion</Button>
+        <Button variant="outline" className="w-44">Crear nueva Gestion</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
