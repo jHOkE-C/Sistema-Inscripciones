@@ -19,12 +19,15 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useApiRequest } from "@/hooks/useApiRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { log } from "console";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 const areaSchema = z.object({
-    name: z
+    nombre: z
         .string()
         .min(3, "El nombre del área debe tener al menos 3 caracteres"),
 });
@@ -33,30 +36,36 @@ const FormAddArea = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showCancel, setShowCancel] = useState(false);
     const [showForm, setShowForm] = useState(false);
-    const [error, setError] = useState(false);
-    const [data, setData] = useState();
+
+    const [formData, setFormData] = useState<{ nombre: string }>();
 
     const form = useForm<z.infer<typeof areaSchema>>({
         resolver: zodResolver(areaSchema),
         defaultValues: {
-            name: "",
+            nombre: "",
         },
     });
 
     const onSubmit = (data) => {
         setShowConfirm(true);
-        setData(data);
+        setFormData(data);
     };
+    const { loading, request, data, error } = useApiRequest();
     const saveArea = async () => {
-        setShowForm(false)
-        // usar el data para guardar en el backend
-    }
+        // fetch new area
+        await request("/api/areas", "POST", formData);
+        console.log(data);
+
+        setShowForm(false);
+    };
 
     return (
         <>
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogTrigger asChild>
-                    <Button variant="outline">Agregar Area</Button>
+                    <Button>
+                        <Plus /> Agregar Area
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
@@ -69,7 +78,7 @@ const FormAddArea = () => {
                         <form action="" onSubmit={form.handleSubmit(onSubmit)}>
                             <FormField
                                 control={form.control}
-                                name="name"
+                                name="nombre"
                                 render={({ field }) => (
                                     <FormItem className="">
                                         <FormLabel>Nombre de Area</FormLabel>
@@ -107,7 +116,6 @@ const FormAddArea = () => {
                 onOpenChange={(e) => {
                     setShowConfirm(e);
                 }}
-                
             />
             {showSuccess && (
                 <AlertComponent title="El área de competencia se creó correctamente" />
