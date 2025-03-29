@@ -1,4 +1,13 @@
+import { AlertComponent } from "@/components/AlertComponent";
+import AlertDialogComponent from "@/components/AlertDialogComponent";
 import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
 
 import {
     Table,
@@ -8,15 +17,17 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useApiRequest } from "@/hooks/useApiRequest";
-import { Trash2 } from "lucide-react";
-import { useEffect } from "react";
+import { API_URL, useApiRequest } from "@/hooks/useApiRequest";
+import { MoreHorizontal } from "lucide-react";
+import { useEffect, useState } from "react";
 export interface Area {
     id: number;
     nombre: string;
 }
 const ListArea = () => {
     const { data, error, loading, request } = useApiRequest<Area[]>();
+    const [idEliminar, setIdEliminar] = useState<number>();
+    const [showConfirm, setShowConfirm] = useState(false);
 
     useEffect(() => {
         const getAreas = async () => {
@@ -25,10 +36,20 @@ const ListArea = () => {
         getAreas();
     }, [request]);
 
-    if (loading) return <p>Loading</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!data) return <p>No hay datos disponibles</p>;
-    
+    const eliminarArea = async () => {
+        console.log("eliminar area", idEliminar);
+        fetch(API_URL + "/api/areas/" + idEliminar, {
+            method: "DELETE",
+        });
+    };
+
+    const confirmarEliminacion = (id: number) => {
+        setIdEliminar(id);
+        setShowConfirm(true);
+    };
+
+    if (loading) return <Spinner size={"large"} />;
+    if (error) return <AlertComponent title={error} variant={"destructive"} />;
     return (
         <>
             <Table>
@@ -39,25 +60,41 @@ const ListArea = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((area) => (
-                        <TableRow key={area.id}>
-                            <TableCell className="font-medium">
-                                {area.nombre}
-                            </TableCell>
+                    {data &&
+                        data.map((area) => (
+                            <TableRow key={area.id}>
+                                <TableCell className="font-medium">
+                                    {area.nombre}
+                                </TableCell>
 
-                            <TableCell className="text-right">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    // onClick={() => eliminarArea(area.id)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                                <TableCell className="text-right">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        // onClick={() => eliminarArea(area.id)}
+                                    ></Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    confirmarEliminacion(
+                                                        area.id
+                                                    )
+                                                }
+                                                variant="destructive"
+                                            >
+                                                Eliminar
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
 
-                    {data.length === 0 && (
+                    {!data && (
                         <TableRow>
                             <TableCell
                                 colSpan={4}
@@ -69,6 +106,13 @@ const ListArea = () => {
                     )}
                 </TableBody>
             </Table>
+            <AlertDialogComponent
+                open={showConfirm}
+                onOpenChange={setShowConfirm}
+                title="¿Está seguro de eliminar esta área? Esta acción no se puede deshacer."
+                continueButtonText="Eliminar"
+                onConfirm={eliminarArea}
+            />
         </>
     );
 };
