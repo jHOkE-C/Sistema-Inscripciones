@@ -34,8 +34,8 @@ export function useApiRequest<T>() {
         setData(result);
         return { data: result, error: null };
       } catch (err) {
-        setError(err.message);
-        return { data: null, error: err.message };
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
+        return { data: null, error: err instanceof Error ? err.message : "An unknown error occurred" };
       } finally {
         setLoading(false);
       }
