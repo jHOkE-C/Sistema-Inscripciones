@@ -19,87 +19,149 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Tipo para las áreas y categorías
 type Categoria = {
   id: string;
   nombre: string;
+  cursoDesde: number;
+  cursoHasta: number;
+  areas: string[]; // IDs de las áreas a las que pertenece
 };
 
 type Area = {
   id: string;
   nombre: string;
-  categorias: Categoria[];
 };
 
 export default function GestionarCategorias() {
-  // Estado para las áreas y categorías
+  // Estado para las áreas
   const [areas, setAreas] = useState<Area[]>([
+    { id: "1", nombre: "Desarrollo" },
+    { id: "2", nombre: "Diseño" },
+    { id: "3", nombre: "Marketing" },
+    { id: "4", nombre: "Administración" },
+  ]);
+
+  // Estado para las categorías
+  const [categorias, setCategorias] = useState<Categoria[]>([
     {
       id: "1",
-      nombre: "Desarrollo",
-      categorias: [
-        { id: "1-1", nombre: "Frontend" },
-        { id: "1-2", nombre: "Backend" },
-        { id: "1-3", nombre: "Mobile" },
-      ],
+      nombre: "Frontend",
+      cursoDesde: 1,
+      cursoHasta: 3,
+      areas: ["1"],
     },
     {
       id: "2",
-      nombre: "Diseño",
-      categorias: [
-        { id: "2-1", nombre: "UI/UX" },
-        { id: "2-2", nombre: "Gráfico" },
-        { id: "2-3", nombre: "Producto" },
-      ],
+      nombre: "Backend",
+      cursoDesde: 2,
+      cursoHasta: 5,
+      areas: ["1"],
     },
     {
       id: "3",
-      nombre: "Marketing",
-      categorias: [
-        { id: "3-1", nombre: "Digital" },
-        { id: "3-2", nombre: "Contenidos" },
-        { id: "3-3", nombre: "Redes Sociales" },
-      ],
+      nombre: "UI/UX",
+      cursoDesde: 1,
+      cursoHasta: 4,
+      areas: ["2"],
+    },
+    {
+      id: "4",
+      nombre: "Digital",
+      cursoDesde: 3,
+      cursoHasta: 6,
+      areas: ["3"],
+    },
+    {
+      id: "5",
+      nombre: "Fullstack",
+      cursoDesde: 3,
+      cursoHasta: 6,
+      areas: ["1", "2"],
     },
   ]);
 
   // Estado para el modal
   const [modalAbierto, setModalAbierto] = useState(false);
-  const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
-  const [nuevaCategoria, setNuevaCategoria] = useState("");
+  const [nuevaCategoria, setNuevaCategoria] = useState({
+    nombre: "",
+    cursoDesde: 1,
+    cursoHasta: 6,
+    areas: [] as string[],
+  });
 
   // Función para abrir el modal
-  const abrirModal = (area: Area) => {
-    setAreaSeleccionada(area);
+  const abrirModal = () => {
     setModalAbierto(true);
-    setNuevaCategoria("");
+    setNuevaCategoria({
+      nombre: "",
+      cursoDesde: 1,
+      cursoHasta: 6,
+      areas: [],
+    });
+  };
+
+  // Función para manejar la selección de áreas
+  const toggleAreaSeleccion = (areaId: string) => {
+    setNuevaCategoria((prev) => {
+      const isSelected = prev.areas.includes(areaId);
+      if (isSelected) {
+        return {
+          ...prev,
+          areas: prev.areas.filter((id) => id !== areaId),
+        };
+      } else {
+        return {
+          ...prev,
+          areas: [...prev.areas, areaId],
+        };
+      }
+    });
   };
 
   // Función para añadir una nueva categoría
   const agregarCategoria = () => {
-    if (!areaSeleccionada || !nuevaCategoria.trim()) return;
+    if (!nuevaCategoria.nombre.trim() || nuevaCategoria.areas.length === 0)
+      return;
 
     const nuevaCategoriaObj: Categoria = {
-      id: `${areaSeleccionada.id}-${Date.now()}`,
-      nombre: nuevaCategoria.trim(),
+      id: `cat-${Date.now()}`,
+      nombre: nuevaCategoria.nombre.trim(),
+      cursoDesde: nuevaCategoria.cursoDesde,
+      cursoHasta: nuevaCategoria.cursoHasta,
+      areas: nuevaCategoria.areas,
     };
 
-    setAreas(
-      areas.map((area) =>
-        area.id === areaSeleccionada.id
-          ? { ...area, categorias: [...area.categorias, nuevaCategoriaObj] }
-          : area
-      )
-    );
-
+    setCategorias([...categorias, nuevaCategoriaObj]);
     setModalAbierto(false);
-    setNuevaCategoria("");
   };
+
+  // Función para obtener las categorías de un área específica
+  const getCategoriasPorArea = (areaId: string) => {
+    return categorias.filter((cat) => cat.areas.includes(areaId));
+  };
+
+  // Generar opciones de cursos (del 1 al 12 por ejemplo)
+  const cursos = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">Gestionar Categorías</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Gestionar Categorías</h1>
+        <Button onClick={abrirModal} className="flex items-center">
+          <Plus className="h-4 w-4 mr-2" />
+          Añadir Nueva Categoría
+        </Button>
+      </div>
 
       <Accordion type="single" collapsible className="w-full">
         {areas.map((area) => (
@@ -109,23 +171,21 @@ export default function GestionarCategorias() {
             </AccordionTrigger>
             <AccordionContent>
               <div className="pl-4 space-y-2">
-                {area.categorias.map((categoria) => (
-                  <div
-                    key={categoria.id}
-                    className="p-2 border rounded-md flex justify-between items-center"
-                  >
-                    <span>{categoria.nombre}</span>
+                {getCategoriasPorArea(area.id).map((categoria) => (
+                  <div key={categoria.id} className="p-3 border rounded-md">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{categoria.nombre}</span>
+                      <span className="text-sm text-muted-foreground">
+                        Cursos: {categoria.cursoDesde} - {categoria.cursoHasta}
+                      </span>
+                    </div>
                   </div>
                 ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2 w-full flex items-center justify-center"
-                  onClick={() => abrirModal(area)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Añadir Categoría
-                </Button>
+                {getCategoriasPorArea(area.id).length === 0 && (
+                  <p className="text-sm text-muted-foreground italic">
+                    No hay categorías en esta área
+                  </p>
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -134,11 +194,11 @@ export default function GestionarCategorias() {
 
       {/* Modal para añadir categoría */}
       <Dialog open={modalAbierto} onOpenChange={setModalAbierto}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Registrar Categoría</DialogTitle>
+            <DialogTitle>Registrar Nueva Categoría</DialogTitle>
             <DialogDescription>
-              Añadir nueva categoría al área: {areaSeleccionada?.nombre}
+              Completa los detalles para crear una nueva categoría
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -148,11 +208,84 @@ export default function GestionarCategorias() {
               </Label>
               <Input
                 id="nombre"
-                value={nuevaCategoria}
-                onChange={(e) => setNuevaCategoria(e.target.value)}
+                value={nuevaCategoria.nombre}
+                onChange={(e) =>
+                  setNuevaCategoria({
+                    ...nuevaCategoria,
+                    nombre: e.target.value,
+                  })
+                }
                 className="col-span-3"
                 placeholder="Nombre de la categoría"
               />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Áreas</Label>
+              <div className="col-span-3 space-y-2">
+                {areas.map((area) => (
+                  <div key={area.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`area-${area.id}`}
+                      checked={nuevaCategoria.areas.includes(area.id)}
+                      onCheckedChange={() => toggleAreaSeleccion(area.id)}
+                    />
+                    <Label htmlFor={`area-${area.id}`}>{area.nombre}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Desde curso</Label>
+              <Select
+                value={nuevaCategoria.cursoDesde.toString()}
+                onValueChange={(value) =>
+                  setNuevaCategoria({
+                    ...nuevaCategoria,
+                    cursoDesde: Number.parseInt(value),
+                  })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seleccionar curso" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cursos.map((curso) => (
+                    <SelectItem key={curso} value={curso.toString()}>
+                      Curso {curso}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Hasta curso</Label>
+              <Select
+                value={nuevaCategoria.cursoHasta.toString()}
+                onValueChange={(value) =>
+                  setNuevaCategoria({
+                    ...nuevaCategoria,
+                    cursoHasta: Number.parseInt(value),
+                  })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seleccionar curso" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cursos.map((curso) => (
+                    <SelectItem
+                      key={curso}
+                      value={curso.toString()}
+                      disabled={curso < nuevaCategoria.cursoDesde}
+                    >
+                      Curso {curso}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
