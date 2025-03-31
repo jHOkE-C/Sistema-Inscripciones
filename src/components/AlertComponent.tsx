@@ -1,24 +1,43 @@
-import { AlertTriangle, CheckCircle } from "lucide-react";
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useEffect } from "react";
+import { AlertTriangle, CheckCircle, X } from "lucide-react";
+import {  AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 interface Props {
-    className?: string;
     title?: string;
     description?: string;
-    variant?: "default" | "destructive" | null | undefined;
+    variant?: "default" | "destructive";
+    onClose?: () => void;
 }
-export function AlertComponent(props: Props) {
+
+export function AlertComponent({ title, description, variant = "default", onClose }: Props) {
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            onClose?.(); 
+        }, 3000);
+        return () => clearTimeout(timeout); 
+    }, [onClose]);
+
     return (
-        <Alert variant={props.variant}>
-            {props.variant === "destructive" ? (
-                <AlertTriangle className="h-4 w-4" />
-            ) : (
-                <CheckCircle className="h-4 w-4" />
+        <div
+            className={cn(
+                "fixed top-5 right-5 z-50 transition-transform duration-300",
+                "bg-white shadow-md p-4 border-1 rounded-lg flex items-start gap-2",
+                variant === "destructive" ? "border-red-500 text-red-700" : "border-green-500 text-green-700"
             )}
-            <AlertTitle>{props.title}</AlertTitle>
-            <AlertDescription>{props.description}</AlertDescription>
-        </Alert>
+        >
+            {variant === "destructive" ? (
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+            ) : (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+            )}
+            <div>
+                <AlertTitle>{title}</AlertTitle>
+                <AlertDescription>{description}</AlertDescription>
+            </div>
+            <button onClick={onClose} className="ml-auto text-gray-500 hover:text-gray-700">
+                <X className="h-5 w-5" />
+            </button>
+        </div>
     );
 }
-export default Alert;

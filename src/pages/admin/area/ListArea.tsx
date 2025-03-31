@@ -1,13 +1,11 @@
-import { AlertComponent } from "@/components/AlertComponent";
 import AlertDialogComponent from "@/components/AlertDialogComponent";
-import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Spinner } from "@/components/ui/spinner";
+import { Loading } from "@/components/ui/spinner";
 
 import {
     Table,
@@ -17,43 +15,36 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { API_URL, useApiRequest } from "@/hooks/useApiRequest";
 import { MoreHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 export interface Area {
     id: number;
     nombre: string;
 }
-const ListArea = () => {
-    const { data, error, loading, request } = useApiRequest<Area[]>();
-    const [idEliminar, setIdEliminar] = useState<number>();
+interface ListAreaProps {
+    areas: Area[] | null;
+    loading: boolean;
+    error: string | null;
+    onDelete: (id: number) => void;
+}
+const ListArea = ({ areas, loading, onDelete }: ListAreaProps) => {
+    const [idEliminar, setIdEliminar] = useState<number | null>(null);
     const [showConfirm, setShowConfirm] = useState(false);
-
-    useEffect(() => {
-        const getAreas = async () => {
-            await request("/api/areas");
-        };
-        getAreas();
-        console.log("data", data);
-    }, [request]);
-
-    const eliminarArea = async () => {
-        console.log("eliminar area", idEliminar);
-        fetch(API_URL + "/api/areas/" + idEliminar, {
-            method: "DELETE",
-        });
-    };
 
     const confirmarEliminacion = (id: number) => {
         setIdEliminar(id);
         setShowConfirm(true);
     };
+    
+    const eliminarArea = async () => {
+        if(idEliminar) await onDelete(idEliminar);
+        setShowConfirm(false);
+    };
 
-    if (loading) return <Spinner size={"large"} />;
-    if (error) return <AlertComponent title={error} variant={"destructive"} />;
+    if (loading) return <Loading />;
     return (
         <>
-            <Table>
+            <Table className="mt-5">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Nombre</TableHead>
@@ -61,19 +52,14 @@ const ListArea = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data &&
-                        data.map((area) => (
+                    {areas &&
+                        areas.map((area) => (
                             <TableRow key={area.id}>
                                 <TableCell className="font-medium">
                                     {area.nombre}
                                 </TableCell>
 
                                 <TableCell className="text-right">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        // onClick={() => eliminarArea(area.id)}
-                                    ></Button>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger>
                                             <MoreHorizontal className="h-4 w-4" />
@@ -95,7 +81,7 @@ const ListArea = () => {
                             </TableRow>
                         ))}
 
-                    {!data && (
+                    {!areas && (
                         <TableRow>
                             <TableCell
                                 colSpan={4}

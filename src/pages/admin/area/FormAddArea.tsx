@@ -1,4 +1,3 @@
-import { AlertComponent } from "@/components/AlertComponent";
 import AlertDialogComponent from "@/components/AlertDialogComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +18,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useApiRequest } from "@/hooks/useApiRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -30,9 +28,12 @@ const areaSchema = z.object({
         .string()
         .min(3, "El nombre del área debe tener al menos 3 caracteres"),
 });
-const FormAddArea = () => {
+interface FormAddAreaProps {
+    onAdd: (data: { nombre: string }) => void;
+}
+
+const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
     const [showCancel, setShowCancel] = useState(false);
     const [showForm, setShowForm] = useState(false);
 
@@ -45,17 +46,15 @@ const FormAddArea = () => {
         },
     });
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data: { nombre: string }) => {
         setShowConfirm(true);
         setFormData(data);
     };
-    const { loading, request, data, error } = useApiRequest();
     const saveArea = async () => {
-        // fetch new area
-        await request("/api/areas", "POST", formData);
-        console.log(data);
-
-        setShowForm(false);
+        if (formData) {
+            await onAdd(formData);
+            setShowForm(false);
+        } 
     };
 
     return (
@@ -116,15 +115,7 @@ const FormAddArea = () => {
                     setShowConfirm(e);
                 }}
             />
-            {showSuccess && (
-                <AlertComponent title="El área de competencia se creó correctamente" />
-            )}
-            {error && (
-                <AlertComponent
-                    title="El registro no se guardó, inténtelo de nuevo."
-                    variant="destructive"
-                />
-            )}
+
         </>
     );
 };
