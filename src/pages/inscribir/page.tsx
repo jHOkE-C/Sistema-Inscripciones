@@ -32,6 +32,7 @@ import {
 import PostulanteDetalle from "./postulante-detalle";
 import Sidebar from "./Sidebar";
 import FormPostulante from "./FormPostulante";
+import ShareUrl from "./ShareUrl";
 
 // Datos de ejemplo para los postulantes
 const postulantes = [
@@ -171,6 +172,7 @@ export default function PageInscripciones() {
                 <Sidebar />
                 {/* Main Content */}
                 <main className="flex-1 overflow-auto">
+                <ShareUrl/>
                     <div className="p-8 py-6 sm:p-10">
                         <div className="mb-6 flex flex-col gap-2">
                             <h1 className="text-3xl font-bold">
