@@ -169,10 +169,10 @@ export default function PageInscripciones() {
         <div className="flex min-h-screen flex-col">
             <div className="flex flex-1">
                 {/* Sidebar */}
-                <Sidebar />
+                {/* <Sidebar /> */}
                 {/* Main Content */}
                 <main className="flex-1 overflow-auto">
-                <ShareUrl/>
+                    <ShareUrl />
                     <div className="p-8 py-6 sm:p-10">
                         <div className="mb-6 flex flex-col gap-2">
                             <h1 className="text-3xl font-bold">
@@ -278,9 +278,7 @@ export default function PageInscripciones() {
                                                     <TableHead>
                                                         Nombre
                                                     </TableHead>
-                                                    <TableHead>
-                                                        Fecha de Nacimiento
-                                                    </TableHead>
+
                                                     <TableHead>
                                                         Categoría
                                                     </TableHead>
@@ -330,11 +328,6 @@ export default function PageInscripciones() {
                                                             <TableCell className="font-medium">
                                                                 {
                                                                     postulante.nombre
-                                                                }
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {
-                                                                    postulante.fechaNacimiento
                                                                 }
                                                             </TableCell>
                                                             <TableCell>

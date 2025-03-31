@@ -10,7 +10,7 @@ import {
 
 interface MySelectProps {
     id?: string;
-    values: { value: string; label: string }[];
+    values: { id: string ; nombre: string }[];
     value: string;
     setValue: (value: string) => void;
     placeholder?: string;
@@ -36,8 +36,8 @@ export function ComboBox({
                 <SelectGroup>
                     <SelectLabel>{label ? label : "Opciones"}</SelectLabel>
                     {values.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        <SelectItem key={option.id} value={option.id}>
+                            {option.nombre}
                         </SelectItem>
                     ))}
                 </SelectGroup>

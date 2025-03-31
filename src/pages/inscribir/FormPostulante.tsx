@@ -1,3 +1,4 @@
+/// Corregir las areas con el grado
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -8,7 +9,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
 import DatePicker from "@/components/DatePicker";
@@ -25,150 +26,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { API_URL } from "@/hooks/useApiRequest";
 
-const departamentos = [
-    "Cochabamba",
-    "La Paz",
-    "Santa Cruz",
-    "Oruro",
-    "Potosí",
-    "Chuquisaca",
-    "Tarija",
-    "Beni",
-    "Pando",
-];
-
-const provincias = {
-    Cochabamba: [
-        "Cercado",
-        "Quillacollo",
-        "Chapare",
-        "Tapacarí",
-        "Bolívar",
-        "Arque",
-        "Capinota",
-        "Germán Jordán",
-        "Esteban Arce",
-        "Arani",
-        "Carrasco",
-        "Mizque",
-        "Punata",
-        "Tiraque",
-        "Ayopaya",
-    ],
-    "La Paz": [
-        "Murillo",
-        "Omasuyos",
-        "Pacajes",
-        "Camacho",
-        "Muñecas",
-        "Larecaja",
-        "Franz Tamayo",
-        "Ingavi",
-        "Loayza",
-        "Inquisivi",
-        "Sud Yungas",
-        "Los Andes",
-        "Aroma",
-        "Nor Yungas",
-        "Abel Iturralde",
-        "Bautista Saavedra",
-        "Manco Kapac",
-        "Gualberto Villarroel",
-        "José Manuel Pando",
-        "Caranavi",
-    ],
-    "Santa Cruz": [
-        "Andrés Ibáñez",
-        "Warnes",
-        "Velasco",
-        "Ichilo",
-        "Chiquitos",
-        "Sara",
-        "Cordillera",
-        "Vallegrande",
-        "Florida",
-        "Obispo Santistevan",
-        "Ñuflo de Chávez",
-        "Ángel Sandoval",
-        "Manuel María Caballero",
-        "Germán Busch",
-        "Guarayos",
-    ],
-    Oruro: [
-        "Cercado",
-        "Abaroa",
-        "Carangas",
-        "Sajama",
-        "Litoral",
-        "Poopó",
-        "Pantaleón Dalence",
-        "Ladislao Cabrera",
-        "Sabaya",
-        "Saucarí",
-        "Tomás Barrón",
-        "Sud Carangas",
-        "San Pedro de Totora",
-        "Sebastián Pagador",
-        "Mejillones",
-        "Nor Carangas",
-    ],
-    Potosí: [
-        "Tomás Frías",
-        "Rafael Bustillo",
-        "Cornelio Saavedra",
-        "Chayanta",
-        "Charcas",
-        "Nor Chichas",
-        "Alonso de Ibáñez",
-        "Sud Chichas",
-        "Nor Lípez",
-        "Sud Lípez",
-        "José María Linares",
-        "Antonio Quijarro",
-        "Bernardino Bilbao",
-        "Daniel Campos",
-        "Modesto Omiste",
-        "Enrique Baldivieso",
-    ],
-    Chuquisaca: [
-        "Oropeza",
-        "Juana Azurduy de Padilla",
-        "Jaime Zudáñez",
-        "Tomina",
-        "Hernando Siles",
-        "Yamparáez",
-        "Nor Cinti",
-        "Sud Cinti",
-        "Luis Calvo",
-        "Belisario Boeto",
-    ],
-    Tarija: [
-        "Cercado",
-        "Aniceto Arce",
-        "Gran Chaco",
-        "Avilés",
-        "Méndez",
-        "Burnet O'Connor",
-    ],
-    Beni: [
-        "Cercado",
-        "Vaca Díez",
-        "José Ballivián",
-        "Yacuma",
-        "Moxos",
-        "Marbán",
-        "Mamoré",
-        "Iténez",
-    ],
-    Pando: [
-        "Nicolás Suárez",
-        "Manuripi",
-        "Madre de Dios",
-        "Abuná",
-        "Federico Román",
-    ],
-};
 const areas = [
     { value: "0", label: "ASTRONOMÍA - ASTROFÍSICA" },
     { value: "1", label: "BIOLOGÍA" },
@@ -178,18 +37,18 @@ const areas = [
 ];
 
 const grados = [
-    { value: "0", label: "1ro Primaria" },
-    { value: "1", label: "2do Primaria" },
-    { value: "2", label: "3ro Primaria" },
-    { value: "3", label: "4to Primaria" },
-    { value: "4", label: "5to Primaria" },
-    { value: "5", label: "6to Primaria" },
-    { value: "6", label: "1ro Secundaria" },
-    { value: "7", label: "2do Secundaria" },
-    { value: "8", label: "3ro Secundaria" },
-    { value: "9", label: "4to Secundaria" },
-    { value: "10", label: "5to Secundaria" },
-    { value: "11", label: "6to Secundaria" },
+    { id: "0", nombre: "1ro Primaria" },
+    { id: "1", nombre: "2do Primaria" },
+    { id: "2", nombre: "3ro Primaria" },
+    { id: "3", nombre: "4to Primaria" },
+    { id: "4", nombre: "5to Primaria" },
+    { id: "5", nombre: "6to Primaria" },
+    { id: "6", nombre: "1ro Secundaria" },
+    { id: "7", nombre: "2do Secundaria" },
+    { id: "8", nombre: "3ro Secundaria" },
+    { id: "9", nombre: "4to Secundaria" },
+    { id: "10", nombre: "5to Secundaria" },
+    { id: "11", nombre: "6to Secundaria" },
 ];
 
 const contactos = [
@@ -268,20 +127,98 @@ const postulanteSchema = z.object({
                 "El nombre del colegio no debe exceder los 100 caracteres.",
         }),
 });
+interface Area {
+    id: string;
+    nombre: string;
+}
+
+interface Departamento {
+    id: string;
+    nombre: string;
+    abreviatura: string;
+}
+
+interface Provincia {
+    departamento_id: string;
+    nombre: string;
+    id: number;
+}
+interface Categoria {
+    id: string;
+    nombre: string;
+    maximo_grado: number;
+    minimo_grado: number;
+    areas: {
+        id: string;
+        pivot: { area_id: number; categoria_id: number };
+    }[];
+}
 
 const FormPostulante = () => {
-    const [grado, setGrado] = useState("");
-    const [selectedDepartamento, setSelectedDepartamento] =
-        useState<string>("");
-
+    const [grado, setGrado] = useState<number>();
+    const [selectedDepartamento, setSelectedDepartamento] = useState<
+        string | number
+    >();
     const form = useForm<z.infer<typeof postulanteSchema>>({
         resolver: zodResolver(postulanteSchema),
-        mode: "onSubmit", // O usa "onBlur" o "onChange" si quieres validación en tiempo real
+        mode: "onSubmit",
     });
 
     const onSubmit = (data: any) => {
         console.log("Formulario enviado con datos:", data);
     };
+    const [areas, setAreas] = useState<Area[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+    const [provincias, setProvincias] = useState<Provincia[]>([]);
+    const [colegios, setColegios] = useState([]);
+    const [selectedGrado, setSelectedGrado] = useState<number>();
+
+    useEffect(() => {
+        const endpoints = [
+            {
+                label: "Areas",
+                url: API_URL + "/api/categorias/areas",
+                setData: setAreas,
+            },
+            {
+                label: "Departamentos",
+                url: API_URL + "/api/departamentos",
+                setData: setDepartamentos,
+            },
+            {
+                label: "Provincias",
+                url: API_URL + "/api/provincias",
+                setData: setProvincias,
+            },
+            {
+                label: "Categorias",
+                url: API_URL + "/api/categorias",
+                setData: setCategorias,
+            },
+            // { label: "Grados", url: API_URL + "/api/grados", setData: setGrados},
+            // { label: "Colegios", url: API_URL + "/api/colegios", setData: setColegios},
+        ];
+
+        const fetchData = async () => {
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint.url);
+                    if (!response.ok) {
+                        console.error(`Error al obtener ${endpoint.label}`);
+                    } else {
+                        const data = await response.json();
+                        console.log(endpoint.label, data);
+                        endpoint.setData(data);
+                    }
+                } catch (error) {
+                    console.error(`Error en ${endpoint.label}:`, error);
+                }
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <Dialog>
@@ -406,12 +343,10 @@ const FormPostulante = () => {
                                                         );
                                                     }}
                                                     values={departamentos.map(
-                                                        (departamento) => {
-                                                            return {
-                                                                value: departamento,
-                                                                label: departamento,
-                                                            };
-                                                        }
+                                                        ({ id, nombre }) => ({
+                                                            id: id.toString(),
+                                                            nombre,
+                                                        })
                                                     )}
                                                 />
                                             </FormControl>
@@ -434,16 +369,23 @@ const FormPostulante = () => {
                                                     }
                                                     value={field.value}
                                                     setValue={field.onChange}
-                                                    values={
-                                                        provincias[
-                                                            selectedDepartamento as keyof typeof provincias
-                                                        ]?.map((provincia) => {
-                                                            return {
-                                                                value: provincia,
-                                                                label: provincia,
-                                                            };
-                                                        }) || []
-                                                    }
+                                                    values={provincias
+                                                        .filter(
+                                                            ({
+                                                                departamento_id,
+                                                            }) =>
+                                                                departamento_id ==
+                                                                selectedDepartamento
+                                                        )
+                                                        .map(
+                                                            ({
+                                                                id,
+                                                                nombre,
+                                                            }) => ({
+                                                                id: id.toString(),
+                                                                nombre,
+                                                            })
+                                                        )}
                                                 />
                                             </FormControl>
 
@@ -476,7 +418,7 @@ const FormPostulante = () => {
                                                     value={field.value}
                                                     setValue={(e) => {
                                                         field.onChange(e);
-                                                        setGrado(e);
+                                                        setGrado(Number(e));
                                                     }}
                                                 />
                                             </FormControl>
@@ -493,8 +435,25 @@ const FormPostulante = () => {
                                             <FormLabel>Area</FormLabel>
                                             <FormControl>
                                                 <ComboBox
-                                                    disabled={grado === ""}
-                                                    values={areas}
+                                                    disabled={!grado}
+                                                    values={categorias.filter(
+                                                        ({
+                                                            maximo_grado,
+                                                            minimo_grado,
+                                                        }) =>
+                                                            grado >=
+                                                                minimo_grado &&
+                                                            grado <=
+                                                                maximo_grado
+                                                    ).map(
+                                                        ({
+                                                            id,
+                                                            nombre,
+                                                        }) => ({
+                                                            id: id.toString(),
+                                                            nombre,
+                                                        })
+                                                    )}
                                                     value={field.value}
                                                     setValue={field.onChange}
                                                 />
