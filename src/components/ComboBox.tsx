@@ -10,9 +10,9 @@ import {
 
 interface MySelectProps {
     id?: string;
-    values: { id: string ; nombre: string }[];
+    values: { id: string; nombre: string }[];
     value: string;
-    setValue: (value: string) => void;
+    onChange: (value: string) => void;
     placeholder?: string;
     disabled?: boolean;
     label?: string;
@@ -23,12 +23,12 @@ export function ComboBox({
     id,
     values,
     value,
-    setValue,
+    onChange,
     placeholder = "Selecciona una opción",
     disabled,
 }: MySelectProps) {
     return (
-        <Select value={value} onValueChange={setValue} disabled={disabled}>
+        <Select value={value} onValueChange={onChange} disabled={disabled}>
             <SelectTrigger id={id} className="w-full">
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
@@ -36,7 +36,7 @@ export function ComboBox({
                 <SelectGroup>
                     <SelectLabel>{label ? label : "Opciones"}</SelectLabel>
                     {values.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
+                        <SelectItem key={option.id} value={option.id.toString()}>
                             {option.nombre}
                         </SelectItem>
                     ))}

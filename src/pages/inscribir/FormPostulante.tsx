@@ -27,34 +27,27 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { API_URL } from "@/hooks/useApiRequest";
-
-const areas = [
-    { value: "0", label: "ASTRONOMÍA - ASTROFÍSICA" },
-    { value: "1", label: "BIOLOGÍA" },
-    { value: "2", label: "FÍSICA" },
-    { value: "3", label: "INFORMATICA" },
-    { value: "4", label: "MATEMATICAS" },
-];
+import { getAreaPorGrado, postDataPostulante, type Area } from "@/utils/apiUtils";
 
 const grados = [
-    { id: "0", nombre: "1ro Primaria" },
-    { id: "1", nombre: "2do Primaria" },
-    { id: "2", nombre: "3ro Primaria" },
-    { id: "3", nombre: "4to Primaria" },
-    { id: "4", nombre: "5to Primaria" },
-    { id: "5", nombre: "6to Primaria" },
-    { id: "6", nombre: "1ro Secundaria" },
-    { id: "7", nombre: "2do Secundaria" },
-    { id: "8", nombre: "3ro Secundaria" },
-    { id: "9", nombre: "4to Secundaria" },
-    { id: "10", nombre: "5to Secundaria" },
-    { id: "11", nombre: "6to Secundaria" },
+    { id: "1", nombre: "1ro Primaria" },
+    { id: "2", nombre: "2do Primaria" },
+    { id: "3", nombre: "3ro Primaria" },
+    { id: "4", nombre: "4to Primaria" },
+    { id: "5", nombre: "5to Primaria" },
+    { id: "6", nombre: "6to Primaria" },
+    { id: "7", nombre: "1ro Secundaria" },
+    { id: "8", nombre: "2do Secundaria" },
+    { id: "9", nombre: "3ro Secundaria" },
+    { id: "10", nombre: "4to Secundaria" },
+    { id: "11", nombre: "5to Secundaria" },
+    { id: "12", nombre: "6to Secundaria" },
 ];
 
 const contactos = [
-    { value: "0", label: "Profesor" },
-    { value: "1", label: "Mamá/Papá" },
-    { value: "2", label: "Estudiante" },
+    { id: "0", nombre: "Profesor" },
+    { id: "1", nombre: "Mamá/Papá" },
+    { id: "2", nombre: "Estudiante" },
 ];
 const postulanteSchema = z.object({
     nombre: z
@@ -117,20 +110,9 @@ const postulanteSchema = z.object({
         .min(7, { message: "El teléfono debe tener al menos 7 dígitos." })
         .max(15, { message: "El teléfono no debe exceder los 15 dígitos." }),
 
-    colegio: z
-        .string()
-        .min(3, {
-            message: "El nombre del colegio debe tener al menos 3 caracteres.",
-        })
-        .max(100, {
-            message:
-                "El nombre del colegio no debe exceder los 100 caracteres.",
-        }),
+    colegio: z.string(),
 });
-interface Area {
-    id: string;
-    nombre: string;
-}
+
 
 interface Departamento {
     id: string;
@@ -143,19 +125,24 @@ interface Provincia {
     nombre: string;
     id: number;
 }
-interface Categoria {
+// interface Categoria {
+//     id: string;
+//     nombre: string;
+//     maximo_grado: number;
+//     minimo_grado: number;
+//     areas: {
+//         id: string;
+//         pivot: { area_id: number; categoria_id: number };
+//     }[];
+// }
+
+interface Colegio {
     id: string;
     nombre: string;
-    maximo_grado: number;
-    minimo_grado: number;
-    areas: {
-        id: string;
-        pivot: { area_id: number; categoria_id: number };
-    }[];
 }
 
 const FormPostulante = () => {
-    const [grado, setGrado] = useState<number>();
+    const [selectedGrado, setSelectedGrado] = useState<string>();
     const [selectedDepartamento, setSelectedDepartamento] = useState<
         string | number
     >();
@@ -164,23 +151,16 @@ const FormPostulante = () => {
         mode: "onSubmit",
     });
 
-    const onSubmit = (data: any) => {
-        console.log("Formulario enviado con datos:", data);
+    const onSubmit = (data: z.infer<typeof postulanteSchema>) => {
+        postDataPostulante(data);
     };
     const [areas, setAreas] = useState<Area[]>([]);
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
     const [provincias, setProvincias] = useState<Provincia[]>([]);
-    const [colegios, setColegios] = useState([]);
-    const [selectedGrado, setSelectedGrado] = useState<number>();
+    const [colegios, setColegios] = useState<Colegio[]>([]);
 
     useEffect(() => {
         const endpoints = [
-            {
-                label: "Areas",
-                url: API_URL + "/api/categorias/areas",
-                setData: setAreas,
-            },
             {
                 label: "Departamentos",
                 url: API_URL + "/api/departamentos",
@@ -191,13 +171,16 @@ const FormPostulante = () => {
                 url: API_URL + "/api/provincias",
                 setData: setProvincias,
             },
+            // {
+            //     label: "Categorias",
+            //     url: API_URL + "/api/categorias",
+            //     setData: setCategorias,
+            // },
             {
-                label: "Categorias",
-                url: API_URL + "/api/categorias",
-                setData: setCategorias,
+                label: "Colegios",
+                url: API_URL + "/api/colegios",
+                setData: setColegios,
             },
-            // { label: "Grados", url: API_URL + "/api/grados", setData: setGrados},
-            // { label: "Colegios", url: API_URL + "/api/colegios", setData: setColegios},
         ];
 
         const fetchData = async () => {
@@ -219,6 +202,14 @@ const FormPostulante = () => {
 
         fetchData();
     }, []);
+    useEffect(() => {
+        if (!selectedGrado) return;
+        const fetchArea = async () => {
+            const areas = await getAreaPorGrado(selectedGrado);
+            setAreas(areas);
+        };
+        fetchArea();
+    }, [selectedGrado]);
 
     return (
         <Dialog>
@@ -336,7 +327,7 @@ const FormPostulante = () => {
                                             <FormControl>
                                                 <ComboBox
                                                     value={field.value}
-                                                    setValue={(e) => {
+                                                    onChange={(e) => {
                                                         field.onChange(e);
                                                         setSelectedDepartamento(
                                                             e
@@ -368,7 +359,7 @@ const FormPostulante = () => {
                                                         !selectedDepartamento
                                                     }
                                                     value={field.value}
-                                                    setValue={field.onChange}
+                                                    onChange={field.onChange}
                                                     values={provincias
                                                         .filter(
                                                             ({
@@ -400,7 +391,10 @@ const FormPostulante = () => {
                                         <FormItem>
                                             <FormLabel>Colegio</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <ComboBox
+                                                    values={colegios}
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -416,9 +410,11 @@ const FormPostulante = () => {
                                                 <ComboBox
                                                     values={grados}
                                                     value={field.value}
-                                                    setValue={(e) => {
+                                                    onChange={(e) => {
                                                         field.onChange(e);
-                                                        setGrado(Number(e));
+                                                        setSelectedGrado(
+                                                            Number(e)
+                                                        );
                                                     }}
                                                 />
                                             </FormControl>
@@ -435,27 +431,9 @@ const FormPostulante = () => {
                                             <FormLabel>Area</FormLabel>
                                             <FormControl>
                                                 <ComboBox
-                                                    disabled={!grado}
-                                                    values={categorias.filter(
-                                                        ({
-                                                            maximo_grado,
-                                                            minimo_grado,
-                                                        }) =>
-                                                            grado >=
-                                                                minimo_grado &&
-                                                            grado <=
-                                                                maximo_grado
-                                                    ).map(
-                                                        ({
-                                                            id,
-                                                            nombre,
-                                                        }) => ({
-                                                            id: id.toString(),
-                                                            nombre,
-                                                        })
-                                                    )}
-                                                    value={field.value}
-                                                    setValue={field.onChange}
+                                                    disabled={!selectedGrado}
+                                                    values={areas}
+                                                    {...field}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -474,7 +452,7 @@ const FormPostulante = () => {
                                             <FormControl>
                                                 <Input
                                                     placeholder="12345678"
-                                                    type="number"
+                                                    type="tel"
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -494,7 +472,7 @@ const FormPostulante = () => {
                                                 <ComboBox
                                                     values={contactos}
                                                     value={field.value}
-                                                    setValue={field.onChange}
+                                                    onChange={field.onChange}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -532,7 +510,7 @@ const FormPostulante = () => {
                                                 <ComboBox
                                                     values={contactos}
                                                     value={field.value}
-                                                    setValue={field.onChange}
+                                                    onChange={field.onChange}
                                                 />
                                             </FormControl>
                                             <FormMessage />
