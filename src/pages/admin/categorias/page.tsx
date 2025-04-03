@@ -44,7 +44,7 @@ type Area = {
 
 export default function GestionarCategorias() {
   // Estado para las áreas
-  const [areas, setAreas] = useState<Area[]>([
+  const [areas] = useState<Area[]>([
     { id: "1", nombre: "Desarrollo" },
     { id: "2", nombre: "Diseño" },
     { id: "3", nombre: "Marketing" },

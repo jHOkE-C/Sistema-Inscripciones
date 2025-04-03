@@ -19,7 +19,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Select,
@@ -30,11 +30,11 @@ import {
 } from "@/components/ui/select";
 
 import PostulanteDetalle from "./postulante-detalle";
-import Sidebar from "./Sidebar";
 import FormPostulante from "./FormPostulante";
 import ShareUrl from "./ShareUrl";
 import { useParams } from "react-router-dom";
 import { getInscripcion } from "@/utils/apiUtils";
+
 
 // Datos de ejemplo para los postulantes
 const postulantes = [
@@ -113,22 +113,31 @@ const postulantes = [
 ];
 
 export default function PageInscripciones() {
-    const [selectedPostulante, setSelectedPostulante] = useState(null);
+    const [selectedPostulante, setSelectedPostulante] = useState<Postulante | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [selectedPostulantes, setSelectedPostulantes] = useState([]);
+    const [selectedPostulantes, setSelectedPostulantes] = useState<number[]>([]);
     const [activeTab, setActiveTab] = useState("todos");
     const { uuid } = useParams();
 
     useEffect(()=>{
         console.log("UUID:",uuid)
-        getInscripcion(uuid);
+        getInscripcion();
     },[])
 
-    const handleTabChange = (value) => {
+
+    interface TabChangeHandler {
+        (value: string): void;
+    }
+
+    const handleTabChange: TabChangeHandler = (value) => {
         setActiveTab(value);
     };
 
-    const getStatusBadge = (estado) => {
+    interface StatusBadgeProps {
+        estado: string;
+    }
+
+    const getStatusBadge = (estado: StatusBadgeProps["estado"]): JSX.Element => {
         switch (estado) {
             case "Aprobado":
                 return <Badge className="bg-green-500">Aprobado</Badge>;
@@ -145,12 +154,26 @@ export default function PageInscripciones() {
         }
     };
 
-    const openPostulanteDetail = (postulante) => {
+    interface Postulante {
+        id: number;
+        nombre: string;
+        fechaNacimiento: string;
+        categoria: string;
+        area: string;
+        estado: string;
+        email: string;
+        telefono: string;
+        documentos: string[];
+        fechaRegistro: string;
+    }
+
+    const openPostulanteDetail = (postulante: Postulante): void => {
         setSelectedPostulante(postulante);
         setIsDetailOpen(true);
     };
 
-    const handlePagoInscripcion = (postulante) => {
+
+    const handlePagoInscripcion = (postulante: Postulante): void => {
         // Aquí iría la lógica para procesar el pago
         console.log(`Procesando pago para ${postulante.nombre}`);
         // Por ahora, solo mostraremos una alerta

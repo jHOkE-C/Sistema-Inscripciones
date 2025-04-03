@@ -3,24 +3,42 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Check, FileText, X, CreditCard } from "lucide-react"
+import { JSX } from "react"
 
-export default function PostulanteDetalle({ postulante, onClose }) {
-  const getStatusBadge = (estado) => {
-    switch (estado) {
-      case "Aprobado":
-        return <Badge className="bg-green-500">Aprobado</Badge>
-      case "Pendiente":
-        return <Badge className="bg-yellow-500">Pendiente</Badge>
-      case "Rechazado":
-        return <Badge className="bg-red-500">Rechazado</Badge>
-      case "Pendiente de Pago":
-        return <Badge className="bg-orange-500">Pendiente de Pago</Badge>
-      default:
-        return <Badge className="bg-gray-500">{estado}</Badge>
-    }
+interface Postulante {
+  nombre: string
+  estado: "Aprobado" | "Pendiente" | "Rechazado" | "Pendiente de Pago" | string
+  fechaNacimiento: string
+  fechaRegistro: string
+  categoria: string
+  area: string
+  email: string
+  telefono: string
+  documentos: string[]
+}
+
+export default function PostulanteDetalle({ postulante, onClose }: { postulante: Postulante; onClose: () => void }) {
+  interface StatusBadgeProps {
+    estado: "Aprobado" | "Pendiente" | "Rechazado" | "Pendiente de Pago" | string;
   }
 
-  const handlePagoInscripcion = (postulante) => {
+  const getStatusBadge = (estado: StatusBadgeProps["estado"]): JSX.Element => {
+    switch (estado) {
+      case "Aprobado":
+        return <Badge className="bg-green-500">Aprobado</Badge>;
+      case "Pendiente":
+        return <Badge className="bg-yellow-500">Pendiente</Badge>;
+      case "Rechazado":
+        return <Badge className="bg-red-500">Rechazado</Badge>;
+      case "Pendiente de Pago":
+        return <Badge className="bg-orange-500">Pendiente de Pago</Badge>;
+      default:
+        return <Badge className="bg-gray-500">{estado}</Badge>;
+    }
+  };
+
+
+  const handlePagoInscripcion = (postulante: Postulante): void => {
     // Aquí iría la lógica para procesar el pago
     console.log(`Procesando pago para ${postulante.nombre}`)
     // Por ahora, solo mostraremos una alerta
@@ -51,11 +69,7 @@ export default function PostulanteDetalle({ postulante, onClose }) {
           <div>
             <h4 className="text-sm font-medium text-muted-foreground mb-1">Categoría</h4>
             <p>{postulante.categoria}</p>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium text-muted-foreground mb-1">Prueba</h4>
-            <p>{postulante.prueba}</p>
-          </div>
+          </div>    
           <div>
             <h4 className="text-sm font-medium text-muted-foreground mb-1">Área</h4>
             <p>{postulante.area}</p>
@@ -80,7 +94,7 @@ export default function PostulanteDetalle({ postulante, onClose }) {
 
         <h4 className="font-medium mb-2">Documentos Presentados</h4>
         <div className="space-y-2 mb-6">
-          {postulante.documentos.map((doc, index) => (
+          {postulante.documentos.map((doc: string, index: number) => (
             <div key={index} className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-blue-600" />
               <span>{doc}</span>

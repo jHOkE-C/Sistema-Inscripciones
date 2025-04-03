@@ -152,7 +152,10 @@ const FormPostulante = () => {
     });
 
     const onSubmit = (data: z.infer<typeof postulanteSchema>) => {
-        postDataPostulante(data);
+        postDataPostulante({
+            ...data,
+            fecha_nacimiento: data.fecha_nacimiento.toISOString(), // Convert Date to ISO string
+        });
     };
     const [areas, setAreas] = useState<Area[]>([]);
     const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
@@ -413,7 +416,7 @@ const FormPostulante = () => {
                                                     onChange={(e) => {
                                                         field.onChange(e);
                                                         setSelectedGrado(
-                                                            Number(e)
+                                                            String(e)
                                                         );
                                                     }}
                                                 />

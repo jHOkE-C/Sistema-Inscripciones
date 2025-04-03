@@ -3,16 +3,21 @@ interface Values {
 }
 import { API_URL } from "@/hooks/useApiRequest";
 
-export const getUuid = async (values) => {
+interface UuidValues {
+    [key: string]: string | number | boolean;
+}
+
+export const getUuid = async (values: UuidValues): Promise<string> => {
     console.log("Enviando datos...", values);
 
-    return "12345678-uuid"
-    
+    return "12345678-uuid";
 };
 
-export const getInscripcion = async (values)=> {
-    return ""
-}
+// Removed unused interface InscripcionValues
+
+export const getInscripcion = async (): Promise<string> => {
+    return "";
+};
 
 
 export const postDataPostulante = async (values: Values): Promise<void> => {
