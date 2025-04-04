@@ -2,6 +2,7 @@ interface Values {
     [key: string]: string | number | boolean;
 }
 import { API_URL } from "@/hooks/useApiRequest";
+import type { ListaPostulantes } from "@/pages/inscribir/columns";
 
 interface UuidValues {
     [key: string]: string | number | boolean;
@@ -18,7 +19,6 @@ export const getUuid = async (values: UuidValues): Promise<string> => {
 export const getInscripcion = async (): Promise<string> => {
     return "";
 };
-
 
 export const postDataPostulante = async (values: Values): Promise<void> => {
     console.log("Formulario enviado con datos:", values);
@@ -44,5 +44,16 @@ export const getAreaPorGrado = async (grado: string): Promise<Area[]> => {
     } catch (error) {
         console.error(`Error en areas:`, error);
     }
+    return [];
+};
+
+export const crearListaPostulante = async (data: { nombre: string }) => {
+    return data;
+};
+
+export const getListasPostulantes = async (
+    uuid: string
+): Promise<ListaPostulantes[]> => {
+    console.log("UUID:", uuid);
     return [];
 };
