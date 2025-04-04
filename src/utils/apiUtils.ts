@@ -57,3 +57,32 @@ export const getListasPostulantes = async (
     console.log("UUID:", uuid);
     return [];
 };
+
+export const eliminarArea = async (id: number) => {
+    const response = await fetch(`${API_URL}/api/areas/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (!response.ok) {
+        throw new Error("Error al eliminar el área");
+    }
+};
+
+export const crearArea = async (data: { nombre: string }) => {
+    const response = await fetch(`${API_URL}/api/areas`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    // enviar el error del backend
+    const responseData = await response.json();
+    if (!response.ok) {
+        throw new Error(responseData.error);
+    }
+
+    return responseData;
+}

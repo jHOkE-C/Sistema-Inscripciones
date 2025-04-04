@@ -4,6 +4,7 @@ import FormAddArea from "./FormAddArea";
 import ListArea, { type Area } from "./ListArea";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
+import { crearArea, eliminarArea } from "@/utils/apiUtils";
 
 export const Page = () => {
     const {
@@ -33,29 +34,39 @@ export const Page = () => {
         setAlert({ title, description, variant });
     };
     const handleAddArea = async (data: { nombre: string }) => {
-        await request("POST", data);
-        if (error) {
-            showAlert("Error", "No se pudo agregar el área", "destructive");
-        } else {
+        try {
+            await crearArea(data);
             showAlert(
-                "Área creada",
-                "Se agregó el área correctamente",
+                "Exito",
+                "El área de competencia se creo correctamente.",
                 "default"
+            );
+        } catch (error: unknown) {
+            showAlert(
+                "Error",
+                error instanceof Error && error.message
+                    ? error.message
+                    : "El registro no se guardó, inténtelo de nuevo",
+                "destructive"
             );
         }
     };
 
     const handleDeleteArea = async (id: number) => {
-        await request("DELETE", undefined, `/${id}`);
-        if (error) {
-            showAlert("Error", "No se pudo eliminar el área", "destructive");
-        } else {
+        try {
+            await eliminarArea(id);
             showAlert(
-                "Área eliminada",
-                "Se eliminó el área correctamente",
+                "Éxito",
+                "El área de competencia se eliminó correctamente.",
                 "default"
             );
             refreshAreas();
+        } catch {
+            showAlert(
+                "Error",
+                "Hubo un error al eliminar el área, inténtelo de nuevo",
+                "destructive"
+            );
         }
     };
 
