@@ -33,6 +33,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { es } from "date-fns/locale";
 import { AlertComponent } from "@/components/AlertComponent";
+import axios from "axios";
 
 export default function GestionRegistration() {
     const [open, setOpen] = useState(false);
@@ -44,24 +45,31 @@ export default function GestionRegistration() {
     const [success, setSuccess] = useState<string | null>(null);
     const currentYear = new Date().getFullYear();
 
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const start = startDate ? format(startDate, "yyyy-MM-dd") : null;
         const end = endDate ? format(endDate, "yyyy-MM-dd") : null;
         try {
-            console.log({
-                name,
+            const data = {
+                nombre: name,
                 gestion: managementPeriod,
-                startDate: start,
-                endDate: end,
-            });
+                fecha_inicio: start,
+                fecha_fin: end,
+            };
+            console.log(data);
+
+            axios.post(
+                "https://ohsansi-back.up.railway.app/api/olimpiadas",
+                data
+            );
             setName("");
             setManagementPeriod("");
             setStartDate(new Date());
             setEndDate(undefined);
-            // Here you would typically send the data to your backend
             setOpen(false);
+
             setSuccess("La gestión se creó correctamente.");
         } catch {
             setError("No se pudo registrar la gestión, Intente nuevamente.");
@@ -88,7 +96,7 @@ export default function GestionRegistration() {
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="name" className="text-right">
-                                    Nombre de la gestión
+                                    Nombre de la version
                                 </Label>
                                 <Input
                                     id="name"
