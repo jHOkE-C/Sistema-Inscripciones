@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { AlertTriangle, CheckCircle, X } from "lucide-react";
-import { AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -19,7 +19,7 @@ export function AlertComponent({
     useEffect(() => {
         const timeout = setTimeout(() => {
             onClose?.();
-        }, 30000);
+        }, 3000);
         return () => clearTimeout(timeout);
     }, [onClose]);
 
@@ -40,7 +40,7 @@ export function AlertComponent({
                     <CheckCircle className="h-7 w-7 mr-2 text-green-500" />
                 )}
                 <div>
-                    <AlertTitle>{title}</AlertTitle>
+                    <p className="font-bold ">{title}</p>
                     <AlertDescription>{description}</AlertDescription>
                 </div>
             </div>
