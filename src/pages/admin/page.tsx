@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -10,15 +11,43 @@ import {
 import { Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Versiones } from "./Versiones";
+
+type Version = {
+  id: number;
+  nombre: string;
+  gestion: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  created_at: string;
+  updated_at: string;
+};
 
 const Admin = () => {
+
+  const [data, setData] = useState<Version[]>([]);
+
+   useEffect(() => {
+    axios
+      .get<Version[]>("https://ohsansi-back.up.railway.app/api/olimpiadas")
+      .then((response: { data: Version[] }) => {
+      setData(response.data);
+      console.log(data)
+      })
+      .catch((error: unknown) => {
+      console.error("Error fetching data:", error);
+      });
+   }, []); 
+
     return (
       <>
         <div className="w-4/5 mx-auto ">
           <h1 className="text-4xl font-bold text-center py-5">
             Administración de Sistema Oh!Sansi
           </h1>
-          <Card>
+          <Card className="mb-5">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl flex items-center gap-x-2">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center ">
@@ -64,6 +93,7 @@ const Admin = () => {
               </Link>
             </CardFooter>
           </Card>
+        <Versiones versiones={data} />
         </div>
       </>
     );

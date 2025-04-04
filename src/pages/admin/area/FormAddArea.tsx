@@ -99,7 +99,7 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                         <AlertDialogComponent
                             open={showCancel}
                             onOpenChange={setShowCancel}
-                            variantButton="destructive"
+                            variantButton="outline"
                             title="¿Está seguro de cancelar el registro?"
                             textButton="Cancelar"
                             onConfirm={() => setShowForm(false)}
