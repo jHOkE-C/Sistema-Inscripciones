@@ -47,7 +47,8 @@ export const getAreaPorGrado = async (grado: string): Promise<Area[]> => {
     return [];
 };
 
-export const crearListaPostulante = async (data: { nombre: string }) => {
+export const crearListaPostulante = async (data: {uuid:string, nombre: string }) => {
+    console.log(data)
     return data;
 };
 
