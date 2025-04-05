@@ -29,11 +29,14 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format} from "date-fns";
 import { cn } from "@/lib/utils";
 import { es } from "date-fns/locale";
 import { AlertComponent } from "@/components/AlertComponent";
 import axios from "axios";
+import { API_URL } from "@/hooks/useApiRequest";
+
+
 
 
 
@@ -66,7 +69,7 @@ export default function GestionRegistration({refresh}: {refresh: () => void}) {
             };
             console.log(data);
             const response =  await axios.post(
-                `https://ohsansi-back.up.railway.app/api/olimpiadas`,
+                `${API_URL}/api/olimpiadas`,
                 data
             )
             console.log(response);
@@ -79,8 +82,12 @@ export default function GestionRegistration({refresh}: {refresh: () => void}) {
             refresh();
             setSuccess("La gestión se creó correctamente.");
 
-        } catch {
-            setError("No se pudo registrar la gestión, Intente nuevamente.");
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                const data = error.response?.data.error
+                setError(data[0]);
+            }
+          
         }
     };
 
@@ -241,10 +248,11 @@ export default function GestionRegistration({refresh}: {refresh: () => void}) {
             {error && (
                 <AlertComponent
                     title="Error"
-                    description={error}
+                    description={error?error:"Error desconocido"}
                     onClose={() => {
                         setError(null);
                     }}
+                    variant="destructive"
                 />
             )}
             {success && (
