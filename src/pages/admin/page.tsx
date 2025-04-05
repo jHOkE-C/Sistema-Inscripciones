@@ -51,7 +51,7 @@ const Admin = () => {
         <h1 className="text-4xl font-bold text-center py-5">
           Administración de Sistema Oh!Sansi
         </h1>
-        <Card className="mb-5">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xl flex items-center gap-x-2">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center ">

@@ -34,7 +34,6 @@ interface FormAddAreaProps {
 
 const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
-    const [showCancel, setShowCancel] = useState(false);
     const [showForm, setShowForm] = useState(false);
 
     const [formData, setFormData] = useState<{ nombre: string }>();
@@ -96,19 +95,19 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                         <Button onClick={form.handleSubmit(onSubmit)}>
                             Registrar
                         </Button>
-                        <AlertDialogComponent
-                            open={showCancel}
-                            onOpenChange={setShowCancel}
-                            variantButton="outline"
-                            title="¿Está seguro de cancelar el registro?"
-                            textButton="Cancelar"
-                            onConfirm={() => setShowForm(false)}
-                        />
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setShowForm(false);
+                            }}
+                        >
+                            Cancelar
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
             <AlertDialogComponent
-                title="¿Está seguro de registrar el área?"
+                title={`¿Está seguro de registrar el área ${formData?.nombre}?`}
                 onConfirm={saveArea}
                 open={showConfirm}
                 onOpenChange={(e) => {

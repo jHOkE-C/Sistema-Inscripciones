@@ -33,7 +33,7 @@ export function Versiones({versiones}: {versiones: Version[]}) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
       {versiones.map((event) => (
         <Card key={event.id} className="flex flex-col h-full">
           <CardHeader className="pb-2">

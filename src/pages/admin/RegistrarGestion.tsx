@@ -66,7 +66,7 @@ export default function GestionRegistration({refresh}: {refresh: () => void}) {
             };
             console.log(data);
             const response =  await axios.post(
-                "https://ohsansi-back.up.railway.app/api/olimpiadas",
+                `https://ohsansi-back.up.railway.app/api/olimpiadas`,
                 data
             )
             console.log(response);
