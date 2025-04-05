@@ -12,11 +12,38 @@ import { Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 import { Versiones } from "./Versiones";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-
+export type Version = {
+  id: number;
+  nombre: string;
+  gestion: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  created_at: string;
+  updated_at: string;
+};
 
 const Admin = () => {
   
+   const [versiones, setData] = useState<Version[]>([]);
+  
+    const getData = async () => {
+      axios
+        .get<Version[]>("https://ohsansi-back.up.railway.app/api/olimpiadas")
+        .then((response) => {
+          setData(response.data);
+          console.log(response.data);
+        })
+        .catch((error: unknown) => {
+          console.error("Error fetching versiones:", error);
+        });
+    };
+
+    useEffect(() => {
+      getData();
+    }, []);
 
   return (
     <>
@@ -43,7 +70,7 @@ const Admin = () => {
             </p>
           </CardContent>
           <CardFooter className="grid space-y-2">
-            <GestionRegistration />
+            <GestionRegistration refresh={() => getData()}/>
             <Link to="/admin/area">
               <Button
                 className="ml-auto text-sm font-medium w-44"
@@ -70,7 +97,7 @@ const Admin = () => {
             </Link>
           </CardFooter>
         </Card>
-        <Versiones />
+        <Versiones versiones={versiones}/>
       </div>
     </>
   );

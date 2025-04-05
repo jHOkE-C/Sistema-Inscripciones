@@ -7,39 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
-import { useEffect, useState } from "react";
-
-type Version = {
-  id: number;
-  nombre: string;
-  gestion: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  created_at: string;
-  updated_at: string;
-};
+import { Version } from "./page";
 
 
-export function Versiones() {
 
-  const [versiones, setData] = useState<Version[]>([]);
-
-  const getData = async () => {
-    axios
-      .get<Version[]>("https://ohsansi-back.up.railway.app/api/olimpiadas")
-      .then((response) => {
-        setData(response.data);
-        console.log(response.data);
-      })
-      .catch((error: unknown) => {
-        console.error("Error fetching versiones:", error);
-      });
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
+export function Versiones({versiones}: {versiones: Version[]}) {
+  
   // Function to format dates in a more readable way
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

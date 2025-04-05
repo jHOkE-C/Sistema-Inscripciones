@@ -35,7 +35,11 @@ import { es } from "date-fns/locale";
 import { AlertComponent } from "@/components/AlertComponent";
 import axios from "axios";
 
-export default function GestionRegistration() {
+
+
+export default function GestionRegistration({refresh}: {refresh: () => void}) {
+
+
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [managementPeriod, setManagementPeriod] = useState("");
@@ -46,7 +50,9 @@ export default function GestionRegistration() {
     const currentYear = new Date().getFullYear();
 
 
-    const handleSubmit = (e: React.FormEvent) => {
+
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const start = startDate ? format(startDate, "yyyy-MM-dd") : null;
@@ -59,20 +65,20 @@ export default function GestionRegistration() {
                 fecha_fin: end,
             };
             console.log(data);
-            const response =  axios.post(
+            const response =  await axios.post(
                 "https://ohsansi-back.up.railway.app/api/olimpiadas",
                 data
-            );
-
+            )
             console.log(response);
-            
+
             setName("");
             setManagementPeriod("");
             setStartDate(new Date());
             setEndDate(undefined);
             setOpen(false);
-
+            refresh();
             setSuccess("La gestión se creó correctamente.");
+
         } catch {
             setError("No se pudo registrar la gestión, Intente nuevamente.");
         }
