@@ -14,6 +14,7 @@ import GestionRegistration from "./RegistrarGestion";
 import { Versiones } from "./Versiones";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/hooks/useApiRequest";
 
 export type Version = {
   id: number;
@@ -31,7 +32,7 @@ const Admin = () => {
   
     const getData = async () => {
       axios
-        .get<Version[]>("https://ohsansi-back.up.railway.app/api/olimpiadas")
+        .get<Version[]>(`${API_URL}/api/olimpiadas`)
         .then((response) => {
           setData(response.data);
           console.log(response.data);
