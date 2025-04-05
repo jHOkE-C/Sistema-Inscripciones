@@ -47,8 +47,11 @@ export const getAreaPorGrado = async (grado: string): Promise<Area[]> => {
     return [];
 };
 
-export const crearListaPostulante = async (data: {uuid:string, nombre: string }) => {
-    console.log(data)
+export const crearListaPostulante = async (data: {
+    uuid: string;
+    nombre: string;
+}) => {
+    console.log(data);
     return data;
 };
 
@@ -56,7 +59,32 @@ export const getListasPostulantes = async (
     uuid: string
 ): Promise<ListaPostulantes[]> => {
     console.log("UUID:", uuid);
-    return [];
+    return [
+        {
+            cantidad_postulantes: 3,
+            id: 1,
+            nombre_lista: "Lista 1",
+            codigo: "af5ds16s",
+            estado: "PENDIENTE",
+            fecha_creacion: new Date(),
+        },
+        {
+            cantidad_postulantes: 5,
+            id: 2,
+            nombre_lista: "Lista 2",
+            codigo: "fdsaf15s",
+            estado: "PENDIENTE",
+            fecha_creacion: new Date(),
+        },
+        {
+            cantidad_postulantes: 10,
+            id: 3,
+            nombre_lista: "Lista 3",
+            codigo: "af5ds16s",
+            estado: "PENDIENTE",
+            fecha_creacion: new Date(),
+        },
+    ];
 };
 
 export const eliminarArea = async (id: number) => {
@@ -86,4 +114,4 @@ export const crearArea = async (data: { nombre: string }) => {
     }
 
     return responseData;
-}
+};

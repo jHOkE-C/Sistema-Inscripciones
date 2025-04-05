@@ -13,6 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {  useNavigate, useParams } from "react-router-dom";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -29,6 +30,8 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
     });
 
+    const navigate= useNavigate()
+    const {uuid} = useParams()
     return (
         <div className="rounded-md border">
             <Table>
@@ -57,6 +60,14 @@ export function DataTable<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
+                                onClick={() => {
+                                    const codigo = row.getValue("codigo")
+                                    console.log(
+                                        "abriendo",
+                                        uuid,codigo
+                                    );
+                                    navigate(`/inscribir/${uuid}/${codigo}`)
+                                }}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>

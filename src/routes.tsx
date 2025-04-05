@@ -2,10 +2,11 @@ const pages = import.meta.glob("./pages/**/*.tsx", { eager: true });
 
 const routes = Object.keys(pages).map((path) => {
     const routePath = path
-        .replace("./pages", "")
-        .replace(/\.tsx$/, "")
-        .replace(/\/page$/, "")
-        .replace(/\[(\w+)\]/, ":$1");
+    .replace("./pages", "")
+    .replace(/\.tsx$/, "")
+    .replace(/\/page$/, "")
+    .replace(/\[(\w+)\]/g, ":$1");
+  
 
     return {
         path: routePath || "/",
