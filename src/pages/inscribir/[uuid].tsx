@@ -3,9 +3,10 @@ import { CreateList } from "./CreateList";
 import { DataTable } from "./TableList";
 import { columns, ListaPostulantes } from "./columns";
 import { useEffect, useState } from "react";
-import { getListasPostulantes } from "@/utils/apiUtils";
+
 import { useParams } from "react-router-dom";
 import ShareUrl from "./ShareUrl";
+import { getListasPostulantes } from "@/api/postulantes";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { uuid } = useParams();

@@ -27,7 +27,9 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { API_URL } from "@/hooks/useApiRequest";
-import { getAreaPorGrado, postDataPostulante, type Area } from "@/utils/apiUtils";
+import { postDataPostulante } from "@/api/postulantes";
+import { getAreaPorGrado, type Area } from "@/api/areas";
+
 
 const grados = [
     { id: "1", nombre: "1ro Primaria" },

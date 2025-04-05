@@ -46,6 +46,7 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
     });
 
     const onSubmit = async (data: { nombre: string }) => {
+        
         setShowConfirm(true);
         setFormData(data);
     };

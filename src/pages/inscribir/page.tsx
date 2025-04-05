@@ -1,3 +1,4 @@
+import { getUuid } from "@/api/uuid";
 import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getUuid } from "@/utils/apiUtils";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

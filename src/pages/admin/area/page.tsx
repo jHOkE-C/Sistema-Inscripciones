@@ -4,7 +4,8 @@ import FormAddArea from "./FormAddArea";
 import ListArea, { type Area } from "./ListArea";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
-import { crearArea, eliminarArea } from "@/utils/apiUtils";
+import { crearArea, eliminarArea } from "@/api/areas";
+
 
 export const Page = () => {
     const {
@@ -41,6 +42,7 @@ export const Page = () => {
                 "El área de competencia se creo correctamente.",
                 "default"
             );
+            refreshAreas()
         } catch (error: unknown) {
             showAlert(
                 "Error",

@@ -1,3 +1,4 @@
+import { crearListaPostulante } from "@/api/postulantes";
 import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { crearListaPostulante } from "@/utils/apiUtils";
+
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 

@@ -33,7 +33,8 @@ import PostulanteDetalle from "./postulante-detalle";
 import FormPostulante from "./FormPostulante";
 import ShareUrl from "./ShareUrl";
 import { useParams } from "react-router-dom";
-import { getInscripcion } from "@/utils/apiUtils";
+import { getInscripcion } from "@/api/uuid";
+
 
 
 // Datos de ejemplo para los postulantes
