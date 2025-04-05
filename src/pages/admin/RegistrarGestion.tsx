@@ -248,7 +248,7 @@ export default function GestionRegistration({refresh}: {refresh: () => void}) {
             {error && (
                 <AlertComponent
                     title="Error"
-                    description={error}
+                    description={error?error:"Error desconocido"}
                     onClose={() => {
                         setError(null);
                     }}
