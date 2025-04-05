@@ -29,7 +29,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format, set } from "date-fns";
+import { format} from "date-fns";
 import { cn } from "@/lib/utils";
 import { es } from "date-fns/locale";
 import { AlertComponent } from "@/components/AlertComponent";
