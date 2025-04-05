@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { crearListaPostulante } from "@/utils/apiUtils";
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
 interface CreateListProps {
     number?: number;
@@ -23,15 +24,20 @@ export function CreateList({ number = 1 }: CreateListProps) {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [nombre, setNombre] = useState<string>();
-
+    const {uuid} = useParams()
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await crearListaPostulante({ nombre: nombre || `Lista ${number}` });
+            if(!uuid) return;
+            await crearListaPostulante({uuid,  nombre: nombre || `Lista ${number}` });
             setSuccess("La lista se creó correctamente.");
-            setOpen(false)
-        } catch {
-            setError("No se pudo registrar la lista. Intente nuevamente.");
+            setOpen(false);
+        } catch (e: unknown) {
+            setError(
+                e instanceof Error && e.message
+                    ? e.message
+                    : "No se pudo registrar la lista. Intente nuevamente."
+            );
         }
     };
 
