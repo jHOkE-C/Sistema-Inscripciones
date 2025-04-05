@@ -7,6 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 type Version = {
   id: number;
@@ -18,11 +20,26 @@ type Version = {
   updated_at: string;
 };
 
-interface Versiones{
-  versiones: Version[];
-}
 
-export function Versiones({ versiones }: Versiones) {
+export function Versiones() {
+
+  const [versiones, setData] = useState<Version[]>([]);
+
+  const getData = async () => {
+    axios
+      .get<Version[]>("https://ohsansi-back.up.railway.app/api/olimpiadas")
+      .then((response) => {
+        setData(response.data);
+        console.log(response.data);
+      })
+      .catch((error: unknown) => {
+        console.error("Error fetching versiones:", error);
+      });
+  };
+
+  useEffect(() => {
+    getData();
+  }, [versiones]);
   // Function to format dates in a more readable way
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
