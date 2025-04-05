@@ -5,6 +5,7 @@ import { columns, ListaPostulantes } from "./columns";
 import { useEffect, useState } from "react";
 import { getListasPostulantes } from "@/utils/apiUtils";
 import { useParams } from "react-router-dom";
+import ShareUrl from "./ShareUrl";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { uuid } = useParams();
@@ -24,20 +25,22 @@ const Page = () => {
     }, []);
 
     return (
-        <div className="container mx-auto my-10">
-           
-            <Card>
-                <CardTitle>
-                    <h1 className="text-2xl font-bold text-center">
-                        Listas de Postulantes
-                    </h1>
-                </CardTitle>
-                <CardContent className="space-y-5">
-                    <CreateList />
-                    <DataTable columns={columns} data={data} />
-                </CardContent>
-            </Card>
-        </div>
+        <>
+            <div className="container mx-auto my-10">
+                <Card>
+                    <CardTitle>
+                        <h1 className="text-2xl font-bold text-center">
+                            Listas de Postulantes
+                        </h1>
+                    </CardTitle>
+                    <CardContent className="space-y-5">
+                        <CreateList />
+                        <DataTable columns={columns} data={data} />
+                    </CardContent>
+                </Card>
+            </div>
+            <ShareUrl/>
+        </>
     );
 };
 

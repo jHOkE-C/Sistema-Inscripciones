@@ -5,6 +5,7 @@ import { Copy, QrCodeIcon, Share2 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import {QRCode} from "react-qrcode-logo";
 
 export default function ShareUrl() {
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -46,14 +47,15 @@ export default function ShareUrl() {
           onClick={() => setShowQrCode(!showQrCode)}
           className="w-full mb-2"
         >
-          <QrCodeIcon className="w-5 h-5 mr-2" />
+          <QrCodeIcon/>
           QR
         </Button>
+        <QRCode value={currentUrl} logoImage="/logo_umss.png"  logoWidth={50} logoPadding={2} size={200}/>
         {showQrCode && (
           <Card className="w-full mt-4">
             <CardTitle className="text-center">Escanea el código QR</CardTitle>
             <CardContent className="flex justify-center">
-              <QRCodeCanvas value={currentUrl} size={200} />
+              <QRCodeCanvas  value={currentUrl} size={200} />
             </CardContent>
           </Card>
         )}
