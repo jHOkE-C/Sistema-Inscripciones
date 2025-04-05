@@ -59,11 +59,13 @@ export default function GestionRegistration() {
                 fecha_fin: end,
             };
             console.log(data);
-
-            axios.post(
+            const response =  axios.post(
                 "https://ohsansi-back.up.railway.app/api/olimpiadas",
                 data
             );
+
+            console.log(response);
+            
             setName("");
             setManagementPeriod("");
             setStartDate(new Date());

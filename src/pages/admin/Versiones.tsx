@@ -39,7 +39,7 @@ export function Versiones() {
 
   useEffect(() => {
     getData();
-  }, [versiones]);
+  }, []);
   // Function to format dates in a more readable way
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
