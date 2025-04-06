@@ -27,20 +27,22 @@ const Page = () => {
 
     return (
         <>
-            <div className="container mx-auto my-10">
-                <Card>
-                    <CardTitle>
-                        <h1 className="text-2xl font-bold text-center">
-                            Listas de Postulantes
-                        </h1>
-                    </CardTitle>
-                    <CardContent className="space-y-5">
-                        <CreateList />
-                        <DataTable columns={columns} data={data} />
-                    </CardContent>
-                </Card>
+            <div className="min-h-screen py-10">
+                <div className="container mx-auto ">
+                    <Card>
+                        <CardTitle>
+                            <h1 className="text-2xl font-bold text-center">
+                                Listas de Postulantes
+                            </h1>
+                        </CardTitle>
+                        <CardContent className="space-y-5">
+                            <CreateList />
+                            <DataTable columns={columns} data={data} />
+                        </CardContent>
+                    </Card>
+                </div>
+                <ShareUrl />
             </div>
-            <ShareUrl/>
         </>
     );
 };
