@@ -44,6 +44,7 @@ const FormRepresentante = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             const { uuid } = await registrarRepresentante(values);
+            localStorage.setItem("uuid", uuid);
             navigate("/inscribir/" + uuid);
         } catch (error: unknown) {
             setError(

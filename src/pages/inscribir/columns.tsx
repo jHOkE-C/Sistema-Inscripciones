@@ -6,7 +6,8 @@ export type ListaPostulantes = {
     cantidad_postulantes: number ;
     fecha_creacion: Date;
     estado: string;
-    codigo: string;
+    codigo_lista: string;
+    id_responsable:string;
 };
 
 export const columns: ColumnDef<ListaPostulantes>[] = [
