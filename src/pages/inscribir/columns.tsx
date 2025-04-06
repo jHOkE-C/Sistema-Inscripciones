@@ -28,7 +28,7 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
         header: "Estado",
     },
     {
-        accessorKey: "codigo",
-        header: "Código",
+        accessorKey: "codigo_lista",
+        header: "Código de lista",
     },
 ];

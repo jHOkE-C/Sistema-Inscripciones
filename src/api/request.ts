@@ -1,43 +1,75 @@
-// request.ts
 import { API_URL } from "@/hooks/useApiRequest";
 
-export async function request<T>(
-    endpoint: string,
-    options?: RequestInit
-): Promise<T> {
+export async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${API_URL}${endpoint}`;
 
     if (import.meta.env.DEV) {
-        console.log(`%c[Request] → ${url}`, "color: blue");
-        console.log("%c[Options]", "color: cyan", options);
+        // Agrupamos los detalles de la solicitud y la respuesta en un solo objeto
+        const requestDetails = {
+            request: {
+                url,
+                options
+            },
+            response: {
+                status: null,
+                data: null,
+                error: null
+            }
+        };
+        
+        // Mostrar la solicitud
+        console.log(`%c[Request] →`, "color: blue", requestDetails.request);
     }
 
     let response: Response;
+    let responseData: T;
+
     try {
+        // Realizamos la solicitud fetch
         response = await fetch(url, options);
-    } catch (err) {
-        console.error("%c[Network Error]", "color: red", err);
-        throw new Error("Error de red. Verifica tu conexión o la URL.");
-    }
 
-    let responseData;
-    try {
+        // Intentamos parsear la respuesta como JSON
         responseData = await response.json();
+
+        // Si la solicitud fue exitosa, mostramos los detalles
+        if (import.meta.env.DEV) {
+            const requestDetails = {
+                request: {
+                    url,
+                    options
+                },
+                response: {
+                    status: response.status,
+                    data: responseData,
+                    error: null
+                }
+            };
+            console.log(`%c[Response] →`, "color: magenta", requestDetails.response);
+        }
+
+        // Comprobamos si la respuesta no es satisfactoria
+        if (!response.ok) {
+            const message =
+                (responseData as { error?: string })?.error || "Error desconocido del servidor.";
+            throw new Error(message);
+        }
+
     } catch (err) {
-        console.error("%c[JSON Parse Error]", "color: red", err);
-        throw new Error("La respuesta no es un JSON válido.");
-    }
-
-    if (import.meta.env.DEV) {
-        console.log("%c[Response Status]", "color: green", response.status);
-        console.log("%c[Response Data]", "color: magenta", responseData);
-    }
-
-    if (!response.ok) {
-        const message =
-            responseData?.error || "Error desconocido del servidor.";
-        console.error("%c[Request Failed]", "color: red", message);
-        throw new Error(message);
+        if (import.meta.env.DEV) {
+            const requestDetails = {
+                request: {
+                    url,
+                    options
+                },
+                response: {
+                    status: null,
+                    data: null,
+                    error: err instanceof Error ? err.message : "Unknown error"
+                }
+            };
+            console.error(`%c[Request Failed] →`, "color: red", requestDetails);
+        }
+        throw new Error(err instanceof Error ? err.message : "Error desconocido");
     }
 
     return responseData;

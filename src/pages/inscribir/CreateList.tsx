@@ -18,21 +18,30 @@ import { useParams } from "react-router-dom";
 
 interface CreateListProps {
     number?: number;
+    refresh?: () => void;
 }
 
-export function CreateList({ number = 1 }: CreateListProps) {
+export function CreateList({
+    number = 1,
+    refresh = () => {},
+}: CreateListProps) {
     const [open, setOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [nombre, setNombre] = useState<string>();
-    const {uuid} = useParams()
+    const { uuid } = useParams();
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            if(!uuid) return;
-            await crearListaPostulante({uuid,  nombre: nombre || `Lista ${number}` });
+            if (!uuid) return;
+            await crearListaPostulante({
+                uuid,
+                nombre_lista: nombre || `Lista ${number}`,
+            });
             setSuccess("La lista se creó correctamente.");
             setOpen(false);
+            setNombre("");
+            refresh();
         } catch (e: unknown) {
             setError(
                 e instanceof Error && e.message

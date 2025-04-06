@@ -11,18 +11,19 @@ import { getListasPostulantes } from "@/api/postulantes";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { uuid } = useParams();
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (!uuid) {
-                    throw new Error("UUID no encontrado en la URL");
-                }
-                const data = await getListasPostulantes(uuid);
-                setData(data);
-            } catch {
-                console.error("Error al obtener las listas de postulantes");
+
+    const fetchData = async () => {
+        try {
+            if (!uuid) {
+                throw new Error("UUID no encontrado en la URL");
             }
-        };
+            const data = await getListasPostulantes(uuid);
+            setData(data);
+        } catch {
+            console.error("Error al obtener las listas de postulantes");
+        }
+    };
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -37,7 +38,7 @@ const Page = () => {
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5">
-                            <CreateList />
+                            <CreateList refresh={fetchData} number={data.length} />
                             <DataTable columns={columns} data={data} />
                         </CardContent>
                     </Card>

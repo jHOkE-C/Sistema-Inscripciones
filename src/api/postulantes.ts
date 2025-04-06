@@ -18,8 +18,11 @@ export const getListasPostulantes = async (
 
 export const crearListaPostulante = async (data: {
     uuid: string;
-    nombre: string;
+    nombre_lista: string;
 }) => {
-    console.log(data);
-    return data;
+    return request<{ message: string; codigo_lista: string }>("/api/listas", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+    });
 };
