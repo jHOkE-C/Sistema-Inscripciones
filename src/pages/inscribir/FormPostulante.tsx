@@ -29,7 +29,7 @@ import {
 import { API_URL } from "@/hooks/useApiRequest";
 import { postDataPostulante } from "@/api/postulantes";
 import { getAreaPorGrado, type Area } from "@/api/areas";
-
+import { MultiSelect } from "@/components/MultiSelect";
 
 const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -92,7 +92,9 @@ const postulanteSchema = z.object({
         .string()
         .min(1, { message: "El tipo de contacto por email es obligatorio." }),
 
-    area: z.string().min(1, { message: "El nombre del área es obligatorio." }),
+    areas: z
+        .array(z.string())
+        .length(2, { message: "Debes seleccionar 2 áreas." }),
 
     email_contacto: z
         .string()
@@ -114,7 +116,6 @@ const postulanteSchema = z.object({
 
     colegio: z.string(),
 });
-
 
 interface Departamento {
     id: string;
@@ -145,9 +146,7 @@ interface Colegio {
 
 const FormPostulante = () => {
     const [selectedGrado, setSelectedGrado] = useState<string>();
-    const [selectedDepartamento, setSelectedDepartamento] = useState<
-        string | number
-    >();
+    const [selectedDepartamento, setSelectedDepartamento] = useState<string>();
     const form = useForm<z.infer<typeof postulanteSchema>>({
         resolver: zodResolver(postulanteSchema),
         mode: "onSubmit",
@@ -157,6 +156,7 @@ const FormPostulante = () => {
         postDataPostulante({
             ...data,
             fecha_nacimiento: data.fecha_nacimiento.toISOString(), // Convert Date to ISO string
+            areas: data.areas.join(","), // Convert array to comma-separated string
         });
     };
     const [areas, setAreas] = useState<Area[]>([]);
@@ -335,7 +335,9 @@ const FormPostulante = () => {
                                                     onChange={(e) => {
                                                         field.onChange(e);
                                                         setSelectedDepartamento(
-                                                            e
+                                                            Array.isArray(e)
+                                                                ? e[0]
+                                                                : e
                                                         );
                                                     }}
                                                     values={departamentos.map(
@@ -430,15 +432,17 @@ const FormPostulante = () => {
 
                                 <FormField
                                     control={form.control}
-                                    name="area"
+                                    name="areas"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Area</FormLabel>
                                             <FormControl>
-                                                <ComboBox
+                                                <MultiSelect
                                                     disabled={!selectedGrado}
                                                     values={areas}
-                                                    {...field}
+                                                    value={field.value || []}
+                                                    onChange={field.onChange}
+                                                    max={2}
                                                 />
                                             </FormControl>
                                             <FormMessage />

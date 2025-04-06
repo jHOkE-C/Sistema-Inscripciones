@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ShareUrl from "./ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
+import FormPostulante from "./FormPostulante";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { uuid } = useParams();
@@ -29,6 +30,7 @@ const Page = () => {
         <>
             <div className="min-h-screen py-10">
                 <div className="container mx-auto ">
+                    <FormPostulante/>
                     <Card>
                         <CardTitle>
                             <h1 className="text-2xl font-bold text-center">
