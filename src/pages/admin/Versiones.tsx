@@ -8,11 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Version } from "./page";
+import { Link } from "react-router-dom";
 
-
-
-export function Versiones({versiones}: {versiones: Version[]}) {
-  
+export function Versiones({ versiones }: { versiones: Version[] }) {
   // Function to format dates in a more readable way
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -35,47 +33,49 @@ export function Versiones({versiones}: {versiones: Version[]}) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
       {versiones.map((event) => (
-        <Card key={event.id} className="flex flex-col h-full">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <CardTitle className="text-xl">{event.nombre}</CardTitle>
-              <Badge variant="outline" className="ml-2">
-                {event.gestion}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Fecha de inicio:</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(event.fecha_inicio)}
-                  </p>
+        <Link to={`/admin/version/${event.id}`} key={event.id}>
+          <Card key={event.id} className="flex flex-col h-full">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-xl">{event.nombre}</CardTitle>
+                <Badge variant="outline" className="ml-2">
+                  {event.gestion}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">Fecha de inicio:</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(event.fecha_inicio)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">Fecha de fin:</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(event.fecha_fin)}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Fecha de fin:</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(event.fecha_fin)}
-                  </p>
-                </div>
+            </CardContent>
+            <CardFooter className="border-t pt-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>
+                  Duración:{" "}
+                  {calculateDuration(event.fecha_inicio, event.fecha_fin)} días
+                </span>
               </div>
-            </div>
-          </CardContent>
-          <CardFooter className="border-t pt-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>
-                Duración:{" "}
-                {calculateDuration(event.fecha_inicio, event.fecha_fin)} días
-              </span>
-            </div>
-          </CardFooter>
-        </Card>
+            </CardFooter>
+          </Card>
+        </Link>
       ))}
     </div>
   );
