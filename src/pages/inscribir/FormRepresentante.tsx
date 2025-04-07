@@ -109,7 +109,7 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
                                                 {...field}
                                                 onChange={(e) => {
                                                     const value = e.target.value.replace(/\D/g, ""); 
-                                                    field.onChange(value );
+                                                    field.onChange(value);
                                                 }}
                                                 value={field.value || ""}
                                                 type="tel"

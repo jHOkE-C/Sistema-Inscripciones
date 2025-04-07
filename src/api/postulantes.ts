@@ -11,13 +11,13 @@ export const postDataPostulante = async (values: Values): Promise<void> => {
 export const getListasPostulantes = async (
     ci: string
 ): Promise<ListaPostulantes[]> => {
-    return request<ListaPostulantes[]>("/api/responsables/" + ci+"/listas", {
+    return request<ListaPostulantes[]>("/api/responsables/" + ci + "/listas", {
         method: "GET",
     });
 };
 
 export const crearListaPostulante = async (data: {
-    uuid: string;
+    ci: string;
     nombre_lista: string;
 }) => {
     return request<{ message: string; codigo_lista: string }>("/api/listas", {

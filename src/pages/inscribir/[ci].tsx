@@ -7,7 +7,6 @@ import { useParams } from "react-router-dom";
 import ShareUrl from "./ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
 import FormRepresentante from "./FormRepresentante";
-import { getRepresentante } from "@/api/representantes";
 import NotFoundPage from "../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
@@ -21,11 +20,11 @@ const Page = () => {
     useEffect(() => {
         fetchData();
     }, []);
-
-    if (!ci || ci.length != 8) {
+    
+    if (!ci || ci.length < 7) {
         return <NotFoundPage />;
     }
-
+    
     const refresh = async () => {
         setLoading(true);
         try {
@@ -40,11 +39,6 @@ const Page = () => {
     };
     const fetchData = async () => {
         try {
-            const representante = await getRepresentante(ci);
-            if (!representante) {
-                setOpenFormRepresentante(true);
-                return;
-            }
             refresh();
         } catch {
             console.error("Error al obtener las listas de postulantes");

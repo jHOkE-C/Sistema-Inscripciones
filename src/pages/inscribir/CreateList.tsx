@@ -35,7 +35,7 @@ export function CreateList({
         try {
             if (!ci) return;
             await crearListaPostulante({
-                uuid: ci,
+                ci,
                 nombre_lista: nombre || `Lista ${number+1}`,
             });
             setSuccess("La lista se creó correctamente.");
