@@ -152,7 +152,7 @@ export default function Gestionador() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-zinc-500 font-semibold">Crea, modifica, y añade areas a un categoria</h2>
+        <h2 className="text-zinc-600 ">Crea, modifica, y añade areas a un categoria</h2>
         <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Crear Categoría
         </Button>
