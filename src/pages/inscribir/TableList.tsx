@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                                 onClick={() => {
-                                    const codigo = row.getValue("codigo")
+                                    const codigo = row.getValue("codigo_lista")
                                     console.log(
                                         "abriendo",
                                         uuid,codigo

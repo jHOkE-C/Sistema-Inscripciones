@@ -24,10 +24,10 @@ export default function ShareUrl() {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          className="fixed bottom-4 right-4 p-3 rounded-full shadow-lg bg-white dark:bg-gray-800"
+          variant="default"
+          className="fixed bottom-4 right-4 p-3 rounded-full shadow-lg  text-white hover:"
         >
-          <Share2 className="w-6 h-6 text-gray-700 dark:text-white" />
+          <Share2 className="w-6 h-6   dark:text-white" />
         </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center p-4 w-80 max-w-full">
