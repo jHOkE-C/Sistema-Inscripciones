@@ -22,7 +22,7 @@ const Page = () => {
         fetchData();
     }, []);
 
-    if (!ci || ci.length < 7) {
+    if (!ci || ci.length != 8) {
         return <NotFoundPage />;
     }
 

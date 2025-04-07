@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { z } from "zod";
+import {  z } from "zod";
 import NotFoundPage from "../404";
 
 const formSchema = z.object({
@@ -27,18 +27,13 @@ const formSchema = z.object({
     email: z.string().email("El correo ingresado no es válido"),
     telefono: z
         .string()
-        .regex(/^[0-9]{7,8}$/, "Ingrese un número de teléfono válido"),
+        .regex(/^\d{8}$/, "El teléfono debe tener exactamente 8 dígitos"),
 });
 
 const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
     const [error, setError] = useState<string | null>(null);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            nombre_completo: "",
-            email: "",
-            telefono: "",
-        },
     });
     const { ci } = useParams();
     if (!ci || ci?.length < 7) return <NotFoundPage />;
@@ -111,8 +106,13 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
                                         <FormLabel>Teléfono</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="tel"
                                                 {...field}
+                                                onChange={(e) => {
+                                                    const value = e.target.value.replace(/\D/g, ""); 
+                                                    field.onChange(value );
+                                                }}
+                                                value={field.value || ""}
+                                                type="tel"
                                                 placeholder="Ejemplo: 76543210"
                                             />
                                         </FormControl>
