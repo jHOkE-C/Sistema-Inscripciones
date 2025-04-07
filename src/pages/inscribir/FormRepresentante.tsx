@@ -15,7 +15,9 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { z } from "zod";
+import NotFoundPage from "../404";
 
 const formSchema = z.object({
     nombre_completo: z
@@ -38,11 +40,11 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
             telefono: "",
         },
     });
-
+    const { ci } = useParams();
+    if (!ci || ci?.length < 7) return <NotFoundPage />;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const { uuid } = await registrarRepresentante(values);
-            localStorage.setItem("uuid", uuid);
+            await registrarRepresentante({ ...values, ci });
             onClose();
         } catch (error: unknown) {
             setError(
@@ -52,7 +54,7 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
     };
     return (
         <>
-            <div className="bg-foreground/5 w-screen h-screen">
+            <div className="w-screen h-screen">
                 <div
                     className={cn(
                         "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg "
@@ -124,16 +126,15 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
                             </Button>
                         </form>
                     </Form>
-
-                    {error && (
-                        <AlertComponent
-                            title="Error"
-                            variant="destructive"
-                            description={error}
-                            onClose={() => setError(null)}
-                        />
-                    )}
                 </div>
+                {error && (
+                    <AlertComponent
+                        title="Error"
+                        variant="destructive"
+                        description={error}
+                        onClose={() => setError(null)}
+                    />
+                )}
             </div>
         </>
     );

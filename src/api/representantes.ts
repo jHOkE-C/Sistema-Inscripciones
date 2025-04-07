@@ -1,6 +1,7 @@
 import { request } from "./request";
 
 export const registrarRepresentante = async (values: {
+    ci: string;
     email: string;
     nombre_completo: string;
     telefono: string;

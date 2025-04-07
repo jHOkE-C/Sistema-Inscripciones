@@ -9,9 +9,9 @@ export const postDataPostulante = async (values: Values): Promise<void> => {
     console.log("Formulario enviado con datos:", values);
 };
 export const getListasPostulantes = async (
-    uuid: string
+    ci: string
 ): Promise<ListaPostulantes[]> => {
-    return request<ListaPostulantes[]>("/api/listas/responsable/" + uuid, {
+    return request<ListaPostulantes[]>("/api/responsables/" + ci+"/listas", {
         method: "GET",
     });
 };

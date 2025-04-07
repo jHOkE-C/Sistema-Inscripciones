@@ -9,11 +9,15 @@ import { getListasPostulantes } from "@/api/postulantes";
 import FormRepresentante from "./FormRepresentante";
 import { getRepresentante } from "@/api/representantes";
 import NotFoundPage from "../404";
+import { AlertComponent } from "@/components/AlertComponent";
+import Loading from "@/components/Loading";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { ci } = useParams();
     const [openFormRepresentante, setOpenFormRepresentante] = useState(false);
+    const [error, setError] = useState<string | null>();
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         fetchData();
     }, []);
@@ -23,9 +27,16 @@ const Page = () => {
     }
 
     const refresh = async () => {
-        const data = await getListasPostulantes(ci);
-
-        setData(data);
+        setLoading(true);
+        try {
+            const data = await getListasPostulantes(ci);
+            setData(data);
+        } catch {
+            //setError(e instanceof Error ? e.message : "error desconocido");
+            setOpenFormRepresentante(true);
+        } finally {
+            setLoading(false);
+        }
     };
     const fetchData = async () => {
         try {
@@ -39,7 +50,7 @@ const Page = () => {
             console.error("Error al obtener las listas de postulantes");
         }
     };
-
+    if (loading) return <Loading />;
     return (
         <>
             {openFormRepresentante && (
@@ -66,6 +77,13 @@ const Page = () => {
                 </div>
                 <ShareUrl />
             </div>
+            {error && (
+                <AlertComponent
+                    description={error}
+                    variant="destructive"
+                    onClose={() => setError(null)}
+                />
+            )}
         </>
     );
 };
