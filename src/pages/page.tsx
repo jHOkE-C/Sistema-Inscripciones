@@ -28,18 +28,7 @@ const PageHome = () => {
                         >
                             Inicio
                         </Link>
-                        <Link
-                            to="/eventos"
-                            className="text-sm font-medium hover:underline"
-                        >
-                            Eventos
-                        </Link>
-                        <Link
-                            to="/categorias"
-                            className="text-sm font-medium hover:underline"
-                        >
-                            Categorías
-                        </Link>
+                        
                         <Link
                             to="/contacto"
                             className="text-sm font-medium hover:underline"
@@ -47,9 +36,6 @@ const PageHome = () => {
                             Contacto
                         </Link>
                     </nav>
-                    <Button asChild>
-                        <Link to="/login">Iniciar Sesión</Link>
-                    </Button>
                 </div>
             </header>
 
@@ -74,7 +60,7 @@ const PageHome = () => {
                                         className="bg-blue-600 hover:bg-blue-700"
                                         >
                                         {uuid
-                                            ? "Continua la Inscripcion"
+                                            ? "Continuar con la Inscripcion"
                                             : "Inscríbete Ahora"}
                                     </Button>
                                             </Link>
