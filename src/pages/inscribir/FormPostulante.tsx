@@ -39,7 +39,7 @@ import {
 import { useParams } from "react-router-dom";
 import { MyCombobox } from "@/components/MyComboBox";
 
-const grados = [
+export const grados = [
     { id: "1", nombre: "1ro Primaria" },
     { id: "2", nombre: "2do Primaria" },
     { id: "3", nombre: "3ro Primaria" },

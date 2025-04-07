@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ShareUrl from "./ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
-import FormRepresentante from "./FormRepresentante";
+import FormResponsable from "./FormResponsable";
 import NotFoundPage from "../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
@@ -14,9 +14,10 @@ import Loading from "@/components/Loading";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { ci } = useParams();
-    const [openFormRepresentante, setOpenFormRepresentante] = useState(false);
+    const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [error, setError] = useState<string | null>();
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState<string | null>(null);
 
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
@@ -33,7 +34,7 @@ const Page = () => {
             setData(data);
         } catch {
             //setError(e instanceof Error ? e.message : "error desconocido");
-            setOpenFormRepresentante(true);
+            setOpenFormResponsable(true);
         } finally {
             setLoading(false);
         }
@@ -48,9 +49,12 @@ const Page = () => {
     if (loading) return <Loading />;
     return (
         <>
-            {openFormRepresentante && (
-                <FormRepresentante
-                    onClose={() => setOpenFormRepresentante(false)}
+            {openFormResponsable && (
+                <FormResponsable
+                    onClose={() => {
+                        setOpenFormResponsable(false);
+                        setSuccess("¡Registro de Responsable Exitoso!");
+                    }}
                 />
             )}
             <div className="min-h-screen py-10">
@@ -77,6 +81,12 @@ const Page = () => {
                     description={error}
                     variant="destructive"
                     onClose={() => setError(null)}
+                />
+            )}
+            {success && (
+                <AlertComponent
+                    description={success}
+                    onClose={() => setSuccess(null)}
                 />
             )}
         </>

@@ -1,4 +1,4 @@
-import { registrarRepresentante } from "@/api/representantes";
+import { registrarResponsable } from "@/api/responsables";
 import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,30 +16,32 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import {  z } from "zod";
+import { z } from "zod";
 import NotFoundPage from "../404";
 
 const formSchema = z.object({
     nombre_completo: z
-        .string()
+        .string({ required_error: "Todos los campos son obligatorios" })
         .min(2, "Debe tener al menos 2 caracteres")
         .max(50, "Máximo 50 caracteres"),
-    email: z.string().email("El correo ingresado no es válido"),
+    email: z
+        .string({ required_error: "Todos los campos son obligatorios" })
+        .email("Ingrese un correo con formato valido ejemplo@dominio.com"),
     telefono: z
-        .string()
+        .string({ required_error: "Todos los campos son obligatorios" })
         .regex(/^\d{8}$/, "El teléfono debe tener exactamente 8 dígitos"),
 });
 
-const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
+const FormResponsable = ({ onClose }: { onClose: () => void }) => {
     const [error, setError] = useState<string | null>(null);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-    });
+    });  
     const { ci } = useParams();
     if (!ci || ci?.length < 7) return <NotFoundPage />;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await registrarRepresentante({ ...values, ci });
+            await registrarResponsable({ ...values, ci });
             onClose();
         } catch (error: unknown) {
             setError(
@@ -56,7 +58,7 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
                     )}
                 >
                     <h2 className="text-2xl font-bold text-center mb-6">
-                        Registro de Representante
+                        Registro de Responsable
                     </h2>
                     <Form {...form}>
                         <form
@@ -108,7 +110,11 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
                                             <Input
                                                 {...field}
                                                 onChange={(e) => {
-                                                    const value = e.target.value.replace(/\D/g, ""); 
+                                                    const value =
+                                                        e.target.value.replace(
+                                                            /\D/g,
+                                                            ""
+                                                        );
                                                     field.onChange(value);
                                                 }}
                                                 value={field.value || ""}
@@ -140,4 +146,4 @@ const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
     );
 };
 
-export default FormRepresentante;
+export default FormResponsable;

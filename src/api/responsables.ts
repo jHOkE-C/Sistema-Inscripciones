@@ -1,6 +1,6 @@
 import { request } from "./request";
 
-export const registrarRepresentante = async (values: {
+export const registrarResponsable = async (values: {
     ci: string;
     email: string;
     nombre_completo: string;
@@ -16,6 +16,6 @@ export const registrarRepresentante = async (values: {
     );
 };
 
-export const getRepresentante = async (ci: string) => {
+export const getResponsable = async (ci: string) => {
     return { nombre: "jose", email: "email@example.com", ci };
 };
