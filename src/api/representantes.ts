@@ -14,3 +14,7 @@ export const registrarRepresentante = async (values: {
         }
     );
 };
+
+export const getRepresentante = async (ci: string) => {
+    return { nombre: "jose", email: "email@example.com", ci };
+};

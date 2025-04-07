@@ -3,32 +3,50 @@ import { CreateList } from "./CreateList";
 import { DataTable } from "./TableList";
 import { columns, ListaPostulantes } from "./columns";
 import { useEffect, useState } from "react";
-
 import { useParams } from "react-router-dom";
 import ShareUrl from "./ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
+import FormRepresentante from "./FormRepresentante";
+import { getRepresentante } from "@/api/representantes";
+import NotFoundPage from "../404";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
-    const { uuid } = useParams();
-
-    const fetchData = async () => {
-        try {
-            if (!uuid) {
-                throw new Error("UUID no encontrado en la URL");
-            }
-            const data = await getListasPostulantes(uuid);
-            setData(data);
-        } catch {
-            console.error("Error al obtener las listas de postulantes");
-        }
-    };
+    const { ci } = useParams();
+    const [openFormRepresentante, setOpenFormRepresentante] = useState(false);
     useEffect(() => {
         fetchData();
     }, []);
 
+    if (!ci || ci.length < 7) {
+        return <NotFoundPage />;
+    }
+
+    const refresh = async () => {
+        const data = await getListasPostulantes(ci);
+
+        setData(data);
+    };
+    const fetchData = async () => {
+        try {
+            const representante = await getRepresentante(ci);
+            if (!representante) {
+                setOpenFormRepresentante(true);
+                return;
+            }
+            refresh();
+        } catch {
+            console.error("Error al obtener las listas de postulantes");
+        }
+    };
+
     return (
         <>
+            {openFormRepresentante && (
+                <FormRepresentante
+                    onClose={() => setOpenFormRepresentante(false)}
+                />
+            )}
             <div className="min-h-screen py-10">
                 <div className="container mx-auto ">
                     <Card>
@@ -38,7 +56,10 @@ const Page = () => {
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5">
-                            <CreateList refresh={fetchData} number={data.length} />
+                            <CreateList
+                                refresh={fetchData}
+                                number={data.length}
+                            />
                             <DataTable columns={columns} data={data} />
                         </CardContent>
                     </Card>

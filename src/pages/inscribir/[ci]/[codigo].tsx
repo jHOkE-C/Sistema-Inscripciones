@@ -1,7 +1,7 @@
 import FormPostulante from "../FormPostulante";
 
 const Page = () => {
-    //const { uuid, codigo } = useParams();
+    //const { ci, codigo } = useParams();
     
     return (
         <>

@@ -1,7 +1,6 @@
 import { registrarRepresentante } from "@/api/representantes";
 import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
     Form,
     FormControl,
@@ -11,11 +10,11 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -29,9 +28,8 @@ const formSchema = z.object({
         .regex(/^[0-9]{7,8}$/, "Ingrese un número de teléfono válido"),
 });
 
-const FormRepresentante = () => {
+const FormRepresentante = ({ onClose }: { onClose: () => void }) => {
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -45,7 +43,7 @@ const FormRepresentante = () => {
         try {
             const { uuid } = await registrarRepresentante(values);
             localStorage.setItem("uuid", uuid);
-            navigate("/inscribir/" + uuid);
+            onClose();
         } catch (error: unknown) {
             setError(
                 error instanceof Error ? error.message : "Error desconocido"
@@ -54,8 +52,12 @@ const FormRepresentante = () => {
     };
     return (
         <>
-            <Card className="w-full max-w-md shadow-lg rounded-2xl">
-                <CardContent className="p-6">
+            <div className="bg-foreground/5 w-screen h-screen">
+                <div
+                    className={cn(
+                        "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg "
+                    )}
+                >
                     <h2 className="text-2xl font-bold text-center mb-6">
                         Registro de Representante
                     </h2>
@@ -122,16 +124,17 @@ const FormRepresentante = () => {
                             </Button>
                         </form>
                     </Form>
-                </CardContent>
-            </Card>
-            {error && (
-                <AlertComponent
-                    title="Error"
-                    variant="destructive"
-                    description={error}
-                    onClose={() => setError(null)}
-                />
-            )}
+
+                    {error && (
+                        <AlertComponent
+                            title="Error"
+                            variant="destructive"
+                            description={error}
+                            onClose={() => setError(null)}
+                        />
+                    )}
+                </div>
+            </div>
         </>
     );
 };

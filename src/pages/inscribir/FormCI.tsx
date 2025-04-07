@@ -26,6 +26,7 @@ const FormCI = () => {
     const form = useForm({ resolver: zodResolver(formSchema) });
     const navigate = useNavigate();
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
+        localStorage.setItem('ci',ci)
         navigate("/inscribir/" + ci);
     };
     return (
