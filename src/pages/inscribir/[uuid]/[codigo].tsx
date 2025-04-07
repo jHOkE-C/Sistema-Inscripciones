@@ -1,11 +1,12 @@
-import { useParams } from "react-router-dom";
+import FormPostulante from "../FormPostulante";
 
 const Page = () => {
-    const { uuid, codigo } = useParams();
+    //const { uuid, codigo } = useParams();
     return (
         <>
-            <p>uuid: {uuid}</p>
-            <p>codigo: {codigo}</p>
+            <div className="py-10 container mx-auto">
+                <FormPostulante />
+            </div>
         </>
     );
 };

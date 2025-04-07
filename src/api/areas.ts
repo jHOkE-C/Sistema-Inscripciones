@@ -4,9 +4,18 @@ export interface Area {
     id: string;
     nombre: string;
 }
+export interface Categoria {
+    id: string;
+    maximo_grado: number;
+    minimo_grado: number;
+    nombre: string;
+    areas: Area[];
+}
 
-export const getAreaPorGrado = async (grado: string): Promise<Area[]> => {
-    return await request<Area[]>(`/api/curso/${grado}/areas`);
+export const getCategoriaAreaPorGrado = async (
+    grado: string
+) => {
+    return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}`);
 };
 
 export const crearArea = async (data: { nombre: string }) => {

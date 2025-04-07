@@ -18,12 +18,13 @@ interface MultiSelectProps {
     label?: string;
     disabled?: boolean;
     max?: number;
+    
 }
 
 export function MultiSelect({
     id,
     values,
-    value,
+    value = [], // valor por defecto para evitar undefined
     onChange,
     placeholder = "Selecciona opciones",
     label = "Opciones",
