@@ -32,101 +32,98 @@ export default function Gestionador() {
   );
   const [availableAreas, setAvailableAreas] = useState<Area[]>([]);
 
-   
+  const fetchData = async () => {
+    try {
+      const areas = await axios.get<Area[]>(`${API_URL}/api/areas`);
+      setAvailableAreas(areas.data);
+      const categorias = await axios.get<Category[]>(
+        `${API_URL}/api/categorias/areas`
+      );
+      setCategories(categorias.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const areas = await axios.get<Area[]>(`${API_URL}/api/areas`);
-        setAvailableAreas(areas.data);
-        console.log(areas.data);
-        const categorias = await axios.get<Category[]>(`${API_URL}/api/categorias/areas`);
-        console.log(categorias.data);
-        setCategories(categorias.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     fetchData();
   }, []);
 
-  const handleCreateCategory = (
+  const handleCreateCategory = async (
     newCategory: Omit<Category, "id" | "areas">
   ) => {
-    const newId = Math.max(0, ...categories.map((c) => c.id)) + 1;
-    const categoryToAdd: Category = {
-      id: newId,
-      ...newCategory,
-      areas: [],
-    };
+    try {
+      await axios.post<Category>(`${API_URL}/api/categorias`, newCategory);
+      console.log("Categoría creada correctamente:", newCategory);
+      fetchData();
+    } catch (error) {
+      console.error("Error creating category:", error);
+    }
 
-    setCategories([...categories, categoryToAdd]);
     setIsCreateModalOpen(false);
   };
 
-  const handleEditCategory = (
-    categoryId: number,
+  const handleEditCategory = async (
+    categoria_id: number,
     updates: { minimo_grado: number; maximo_grado: number }
   ) => {
-    setCategories(
-      categories.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            minimo_grado: updates.minimo_grado,
-            maximo_grado: updates.maximo_grado,
-          };
-        }
-        return category;
-      })
-    );
+    try {
+      await axios.put(`${API_URL}/api/categorias/${categoria_id}`, updates);
+      fetchData();
+      setIsEditModalOpen(false);
+      setSelectedCategory(null);
+      console.log("Categoría editada correctamente:", updates);
+    } catch (error) {
+      console.error("Error editing category:", error);
+    }
 
-    setIsEditModalOpen(false);
-    setSelectedCategory(null);
+    
   };
 
-  const handleDeleteCategory = (categoryId: number) => {
-    setCategories(categories.filter((category) => category.id !== categoryId));
-    setIsDeleteModalOpen(false);
-    setSelectedCategory(null);
+  const handleDeleteCategory = async (categoria_id: number) => {
+    try {
+      await axios.delete(`${API_URL}/api/categorias/${categoria_id}`);
+      setCategories(
+        categories.filter((category) => category.id !== categoria_id)
+      );
+      setIsDeleteModalOpen(false);
+      setSelectedCategory(null);
+      console.log("Categoría eliminada correctamente.");
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
   };
 
-  const handleAddAreaToCategory = (categoryId: number, areaId: number) => {
-    const area = availableAreas.find((a) => a.id === areaId);
-    if (!area) return;
-
-    setCategories(
-      categories.map((category) => {
-        if (category.id === categoryId) {
-          // Check if area already exists in this category
-          const areaExists = category.areas.some((a) => a.id === areaId);
-          if (!areaExists) {
-            return {
-              ...category,
-              areas: [...category.areas, area],
-            };
-          }
-        }
-        return category;
-      })
-    );
-
-    setIsAddAreaModalOpen(false);
-    setSelectedCategory(null);
+  const handleAddAreaToCategory = async (
+    categoria_id: number,
+    area_id: number
+  ) => {
+    try {
+      await axios.post(`${API_URL}/api/categoria/area`, {
+        area_id,
+        categoria_id,
+      });
+      fetchData();
+      setIsAddAreaModalOpen(false);
+      setSelectedCategory(null);
+      console.log("Área añadida a la categoría correctamente.");
+    } catch (error) {
+      console.error("Error adding area to category:", error);
+    }
   };
 
-  const handleRemoveAreaFromCategory = (categoryId: number, areaId: number) => {
-    setCategories(
-      categories.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            areas: category.areas.filter((area) => area.id !== areaId),
-          };
-        }
-        return category;
-      })
-    );
+  const handleRemoveAreaFromCategory = (
+    categoria_id: number,
+    area_id: number
+  ) => {
+    try {
+      axios.delete(`${API_URL}/api/categoria/area`, {
+        data: { area_id, categoria_id },
+      });
+      fetchData();
+      console.log("Área eliminada de la categoría correctamente.");
+    } catch (error) {
+      console.error("Error removing area from category:", error);
+    }
   };
 
   const openAddAreaModal = (category: Category) => {
@@ -152,7 +149,9 @@ export default function Gestionador() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-zinc-600 ">Crea, modifica, y añade areas a un categoria</h2>
+        <h2 className="text-zinc-600 ">
+          Crea, modifica, y añade areas a un categoria
+        </h2>
         <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Crear Categoría
         </Button>
@@ -251,8 +250,8 @@ export default function Gestionador() {
             availableAreas={availableAreas.filter(
               (area) => !selectedCategory.areas.some((a) => a.id === area.id)
             )}
-            onAddArea={(areaId) =>
-              handleAddAreaToCategory(selectedCategory.id, areaId)
+            onAddArea={(area_id) =>
+              handleAddAreaToCategory(selectedCategory.id, area_id)
             }
           />
 
