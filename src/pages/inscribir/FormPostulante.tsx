@@ -36,6 +36,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useParams } from "react-router-dom";
 
 const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -155,9 +156,10 @@ const FormPostulante = () => {
         resolver: zodResolver(postulanteSchema),
         mode: "onSubmit",
     });
+    const {codigo} = useParams()
 
     const onSubmit = (data: z.infer<typeof postulanteSchema>) => {
-        console.log(data);
+        console.log({...data,"uuid_lista":  codigo});
         postDataPostulante({
             ...data,
             fecha_nacimiento: data.fecha_nacimiento.toISOString(),

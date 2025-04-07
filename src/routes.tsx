@@ -34,5 +34,13 @@ const routes = Object.keys(pages)
         };
     })
     .filter(Boolean);
+const NotFound = (pages["./pages/404.tsx"] as { default: React.ComponentType })
+    ?.default;
 
+if (NotFound) {
+    routes.push({
+        path: "*",
+        element: <NotFound />,
+    });
+}
 export default routes;
