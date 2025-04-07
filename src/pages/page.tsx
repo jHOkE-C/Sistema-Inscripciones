@@ -4,6 +4,7 @@ import { Calendar, Medal, Trophy, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PageHome = () => {
+    const uuid = localStorage.getItem("uuid");
     return (
         <div className="flex min-h-screen flex-col ">
             {/* Header */}
@@ -67,14 +68,17 @@ const PageHome = () => {
                                     las competencias más emocionantes del año.
                                 </p>
                                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                                    <Link to={"/inscribir"}>
-                                        <Button
-                                            size="lg"
-                                            className="bg-blue-600 hover:bg-blue-700"
+                                    <Link to={`/inscribir/${uuid ? uuid : ""}`}>
+                                    <Button
+                                        size="lg"
+                                        className="bg-blue-600 hover:bg-blue-700"
                                         >
-                                            Inscríbete Ahora
-                                        </Button>
-                                    </Link>
+                                        {uuid
+                                            ? "Continua la Inscripcion"
+                                            : "Inscríbete Ahora"}
+                                    </Button>
+                                            </Link>
+
                                     <Button size="lg" variant="outline">
                                         Conoce Más
                                     </Button>
