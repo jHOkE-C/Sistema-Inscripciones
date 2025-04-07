@@ -157,10 +157,10 @@ export default function Gestionador() {
         </Button>
       </div>
 
-      <Table>
+      <Table className="mb-10">
         <TableHeader>
           <TableRow>
-            <TableHead>Nombre</TableHead>
+            <TableHead>Categoria</TableHead>
             <TableHead>Grado Mínimo</TableHead>
             <TableHead>Grado Máximo</TableHead>
             <TableHead>Áreas</TableHead>
