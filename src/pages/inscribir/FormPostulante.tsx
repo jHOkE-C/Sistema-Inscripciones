@@ -37,8 +37,9 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useParams } from "react-router-dom";
+import { MyCombobox } from "@/components/MyComboBox";
 
-const grados = [
+export const grados = [
     { id: "1", nombre: "1ro Primaria" },
     { id: "2", nombre: "2do Primaria" },
     { id: "3", nombre: "3ro Primaria" },
@@ -133,17 +134,6 @@ interface Provincia {
     nombre: string;
     id: number;
 }
-// interface Categoria {
-//     id: string;
-//     nombre: string;
-//     maximo_grado: number;
-//     minimo_grado: number;
-//     areas: {
-//         id: string;
-//         pivot: { area_id: number; categoria_id: number };
-//     }[];
-// }
-
 interface Colegio {
     id: string;
     nombre: string;
@@ -156,10 +146,10 @@ const FormPostulante = () => {
         resolver: zodResolver(postulanteSchema),
         mode: "onSubmit",
     });
-    const {codigo} = useParams()
+    const { codigo } = useParams();
 
     const onSubmit = (data: z.infer<typeof postulanteSchema>) => {
-        console.log({...data,"uuid_lista":  codigo});
+        console.log({ ...data, uuid_lista: codigo });
         postDataPostulante({
             ...data,
             fecha_nacimiento: data.fecha_nacimiento.toISOString(),
@@ -222,12 +212,43 @@ const FormPostulante = () => {
         };
         fetchArea();
     }, [selectedGrado]);
+    const [openAccordions, setOpenAccordions] = useState<string[]>([]);
+
+    const handleErrors = (errors: Record<string, unknown>) => {
+        const errorFields = Object.keys(errors);
+        const fieldToAccordionMap: Record<string, string> = {
+            nombre: "personal",
+            apellido: "personal",
+            ci: "personal",
+            fecha_nacimiento: "personal",
+            correo_postulante: "personal",
+            departamento: "ubicacion",
+            provincia: "ubicacion",
+            colegio: "ubicacion",
+            telefono_contacto: "contacto",
+            tipo_contacto_telefono: "contacto",
+            email_contacto: "contacto",
+            tipo_contacto_email: "contacto",
+            curso: "categoria-area",
+            areas: "categoria-area",
+        };
+
+        const accordionsToOpen = new Set<string>();
+        errorFields.forEach((field) => {
+            const accordion = fieldToAccordionMap[field];
+            if (accordion) {
+                accordionsToOpen.add(accordion);
+            }
+        });
+
+        setOpenAccordions(Array.from(accordionsToOpen));
+    };
 
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button>
-                    <Plus className="mr-2 h-4 w-4" />
+                    <Plus className="mr-2" />
                     Nuevo Postulante
                 </Button>
             </DialogTrigger>
@@ -240,11 +261,17 @@ const FormPostulante = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form action="" onSubmit={form.handleSubmit(onSubmit)}>
+                    <form onSubmit={form.handleSubmit(onSubmit, handleErrors)}>
                         <div className="grid gap-4 py-2">
                             <div className="grid  gap-4">
                                 <Accordion
+                            
                                     type="multiple"
+                                    value={openAccordions}
+                                    onValueChange={(value) => {
+                                        setOpenAccordions(value);
+                                        console.log(value);
+                                    }}
                                     className="space-y-4"
                                 >
                                     <AccordionItem value="personal">
@@ -458,7 +485,7 @@ const FormPostulante = () => {
                                                                 Colegio
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <ComboBox
+                                                                <MyCombobox
                                                                     values={
                                                                         colegios
                                                                     }
@@ -625,7 +652,6 @@ const FormPostulante = () => {
                                                     )}
                                                 />
 
-                                                {/* Categoría-Area */}
                                                 <FormField
                                                     control={form.control}
                                                     name="areas"
@@ -654,7 +680,7 @@ const FormPostulante = () => {
                                                                                         nombre: nombreArea,
                                                                                     }) => ({
                                                                                         id: `${idArea}-${idCat}`,
-                                                                                        nombre: `${nombreCat} - ${nombreArea}`,
+                                                                                        nombre: `${nombreArea} - ${nombreCat}   `,
                                                                                     })
                                                                                 ) ||
                                                                                 []
@@ -715,7 +741,12 @@ const FormPostulante = () => {
                             <DialogTrigger asChild>
                                 <Button variant="outline">Cancelar</Button>
                             </DialogTrigger>
-                            <Button type="submit">Guardar Postulante</Button>
+                            <Button
+                                type="submit"
+                                onClick={() => console.log(form.getValues())}
+                            >
+                                Guardar Postulante
+                            </Button>
                         </div>
                     </form>
                 </Form>

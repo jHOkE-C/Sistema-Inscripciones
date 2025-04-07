@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
@@ -27,8 +27,8 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = useState<SortingState>([])
- 
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const table = useReactTable({
         data,
         columns,
@@ -36,13 +36,12 @@ export function DataTable<TData, TValue>({
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
         state: {
-          sorting,
+            sorting,
         },
-    
     });
 
-    const navigate= useNavigate()
-    const {uuid} = useParams()
+    const navigate = useNavigate();
+    const { ci } = useParams();
     return (
         <div className="rounded-md border">
             <Table>
@@ -72,12 +71,9 @@ export function DataTable<TData, TValue>({
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                                 onClick={() => {
-                                    const codigo = row.getValue("codigo_lista")
-                                    console.log(
-                                        "abriendo",
-                                        uuid,codigo
-                                    );
-                                    navigate(`/inscribir/${uuid}/${codigo}`)
+                                    const codigo = row.getValue("codigo_lista");
+                                    console.log("abriendo", ci, codigo);
+                                    navigate(`/inscribir/${ci}/${codigo}`);
                                 }}
                             >
                                 {row.getVisibleCells().map((cell) => (

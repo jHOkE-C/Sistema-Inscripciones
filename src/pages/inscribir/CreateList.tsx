@@ -29,14 +29,14 @@ export function CreateList({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [nombre, setNombre] = useState<string>();
-    const { uuid } = useParams();
+    const { ci } = useParams();
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            if (!uuid) return;
+            if (!ci) return;
             await crearListaPostulante({
-                uuid,
-                nombre_lista: nombre || `Lista ${number}`,
+                ci,
+                nombre_lista: nombre || `Lista ${number+1}`,
             });
             setSuccess("La lista se creó correctamente.");
             setOpen(false);

@@ -1,6 +1,7 @@
 import { request } from "./request";
 
-export const registrarRepresentante = async (values: {
+export const registrarResponsable = async (values: {
+    ci: string;
     email: string;
     nombre_completo: string;
     telefono: string;
@@ -13,4 +14,8 @@ export const registrarRepresentante = async (values: {
             body: JSON.stringify(values),
         }
     );
+};
+
+export const getResponsable = async (ci: string) => {
+    return { nombre: "jose", email: "email@example.com", ci };
 };

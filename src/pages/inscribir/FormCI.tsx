@@ -20,12 +20,16 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 const formSchema = z.object({
-    ci: z.string().min(7, "La Cédula de identidad debe tener minimo 7 numeros"),
+    ci: z
+        .string()
+        .min(7, "La Cédula de Identidad debe tener al menos 7 dígitos")
+        .max(10, "La Cédula de Identidad no puede tener más de 10 digitos")
 });
 const FormCI = () => {
     const form = useForm({ resolver: zodResolver(formSchema) });
     const navigate = useNavigate();
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
+        localStorage.setItem('ci',ci)
         navigate("/inscribir/" + ci);
     };
     return (
