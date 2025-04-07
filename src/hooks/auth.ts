@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 export type UserType = {
     token: string;
-    usuario: string; 
+    usuario: string;
 };
 
 type AuthContextType = {
@@ -10,7 +10,9 @@ type AuthContextType = {
     logOut: () => void;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+    undefined
+);
 
 export const useAuth = () => {
     const context = useContext(AuthContext);

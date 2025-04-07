@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface MySelectProps {
     id?: string;
@@ -16,6 +17,7 @@ interface MySelectProps {
     placeholder?: string;
     disabled?: boolean;
     label?: string;
+    className?: string;
 }
 
 export function ComboBox({
@@ -26,11 +28,12 @@ export function ComboBox({
     onChange,
     placeholder = "Selecciona una opción",
     disabled,
+    className
 }: MySelectProps) {
     return (
-        <Select value={value} onValueChange={onChange} disabled={disabled}>
-            <SelectTrigger id={id} className="w-full">
-                <SelectValue placeholder={placeholder} />
+        <Select value={value} onValueChange={onChange} disabled={disabled} >
+            <SelectTrigger id={id} className={cn("w-full", className)}>
+                <SelectValue placeholder={placeholder}  />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
