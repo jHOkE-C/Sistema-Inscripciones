@@ -19,14 +19,13 @@ const Page = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (ci && ci.length >= 7) fetchData();
+        if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
     }, []);
 
-    if (!ci || ci.length < 7) {
+    if (!ci || ci.length < 7 || ci.length > 10) {
         return <NotFoundPage />;
     }
-    
-    
+
     const refresh = async () => {
         setLoading(true);
         try {
