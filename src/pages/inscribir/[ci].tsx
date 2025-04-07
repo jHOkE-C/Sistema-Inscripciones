@@ -68,7 +68,7 @@ const Page = () => {
                         <CardContent className="space-y-5">
                             <CreateList
                                 refresh={fetchData}
-                                number={data.length}
+                                number={data.length+1}
                             />
                             <DataTable columns={columns} data={data} />
                         </CardContent>
