@@ -17,13 +17,15 @@ const Page = () => {
     const [openFormRepresentante, setOpenFormRepresentante] = useState(false);
     const [error, setError] = useState<string | null>();
     const [loading, setLoading] = useState(false);
+
     useEffect(() => {
-        fetchData();
+        if (ci && ci.length >= 7) fetchData();
     }, []);
-    
+
     if (!ci || ci.length < 7) {
         return <NotFoundPage />;
     }
+    
     
     const refresh = async () => {
         setLoading(true);
