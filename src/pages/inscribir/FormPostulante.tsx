@@ -9,7 +9,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
 import { ComboBox } from "@/components/ComboBox";
@@ -150,8 +150,8 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     const [success, setSuccess] = useState<string | null>();
     const [showForm, setShowForm] = useState(false);
     const { codigo } = useParams();
-    const [registrando, setRegistrando] = useState(false);
-    const isSubmittingRef = useRef(false);
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const endpoints = [
             {
@@ -200,7 +200,6 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     }, [selectedGrado]);
     const [openAccordions, setOpenAccordions] = useState<string[]>([]);
 
-
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
     const [provincias, setProvincias] = useState<Provincia[]>([]);
@@ -238,9 +237,8 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     if (!codigo) return;
 
     const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
-        if (isSubmittingRef.current) return;
-        isSubmittingRef.current = true;
-        setRegistrando(true);
+        if (loading) return;
+        setLoading(true);
         try {
             await postDataPostulante({ ...data, codigo_lista: codigo });
             setSuccess("El postulante fue registrado exitosamente");
@@ -251,8 +249,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                 e instanceof Error ? e.message : "Hubo un error desconocido"
             );
         } finally {
-            setRegistrando(false);
-            isSubmittingRef.current = false;
+            setLoading(false);
         }
     };
 
@@ -274,9 +271,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
-                        <form
-                          
-                        >
+                        <form>
                             <div className="grid gap-4 py-2">
                                 <div className="grid  gap-4">
                                     <Accordion
@@ -704,7 +699,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                                             nombre: nombreArea,
                                                                                         }) => ({
                                                                                             id: `${idArea}-${idCat}`,
-                                                                                            nombre: `${nombreArea} - ${nombreCat}   `,
+                                                                                            nombre: `${nombreArea} - ${nombreCat}`,
                                                                                         })
                                                                                     ) ||
                                                                                     []
@@ -732,7 +727,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                                         const [
                                                                                             idArea,
                                                                                             idCat,
-                                                                                        ] =
+                                                                                        ] = 
                                                                                             item
                                                                                                 .split(
                                                                                                     "-"
@@ -767,8 +762,14 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                 <DialogTrigger asChild>
                                     <Button variant="outline">Cancelar</Button>
                                 </DialogTrigger>
-                                <Button disabled={registrando}onClick={form.handleSubmit(onSubmit, handleErrors)}>
-                                    {registrando
+                                <Button
+                                    disabled={loading}
+                                    onClick={form.handleSubmit(
+                                        onSubmit,
+                                        handleErrors
+                                    )}
+                                >
+                                    {loading
                                         ? "Registrando..."
                                         : "Guardar Postulante"}
                                 </Button>

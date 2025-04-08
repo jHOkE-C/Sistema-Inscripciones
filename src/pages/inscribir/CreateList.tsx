@@ -29,15 +29,21 @@ export function CreateList({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [nombre, setNombre] = useState<string>();
+    const [loading, setLoading] = useState(false); 
     const { ci } = useParams();
+
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (loading) return; 
         try {
+            setLoading(true); 
             if (!ci) return;
+
             await crearListaPostulante({
                 ci,
                 nombre_lista: nombre || `Lista ${number}`,
             });
+
             setSuccess("La lista se creó correctamente.");
             setOpen(false);
             setNombre("");
@@ -48,6 +54,8 @@ export function CreateList({
                     ? e.message
                     : "No se pudo registrar la lista. Intente nuevamente."
             );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -83,7 +91,9 @@ export function CreateList({
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Continuar</Button>
+                            <Button type="submit" disabled={loading}>
+                                {loading ? "Creando..." : "Continuar"}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
