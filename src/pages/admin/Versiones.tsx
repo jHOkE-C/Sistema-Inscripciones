@@ -25,7 +25,7 @@ export function Versiones({ versiones }: { versiones: Version[] }) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
       {versiones.map((event) => (
         <Link to={`/admin/version/${event.id}`} key={event.id}>
-          <Card key={event.id} className="flex flex-col h-full">
+          <Card key={event.id} className="flex flex-col h-full hover:bg-zinc-50" >
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <CardTitle className="text-xl">{event.nombre}</CardTitle>
