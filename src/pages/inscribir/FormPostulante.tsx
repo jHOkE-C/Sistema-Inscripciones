@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
-import DatePicker from "@/components/DatePicker";
 import { ComboBox } from "@/components/ComboBox";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +38,7 @@ import {
 import { useParams } from "react-router-dom";
 import { MyCombobox } from "@/components/MyComboBox";
 import { AlertComponent } from "@/components/AlertComponent";
+import { DateSelector } from "@/components/DateSelector";
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -354,7 +354,8 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                     Nacimiento
                                                                 </FormLabel>
                                                                 <FormControl className="col-span-2">
-                                                                    <DatePicker
+                                                                    <DateSelector value={field.value} onChange={field.onChange}/>
+                                                                    {/* <DatePicker
                                                                         classname="w-full"
                                                                         value={
                                                                             field.value
@@ -362,7 +363,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                         onChange={
                                                                             field.onChange
                                                                         }
-                                                                    />
+                                                                    /> */}
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
