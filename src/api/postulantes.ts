@@ -1,9 +1,13 @@
 import type { ListaPostulantes } from "@/pages/inscribir/columns";
 import { request } from "./request";
 
-
-export const postDataPostulante = async (values: Record<string, string | number | boolean>) => {
-    console.log(values)
+export const postDataPostulante = async (
+    values: Record<
+        string,
+        string | number | boolean | Date | { id_area: number; id_cat: number }[]
+    >
+) => {
+    console.log(values);
     return await request("/api/inscripciones", {
         method: "POST",
         body: JSON.stringify(values),
