@@ -60,7 +60,7 @@ const Admin = () => {
 
     return (
         <>
-            <div className="w-4/5 mx-auto ">
+            <div className="w-full p-4 md:w-4/5 mx-auto ">
                 <h1 className="text-4xl font-bold text-center py-5">
                     Administración de Sistema Oh!Sansi
                 </h1>
