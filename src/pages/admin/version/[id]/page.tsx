@@ -348,10 +348,10 @@ export default function OlimpiadaPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">{olimpiada.nombre}</h1>
+          <h1 className=" text-xl md:text-3xl font-bold">{olimpiada.nombre}</h1>
           <p className="text-gray-500">Gestión: {olimpiada.gestion}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="grid md:flex gap-2">
           <Button
             variant="outline"
             onClick={() => setEditDialogOpen(true)}
