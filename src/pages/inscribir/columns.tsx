@@ -3,13 +3,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 export type ListaPostulantes = {
-    id: number;
-    nombre_lista: string;
-    cantidad_postulantes: number;
-    fecha_creacion: Date;
-    estado: string;
     codigo_lista: string;
-    id_responsable: string;
+    estado: string;
+    fecha_creacion: Date;
+    nombre_lista: string;
+    postulantes_count: number;
 };
 
 export const columns: ColumnDef<ListaPostulantes>[] = [
@@ -34,7 +32,7 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
         },
     },
     {
-        accessorKey: "cantidad_postulantes",
+        accessorKey: "postulantes_count",
         header: ({ column }) => {
             return (
                 <Button

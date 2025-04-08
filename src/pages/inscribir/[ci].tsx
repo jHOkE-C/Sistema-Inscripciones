@@ -21,7 +21,7 @@ const Page = () => {
 
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
-    }, []); 
+    }, []);
 
     if (!ci || ci.length < 7 || ci.length > 10) {
         return <NotFoundPage />;
@@ -31,7 +31,7 @@ const Page = () => {
         setLoading(true);
         try {
             const data = await getListasPostulantes(ci);
-           
+            console.log(data);
             setData(data.data);
         } catch {
             //setError(e instanceof Error ? e.message : "error desconocido");
@@ -69,7 +69,7 @@ const Page = () => {
                         <CardContent className="space-y-5">
                             <CreateList
                                 refresh={fetchData}
-                                number={data.length+1}
+                                number={data.length + 1}
                             />
                             <DataTable columns={columns} data={data} />
                         </CardContent>
