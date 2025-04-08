@@ -36,7 +36,7 @@ export function CreateList({
             if (!ci) return;
             await crearListaPostulante({
                 ci,
-                nombre_lista: nombre || `Lista ${number+1}`,
+                nombre_lista: nombre || `Lista ${number}`,
             });
             setSuccess("La lista se creó correctamente.");
             setOpen(false);
