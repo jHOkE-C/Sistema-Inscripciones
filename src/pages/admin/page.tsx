@@ -15,6 +15,7 @@ import { Versiones } from "./Versiones";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/hooks/useApiRequest";
+import Status, { OlympicsData } from "./estatus";
 
 export type Version = {
     id: number;
@@ -28,6 +29,18 @@ export type Version = {
 
 const Admin = () => {
     const [versiones, setData] = useState<Version[]>([]);
+    const [status, setStatus] = useState<OlympicsData>({});
+
+    const getStatus = async () => {
+        try {
+            const response = await axios.get<OlympicsData>(
+                `${API_URL}/api/olimpiadas/hoy`
+            );
+            setStatus(response.data);
+        } catch (error) {
+            console.error("Error fetching status:", error);
+        }
+    }
 
     const getData = async () => {
         axios
@@ -42,6 +55,7 @@ const Admin = () => {
 
     useEffect(() => {
         getData();
+        getStatus();
     }, []);
 
     return (
@@ -63,10 +77,8 @@ const Admin = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                            Administra y configura las gestiones necesarias para
-                            llevar a cabo las olimpiadas de manera eficiente.
-                        </p>
+                        <Status data={status}/>
+                
                     </CardContent>
                     <CardFooter className="grid space-y-2">
                         <GestionRegistration refresh={() => getData()} />
