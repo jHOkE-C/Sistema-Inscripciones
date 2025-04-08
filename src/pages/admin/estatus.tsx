@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon } from "lucide-react";
 
 export interface OlympicsData {
   id?: number;
@@ -17,15 +16,6 @@ export default function Status({ data }: { data: OlympicsData }) {
   const isActive = !data.message;
 
   // Format dates if they exist
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
 
   return (
     <Card className="w-full max-w-md">
