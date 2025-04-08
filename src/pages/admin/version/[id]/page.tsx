@@ -51,9 +51,10 @@ import { Calendar } from "@/components/ui/calendar";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
+import { useNavigate } from "react-router-dom";
 // Define types for our data
 interface Cronograma {
-  id: number;
+  id?: number;
   tipo_plazo: string;
   fecha_inicio: string;
   fecha_fin: string;
@@ -73,8 +74,6 @@ interface OlimpiadaData {
   olimpiada: Olimpiada;
 }
 
-
-// Form schemas
 const editOlimpiadaSchema = z
   .object({
     fecha_inicio: z.date(),
@@ -124,11 +123,10 @@ const editCronogramaSchema = z
     }
   );
 
-  
-
 export default function OlimpiadaPage() {
   const params = useParams();
   const id = Number(params.id);
+  const navigate = useNavigate();
   // State
   const [data, setData] = useState<OlimpiadaData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,6 +139,18 @@ export default function OlimpiadaPage() {
     useState(false);
   const [selectedCronograma, setSelectedCronograma] =
     useState<Cronograma | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get<OlimpiadaData>(
+        `${API_URL}/api/olimpiadas/${id}/cronogramas`
+      );
+      setData(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching olimpiada data:", error);
+    }
+  };
 
   // Forms
   const editOlimpiadaForm = useForm<z.infer<typeof editOlimpiadaSchema>>({
@@ -170,62 +180,12 @@ export default function OlimpiadaPage() {
 
   useEffect(() => {
     console.log(id);
-    const fetchData = async () => {
-      try {
-        // Fetch data from the API
-        const response = await axios.get<OlimpiadaData>(`${API_URL}/api/olimpiadas/${id}/cronogramas`);
-        //setData(response.data);
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching olimpiada data:", error);
-      }
-      
-    }
     fetchData();
-    // Simulating data fetch
-    const olimpiadaData: OlimpiadaData = {
-      olimpiada: {
-        id: 2,
-        nombre: "Oh!Sansi 2025 - II",
-        gestion: "2025 - II",
-        fecha_inicio: "2025-06-14T00:00:00.000000Z",
-        fecha_fin: "2025-07-19T00:00:00.000000Z",
-        cronogramas: [
-          {
-            id: 1,
-            tipo_plazo: "inscripcion",
-            fecha_inicio: "2025-06-14",
-            fecha_fin: "2025-06-24",
-            olimpiada_id: 2,
-          },
-          {
-            id: 2,
-            tipo_plazo: "premiacion",
-            fecha_inicio: "2025-06-24",
-            fecha_fin: "2025-07-02",
-            olimpiada_id: 2,
-          },
-        ],
-      },
-    };
-
-    setData(olimpiadaData);
-    setLoading(false);
-    
-
-    // Set initial values for edit form
-    if (olimpiadaData.olimpiada) {
-      editOlimpiadaForm.reset({
-        fecha_inicio: new Date(olimpiadaData.olimpiada.fecha_inicio),
-        fecha_fin: new Date(olimpiadaData.olimpiada.fecha_fin),
-      });
-    }
   }, []);
 
   // Format date to a more readable format
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString + "T00:00:00");
     return format(date, "dd MMMM yyyy", { locale: es });
   };
 
@@ -246,34 +206,41 @@ export default function OlimpiadaPage() {
   // Handle delete olimpiada
   const handleDeleteOlimpiada = () => {
     // In a real app, you would make an API call here
-    console.log("Deleting olimpiada with ID:", data?.olimpiada.id);
-    alert("Olimpiada eliminada correctamente");
+    try {
+      axios.delete(`${API_URL}/api/olimpiadas/${data?.olimpiada.id}`);
+      navigate("/admin");
+    } catch (error) {
+      console.error("Error deleting olimpiada:", error);
+    }
     setDeleteDialogOpen(false);
-    // Redirect or update UI as needed
   };
 
   // Handle edit olimpiada dates
-  const onEditOlimpiada = (values: z.infer<typeof editOlimpiadaSchema>) => {
+  const onEditOlimpiada = async (values: z.infer<typeof editOlimpiadaSchema>) => {
     if (!data) return;
 
     // In a real app, you would make an API call here
     console.log("Updating olimpiada dates:", values);
 
     // Update local state
-    setData({
-      olimpiada: {
-        ...data.olimpiada,
-        fecha_inicio: values.fecha_inicio.toISOString(),
-        fecha_fin: values.fecha_fin.toISOString(),
-      },
-    });
-
+    try {
+      const newOlimpiada = {
+        fecha_inicio: format(values.fecha_inicio, "yyyy-MM-dd"),
+        fecha_fin: format(values.fecha_fin, "yyyy-MM-dd"),
+      };
+      console.log(newOlimpiada);
+      await axios.put(`${API_URL}/api/olimpiadas/${data.olimpiada.id}`, newOlimpiada);
+      console.log("Olimpiada updated successfully:", newOlimpiada);
+      await fetchData();
+      console.log(data)
+    } catch (error) {
+      console.error("Error updating olimpiada:", error);
+    }
     setEditDialogOpen(false);
-    alert("Fechas actualizadas correctamente");
   };
 
   // Handle add cronograma
-  const onAddCronograma = (values: z.infer<typeof cronogramaSchema>) => {
+  const onAddCronograma = async (values: z.infer<typeof cronogramaSchema>) => {
     if (!data) return;
 
     // In a real app, you would make an API call here
@@ -281,48 +248,49 @@ export default function OlimpiadaPage() {
 
     // Create new cronograma
     const newCronograma: Cronograma = {
-      id: Math.max(...data.olimpiada.cronogramas.map((c) => c.id)) + 1, // Generate a new ID
       tipo_plazo: values.tipo_plazo,
       fecha_inicio: values.fecha_inicio.toISOString().split("T")[0],
       fecha_fin: values.fecha_fin.toISOString().split("T")[0],
       olimpiada_id: data.olimpiada.id,
     };
-
-    // Update local state
-    setData({
-      olimpiada: {
-        ...data.olimpiada,
-        cronogramas: [...data.olimpiada.cronogramas, newCronograma],
-      },
-    });
-
-    setAddCronogramaDialogOpen(false);
+    try {
+      await axios.post(`${API_URL}/api/cronogramas`, newCronograma);
+      console.log("Cronograma added successfully:");
+      setAddCronogramaDialogOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error adding cronograma:", error);
+    }
     addCronogramaForm.reset();
-    alert("Cronograma añadido correctamente");
   };
 
   // Handle delete cronograma
-  const handleDeleteCronograma = () => {
+  const handleDeleteCronograma = async () => {
     if (!data || !selectedCronograma) return;
 
     // In a real app, you would make an API call here
     console.log("Deleting cronograma with ID:", selectedCronograma.id);
 
-    // Update local state
-    setData({
-      olimpiada: {
-        ...data.olimpiada,
-        cronogramas: data.olimpiada.cronogramas.filter(
-          (c) => c.id !== selectedCronograma.id
-        ),
-      },
-    });
+    try {
+      await axios.delete(`${API_URL}/api/cronogramas/${selectedCronograma.id}`);
+      console.log("Cronograma deleted successfully:", selectedCronograma.id);
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting cronograma:", error);
+    }
 
     setDeleteCronogramaDialogOpen(false);
     setSelectedCronograma(null);
-    alert("Cronograma eliminado correctamente");
   };
 
+  useEffect(() => {
+    if (data) {
+      editOlimpiadaForm.reset({
+        fecha_inicio: new Date(data.olimpiada.fecha_inicio),
+        fecha_fin: new Date(data.olimpiada.fecha_fin),
+      });
+    }
+  }, [data, editOlimpiadaForm]);
   // Handle edit cronograma
   const onEditCronograma = (values: z.infer<typeof editCronogramaSchema>) => {
     if (!data || !selectedCronograma) return;
@@ -462,7 +430,7 @@ export default function OlimpiadaPage() {
             className="flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Agregar cronograma
+            Agregar fase
           </Button>
         </div>
 
@@ -648,9 +616,9 @@ export default function OlimpiadaPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Agregar nuevo cronograma</DialogTitle>
+            <DialogTitle>Agregar nueva fase</DialogTitle>
             <DialogDescription>
-              Añade un nuevo cronograma a la olimpiada.
+              Añade una nueva fase a la olimpiada.
             </DialogDescription>
           </DialogHeader>
           <Form {...addCronogramaForm}>
