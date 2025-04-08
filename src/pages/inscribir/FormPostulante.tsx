@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/accordion";
 import { useParams } from "react-router-dom";
 import { MyCombobox } from "@/components/MyComboBox";
+import { AlertComponent } from "@/components/AlertComponent";
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -60,21 +61,20 @@ const contactos = [
     { id: "2", nombre: "Estudiante" },
 ];
 const postulanteSchema = z.object({
-    nombre: z
+    nombres: z
         .string()
         .min(3, { message: "El nombre debe tener al menos 3 caracteres." })
         .max(50, { message: "El nombre no debe exceder los 50 caracteres." }),
 
-    apellido: z
+    apellidos: z
         .string()
         .min(3, { message: "El apellido debe tener al menos 3 caracteres." })
         .max(50, { message: "El apellido no debe exceder los 50 caracteres." }),
 
     ci: z
         .string()
-        .min(7, { message: "El CI debe tener al menos 7 caracteres." })
-        .max(15, { message: "El CI no debe exceder los 15 caracteres." }),
-
+        .min(7, "La Cédula de Identidad debe tener al menos 7 dígitos")
+        .max(10, "La Cédula de Identidad no puede tener más de 10 digitos"),
     fecha_nacimiento: z.date().refine(
         (date) => {
             const edad = new Date().getFullYear() - date.getFullYear();
@@ -146,15 +146,26 @@ const FormPostulante = () => {
         resolver: zodResolver(postulanteSchema),
         mode: "onSubmit",
     });
+    const [error, setError] = useState<string | null>();
+    const [success, setSuccess] = useState<string | null>();
+    const [showForm, setShowForm] = useState(false);
     const { codigo } = useParams();
 
-    const onSubmit = (data: z.infer<typeof postulanteSchema>) => {
-        console.log({ ...data, uuid_lista: codigo });
-        postDataPostulante({
-            ...data,
-            fecha_nacimiento: data.fecha_nacimiento.toISOString(),
-            areas: data.areas.join(","),
-        });
+    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
+        if (!codigo) {
+            console.log("no hay codigo");
+            return;
+        }
+        try {
+            await postDataPostulante({ ...data, codigo_lista: codigo });
+
+            setSuccess("El postulante fue registrado exitosamente");
+            setShowForm(false);
+        } catch (e) {
+            setError(
+                e instanceof Error ? e.message : "Hubo un error desconocido"
+            );
+        }
     };
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
@@ -173,11 +184,6 @@ const FormPostulante = () => {
                 url: API_URL + "/api/provincias",
                 setData: setProvincias,
             },
-            // {
-            //     label: "Categorias",
-            //     url: API_URL + "/api/categorias",
-            //     setData: setCategorias,
-            // },
             {
                 label: "Colegios",
                 url: API_URL + "/api/colegios",
@@ -245,222 +251,179 @@ const FormPostulante = () => {
     };
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus className="mr-2" />
-                    Nuevo Postulante
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[calc(100vh-100px)] overflow-y-auto ">
-                <DialogHeader>
-                    <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
-                    <DialogDescription>
-                        Ingresa los datos del nuevo postulante para las
-                        olimpiadas ohSansi
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit, handleErrors)}>
-                        <div className="grid gap-4 py-2">
-                            <div className="grid  gap-4">
-                                <Accordion
-                            
-                                    type="multiple"
-                                    value={openAccordions}
-                                    onValueChange={(value) => {
-                                        setOpenAccordions(value);
-                                        console.log(value);
-                                    }}
-                                    className="space-y-4"
-                                >
-                                    <AccordionItem value="personal">
-                                        <AccordionTrigger>
-                                            Datos Personales
-                                        </AccordionTrigger>
-                                        <AccordionContent className="space-y-4 mt-2">
-                                            <div className="grid grid-cols-1  gap-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="nombre"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Nombres
-                                                            </FormLabel>
-                                                            <FormControl className="col-span-2">
-                                                                <Input
-                                                                    placeholder="Juan"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="apellido"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Apellidos
-                                                            </FormLabel>
-                                                            <FormControl className="col-span-2">
-                                                                <Input
-                                                                    placeholder="Gonzales"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="ci"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                CI
-                                                            </FormLabel>
-                                                            <FormControl className="col-span-2">
-                                                                <Input
-                                                                    placeholder="12345678"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+        <>
+            <Dialog open={showForm} onOpenChange={setShowForm}>
+                <DialogTrigger asChild>
+                    <Button>
+                        <Plus className="mr-2" />
+                        Nuevo Postulante
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] max-h-[calc(100vh-100px)] overflow-y-auto ">
+                    <DialogHeader>
+                        <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
+                        <DialogDescription>
+                            Ingresa los datos del nuevo postulante para las
+                            olimpiadas ohSansi
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit, handleErrors)}
+                        >
+                            <div className="grid gap-4 py-2">
+                                <div className="grid  gap-4">
+                                    <Accordion
+                                        type="multiple"
+                                        value={openAccordions}
+                                        onValueChange={(value) => {
+                                            setOpenAccordions(value);
+                                            console.log(value);
+                                        }}
+                                        className="space-y-4"
+                                    >
+                                        <AccordionItem value="personal">
+                                            <AccordionTrigger>
+                                                Datos Personales
+                                            </AccordionTrigger>
+                                            <AccordionContent className="space-y-4 mt-2">
+                                                <div className="grid grid-cols-1  gap-4">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="nombres"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Nombres
+                                                                </FormLabel>
+                                                                <FormControl className="col-span-2">
+                                                                    <Input
+                                                                        placeholder="Juan"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="apellidos"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Apellidos
+                                                                </FormLabel>
+                                                                <FormControl className="col-span-2">
+                                                                    <Input
+                                                                        placeholder="Gonzales"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="ci"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    CI
+                                                                </FormLabel>
+                                                                <FormControl className="col-span-2">
+                                                                    <Input
+                                                                        placeholder="12345678"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
 
-                                                <FormField
-                                                    control={form.control}
-                                                    name="fecha_nacimiento"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Fecha de
-                                                                Nacimiento
-                                                            </FormLabel>
-                                                            <FormControl className="col-span-2">
-                                                                <DatePicker
-                                                                    classname="w-full"
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={
-                                                                        field.onChange
-                                                                    }
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="correo_postulante"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Correo
-                                                                Electrónico
-                                                            </FormLabel>
-                                                            <FormControl className="col-span-2">
-                                                                <Input
-                                                                    placeholder="correo@ejemplo.com"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                    <AccordionItem value="ubicacion">
-                                        <AccordionTrigger>
-                                            Ubicación
-                                        </AccordionTrigger>
-                                        <AccordionContent className="space-y-4 mt-2">
-                                            <div className="grid grid-cols-1  gap-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="departamento"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Departamento
-                                                            </FormLabel>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="fecha_nacimiento"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Fecha de
+                                                                    Nacimiento
+                                                                </FormLabel>
+                                                                <FormControl className="col-span-2">
+                                                                    <DatePicker
+                                                                        classname="w-full"
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={
+                                                                            field.onChange
+                                                                        }
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="correo_postulante"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Correo
+                                                                    Electrónico
+                                                                </FormLabel>
+                                                                <FormControl className="col-span-2">
+                                                                    <Input
+                                                                        placeholder="correo@ejemplo.com"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                        <AccordionItem value="ubicacion">
+                                            <AccordionTrigger>
+                                                Ubicación
+                                            </AccordionTrigger>
+                                            <AccordionContent className="space-y-4 mt-2">
+                                                <div className="grid grid-cols-1  gap-4">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="departamento"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Departamento
+                                                                </FormLabel>
 
-                                                            <FormControl className="col-span-2">
-                                                                <ComboBox
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={(
-                                                                        e
-                                                                    ) => {
-                                                                        field.onChange(
+                                                                <FormControl className="col-span-2">
+                                                                    <ComboBox
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={(
                                                                             e
-                                                                        );
-                                                                        setSelectedDepartamento(
-                                                                            Array.isArray(
+                                                                        ) => {
+                                                                            field.onChange(
                                                                                 e
-                                                                            )
-                                                                                ? e[0]
-                                                                                : e
-                                                                        );
-                                                                    }}
-                                                                    values={departamentos.map(
-                                                                        ({
-                                                                            id,
-                                                                            nombre,
-                                                                        }) => ({
-                                                                            id: id.toString(),
-                                                                            nombre,
-                                                                        })
-                                                                    )}
-                                                                />
-                                                            </FormControl>
-
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="provincia"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Provincia
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <ComboBox
-                                                                    className="col-span-2"
-                                                                    disabled={
-                                                                        !selectedDepartamento
-                                                                    }
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={
-                                                                        field.onChange
-                                                                    }
-                                                                    values={provincias
-                                                                        .filter(
-                                                                            ({
-                                                                                departamento_id,
-                                                                            }) =>
-                                                                                departamento_id ==
-                                                                                selectedDepartamento
-                                                                        )
-                                                                        .map(
+                                                                            );
+                                                                            setSelectedDepartamento(
+                                                                                Array.isArray(
+                                                                                    e
+                                                                                )
+                                                                                    ? e[0]
+                                                                                    : e
+                                                                            );
+                                                                        }}
+                                                                        values={departamentos.map(
                                                                             ({
                                                                                 id,
                                                                                 nombre,
@@ -469,289 +432,355 @@ const FormPostulante = () => {
                                                                                 nombre,
                                                                             })
                                                                         )}
-                                                                />
-                                                            </FormControl>
+                                                                    />
+                                                                </FormControl>
 
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="colegio"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Colegio
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <MyCombobox
-                                                                    values={
-                                                                        colegios
-                                                                    }
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                    <AccordionItem value="contacto">
-                                        <AccordionTrigger>
-                                            Datos de Contacto
-                                        </AccordionTrigger>
-                                        <AccordionContent className="space-y-4 mt-2">
-                                            <div className="grid grid-cols-1  gap-4">
-                                                {/* Teléfono */}
-                                                <FormField
-                                                    control={form.control}
-                                                    name="telefono_contacto"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Número de
-                                                                teléfono de
-                                                                referencia
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="12345678"
-                                                                    type="tel"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
 
-                                                {/* Tipo teléfono */}
-                                                <FormField
-                                                    control={form.control}
-                                                    name="tipo_contacto_telefono"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                ¿A quién
-                                                                pertenece el
-                                                                teléfono?
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <ComboBox
-                                                                    values={
-                                                                        contactos
-                                                                    }
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={
-                                                                        field.onChange
-                                                                    }
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                {/* Email contacto */}
-                                                <FormField
-                                                    control={form.control}
-                                                    name="email_contacto"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Correo
-                                                                electrónico de
-                                                                referencia
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="contacto@ejemplo.com"
-                                                                    type="email"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                {/* Tipo email */}
-                                                <FormField
-                                                    control={form.control}
-                                                    name="tipo_contacto_email"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                ¿A quién
-                                                                pertenece el
-                                                                correo?
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <ComboBox
-                                                                    values={
-                                                                        contactos
-                                                                    }
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={
-                                                                        field.onChange
-                                                                    }
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                    <AccordionItem value="categoria-area">
-                                        <AccordionTrigger>
-                                            Categoria - Área
-                                        </AccordionTrigger>
-                                        <AccordionContent className="space-y-4 mt-2">
-                                            <div className="grid grid-cols-1 gap-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="curso"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Grado
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <ComboBox
-                                                                    values={
-                                                                        grados
-                                                                    }
-                                                                    value={
-                                                                        field.value
-                                                                    }
-                                                                    onChange={(
-                                                                        e
-                                                                    ) => {
-                                                                        field.onChange(
-                                                                            e
-                                                                        );
-                                                                        setSelectedGrado(
-                                                                            String(
-                                                                                e
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="provincia"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Provincia
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <ComboBox
+                                                                        className="col-span-2"
+                                                                        disabled={
+                                                                            !selectedDepartamento
+                                                                        }
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={
+                                                                            field.onChange
+                                                                        }
+                                                                        values={provincias
+                                                                            .filter(
+                                                                                ({
+                                                                                    departamento_id,
+                                                                                }) =>
+                                                                                    departamento_id ==
+                                                                                    selectedDepartamento
                                                                             )
-                                                                        );
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                                            .map(
+                                                                                ({
+                                                                                    id,
+                                                                                    nombre,
+                                                                                }) => ({
+                                                                                    id: id.toString(),
+                                                                                    nombre,
+                                                                                })
+                                                                            )}
+                                                                    />
+                                                                </FormControl>
 
-                                                <FormField
-                                                    control={form.control}
-                                                    name="areas"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                Selecciona hasta
-                                                                2 Áreas
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <MultiSelect
-                                                                    disabled={
-                                                                        !selectedGrado
-                                                                    }
-                                                                    max={2}
-                                                                    values={
-                                                                        categorias?.flatMap(
-                                                                            ({
-                                                                                id: idCat,
-                                                                                nombre: nombreCat,
-                                                                                areas,
-                                                                            }) =>
-                                                                                areas?.map(
-                                                                                    ({
-                                                                                        id: idArea,
-                                                                                        nombre: nombreArea,
-                                                                                    }) => ({
-                                                                                        id: `${idArea}-${idCat}`,
-                                                                                        nombre: `${nombreArea} - ${nombreCat}   `,
-                                                                                    })
-                                                                                ) ||
-                                                                                []
-                                                                        ) || []
-                                                                    }
-                                                                    value={
-                                                                        field.value?.map(
-                                                                            ({
-                                                                                id_area,
-                                                                                id_cat,
-                                                                            }) =>
-                                                                                `${id_area}-${id_cat}`
-                                                                        ) || []
-                                                                    }
-                                                                    onChange={(
-                                                                        selected: string[]
-                                                                    ) => {
-                                                                        const transformed =
-                                                                            selected.map(
-                                                                                (
-                                                                                    item
-                                                                                ) => {
-                                                                                    const [
-                                                                                        idArea,
-                                                                                        idCat,
-                                                                                    ] =
-                                                                                        item
-                                                                                            .split(
-                                                                                                "-"
-                                                                                            )
-                                                                                            .map(
-                                                                                                Number
-                                                                                            );
-                                                                                    return {
-                                                                                        id_cat: idCat,
-                                                                                        id_area:
-                                                                                            idArea,
-                                                                                    };
-                                                                                }
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="colegio"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Colegio
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <MyCombobox
+                                                                        values={
+                                                                            colegios
+                                                                        }
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                        <AccordionItem value="contacto">
+                                            <AccordionTrigger>
+                                                Datos de Contacto
+                                            </AccordionTrigger>
+                                            <AccordionContent className="space-y-4 mt-2">
+                                                <div className="grid grid-cols-1  gap-4">
+                                                    {/* Teléfono */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="telefono_contacto"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Número de
+                                                                    teléfono de
+                                                                    referencia
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="12345678"
+                                                                        type="tel"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    {/* Tipo teléfono */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="tipo_contacto_telefono"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    ¿A quién
+                                                                    pertenece el
+                                                                    teléfono?
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <ComboBox
+                                                                        values={
+                                                                            contactos
+                                                                        }
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={
+                                                                            field.onChange
+                                                                        }
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    {/* Email contacto */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="email_contacto"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Correo
+                                                                    electrónico
+                                                                    de
+                                                                    referencia
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="contacto@ejemplo.com"
+                                                                        type="email"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    {/* Tipo email */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="tipo_contacto_email"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    ¿A quién
+                                                                    pertenece el
+                                                                    correo?
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <ComboBox
+                                                                        values={
+                                                                            contactos
+                                                                        }
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={
+                                                                            field.onChange
+                                                                        }
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                        <AccordionItem value="categoria-area">
+                                            <AccordionTrigger>
+                                                Categoria - Área
+                                            </AccordionTrigger>
+                                            <AccordionContent className="space-y-4 mt-2">
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="curso"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Grado
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <ComboBox
+                                                                        values={
+                                                                            grados
+                                                                        }
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={(
+                                                                            e
+                                                                        ) => {
+                                                                            field.onChange(
+                                                                                e
                                                                             );
-                                                                        field.onChange(
-                                                                            transformed
-                                                                        );
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
+                                                                            setSelectedGrado(
+                                                                                String(
+                                                                                    e
+                                                                                )
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="areas"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Selecciona
+                                                                    hasta 2
+                                                                    Áreas
+                                                                </FormLabel>
+                                                                <FormControl>
+                                                                    <MultiSelect
+                                                                        disabled={
+                                                                            !selectedGrado
+                                                                        }
+                                                                        max={2}
+                                                                        values={
+                                                                            categorias?.flatMap(
+                                                                                ({
+                                                                                    id: idCat,
+                                                                                    nombre: nombreCat,
+                                                                                    areas,
+                                                                                }) =>
+                                                                                    areas?.map(
+                                                                                        ({
+                                                                                            id: idArea,
+                                                                                            nombre: nombreArea,
+                                                                                        }) => ({
+                                                                                            id: `${idArea}-${idCat}`,
+                                                                                            nombre: `${nombreArea} - ${nombreCat}   `,
+                                                                                        })
+                                                                                    ) ||
+                                                                                    []
+                                                                            ) ||
+                                                                            []
+                                                                        }
+                                                                        value={
+                                                                            field.value?.map(
+                                                                                ({
+                                                                                    id_area,
+                                                                                    id_cat,
+                                                                                }) =>
+                                                                                    `${id_area}-${id_cat}`
+                                                                            ) ||
+                                                                            []
+                                                                        }
+                                                                        onChange={(
+                                                                            selected: string[]
+                                                                        ) => {
+                                                                            const transformed =
+                                                                                selected.map(
+                                                                                    (
+                                                                                        item
+                                                                                    ) => {
+                                                                                        const [
+                                                                                            idArea,
+                                                                                            idCat,
+                                                                                        ] =
+                                                                                            item
+                                                                                                .split(
+                                                                                                    "-"
+                                                                                                )
+                                                                                                .map(
+                                                                                                    Number
+                                                                                                );
+                                                                                        return {
+                                                                                            id_cat: idCat,
+                                                                                            id_area:
+                                                                                                idArea,
+                                                                                        };
+                                                                                    }
+                                                                                );
+                                                                            field.onChange(
+                                                                                transformed
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <DialogTrigger asChild>
-                                <Button variant="outline">Cancelar</Button>
-                            </DialogTrigger>
-                            <Button
-                                type="submit"
-                                onClick={() => console.log(form.getValues())}
-                            >
-                                Guardar Postulante
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+                            <div className="flex justify-end gap-2">
+                                <DialogTrigger asChild>
+                                    <Button variant="outline">Cancelar</Button>
+                                </DialogTrigger>
+                                <Button
+                                    type="submit"
+                                    onClick={() =>
+                                        console.log(form.getValues())
+                                    }
+                                >
+                                    Guardar Postulante
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
+            {error && (
+                <AlertComponent
+                    description={error}
+                    variant="destructive"
+                    onClose={() => setError(null)}
+                />
+            )}
+            {success && (
+                <AlertComponent
+                    description={success}
+                    variant="default"
+                    onClose={() => setSuccess(null)}
+                />
+            )}
+        </>
     );
 };
 
