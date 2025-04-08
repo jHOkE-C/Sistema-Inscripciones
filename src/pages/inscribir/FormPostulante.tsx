@@ -9,7 +9,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Plus } from "lucide-react";
 import { ComboBox } from "@/components/ComboBox";
@@ -150,29 +150,8 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     const [success, setSuccess] = useState<string | null>();
     const [showForm, setShowForm] = useState(false);
     const { codigo } = useParams();
-
-    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
-        if (!codigo) {
-            console.log("no hay codigo");
-            return;
-        }
-        try {
-            await postDataPostulante({ ...data, codigo_lista: codigo });
-
-            setSuccess("El postulante fue registrado exitosamente");
-            setShowForm(false);
-            refresh();
-        } catch (e) {
-            setError(
-                e instanceof Error ? e.message : "Hubo un error desconocido"
-            );
-        }
-    };
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
-    const [provincias, setProvincias] = useState<Provincia[]>([]);
-    const [colegios, setColegios] = useState<Colegio[]>([]);
-
+    const [registrando, setRegistrando] = useState(false);
+    const isSubmittingRef = useRef(false);
     useEffect(() => {
         const endpoints = [
             {
@@ -221,6 +200,12 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     }, [selectedGrado]);
     const [openAccordions, setOpenAccordions] = useState<string[]>([]);
 
+
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+    const [provincias, setProvincias] = useState<Provincia[]>([]);
+    const [colegios, setColegios] = useState<Colegio[]>([]);
+
     const handleErrors = (errors: Record<string, unknown>) => {
         const errorFields = Object.keys(errors);
         const fieldToAccordionMap: Record<string, string> = {
@@ -250,6 +235,26 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
 
         setOpenAccordions(Array.from(accordionsToOpen));
     };
+    if (!codigo) return;
+
+    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
+        setRegistrando(true);
+        try {
+            await postDataPostulante({ ...data, codigo_lista: codigo });
+            setSuccess("El postulante fue registrado exitosamente");
+            setShowForm(false);
+            refresh();
+        } catch (e) {
+            setError(
+                e instanceof Error ? e.message : "Hubo un error desconocido"
+            );
+        } finally {
+            setRegistrando(false);
+            isSubmittingRef.current = false;
+        }
+    };
 
     return (
         <>
@@ -270,7 +275,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                     </DialogHeader>
                     <Form {...form}>
                         <form
-                            onSubmit={form.handleSubmit(onSubmit, handleErrors)}
+                          
                         >
                             <div className="grid gap-4 py-2">
                                 <div className="grid  gap-4">
@@ -354,7 +359,14 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                     Nacimiento
                                                                 </FormLabel>
                                                                 <FormControl className="col-span-2">
-                                                                    <DateSelector value={field.value} onChange={field.onChange}/>
+                                                                    <DateSelector
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={
+                                                                            field.onChange
+                                                                        }
+                                                                    />
                                                                     {/* <DatePicker
                                                                         classname="w-full"
                                                                         value={
@@ -755,13 +767,10 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                 <DialogTrigger asChild>
                                     <Button variant="outline">Cancelar</Button>
                                 </DialogTrigger>
-                                <Button
-                                    type="submit"
-                                    onClick={() =>
-                                        console.log(form.getValues())
-                                    }
-                                >
-                                    Guardar Postulante
+                                <Button disabled={registrando}onClick={form.handleSubmit(onSubmit, handleErrors)}>
+                                    {registrando
+                                        ? "Registrando..."
+                                        : "Guardar Postulante"}
                                 </Button>
                             </div>
                         </form>
