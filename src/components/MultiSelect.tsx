@@ -6,6 +6,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useEffect } from "react";
 
 interface MultiSelectProps {
     id?: string;
@@ -18,7 +19,6 @@ interface MultiSelectProps {
     label?: string;
     disabled?: boolean;
     max?: number;
-    
 }
 
 export function MultiSelect({
@@ -31,6 +31,16 @@ export function MultiSelect({
     disabled,
     max = 999,
 }: MultiSelectProps) {
+    // Sincroniza los valores seleccionados con los valores disponibles
+    useEffect(() => {
+        const validValues = value.filter((v) =>
+            values.some((option) => option.id === v)
+        );
+        if (validValues.length !== value.length) {
+            onChange(validValues);
+        }
+    }, [values, value, onChange]);
+
     // Alterna la selección de un valor
     const toggleValue = (optionId: string) => {
         if (value.includes(optionId)) {

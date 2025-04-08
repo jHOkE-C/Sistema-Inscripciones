@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 
 import { Plus } from "lucide-react";
-import DatePicker from "@/components/DatePicker";
 import { ComboBox } from "@/components/ComboBox";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +38,7 @@ import {
 import { useParams } from "react-router-dom";
 import { MyCombobox } from "@/components/MyComboBox";
 import { AlertComponent } from "@/components/AlertComponent";
+import { DateSelector } from "@/components/DateSelector";
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -56,9 +56,9 @@ export const grados = [
 ];
 
 const contactos = [
-    { id: "0", nombre: "Profesor" },
-    { id: "1", nombre: "Mamá/Papá" },
-    { id: "2", nombre: "Estudiante" },
+    { id: "1", nombre: "Profesor" },
+    { id: "2", nombre: "Mamá/Papá" },
+    { id: "3", nombre: "Estudiante" },
 ];
 const postulanteSchema = z.object({
     nombres: z
@@ -118,7 +118,7 @@ const postulanteSchema = z.object({
         .string()
         .regex(/^\d+$/, { message: "El teléfono solo debe contener números." })
         .min(7, { message: "El teléfono debe tener al menos 7 dígitos." })
-        .max(15, { message: "El teléfono no debe exceder los 15 dígitos." }),
+        .max(8, { message: "El teléfono no debe exceder los 8 dígitos." }),
 
     colegio: z.string(),
 });
@@ -139,7 +139,7 @@ interface Colegio {
     nombre: string;
 }
 
-const FormPostulante = () => {
+const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     const [selectedGrado, setSelectedGrado] = useState<string>();
     const [selectedDepartamento, setSelectedDepartamento] = useState<string>();
     const form = useForm<z.infer<typeof postulanteSchema>>({
@@ -150,27 +150,7 @@ const FormPostulante = () => {
     const [success, setSuccess] = useState<string | null>();
     const [showForm, setShowForm] = useState(false);
     const { codigo } = useParams();
-
-    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
-        if (!codigo) {
-            console.log("no hay codigo");
-            return;
-        }
-        try {
-            await postDataPostulante({ ...data, codigo_lista: codigo });
-
-            setSuccess("El postulante fue registrado exitosamente");
-            setShowForm(false);
-        } catch (e) {
-            setError(
-                e instanceof Error ? e.message : "Hubo un error desconocido"
-            );
-        }
-    };
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
-    const [provincias, setProvincias] = useState<Provincia[]>([]);
-    const [colegios, setColegios] = useState<Colegio[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const endpoints = [
@@ -220,6 +200,11 @@ const FormPostulante = () => {
     }, [selectedGrado]);
     const [openAccordions, setOpenAccordions] = useState<string[]>([]);
 
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+    const [provincias, setProvincias] = useState<Provincia[]>([]);
+    const [colegios, setColegios] = useState<Colegio[]>([]);
+
     const handleErrors = (errors: Record<string, unknown>) => {
         const errorFields = Object.keys(errors);
         const fieldToAccordionMap: Record<string, string> = {
@@ -249,6 +234,24 @@ const FormPostulante = () => {
 
         setOpenAccordions(Array.from(accordionsToOpen));
     };
+    if (!codigo) return;
+
+    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
+        if (loading) return;
+        setLoading(true);
+        try {
+            await postDataPostulante({ ...data, codigo_lista: codigo });
+            setSuccess("El postulante fue registrado exitosamente");
+            setShowForm(false);
+            refresh();
+        } catch (e) {
+            setError(
+                e instanceof Error ? e.message : "Hubo un error desconocido"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -268,9 +271,7 @@ const FormPostulante = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit, handleErrors)}
-                        >
+                        <form>
                             <div className="grid gap-4 py-2">
                                 <div className="grid  gap-4">
                                     <Accordion
@@ -353,8 +354,7 @@ const FormPostulante = () => {
                                                                     Nacimiento
                                                                 </FormLabel>
                                                                 <FormControl className="col-span-2">
-                                                                    <DatePicker
-                                                                        classname="w-full"
+                                                                    <DateSelector
                                                                         value={
                                                                             field.value
                                                                         }
@@ -362,6 +362,15 @@ const FormPostulante = () => {
                                                                             field.onChange
                                                                         }
                                                                     />
+                                                                    {/* <DatePicker
+                                                                        classname="w-full"
+                                                                        value={
+                                                                            field.value
+                                                                        }
+                                                                        onChange={
+                                                                            field.onChange
+                                                                        }
+                                                                    /> */}
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -690,7 +699,7 @@ const FormPostulante = () => {
                                                                                             nombre: nombreArea,
                                                                                         }) => ({
                                                                                             id: `${idArea}-${idCat}`,
-                                                                                            nombre: `${nombreArea} - ${nombreCat}   `,
+                                                                                            nombre: `${nombreArea} - ${nombreCat}`,
                                                                                         })
                                                                                     ) ||
                                                                                     []
@@ -718,7 +727,7 @@ const FormPostulante = () => {
                                                                                         const [
                                                                                             idArea,
                                                                                             idCat,
-                                                                                        ] =
+                                                                                        ] = 
                                                                                             item
                                                                                                 .split(
                                                                                                     "-"
@@ -754,12 +763,15 @@ const FormPostulante = () => {
                                     <Button variant="outline">Cancelar</Button>
                                 </DialogTrigger>
                                 <Button
-                                    type="submit"
-                                    onClick={() =>
-                                        console.log(form.getValues())
-                                    }
+                                    disabled={loading}
+                                    onClick={form.handleSubmit(
+                                        onSubmit,
+                                        handleErrors
+                                    )}
                                 >
-                                    Guardar Postulante
+                                    {loading
+                                        ? "Registrando..."
+                                        : "Guardar Postulante"}
                                 </Button>
                             </div>
                         </form>

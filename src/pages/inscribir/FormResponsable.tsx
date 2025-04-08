@@ -36,7 +36,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
     const [error, setError] = useState<string | null>(null);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-    });  
+    });
     const { ci } = useParams();
     if (!ci || ci?.length < 7) return <NotFoundPage />;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
