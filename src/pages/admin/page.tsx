@@ -34,7 +34,6 @@ const Admin = () => {
             .get<Version[]>(`${API_URL}/api/olimpiadas`)
             .then((response) => {
                 setData(response.data);
-                console.log(response.data);
             })
             .catch((error: unknown) => {
                 console.error("Error fetching versiones:", error);
