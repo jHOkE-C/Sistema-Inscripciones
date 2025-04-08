@@ -55,7 +55,7 @@ export function CreateList({
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline" onClick={() => setOpen(true)}>
+                    <Button variant="default" onClick={() => setOpen(true)}>
                         Crear Lista
                     </Button>
                 </DialogTrigger>
