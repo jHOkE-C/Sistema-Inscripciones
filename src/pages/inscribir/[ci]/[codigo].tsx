@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import { getInscritosPorLista } from "@/api/postulantes";
 
 import Loading from "@/components/Loading";
+import NotFoundPage from "@/pages/404";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
@@ -43,7 +44,7 @@ export default function Page() {
         }
     };
     if (loading) return <Loading />;
-    if (notFound) return <></>;
+    if (notFound) return <NotFoundPage/>;
 
     return (
         <div className="min-h-screen py-10">
