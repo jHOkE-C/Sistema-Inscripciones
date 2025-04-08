@@ -52,27 +52,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
 import { useNavigate } from "react-router-dom";
+import { Cronograma, formatDate, OlimpiadaData } from "./types";
 // Define types for our data
-interface Cronograma {
-  id?: number;
-  tipo_plazo: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  olimpiada_id: number;
-}
 
-interface Olimpiada {
-  id: number;
-  nombre: string;
-  gestion: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  cronogramas: Cronograma[];
-}
-
-interface OlimpiadaData {
-  olimpiada: Olimpiada;
-}
 
 const editOlimpiadaSchema = z
   .object({
@@ -184,10 +166,6 @@ export default function OlimpiadaPage() {
   }, []);
 
   // Format date to a more readable format
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString + "T00:00:00");
-    return format(date, "dd MMMM yyyy", { locale: es });
-  };
 
   // Get the type of schedule in Spanish
   const getTipoPlazoLabel = (tipo: string) => {
@@ -215,8 +193,19 @@ export default function OlimpiadaPage() {
     setDeleteDialogOpen(false);
   };
 
+  // Agregar esta función dentro del componente OlimpiadaPage
+  const getAvailableTipoPlazo = () => {
+    if (!data) return [];
+
+    const usedTipos = data.olimpiada.cronogramas.map((c) => c.tipo_plazo);
+    const allTipos = ["inscripcion", "competencia", "premiacion"];
+
+    return allTipos.filter((tipo) => !usedTipos.includes(tipo));
+  };
   // Handle edit olimpiada dates
-  const onEditOlimpiada = async (values: z.infer<typeof editOlimpiadaSchema>) => {
+  const onEditOlimpiada = async (
+    values: z.infer<typeof editOlimpiadaSchema>
+  ) => {
     if (!data) return;
 
     // In a real app, you would make an API call here
@@ -229,10 +218,13 @@ export default function OlimpiadaPage() {
         fecha_fin: format(values.fecha_fin, "yyyy-MM-dd"),
       };
       console.log(newOlimpiada);
-      await axios.put(`${API_URL}/api/olimpiadas/${data.olimpiada.id}`, newOlimpiada);
+      await axios.put(
+        `${API_URL}/api/olimpiadas/${data.olimpiada.id}`,
+        newOlimpiada
+      );
       console.log("Olimpiada updated successfully:", newOlimpiada);
       await fetchData();
-      console.log(data)
+      console.log(data);
     } catch (error) {
       console.error("Error updating olimpiada:", error);
     }
@@ -292,31 +284,30 @@ export default function OlimpiadaPage() {
     }
   }, [data, editOlimpiadaForm]);
   // Handle edit cronograma
-  const onEditCronograma = (values: z.infer<typeof editCronogramaSchema>) => {
+  const onEditCronograma = async (values: z.infer<typeof editCronogramaSchema>) => {
     if (!data || !selectedCronograma) return;
 
     // In a real app, you would make an API call here
-    console.log("Updating cronograma dates:", values);
+    try {
+      const updatedCronograma: Cronograma = {
+        ...selectedCronograma,
+        fecha_inicio: values.fecha_inicio.toISOString().split("T")[0],
+        fecha_fin: values.fecha_fin.toISOString().split("T")[0],
+      };
+      console.log("Updating cronograma:", updatedCronograma);
+      await axios.put(
+        `${API_URL}/api/cronogramas/${selectedCronograma.id}`,
+        updatedCronograma
+      );
+      console.log("Cronograma updated successfully:", updatedCronograma);
+      fetchData();
+    } catch (error) {
+      console.error("Error updating cronograma:", error);
+    }
 
-    // Update local state
-    setData({
-      olimpiada: {
-        ...data.olimpiada,
-        cronogramas: data.olimpiada.cronogramas.map((c) =>
-          c.id === selectedCronograma.id
-            ? {
-                ...c,
-                fecha_inicio: values.fecha_inicio.toISOString().split("T")[0],
-                fecha_fin: values.fecha_fin.toISOString().split("T")[0],
-              }
-            : c
-        ),
-      },
-    });
 
     setEditCronogramaDialogOpen(false);
     setSelectedCronograma(null);
-    alert("Cronograma actualizado correctamente");
   };
 
   // Open edit cronograma dialog
@@ -531,7 +522,9 @@ export default function OlimpiadaPage() {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              formatDate(
+                                field.value.toISOString().split("T")[0]
+                              )
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -548,6 +541,7 @@ export default function OlimpiadaPage() {
                             return date < new Date("2000-01-01");
                           }}
                           initialFocus
+                          locale={es}
                         />
                       </PopoverContent>
                     </Popover>
@@ -572,7 +566,9 @@ export default function OlimpiadaPage() {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              formatDate(
+                                field.value.toISOString().split("T")[0]
+                              )
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -594,6 +590,7 @@ export default function OlimpiadaPage() {
                             );
                           }}
                           initialFocus
+                          locale={es}
                         />
                       </PopoverContent>
                     </Popover>
@@ -642,9 +639,11 @@ export default function OlimpiadaPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="inscripcion">Inscripción</SelectItem>
-                        <SelectItem value="competencia">Competencia</SelectItem>
-                        <SelectItem value="premiacion">Premiación</SelectItem>
+                        {getAvailableTipoPlazo().map((tipo) => (
+                          <SelectItem key={tipo} value={tipo}>
+                            {getTipoPlazoLabel(tipo)}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -688,6 +687,7 @@ export default function OlimpiadaPage() {
                             );
                           }}
                           initialFocus
+                          locale={es}
                         />
                       </PopoverContent>
                     </Popover>
@@ -735,6 +735,7 @@ export default function OlimpiadaPage() {
                             );
                           }}
                           initialFocus
+                          locale={es}
                         />
                       </PopoverContent>
                     </Popover>
@@ -787,7 +788,9 @@ export default function OlimpiadaPage() {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              formatDate(
+                                field.value.toISOString().split("T")[0]
+                              )
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -807,6 +810,7 @@ export default function OlimpiadaPage() {
                             );
                           }}
                           initialFocus
+                          locale={es}
                         />
                       </PopoverContent>
                     </Popover>
@@ -831,7 +835,9 @@ export default function OlimpiadaPage() {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              formatDate(
+                                field.value.toISOString().split("T")[0]
+                              )
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -854,6 +860,7 @@ export default function OlimpiadaPage() {
                             );
                           }}
                           initialFocus
+                          locale={es}
                         />
                       </PopoverContent>
                     </Popover>

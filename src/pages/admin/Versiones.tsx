@@ -9,19 +9,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Version } from "./page";
 import { Link } from "react-router-dom";
+import { formatDate } from "./version/[id]/types";
 
 export function Versiones({ versiones }: { versiones: Version[] }) {
-  // Function to format dates in a more readable way
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("es", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(date);
-  };
 
-  // Calculate duration in days
   const calculateDuration = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
