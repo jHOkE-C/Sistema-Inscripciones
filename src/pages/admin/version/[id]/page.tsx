@@ -53,6 +53,8 @@ import { useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
 import { useNavigate } from "react-router-dom";
 import { Cronograma, formatDate, OlimpiadaData } from "./types";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 // Define types for our data
 
 
@@ -189,6 +191,7 @@ export default function OlimpiadaPage() {
       navigate("/admin");
     } catch (error) {
       console.error("Error deleting olimpiada:", error);
+      toast.error("Error al eliminar la olimpiada.");
     }
     setDeleteDialogOpen(false);
   };
@@ -208,27 +211,27 @@ export default function OlimpiadaPage() {
   ) => {
     if (!data) return;
 
-    // In a real app, you would make an API call here
-    console.log("Updating olimpiada dates:", values);
-
-    // Update local state
     try {
       const newOlimpiada = {
         fecha_inicio: format(values.fecha_inicio, "yyyy-MM-dd"),
         fecha_fin: format(values.fecha_fin, "yyyy-MM-dd"),
       };
-      console.log(newOlimpiada);
       await axios.put(
         `${API_URL}/api/olimpiadas/${data.olimpiada.id}`,
         newOlimpiada
       );
       console.log("Olimpiada updated successfully:", newOlimpiada);
+      toast.success("Fechas actualizadas correctamente.");
       await fetchData();
-      console.log(data);
+      setEditDialogOpen(false);
     } catch (error) {
-      console.error("Error updating olimpiada:", error);
+      if (axios.isAxiosError(error)) {
+         const mensaje = error.response?.data?.error;
+        toast.error(mensaje);
+      }
+     
     }
-    setEditDialogOpen(false);
+    
   };
 
   // Handle add cronograma
@@ -250,10 +253,15 @@ export default function OlimpiadaPage() {
       console.log("Cronograma added successfully:");
       setAddCronogramaDialogOpen(false);
       fetchData();
+      addCronogramaForm.reset();
+      toast.success("Fase agregada correctamente.");
     } catch (error) {
-      console.error("Error adding cronograma:", error);
+      if (axios.isAxiosError(error)) {
+        const mensaje = error.response?.data?.error[0];
+        toast.error(mensaje);
+      }
     }
-    addCronogramaForm.reset();
+    
   };
 
   // Handle delete cronograma
@@ -267,7 +275,9 @@ export default function OlimpiadaPage() {
       await axios.delete(`${API_URL}/api/cronogramas/${selectedCronograma.id}`);
       console.log("Cronograma deleted successfully:", selectedCronograma.id);
       fetchData();
+      toast.success("Fase eliminada correctamente.");
     } catch (error) {
+      toast.error("Error al eliminar la fase.");
       console.error("Error deleting cronograma:", error);
     }
 
@@ -301,13 +311,19 @@ export default function OlimpiadaPage() {
       );
       console.log("Cronograma updated successfully:", updatedCronograma);
       fetchData();
+      toast.success("Fase actualizada correctamente.");
+      setEditCronogramaDialogOpen(false);
+      setSelectedCronograma(null);
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const mensaje = error.response?.data?.error[0];
+        toast.error(mensaje);
+      }
       console.error("Error updating cronograma:", error);
     }
 
 
-    setEditCronogramaDialogOpen(false);
-    setSelectedCronograma(null);
+    
   };
 
   // Open edit cronograma dialog
@@ -329,7 +345,7 @@ export default function OlimpiadaPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg">Cargando información de la olimpiada...</p>
+        <p className="text-lg">Cargando...</p>
       </div>
     );
   }
@@ -346,6 +362,7 @@ export default function OlimpiadaPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <Toaster />
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className=" text-xl md:text-3xl font-bold">{olimpiada.nombre}</h1>
