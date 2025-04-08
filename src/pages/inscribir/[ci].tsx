@@ -31,7 +31,8 @@ const Page = () => {
         setLoading(true);
         try {
             const data = await getListasPostulantes(ci);
-            setData(data);
+           
+            setData(data.data);
         } catch {
             //setError(e instanceof Error ? e.message : "error desconocido");
             setOpenFormResponsable(true);

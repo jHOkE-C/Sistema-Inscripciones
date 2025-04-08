@@ -10,16 +10,20 @@ export const postDataPostulante = async (values: Values): Promise<void> => {
 };
 export const getListasPostulantes = async (
     ci: string
-): Promise<ListaPostulantes[]> => {
-    return request<ListaPostulantes[]>("/api/responsables/" + ci + "/listas", {
-        method: "GET",
-    });
+) => {
+    return request<{ data: ListaPostulantes[] }>(
+        "/api/listas/responsables/" + ci + "/listas",
+        {
+            method: "GET",
+        }
+    );
 };
 
 export const crearListaPostulante = async (data: {
     ci: string;
     nombre_lista: string;
 }) => {
+    console.log(data);
     return request<{ message: string; codigo_lista: string }>("/api/listas", {
         method: "POST",
         body: JSON.stringify(data),
