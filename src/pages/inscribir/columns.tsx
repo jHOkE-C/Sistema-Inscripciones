@@ -14,6 +14,10 @@ export type ListaPostulantes = {
 
 export const columns: ColumnDef<ListaPostulantes>[] = [
     {
+        accessorKey: "codigo_lista",
+        header: "Código de lista",
+    },
+    {
         accessorKey: "nombre_lista",
         header: ({ column }) => {
             return (
@@ -46,22 +50,6 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
         },
     },
     {
-        accessorKey: "fecha_creacion",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                >
-                    Fecha de creacion
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-    },
-    {
         accessorKey: "estado",
         header: ({ column }) => {
             return (
@@ -78,7 +66,19 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
         },
     },
     {
-        accessorKey: "codigo_lista",
-        header: "Código de lista",
+        accessorKey: "fecha_creacion",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Fecha de creacion
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
 ];

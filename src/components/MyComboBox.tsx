@@ -39,18 +39,18 @@ export function MyCombobox({ values, value, onChange }: MyComboBoxProps) {
                 >
                     {value
                         ? values.find((framework) => framework.id == value)?.nombre
-                        : "Select framework..."}
+                        : "Seleccione un opcion..."}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
                     <CommandInput
-                        placeholder="Search framework..."
+                        placeholder="Busca la opcion..."
                         className="h-9"
                     />
                     <CommandList>
-                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandEmpty>No hay opciones.</CommandEmpty>
                         <CommandGroup>
                             {values.map((framework) => (
                                 <CommandItem

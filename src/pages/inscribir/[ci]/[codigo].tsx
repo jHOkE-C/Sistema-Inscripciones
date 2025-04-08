@@ -13,32 +13,37 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
 import { getInscritosPorLista } from "@/api/postulantes";
-import NotFoundPage from "@/pages/404";
+
+import Loading from "@/components/Loading";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
     const { codigo } = useParams();
-    const [notFound,setNotFound] = useState(true)
-
-    const fetchData = async () => {
-        if (!codigo) {
-            console.log("no hay codigo");
-            return;
-        }
-        try{
-            const data = await getInscritosPorLista(codigo);
-            setData(data.data.inscripciones);
-            setNotFound(false)
-        }catch {
-            setNotFound(true)
-        }
-    };
+    const [notFound, setNotFound] = useState(false);
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         fetchData();
     }, []);
-    if (notFound){
-        return <NotFoundPage/>
-    }
+    if (!codigo) return;
+    const refresh = async () => {
+        const data = await getInscritosPorLista(codigo);
+        setData(data.data.inscripciones);
+    };
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const data = await getInscritosPorLista(codigo);
+            setData(data.data.inscripciones);
+            setNotFound(false);
+        } catch {
+            setNotFound(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+    if (loading) return <Loading />;
+    if (notFound) return <></>;
 
     return (
         <div className="min-h-screen py-10">
@@ -50,9 +55,9 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="overflow-x-auto space-y-5">
-                        <FormPostulante />
+                        <FormPostulante refresh={refresh} />
                         <Table>
-                            {data.length > 0 && (
+                            {data.length === 0 && (
                                 <TableCaption>
                                     No existen postulantes registrados a esta
                                     lista

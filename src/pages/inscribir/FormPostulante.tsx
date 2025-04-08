@@ -139,7 +139,7 @@ interface Colegio {
     nombre: string;
 }
 
-const FormPostulante = () => {
+const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     const [selectedGrado, setSelectedGrado] = useState<string>();
     const [selectedDepartamento, setSelectedDepartamento] = useState<string>();
     const form = useForm<z.infer<typeof postulanteSchema>>({
@@ -161,6 +161,7 @@ const FormPostulante = () => {
 
             setSuccess("El postulante fue registrado exitosamente");
             setShowForm(false);
+            refresh();
         } catch (e) {
             setError(
                 e instanceof Error ? e.message : "Hubo un error desconocido"
