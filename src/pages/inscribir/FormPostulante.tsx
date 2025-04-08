@@ -56,9 +56,9 @@ export const grados = [
 ];
 
 const contactos = [
-    { id: "0", nombre: "Profesor" },
-    { id: "1", nombre: "Mamá/Papá" },
-    { id: "2", nombre: "Estudiante" },
+    { id: "1", nombre: "Profesor" },
+    { id: "2", nombre: "Mamá/Papá" },
+    { id: "3", nombre: "Estudiante" },
 ];
 const postulanteSchema = z.object({
     nombres: z
@@ -118,7 +118,7 @@ const postulanteSchema = z.object({
         .string()
         .regex(/^\d+$/, { message: "El teléfono solo debe contener números." })
         .min(7, { message: "El teléfono debe tener al menos 7 dígitos." })
-        .max(15, { message: "El teléfono no debe exceder los 15 dígitos." }),
+        .max(8, { message: "El teléfono no debe exceder los 8 dígitos." }),
 
     colegio: z.string(),
 });

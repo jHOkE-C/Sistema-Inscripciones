@@ -21,7 +21,7 @@ const Page = () => {
 
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
-    }, []);
+    }, []); 
 
     if (!ci || ci.length < 7 || ci.length > 10) {
         return <NotFoundPage />;

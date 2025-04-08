@@ -1,22 +1,44 @@
 import { useEffect, useState } from "react";
-import FormPostulante, { grados } from "../FormPostulante";
-import { inscripciones, type Lista } from "./columns";
+import FormPostulante from "../FormPostulante";
+import { type Postulante } from "./columns";
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useParams } from "react-router-dom";
+import { getInscritosPorLista } from "@/api/postulantes";
+import NotFoundPage from "@/pages/404";
 
 export default function Page() {
-    const [data, setData] = useState<Lista[]>([]);
+    const [data, setData] = useState<Postulante[]>([]);
+    const { codigo } = useParams();
+    const [notFound,setNotFound] = useState(true)
 
+    const fetchData = async () => {
+        if (!codigo) {
+            console.log("no hay codigo");
+            return;
+        }
+        try{
+            const data = await getInscritosPorLista(codigo);
+            setData(data.data.inscripciones);
+            setNotFound(false)
+        }catch {
+            setNotFound(true)
+        }
+    };
     useEffect(() => {
-        setData(inscripciones);
+        fetchData();
     }, []);
+    if (notFound){
+        return <NotFoundPage/>
+    }
 
     return (
         <div className="min-h-screen py-10">
@@ -28,10 +50,15 @@ export default function Page() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="overflow-x-auto space-y-5">
-                        <FormPostulante
-                            
-                        />
+                        <FormPostulante />
                         <Table>
+                            {data.length > 0 && (
+                                <TableCaption>
+                                    No existen postulantes registrados a esta
+                                    lista
+                                </TableCaption>
+                            )}
+
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nombres</TableHead>
@@ -39,40 +66,23 @@ export default function Page() {
                                     <TableHead>CI</TableHead>
                                     <TableHead>Area</TableHead>
                                     <TableHead>Categoria</TableHead>
-                                    <TableHead>Curso</TableHead>
-                                    <TableHead>Email</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {data[0]?.inscripciones.map((inscripcion) => (
+                                {data.map((inscripcion) => (
                                     <TableRow key={inscripcion.id}>
                                         <TableCell>
-                                            {inscripcion.postulante.nombres}
+                                            {inscripcion.nombres}
                                         </TableCell>
                                         <TableCell>
-                                            {inscripcion.postulante.apellidos}
+                                            {inscripcion.apellidos}
+                                        </TableCell>
+                                        <TableCell>{inscripcion.ci}</TableCell>
+                                        <TableCell>
+                                            {inscripcion.area}
                                         </TableCell>
                                         <TableCell>
-                                            {inscripcion.postulante.ci}
-                                        </TableCell>
-                                        <TableCell>
-                                            {inscripcion.area_id}
-                                        </TableCell>
-                                        <TableCell>
-                                            {inscripcion.categoria_id}
-                                        </TableCell>
-                                        <TableCell>
-                                            {
-                                                grados.find(
-                                                    ({ id }) =>
-                                                        id ==
-                                                        inscripcion.postulante
-                                                            .curso
-                                                )?.nombre
-                                            }
-                                        </TableCell>
-                                        <TableCell>
-                                            {inscripcion.postulante.email}
+                                            {inscripcion.categoria}
                                         </TableCell>
                                     </TableRow>
                                 ))}

@@ -1,5 +1,6 @@
 import type { ListaPostulantes } from "@/pages/inscribir/columns";
 import { request } from "./request";
+import type { Postulante } from "@/pages/inscribir/[ci]/columns";
 
 export const postDataPostulante = async (
     values: Record<
@@ -33,4 +34,13 @@ export const crearListaPostulante = async (data: {
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
     });
+};
+
+export const getInscritosPorLista = (codigo: string) => {
+    return request<{ data: { inscripciones: Postulante[] } }>(
+        "/api/listas/codigo/" + codigo,
+        {
+            method: "GET",
+        }
+    );
 };
