@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Clock, Trash2, Edit, Plus } from "lucide-react";
+import { CalendarIcon, Clock, Trash2, Edit, Plus, ChevronLeft } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -49,14 +49,13 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
 import { useNavigate } from "react-router-dom";
 import { Cronograma, formatDate, OlimpiadaData } from "./types";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 // Define types for our data
-
 
 const editOlimpiadaSchema = z
   .object({
@@ -226,12 +225,10 @@ export default function OlimpiadaPage() {
       setEditDialogOpen(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-         const mensaje = error.response?.data?.error;
+        const mensaje = error.response?.data?.error;
         toast.error(mensaje);
       }
-     
     }
-    
   };
 
   // Handle add cronograma
@@ -261,7 +258,6 @@ export default function OlimpiadaPage() {
         toast.error(mensaje);
       }
     }
-    
   };
 
   // Handle delete cronograma
@@ -294,7 +290,9 @@ export default function OlimpiadaPage() {
     }
   }, [data, editOlimpiadaForm]);
   // Handle edit cronograma
-  const onEditCronograma = async (values: z.infer<typeof editCronogramaSchema>) => {
+  const onEditCronograma = async (
+    values: z.infer<typeof editCronogramaSchema>
+  ) => {
     if (!data || !selectedCronograma) return;
 
     // In a real app, you would make an API call here
@@ -321,9 +319,6 @@ export default function OlimpiadaPage() {
       }
       console.error("Error updating cronograma:", error);
     }
-
-
-    
   };
 
   // Open edit cronograma dialog
@@ -361,566 +356,583 @@ export default function OlimpiadaPage() {
   const { olimpiada } = data;
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Toaster />
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className=" text-xl md:text-3xl font-bold">{olimpiada.nombre}</h1>
-          <p className="text-gray-500">Gestión: {olimpiada.gestion}</p>
-        </div>
-        <div className="grid md:flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setEditDialogOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <Edit className="h-4 w-4" />
-            Editar fechas
+    <>
+      <div className="pt-4 px-4">
+        <Link to="/admin">
+          <Button variant="ghost" className="flex items-center gap-1 mb-4">
+            <ChevronLeft className="h" />
+            Volver
           </Button>
-          <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="destructive" className="flex items-center gap-2">
-                <Trash2 className="h-4 w-4" />
-                Eliminar
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirmar eliminación</DialogTitle>
-                <DialogDescription>
-                  ¿Estás seguro de que deseas eliminar la olimpiada "
-                  {olimpiada.nombre}"? Esta acción no se puede deshacer.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setDeleteDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button variant="destructive" onClick={handleDeleteOlimpiada}>
-                  Eliminar
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+        </Link>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-blue-600" />
+      <div className="container mx-auto py-8 px-4">
+        <Toaster />
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-sm text-muted-foreground">Fecha de inicio:</p>
-            <p className="font-medium">{formatDate(olimpiada.fecha_inicio)}</p>
+            <h1 className=" text-xl md:text-3xl font-bold">
+              {olimpiada.nombre}
+            </h1>
+            <p className="text-gray-500">Gestión: {olimpiada.gestion}</p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-blue-600" />
-          <div>
-            <p className="text-sm text-muted-foreground">
-              Fecha de finalización:
-            </p>
-            <p className="font-medium">{formatDate(olimpiada.fecha_fin)}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-600" />
-            Cronograma
-          </h3>
-          <Button
-            onClick={() => setAddCronogramaDialogOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Agregar fase
-          </Button>
-        </div>
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Fecha de inicio</TableHead>
-              <TableHead>Fecha de finalización</TableHead>
-              <TableHead>Duración</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {olimpiada.cronogramas.map((cronograma) => {
-              // Calculate duration in days
-              const start = new Date(cronograma.fecha_inicio);
-              const end = new Date(cronograma.fecha_fin);
-              const durationDays = Math.ceil(
-                (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-              );
-
-              return (
-                <TableRow key={cronograma.id}>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        cronograma.tipo_plazo === "inscripcion"
-                          ? "default"
-                          : cronograma.tipo_plazo === "competencia"
-                          ? "secondary"
-                          : "outline"
-                      }
-                    >
-                      {getTipoPlazoLabel(cronograma.tipo_plazo)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatDate(cronograma.fecha_inicio)}</TableCell>
-                  <TableCell>{formatDate(cronograma.fecha_fin)}</TableCell>
-                  <TableCell>{durationDays} días</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditCronogramaDialog(cronograma)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Editar</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openDeleteCronogramaDialog(cronograma)}
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Eliminar</span>
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Edit Olimpiada Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar fechas de la olimpiada</DialogTitle>
-            <DialogDescription>
-              Actualiza las fechas de inicio y finalización de la olimpiada.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...editOlimpiadaForm}>
-            <form
-              onSubmit={editOlimpiadaForm.handleSubmit(onEditOlimpiada)}
-              className="space-y-4"
-            >
-              <FormField
-                control={editOlimpiadaForm.control}
-                name="fecha_inicio"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de inicio</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              formatDate(
-                                field.value.toISOString().split("T")[0]
-                              )
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            return date < new Date("2000-01-01");
-                          }}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={editOlimpiadaForm.control}
-                name="fecha_fin"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de finalización</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              formatDate(
-                                field.value.toISOString().split("T")[0]
-                              )
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            const startDate =
-                              editOlimpiadaForm.getValues().fecha_inicio;
-                            return (
-                              date < new Date("2000-01-01") ||
-                              (startDate && date < startDate)
-                            );
-                          }}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit">Guardar cambios</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Cronograma Dialog */}
-      <Dialog
-        open={addCronogramaDialogOpen}
-        onOpenChange={setAddCronogramaDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Agregar nueva fase</DialogTitle>
-            <DialogDescription>
-              Añade una nueva fase a la olimpiada.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...addCronogramaForm}>
-            <form
-              onSubmit={addCronogramaForm.handleSubmit(onAddCronograma)}
-              className="space-y-4"
-            >
-              <FormField
-                control={addCronogramaForm.control}
-                name="tipo_plazo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de plazo</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar tipo de plazo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {getAvailableTipoPlazo().map((tipo) => (
-                          <SelectItem key={tipo} value={tipo}>
-                            {getTipoPlazoLabel(tipo)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={addCronogramaForm.control}
-                name="fecha_inicio"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de inicio</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: es })
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            return (
-                              date < new Date(olimpiada.fecha_inicio) ||
-                              date > new Date(olimpiada.fecha_fin)
-                            );
-                          }}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={addCronogramaForm.control}
-                name="fecha_fin"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de finalización</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: es })
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            const startDate =
-                              addCronogramaForm.getValues().fecha_inicio;
-                            return (
-                              date < new Date("2000-01-01") ||
-                              (startDate && date < startDate) ||
-                              date > new Date(olimpiada.fecha_fin)
-                            );
-                          }}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit">Agregar cronograma</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Cronograma Dialog */}
-      <Dialog
-        open={editCronogramaDialogOpen}
-        onOpenChange={setEditCronogramaDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar cronograma</DialogTitle>
-            <DialogDescription>
-              Actualiza las fechas del cronograma de{" "}
-              {selectedCronograma &&
-                getTipoPlazoLabel(selectedCronograma.tipo_plazo)}
-              .
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...editCronogramaForm}>
-            <form
-              onSubmit={editCronogramaForm.handleSubmit(onEditCronograma)}
-              className="space-y-4"
-            >
-              <FormField
-                control={editCronogramaForm.control}
-                name="fecha_inicio"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de inicio</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              formatDate(
-                                field.value.toISOString().split("T")[0]
-                              )
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            return (
-                              date < new Date(olimpiada.fecha_inicio) ||
-                              date > new Date(olimpiada.fecha_fin)
-                            );
-                          }}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={editCronogramaForm.control}
-                name="fecha_fin"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de finalización</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              formatDate(
-                                field.value.toISOString().split("T")[0]
-                              )
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            const startDate =
-                              editCronogramaForm.getValues().fecha_inicio;
-                            return (
-                              date < new Date("2000-01-01") ||
-                              (startDate && date < startDate) ||
-                              date > new Date(olimpiada.fecha_fin)
-                            );
-                          }}
-                          initialFocus
-                          locale={es}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit">Guardar cambios</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Cronograma Dialog */}
-      <Dialog
-        open={deleteCronogramaDialogOpen}
-        onOpenChange={setDeleteCronogramaDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar eliminación</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que deseas eliminar el cronograma de{" "}
-              {selectedCronograma &&
-                getTipoPlazoLabel(selectedCronograma.tipo_plazo)}
-              ? Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+          <div className="grid md:flex gap-2">
             <Button
               variant="outline"
-              onClick={() => setDeleteCronogramaDialogOpen(false)}
+              onClick={() => setEditDialogOpen(true)}
+              className="flex items-center gap-2"
             >
-              Cancelar
+              <Edit className="h-4 w-4" />
+              Editar fechas
             </Button>
-            <Button variant="destructive" onClick={handleDeleteCronograma}>
-              Eliminar
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Eliminar
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Confirmar eliminación</DialogTitle>
+                  <DialogDescription>
+                    ¿Estás seguro de que deseas eliminar la olimpiada "
+                    {olimpiada.nombre}"? Esta acción no se puede deshacer.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteDialogOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button variant="destructive" onClick={handleDeleteOlimpiada}>
+                    Eliminar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-blue-600" />
+            <div>
+              <p className="text-sm text-muted-foreground">Fecha de inicio:</p>
+              <p className="font-medium">
+                {formatDate(olimpiada.fecha_inicio)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-blue-600" />
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Fecha de finalización:
+              </p>
+              <p className="font-medium">{formatDate(olimpiada.fecha_fin)}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <Clock className="h-5 w-5 text-blue-600" />
+              Cronograma
+            </h3>
+            <Button
+              onClick={() => setAddCronogramaDialogOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Agregar fase
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Fecha de inicio</TableHead>
+                <TableHead>Fecha de finalización</TableHead>
+                <TableHead>Duración</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {olimpiada.cronogramas.map((cronograma) => {
+                // Calculate duration in days
+                const start = new Date(cronograma.fecha_inicio);
+                const end = new Date(cronograma.fecha_fin);
+                const durationDays = Math.ceil(
+                  (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+                );
+
+                return (
+                  <TableRow key={cronograma.id}>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          cronograma.tipo_plazo === "inscripcion"
+                            ? "default"
+                            : cronograma.tipo_plazo === "competencia"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {getTipoPlazoLabel(cronograma.tipo_plazo)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(cronograma.fecha_inicio)}</TableCell>
+                    <TableCell>{formatDate(cronograma.fecha_fin)}</TableCell>
+                    <TableCell>{durationDays} días</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditCronogramaDialog(cronograma)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span className="sr-only">Editar</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openDeleteCronogramaDialog(cronograma)}
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Eliminar</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Edit Olimpiada Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar fechas de la olimpiada</DialogTitle>
+              <DialogDescription>
+                Actualiza las fechas de inicio y finalización de la olimpiada.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...editOlimpiadaForm}>
+              <form
+                onSubmit={editOlimpiadaForm.handleSubmit(onEditOlimpiada)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={editOlimpiadaForm.control}
+                  name="fecha_inicio"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de inicio</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                formatDate(
+                                  field.value.toISOString().split("T")[0]
+                                )
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              return date < new Date("2000-01-01");
+                            }}
+                            initialFocus
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editOlimpiadaForm.control}
+                  name="fecha_fin"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de finalización</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                formatDate(
+                                  field.value.toISOString().split("T")[0]
+                                )
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              const startDate =
+                                editOlimpiadaForm.getValues().fecha_inicio;
+                              return (
+                                date < new Date("2000-01-01") ||
+                                (startDate && date < startDate)
+                              );
+                            }}
+                            initialFocus
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <Button type="submit">Guardar cambios</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Cronograma Dialog */}
+        <Dialog
+          open={addCronogramaDialogOpen}
+          onOpenChange={setAddCronogramaDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Agregar nueva fase</DialogTitle>
+              <DialogDescription>
+                Añade una nueva fase a la olimpiada.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...addCronogramaForm}>
+              <form
+                onSubmit={addCronogramaForm.handleSubmit(onAddCronograma)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={addCronogramaForm.control}
+                  name="tipo_plazo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de plazo</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar tipo de plazo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {getAvailableTipoPlazo().map((tipo) => (
+                            <SelectItem key={tipo} value={tipo}>
+                              {getTipoPlazoLabel(tipo)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addCronogramaForm.control}
+                  name="fecha_inicio"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de inicio</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: es })
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              return (
+                                date < new Date(olimpiada.fecha_inicio) ||
+                                date > new Date(olimpiada.fecha_fin)
+                              );
+                            }}
+                            initialFocus
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addCronogramaForm.control}
+                  name="fecha_fin"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de finalización</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: es })
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              const startDate =
+                                addCronogramaForm.getValues().fecha_inicio;
+                              return (
+                                date < new Date("2000-01-01") ||
+                                (startDate && date < startDate) ||
+                                date > new Date(olimpiada.fecha_fin)
+                              );
+                            }}
+                            initialFocus
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <Button type="submit">Agregar cronograma</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Cronograma Dialog */}
+        <Dialog
+          open={editCronogramaDialogOpen}
+          onOpenChange={setEditCronogramaDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar cronograma</DialogTitle>
+              <DialogDescription>
+                Actualiza las fechas del cronograma de{" "}
+                {selectedCronograma &&
+                  getTipoPlazoLabel(selectedCronograma.tipo_plazo)}
+                .
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...editCronogramaForm}>
+              <form
+                onSubmit={editCronogramaForm.handleSubmit(onEditCronograma)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={editCronogramaForm.control}
+                  name="fecha_inicio"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de inicio</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                formatDate(
+                                  field.value.toISOString().split("T")[0]
+                                )
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              return (
+                                date < new Date(olimpiada.fecha_inicio) ||
+                                date > new Date(olimpiada.fecha_fin)
+                              );
+                            }}
+                            initialFocus
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editCronogramaForm.control}
+                  name="fecha_fin"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de finalización</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                formatDate(
+                                  field.value.toISOString().split("T")[0]
+                                )
+                              ) : (
+                                <span>Seleccionar fecha</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              const startDate =
+                                editCronogramaForm.getValues().fecha_inicio;
+                              return (
+                                date < new Date("2000-01-01") ||
+                                (startDate && date < startDate) ||
+                                date > new Date(olimpiada.fecha_fin)
+                              );
+                            }}
+                            initialFocus
+                            locale={es}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <Button type="submit">Guardar cambios</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Cronograma Dialog */}
+        <Dialog
+          open={deleteCronogramaDialogOpen}
+          onOpenChange={setDeleteCronogramaDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmar eliminación</DialogTitle>
+              <DialogDescription>
+                ¿Estás seguro de que deseas eliminar el cronograma de{" "}
+                {selectedCronograma &&
+                  getTipoPlazoLabel(selectedCronograma.tipo_plazo)}
+                ? Esta acción no se puede deshacer.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteCronogramaDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button variant="destructive" onClick={handleDeleteCronograma}>
+                Eliminar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </>
   );
 }
