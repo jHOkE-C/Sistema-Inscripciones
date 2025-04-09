@@ -3,10 +3,12 @@ import Gestionador from "./getionador";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Toaster } from "sonner";
 
 export default function Page() {
   return (
     <div>
+      <Toaster />
       <div className="pt-4 px-4">
         <Link to="/admin">
           <Button

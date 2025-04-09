@@ -20,6 +20,7 @@ import CreateCategoryModal from "./create-category-modal";
 import AddAreaModal from "./add-modal";
 import EditCategoryModal from "./edit-modal";
 import DeleteConfirmationModal from "./delete-modal";
+import { toast } from "sonner";
 
 export default function Gestionador() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -55,10 +56,14 @@ export default function Gestionador() {
       await axios.post<Category>(`${API_URL}/api/categorias`, newCategory);
       console.log("Categoría creada correctamente:", newCategory);
       fetchData();
+      toast.success("Categoría creada correctamente.");
+      
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      }
       console.error("Error creating category:", error);
     }
-
     setIsCreateModalOpen(false);
   };
 
@@ -71,25 +76,26 @@ export default function Gestionador() {
       fetchData();
       setIsEditModalOpen(false);
       setSelectedCategory(null);
-      console.log("Categoría editada correctamente:", updates);
+      toast.success("Categoría editada correctamente.");
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      }
       console.error("Error editing category:", error);
     }
-
-    
   };
 
   const handleDeleteCategory = async (categoria_id: number) => {
     try {
       await axios.delete(`${API_URL}/api/categorias/${categoria_id}`);
-      setCategories(
-        categories.filter((category) => category.id !== categoria_id)
-      );
+      fetchData();
       setIsDeleteModalOpen(false);
       setSelectedCategory(null);
-      console.log("Categoría eliminada correctamente.");
+      toast.success("Categoría eliminada correctamente.");
     } catch (error) {
-      console.error("Error deleting category:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      }
     }
   };
 
@@ -105,24 +111,28 @@ export default function Gestionador() {
       fetchData();
       setIsAddAreaModalOpen(false);
       setSelectedCategory(null);
-      console.log("Área añadida a la categoría correctamente.");
+      toast.success("Área añadida a la categoría correctamente.");
     } catch (error) {
-      console.error("Error adding area to category:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      }
     }
   };
 
-  const handleRemoveAreaFromCategory = (
+  const handleRemoveAreaFromCategory = async (
     categoria_id: number,
     area_id: number
   ) => {
     try {
-      axios.delete(`${API_URL}/api/categoria/area`, {
+      await axios.delete(`${API_URL}/api/categoria/area`, {
         data: { area_id, categoria_id },
       });
       fetchData();
-      console.log("Área eliminada de la categoría correctamente.");
+      toast.success("Área eliminada de la categoría correctamente.");
     } catch (error) {
-      console.error("Error removing area from category:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      }
     }
   };
 
