@@ -10,6 +10,7 @@ import FormResponsable from "./FormResponsable";
 import NotFoundPage from "../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
+import ReturnComponent from "@/components/ReturnComponent";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -50,6 +51,7 @@ const Page = () => {
     if (loading) return <Loading />;
     return (
         <>
+            <ReturnComponent to={`/`} />
             {openFormResponsable && (
                 <FormResponsable
                     onClose={() => {
@@ -58,7 +60,7 @@ const Page = () => {
                     }}
                 />
             )}
-            <div className="min-h-screen py-10">
+            <div className="min-h-screen py-5">
                 <div className="container mx-auto ">
                     <Card>
                         <CardTitle>
