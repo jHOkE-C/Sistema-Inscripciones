@@ -77,7 +77,14 @@ export function DataTable<TData, TValue>({
                                 }}
                             >
                                 {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
+                                    <TableCell
+                                        key={cell.id}
+                                        className={
+                                            cell.column.id === "codigo_lista"
+                                                ? "font-bold"
+                                                : ""
+                                        }
+                                    >
                                         {flexRender(
                                             cell.column.columnDef.cell,
                                             cell.getContext()
