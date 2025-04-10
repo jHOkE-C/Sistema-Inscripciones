@@ -10,6 +10,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import type { JSX } from "react";
 
 interface props {
     textButton?: string;
@@ -23,7 +24,7 @@ interface props {
         | null
         | undefined;
     title: string;
-    description?: string;
+    description?: JSX.Element;
     cancelButtonText?: string;
     continueButtonText?: string;
     onCancel?: () => void;

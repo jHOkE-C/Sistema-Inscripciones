@@ -1,10 +1,5 @@
 import AlertDialogComponent from "@/components/AlertDialogComponent";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/spinner";
 
 import {
@@ -15,31 +10,37 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { MoreHorizontal } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
+export interface Categoria {
+    id: string;
+    nombre: string;
+}
 export interface Area {
     id: number;
     nombre: string;
+    categorias: Categoria[];
 }
 interface ListAreaProps {
     areas: Area[] | null;
     loading: boolean;
     error: string | null;
     onDelete: (id: number) => void;
+    eliminar?: boolean;
 }
-const ListArea = ({ areas, loading, onDelete }: ListAreaProps) => {
-    const [idEliminar, setIdEliminar] = useState<number | null>(null);
+const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
     const [showConfirm, setShowConfirm] = useState(false);
-
-    const confirmarEliminacion = (id: number) => {
-        setIdEliminar(id);
+    const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
+    const confirmarEliminacion = (area: Area) => {
+        setAreaSeleccionada(area);
         setShowConfirm(true);
     };
-    
+
     const eliminarArea = async () => {
-        if(idEliminar) await onDelete(idEliminar);
+        if (areaSeleccionada) await onDelete(areaSeleccionada.id);
         setShowConfirm(false);
     };
+    console.log(areas)
 
     if (loading) return <Loading />;
     return (
@@ -48,35 +49,35 @@ const ListArea = ({ areas, loading, onDelete }: ListAreaProps) => {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Nombre</TableHead>
-                        <TableHead className="text-right">Acciones</TableHead>
+                        {eliminar && (
+                            <TableHead className="text-right font-bold">
+                                Acciones
+                            </TableHead>
+                        )}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {areas &&
                         areas.map((area) => (
                             <TableRow key={area.id}>
-                                <TableCell className="font-medium">
+                                <TableCell className="font-normal">
                                     {area.nombre}
                                 </TableCell>
 
                                 <TableCell className="text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger>
-                                            <MoreHorizontal className="h-4 w-4" />
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuItem
-                                                onClick={() =>
-                                                    confirmarEliminacion(
-                                                        area.id
-                                                    )
-                                                }
-                                                variant="destructive"
-                                            >
-                                                Eliminar
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    {eliminar && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-destructive hover:text-destructive"
+                                            onClick={() =>
+                                                confirmarEliminacion(area)
+                                            }
+                                        >
+                                            <Trash2 className="mr-1 h-3 w-3" />{" "}
+                                            Eliminar
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -96,8 +97,20 @@ const ListArea = ({ areas, loading, onDelete }: ListAreaProps) => {
             <AlertDialogComponent
                 open={showConfirm}
                 onOpenChange={setShowConfirm}
-                title="¿Está seguro de eliminar esta área? Esta acción no se puede deshacer."
-                continueButtonText="Eliminar"
+                title={`¿Está seguro que desea dar de baja el área  ${areaSeleccionada?.nombre}?`}
+                description={
+                    <>
+                        el área tiene las siguientes categorías relacionadas:
+                        <br />
+                        {areaSeleccionada?.categorias.map(({ nombre }, index) => (
+                            <span className="ml-3" key={index}>
+                                {nombre}
+                                <br />
+                            </span>
+                        ))}
+                    </>
+                }
+                continueButtonText="Dar de Baja"
                 onConfirm={eliminarArea}
             />
         </>

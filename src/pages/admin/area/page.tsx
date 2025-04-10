@@ -1,109 +1,65 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import FormAddArea from "./FormAddArea";
-import ListArea, { type Area } from "./ListArea";
-import { useApiRequest } from "@/hooks/useApiRequest";
-import { AlertComponent } from "@/components/AlertComponent";
-import { crearArea, eliminarArea } from "@/api/areas";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardTitle,
+} from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 
 export const Page = () => {
-  const {
-    data: areas,
-    loading,
-    error,
-    request,
-  } = useApiRequest<Area[]>("/api/areas");
-  const [alert, setAlert] = useState<{
-    title: string;
-    description?: string;
-    variant?: "default" | "destructive";
-  } | null>(null);
-
-  useEffect(() => {
-    request("GET");
-  }, [request]);
-
-  const refreshAreas = async () => {
-    await request("GET");
-  };
-  const showAlert = (
-    title: string,
-    description?: string,
-    variant?: "default" | "destructive"
-  ) => {
-    setAlert({ title, description, variant });
-  };
-  const handleAddArea = async (data: { nombre: string }) => {
-    try {
-      await crearArea(data);
-      showAlert(
-        "Exito",
-        "El área de competencia se creo correctamente.",
-        "default"
-      );
-      refreshAreas();
-    } catch (error: unknown) {
-      showAlert(
-        "Error",
-        error instanceof Error && error.message
-          ? error.message
-          : "El registro no se guardó, inténtelo de nuevo",
-        "destructive"
-      );
-    }
-  };
-
-  const handleDeleteArea = async (id: number) => {
-    try {
-      await eliminarArea(id);
-      showAlert(
-        "Éxito",
-        "El área de competencia se eliminó correctamente.",
-        "default"
-      );
-      refreshAreas();
-    } catch {
-      showAlert(
-        "Error",
-        "Hubo un error al eliminar el área, inténtelo de nuevo",
-        "destructive"
-      );
-    }
-  };
-
-  return (
-    <>
-      <div className="pt-4 px-4">
-        <Link to="/admin">
-          <Button variant="ghost" className="flex items-center gap-1 mb-4">
-            <ChevronLeft className="h" />
-            Volver
-          </Button>
-        </Link>
-      </div>
-      <div className="w-4/5 mx-auto mt-10">
-        <Card>
-          <CardTitle>
-            <h1 className="text-4xl font-bold text-center py-5">
-              Gestión de Áreas
-            </h1>
-          </CardTitle>
-          <CardContent>
-            <FormAddArea onAdd={handleAddArea} />
-            <ListArea
-              areas={areas}
-              loading={loading}
-              error={error}
-              onDelete={handleDeleteArea}
-            />
-          </CardContent>
-        </Card>
-        {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
-      </div>
-    </>
+    return (
+      <>
+          <div className="pt-4 px-4">
+              <Link to="/admin">
+                  <Button
+                      variant="ghost"
+                      className="flex items-center gap-1 mb-4"
+                  >
+                      <ChevronLeft className="h" />
+                      Volver
+                  </Button>
+              </Link>
+          </div>
+          <div className="w-4/5 mx-auto mt-10">
+              <Card>
+                  <CardTitle>
+                      <h1 className="text-4xl font-bold text-center py-5">
+                          Gestión de Áreas
+                      </h1>
+                  </CardTitle>
+                  <CardDescription className="mx-auto">
+                      Gestiona las áreas para las olimpiadas
+                  </CardDescription>
+                  <CardContent>
+                      <div className="w-full flex justify-around">
+                          <Link to={"/admin/area/agregar"}>
+                              <Button
+                                  variant={"outline"}
+                                  className="flex flex-col h-auto"
+                              >
+                                  <div className="bg-black rounded-full text-white p-2">
+                                      <Plus className="size-" />
+                                  </div>
+                                  Agregar un Área
+                              </Button>
+                          </Link>
+                          <Link to={"/admin/area/dar-de-baja"}>
+                              <Button
+                                  variant={"outline"}
+                                  className="flex flex-col h-auto"
+                              >
+                                  <Trash2 className="size-10" />
+                                  Dar de baja un Área
+                              </Button>
+                          </Link>
+                      </div>
+                  </CardContent>
+              </Card>
+              
+          </div>
+      </>
   );
 };
 
