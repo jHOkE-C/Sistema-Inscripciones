@@ -5,7 +5,6 @@ import {
     CardDescription,
     CardTitle,
 } from "@/components/ui/card";
-import { useApiRequest } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
 import { eliminarArea } from "@/api/areas";
 import { Link } from "react-router-dom";
@@ -14,26 +13,51 @@ import { ChevronLeft } from "lucide-react";
 import type { Area } from "../ListArea";
 
 import ListArea from "../ListArea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { request } from "@/api/request";
+
+export interface Olimpiada {
+    id: string;
+    nombre: string;
+    gestion: string;
+    vigente: boolean;
+}
 
 export const Page = () => {
-    const {
-        data: areas,
-        loading,
-        error,
-        request,
-    } = useApiRequest<Area[]>("/api/areas/categorias");
     const [alert, setAlert] = useState<{
         title: string;
         description?: string;
         variant?: "default" | "destructive";
     } | null>(null);
-
+    const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
+    const getOlimpiadas = async () => {
+        const data = await request<Olimpiada[]>("/api/olimpiadas");
+        setOlimpiadas(data);
+    };
+    const [idOlimpiada, setOlimpiadaSeleccionada] = useState<string>();
+    const [areas, setAreas] = useState<Area[]>([]);
     useEffect(() => {
-        request("GET");
+        getOlimpiadas();
     }, [request]);
+    const [error, setError] = useState<string|null>(null);
+
 
     const refreshAreas = async () => {
-        await request("GET");
+        try {
+
+            const data = await request<Area[]>(
+                "/api/areas/categorias/olimpiada/" + idOlimpiada
+            );
+            setAreas(data);
+        }catch(e){
+            setError(String(e))
+        }
     };
     const showAlert = (
         title: string,
@@ -59,7 +83,11 @@ export const Page = () => {
                 "destructive"
             );
         }
-    };
+    };  useEffect(() => {
+        if (idOlimpiada) {
+          refreshAreas();
+        }
+      }, [idOlimpiada]);
 
     return (
         <>
@@ -83,15 +111,34 @@ export const Page = () => {
                     </CardTitle>
                     <CardDescription className="mx-auto">
                         Da de baja un area para las olimpiadas
+                        <Select
+                            onValueChange={(value) => {
+                                setOlimpiadaSeleccionada(value);
+                             
+                            }}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Olimpiada" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {olimpiadas.map(({ id, nombre }) => (
+                                    <SelectItem value={id}>{nombre}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </CardDescription>
                     <CardContent>
-                        <ListArea
+                        {
+                            idOlimpiada ? 
+
+                            <ListArea
                             areas={areas}
-                            loading={loading}
                             error={error}
                             onDelete={handleDeleteArea}
                             eliminar
-                        />
+                            />:
+                            <p>Seleccione una olimpiada</p>
+                        }
                     </CardContent>
                 </Card>
                 {alert && (

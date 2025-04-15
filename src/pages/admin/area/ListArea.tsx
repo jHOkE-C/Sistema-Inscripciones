@@ -22,8 +22,8 @@ export interface Area {
     categorias: Categoria[];
 }
 interface ListAreaProps {
-    areas: Area[] | null;
-    loading: boolean;
+    areas: Area[];
+    loading?: boolean;
     error: string | null;
     onDelete: (id: number) => void;
     eliminar?: boolean;
@@ -40,7 +40,7 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
         if (areaSeleccionada) await onDelete(areaSeleccionada.id);
         setShowConfirm(false);
     };
-    console.log(areas)
+    console.log(areas);
 
     if (loading) return <Loading />;
     return (
@@ -57,7 +57,7 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {areas &&
+                    {areas.length > 0 ? (
                         areas.map((area) => (
                             <TableRow key={area.id}>
                                 <TableCell className="font-normal">
@@ -75,20 +75,19 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                                             }
                                         >
                                             <Trash2 className="mr-1 h-3 w-3" />{" "}
-                                            Eliminar
+                                            Dar de Baja
                                         </Button>
                                     )}
                                 </TableCell>
                             </TableRow>
-                        ))}
-
-                    {!areas && (
+                        ))
+                    ) : (
                         <TableRow>
                             <TableCell
                                 colSpan={4}
                                 className="text-center py-8 text-muted-foreground"
                             >
-                                No hay áreas configuradas
+                                No hay áreas
                             </TableCell>
                         </TableRow>
                     )}
@@ -102,12 +101,14 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                     <>
                         el área tiene las siguientes categorías relacionadas:
                         <br />
-                        {areaSeleccionada?.categorias.map(({ nombre }, index) => (
-                            <span className="ml-3" key={index}>
-                                {nombre}
-                                <br />
-                            </span>
-                        ))}
+                        {areaSeleccionada?.categorias.map(
+                            ({ nombre }, index) => (
+                                <span className="ml-3" key={index}>
+                                    {nombre}
+                                    <br />
+                                </span>
+                            )
+                        )}
                     </>
                 }
                 continueButtonText="Dar de Baja"
