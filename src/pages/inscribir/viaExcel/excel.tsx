@@ -47,7 +47,7 @@ export default function ExcelUploader() {
     const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
     const [provincias, setProvincias] = useState<Provincia[]>([]);
     const [colegios, setColegios] = useState<Colegio[]>([]);
-    const [areasCategorias, setAreasCategorias] = useState<Map<string, Categoria[]>>(new Map());
+    const [areasCategorias, setAreasCategorias] = useState<Map<string, CategoriaExtendida[]>>(new Map());
 
     useEffect(() => {
         const fetchOlimpiadas = async () => {
@@ -223,6 +223,8 @@ export default function ExcelUploader() {
         try {
             setLoading(true);
             alert('Postulantes registrados exitosamente');
+            console.log(postulantes);
+            console.log(ci);
             setShowDialog(false);
             setPostulantes([]);
         } catch (error) {
