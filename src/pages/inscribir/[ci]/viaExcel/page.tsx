@@ -1,5 +1,13 @@
-import ExcelUploader from '../../viaExcel/excel';
+import ExcelUploader from './excel';
+import ReturnComponent from '@/components/ReturnComponent';
+import { useParams } from 'react-router-dom';
 
 export default function Page() {
-    return <ExcelUploader />;
+    const { ci } = useParams();
+    return (
+        <>
+            <ReturnComponent to={`/inscribir/${ci}`} />
+            <ExcelUploader />
+        </>
+    );
 } 

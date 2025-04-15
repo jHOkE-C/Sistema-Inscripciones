@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida } from './types';
 import { Loader2 } from "lucide-react";
-import { useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
 import Loading from "@/components/Loading";
@@ -34,7 +33,6 @@ type Olimpiada = {
 };
 
 export default function ExcelUploader() {
-    const { ci } = useParams();
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
     const [errores, setErrores] = useState<ValidationError[]>([]);
@@ -224,7 +222,6 @@ export default function ExcelUploader() {
             setLoading(true);
             alert('Postulantes registrados exitosamente');
             console.log(postulantes);
-            console.log(ci);
             setShowDialog(false);
             setPostulantes([]);
         } catch (error) {
@@ -236,6 +233,7 @@ export default function ExcelUploader() {
     };
 
     return (
+        
         <div className="p-4">
         <div className="max-w-2xl mx-auto">
         <div className="flex flex-col space-y-4">
