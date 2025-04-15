@@ -40,7 +40,7 @@ const Admin = () => {
         } catch (error) {
             console.error("Error fetching status:", error);
         }
-    }
+    };
 
     const getData = async () => {
         axios
@@ -77,8 +77,7 @@ const Admin = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Status data={status}/>
-                
+                        <Status data={status} />
                     </CardContent>
                     <CardFooter className="grid space-y-2">
                         <GestionRegistration refresh={() => getData()} />
@@ -105,6 +104,9 @@ const Admin = () => {
                             >
                                 Gestionar Postulantes
                             </Button>
+                        </Link>
+                        <Link to="/admin/asociar">
+                            <Button variant={"outline"}>Asociar Areas con Categorias</Button>
                         </Link>
                     </CardFooter>
                 </Card>

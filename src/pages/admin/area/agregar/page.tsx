@@ -106,7 +106,7 @@ export const Page = () => {
                     <CardContent>
                         <FormAddArea onAdd={handleAddArea} />
                         <ListArea
-                            areas={areas}
+                            areas={areas|| []}
                             loading={loading}
                             error={error}
                             onDelete={handleDeleteArea}
