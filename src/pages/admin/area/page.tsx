@@ -1,65 +1,94 @@
+import { Building2, ChevronLeft, PlusCircle, Trash2 } from "lucide-react";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Page = () => {
-    return (
-      <>
-          <div className="pt-4 px-4">
-              <Link to="/admin">
-                  <Button
-                      variant="ghost"
-                      className="flex items-center gap-1 mb-4"
-                  >
-                      <ChevronLeft className="h" />
-                      Volver
-                  </Button>
+  return (
+    <>
+      <div className="pt-4 px-4">
+        <Link to="/admin">
+          <Button variant="ghost" className="flex items-center gap-1 mb-4">
+            <ChevronLeft className="h" />
+            Volver
+          </Button>
+        </Link>
+      </div>
+      <div className="container mx-auto py-10 px-4">
+        <div className="flex flex-col items-center justify-center mb-10 text-center">
+          <div className="bg-primary/10 p-3 rounded-full mb-4">
+            <Building2 className="h-10 w-10 text-primary" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
+            Gestión de Áreas
+          </h1>
+          <p className="text-muted-foreground max-w-md">
+            Administre las áreas de la olimpiada de manera eficiente. Agregue
+            nuevas áreas para las competencias o desactive las que ya no sean
+            necesarias.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <Card className="border-2 border-primary/10 hover:border-primary/30 transition-all duration-300 shadow-md">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <PlusCircle className="h-5 w-5 text-primary" />
+                Agregar Área
+              </CardTitle>
+              <CardDescription>
+                Cree una nueva área para su organización
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Defina y cree nuevas áreas de competencia para organizar, planificar y gestionar de manera más eficiente las diferentes disciplinas y actividades de la olimpiada.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link to="/admin/area/agregar" className="w-full">
+                <Button className="w-full">Ir a Agregar Área</Button>
               </Link>
-          </div>
-          <div className="w-4/5 mx-auto mt-10">
-              <Card>
-                  <CardTitle>
-                      <h1 className="text-4xl font-bold text-center py-5">
-                          Gestión de Áreas
-                      </h1>
-                  </CardTitle>
-                  <CardDescription className="mx-auto">
-                      Gestiona las áreas para las olimpiadas
-                  </CardDescription>
-                  <CardContent>
-                      <div className="w-full flex justify-around">
-                          <Link to={"/admin/area/agregar"}>
-                              <Button
-                                  variant={"outline"}
-                                  className="flex flex-col h-auto"
-                              >
-                                  <div className="bg-black rounded-full text-white p-2">
-                                      <Plus className="size-" />
-                                  </div>
-                                  Agregar un Área
-                              </Button>
-                          </Link>
-                          <Link to={"/admin/area/dar-de-baja"}>
-                              <Button
-                                  variant={"outline"}
-                                  className="flex flex-col h-auto"
-                              >
-                                  <Trash2 className="size-10" />
-                                  Dar de baja un Área
-                              </Button>
-                          </Link>
-                      </div>
-                  </CardContent>
-              </Card>
-              
-          </div>
-      </>
+            </CardFooter>
+          </Card>
+
+          <Card className="border-2 border-destructive/10 hover:border-destructive/30 transition-all duration-300 shadow-md">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Trash2 className="h-5 w-5 text-destructive" />
+                Dar de Baja un Área
+              </CardTitle>
+              <CardDescription>
+                Desactive áreas que ya no son necesarias
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Desactive áreas de competencias que ya no sean relevantes o que
+                hayan sido reemplazadas por nuevas disciplinas en la olimpiada.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link to="/admin/area/dar-de-baja" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full border-destructive/50 text-destructive hover:bg-destructive/10"
+                >
+                  Ir a Dar de Baja Área
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </>
   );
 };
 
