@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface CreateListProps {
     number?: number;
@@ -31,6 +31,8 @@ export function CreateList({
     const [nombre, setNombre] = useState<string>();
     const [loading, setLoading] = useState(false); 
     const { ci } = useParams();
+    const navigate = useNavigate();
+
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -67,6 +69,9 @@ export function CreateList({
                         Crear Lista
                     </Button>
                 </DialogTrigger>
+                <Button variant="default" onClick={() => navigate(`/inscribir/${ci}/viaExcel`)}>
+                    Excel
+                </Button>
                 <DialogContent className="sm:max-w-[425px]">
                     <form onSubmit={onSubmit}>
                         <DialogHeader>

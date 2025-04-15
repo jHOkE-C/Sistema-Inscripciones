@@ -158,10 +158,10 @@ export default function CreateCategoryModal({
         </div>
 
         <DialogFooter>
+          <Button onClick={handleSubmit}>Crear Categoría</Button>
           <Button variant="outline" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit}>Crear Categoría</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

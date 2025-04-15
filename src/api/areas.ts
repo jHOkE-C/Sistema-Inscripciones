@@ -10,14 +10,46 @@ export interface Categoria {
     minimo_grado: number;
     nombre: string;
     areas: Area[];
+    areaId: number;
+    areaNombre: string;
+}
+export interface Nivel {
+    id: string;
+    nombre: string;
 }
 
+export interface CategoriaNivel {
+    id: string;
+    maximo_grado: number;
+    minimo_grado: number;
+    nombre: string;
+    nivel: Nivel[];
+}
+export interface Provincia {
+    id: string;
+    nombre: string;
+    departamento_id: string;
+}
+export interface Departamento {
+    id: string;
+    nombre: string;
+}
+export interface Colegio {
+    id: string;
+    nombre: string;
+}
 export const getCategoriaAreaPorGrado = async (
     grado: string
 ) => {
     return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}`);
 };
 
+export const getCategoriaAreaPorGradoOlimpiada = async (
+    grado: string,
+    olimpiada: string
+) => {
+    return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}/olimpiada/${olimpiada}`);
+};
 export const crearArea = async (data: { nombre: string }) => {
     return await request("/api/areas", {
         method: "POST",

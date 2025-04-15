@@ -36,13 +36,13 @@ export default function DeleteConfirmationModal({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirmDelete}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-blue-500 text-destructive-foreground hover:bg-destructive/90"
           >
             Eliminar
           </AlertDialogAction>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

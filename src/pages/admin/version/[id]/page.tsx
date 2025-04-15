@@ -386,8 +386,8 @@ export default function OlimpiadaPage() {
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button
-                  variant="destructive"
-                  className="flex items-center gap-2"
+                  variant="outline"
+                  className="flex items-center gap-2 text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
                   Eliminar
