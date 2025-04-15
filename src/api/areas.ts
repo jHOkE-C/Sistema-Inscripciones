@@ -13,18 +13,6 @@ export interface Categoria {
     areaId: number;
     areaNombre: string;
 }
-export interface Nivel {
-    id: string;
-    nombre: string;
-}
-
-export interface CategoriaNivel {
-    id: string;
-    maximo_grado: number;
-    minimo_grado: number;
-    nombre: string;
-    nivel: Nivel[];
-}
 export interface Provincia {
     id: string;
     nombre: string;
