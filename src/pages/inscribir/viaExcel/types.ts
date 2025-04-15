@@ -1,4 +1,3 @@
-
 export interface ExcelPostulante {
     nombres: string;
     apellidos: string;
@@ -72,4 +71,9 @@ export const estadosIniciales: EstadosIniciales = {
     provincias: [],
     colegios: [],
     areasCategoriasPorGrado: new Map()
+};
+
+export type CategoriaExtendida = Categoria & {
+    areaId: number;
+    areaNombre: string;
 };

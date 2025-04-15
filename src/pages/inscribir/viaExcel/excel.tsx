@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError} from './types';
+import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida } from './types';
 import { Loader2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
@@ -17,11 +17,6 @@ import Loading from "@/components/Loading";
 import { validarCamposRequeridos, validarFila } from './validations';
 import { MultiSelect } from "@/components/MultiSelect";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
-type CategoriaExtendida = Categoria & {
-    areaId: number;
-    areaNombre: string;
-};
 
 type AreaConCategorias = {
     id: number;
@@ -201,7 +196,7 @@ export default function ExcelUploader() {
 
                     const todosErrores: ValidationError[] = [];
                     postulantesData.forEach((fila, index) => {
-                        const erroresFila = validarFila(fila, index + 2, departamentos, provincias, colegios);
+                        const erroresFila = validarFila(fila, index + 2, departamentos, provincias, colegios, areasCategorias);
                         todosErrores.push(...erroresFila);
                     });
 

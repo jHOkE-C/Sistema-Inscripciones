@@ -1,5 +1,5 @@
 import { ExcelPostulante, ValidationError, CONTACTOS_PERMITIDOS } from './types';
-import { Departamento, Provincia, Colegio } from './types';
+import { Departamento, Provincia, Colegio, CategoriaExtendida } from './types';
 import { grados } from './types';
 
 export const validarCamposRequeridos = (headers: string[]): string[] => {
@@ -33,7 +33,8 @@ export const validarFila = (
     numFila: number,
     departamentos: Departamento[],
     provincias: Provincia[],
-    colegios: Colegio[]
+    colegios: Colegio[],
+    areasCategorias: Map<string, CategoriaExtendida[]>
 ): ValidationError[] => {
     const errores: ValidationError[] = [];
 
@@ -195,6 +196,35 @@ export const validarFila = (
             });
         }
     });
+
+    const gradoId = grados.find(g => g.nombre === fila.grado)?.id;
+        console.log(gradoId);
+        if (gradoId) {
+            const areasDisponibles = areasCategorias.get(gradoId);
+            ['area_categoria1', 'area_categoria2'].forEach((campo, index) => {
+                const areaCategoria = fila[campo as keyof ExcelPostulante];
+                if (areaCategoria && areaCategoria.trim() !== '') {
+                    const areaValida = areasDisponibles?.some(ac =>{
+                            
+                            console.log(`${ac.areaNombre}-${ac.nombre}`.toLowerCase());
+                            console.log(areaCategoria.toLowerCase());
+                            return `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === areaCategoria.toLowerCase()
+                        }
+                    );
+                    console.log(areaValida);
+
+                    if (!areaValida) {
+                        errores.push({
+                            campo: `Área-Categoría ${index + 1}`,
+                            fila: numFila,
+                            ci: fila.ci,
+                            mensaje: `Área-Categoría no válida para el grado seleccionado`
+                        });
+                    }
+                }
+            });
+        }
+
 
     return errores;
 }; 
