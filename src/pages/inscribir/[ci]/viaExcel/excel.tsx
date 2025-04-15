@@ -9,7 +9,7 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida } from './types';
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, FileSpreadsheet } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
 import Loading from "@/components/Loading";
@@ -34,7 +34,6 @@ type Olimpiada = {
 
 export default function ExcelUploader() {
     const [loading, setLoading] = useState(false);
-    const [loadingData, setLoadingData] = useState(true);
     const [errores, setErrores] = useState<ValidationError[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [postulantes, setPostulantes] = useState<ExcelPostulante[]>([]);
@@ -53,21 +52,7 @@ export default function ExcelUploader() {
                 const response = await fetch(`${API_URL}/api/olimpiadas/hoy`);
                 const data = await response.json();
                 setOlimpiadas(data);
-            } catch (error) {
-                console.error('Error al cargar olimpiadas:', error);
-            } finally {
-                setLoadingData(false);
-            }
-        };
-
-        fetchOlimpiadas();
-    }, []);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (olimpiadaSeleccionada.length === 0) return;
-
-            try {
+                
                 setCargandoCategorias(true);
                 const deptResponse = await fetch(`${API_URL}/api/departamentos`);
                 const deptData = await deptResponse.json();
@@ -81,6 +66,21 @@ export default function ExcelUploader() {
                 const colData = await colResponse.json();
                 setColegios(colData);
 
+            } catch (error) {
+                console.error('Error al cargar olimpiadas:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOlimpiadas();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (olimpiadaSeleccionada.length === 0) return;
+
+            try {
                 const areasConCategorias = await fetch(`${API_URL}/api/areas/categorias/olimpiada/${olimpiadaSeleccionada[0]}`);
                 const areasConCategoriasData = await areasConCategorias.json() as AreaConCategorias[];
                 const areasMap = new Map<string, CategoriaExtendida[]>();
@@ -113,7 +113,7 @@ export default function ExcelUploader() {
         fetchData();
     }, [olimpiadaSeleccionada]);
 
-    if (loadingData) {
+    if (loading) {
         return <Loading />;
     }
 
@@ -201,6 +201,7 @@ export default function ExcelUploader() {
                     setPostulantes(postulantesData);
                     setErrores(todosErrores);
                     setShowDialog(true);
+                    console.log(postulantesData);
                 } catch (error) {
                     console.error('Error al procesar el archivo:', error);
                     alert("No se ha podido validar la lista de postulantes, por favor vuelva a subir el archivo");
@@ -232,101 +233,137 @@ export default function ExcelUploader() {
         }
     };
 
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                    file.type === 'application/vnd.ms-excel')) {
+            const event = {
+                target: {
+                    files: [file]
+                }
+            } as unknown as React.ChangeEvent<HTMLInputElement>;
+            handleFileUpload(event);
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
+
     return (
-        
         <div className="p-4">
-        <div className="max-w-2xl mx-auto">
-        <div className="flex flex-col space-y-4">
-            <div>
-                <MultiSelect
-                    values={olimpiadas.map(o => ({ id: o.id.toString(), nombre: o.nombre }))}
-                    value={olimpiadaSeleccionada}
-                    onChange={setOlimpiadaSeleccionada}
-                    placeholder="Seleccione una olimpiada"
-                    label="Olimpiadas"
-                    max={1}
-                />
-            </div>
+            <div className="max-w-2xl mx-auto">
+                <div className="flex flex-col space-y-4">
+                    <div>
+                        <p className="pb-4 text-lg">Primero, seleccione la olimpiada a la que pertenecen los postulantes</p>
+                        <MultiSelect
+                            values={olimpiadas.map(o => ({ id: o.id.toString(), nombre: o.nombre }))}
+                            value={olimpiadaSeleccionada}
+                            onChange={setOlimpiadaSeleccionada}
+                            placeholder="Seleccione una olimpiada"
+                            label="Olimpiadas"
+                            max={1}
+                        />
+                    </div>
 
-            {cargandoCategorias && (
-                <Alert>
-                    <AlertDescription className="flex items-center">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Cargando categorías y áreas...
-                    </AlertDescription>
-                </Alert>
-            )}
-
-            <Button 
-                disabled={loading || olimpiadaSeleccionada.length === 0 || cargandoCategorias} 
-                onClick={() => document.getElementById('excelInput')?.click()}
-            >
-                {cargandoCategorias ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Procesando...
-                    </>
-                ) : (
-                    'Subir Excel'
-                )}
-            </Button>
-            <input
-                id="excelInput"
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={handleFileUpload}
-                style={{ display: 'none' }}
-            />
-
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                <DialogHeader>
-                    <DialogTitle>
-                        {errores.length > 0 ? 
-                            <div className="space-y-2">
-                                <p>Se han detectado errores de formato en el archivo subido</p>
-                                {errores.map((error, index) => (
-                                    <div key={index} className="text-sm text-red-500">
-                                        {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
-                                    </div>
-                                ))}
-                            </div >
-                            : 
-                            "No se detectaron errores en el archivo"
-                        }
-                    </DialogTitle>
-                </DialogHeader>
-                <DialogContent className="max-h-[80vh] overflow-y-auto">
-                    {errores.length > 0 ? (
-                        <div className="space-y-2">
-                            {errores.map((error, index) => (
-                                <div key={index} className="text-sm text-red-500">
-                                    {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center text-green-600">
-                            El archivo está listo para ser procesado
-                            <DialogFooter>
-                                <Button 
-                                    variant="outline" 
-                                    onClick={() => setShowDialog(false)}
-                                >
-                                    Cancelar
-                                </Button>
-                                
-                                <Button 
-                                    onClick={handleConfirmar}
-                                >
-                                    Confirmar
-                                </Button>
-                            </DialogFooter>
-                        </div>
+                    {olimpiadaSeleccionada.length > 0 && cargandoCategorias && (
+                        <Alert>
+                            <AlertDescription className="flex items-center">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <p className='text-sm text-blue-500'>Espere por favor, estamos cargando categorías y áreas...</p>
+                            </AlertDescription>
+                        </Alert>
                     )}
-                </DialogContent>
-            </Dialog>
-        </div>
-        </div>
+
+                    {olimpiadaSeleccionada.length > 0 && !cargandoCategorias && (
+                        <>
+                            <p className="text-lg">Ahora, seleccione el archivo Excel con los postulantes</p>
+                            <div
+                                className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                                onDrop={handleDrop}
+                                onDragOver={handleDragOver}
+                                onClick={() => document.getElementById('excelInput')?.click()}
+                            >
+                                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                                <div className="mt-4 flex text-sm leading-6 text-gray-600 flex-col">
+                                    <label
+                                        htmlFor="excelInput"
+                                        className="relative cursor-pointer rounded-md font-semibold text-primary hover:text-primary/80"
+                                    >
+                                        <span className=''>Subir un archivo</span>
+                                        <input
+                                            id="excelInput"
+                                            type="file"
+                                            accept=".xlsx,.xls"
+                                            onChange={handleFileUpload}
+                                            className="sr-only"
+                                        />
+                                    </label>
+                                    <p className="pl-1">o arrástrelo y suéltelo aquí</p>
+                                </div>
+                                <p className="text-xs leading-5 text-gray-600 mt-2">
+                                    Solo archivos Excel (.xlsx, .xls)
+                                </p>
+                            </div>
+
+                            <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        {errores.length > 0 ? 
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                    <FileSpreadsheet className="h-4 w-4" />
+                                                    <p>Archivo: {postulantes.length > 0 ? 'Excel con ' + postulantes.length + ' postulantes' : 'No hay archivo'}</p>
+                                                </div>
+                                                <p className='text-red-500'>Se han detectado errores de formato en el archivo subido</p>
+                                                {errores.map((error, index) => (
+                                                    <div key={index} className="text-sm text-red-500">
+                                                        {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            : 
+                                            ""
+                                        }
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                                    {errores.length > 0 ? (
+                                        <div className="space-y-2">
+                                            {errores.map((error, index) => (
+                                                <div key={index} className="text-sm text-red-500">
+                                                    {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div >
+                                            <p className='pb-6 text-green-600'>El archivo está listo para ser procesado</p>
+                                            <DialogFooter>
+                                                
+                                                <Button 
+                                                    
+                                                    onClick={handleConfirmar}
+                                                >
+                                                    Confirmar
+                                                </Button>
+                                                <Button 
+                                                    variant="outline" 
+                                                    onClick={() => setShowDialog(false)}
+                                                >
+                                                    Cancelar
+                                                </Button>
+                                                
+                                            </DialogFooter>
+                                        </div>
+                                    )}
+                                </DialogContent>
+                            </Dialog>
+                        </>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
