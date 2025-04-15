@@ -19,7 +19,7 @@ export function AlertComponent({
     useEffect(() => {
         const timeout = setTimeout(() => {
             onClose?.();
-        }, 3000);
+        }, 5000);
         return () => clearTimeout(timeout);
     }, [onClose]);
 

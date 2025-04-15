@@ -6,7 +6,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { AlertComponent } from "@/components/AlertComponent";
-import { eliminarArea } from "@/api/areas";
+import { darDeBajaArea } from "@/api/areas";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
@@ -21,6 +21,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { request } from "@/api/request";
+import { Label } from "@/components/ui/label";
 
 export interface Olimpiada {
     id: string;
@@ -45,18 +46,16 @@ export const Page = () => {
     useEffect(() => {
         getOlimpiadas();
     }, [request]);
-    const [error, setError] = useState<string|null>(null);
-
+    const [error, setError] = useState<string | null>(null);
 
     const refreshAreas = async () => {
         try {
-
             const data = await request<Area[]>(
                 "/api/areas/categorias/olimpiada/" + idOlimpiada
             );
             setAreas(data);
-        }catch(e){
-            setError(String(e))
+        } catch (e) {
+            setError(String(e));
         }
     };
     const showAlert = (
@@ -69,25 +68,24 @@ export const Page = () => {
 
     const handleDeleteArea = async (id: number) => {
         try {
-            await eliminarArea(id);
+            await darDeBajaArea(id);
+            console.log("normal")
             showAlert(
                 "Éxito",
                 "El área de competencia se eliminó correctamente.",
                 "default"
             );
             refreshAreas();
-        } catch {
-            showAlert(
-                "Error",
-                "Hubo un error al eliminar el área, inténtelo de nuevo",
-                "destructive"
-            );
+        } catch (e) {
+            console.log("error")
+            showAlert("Error", e instanceof Error ? e.message: "Hubo un error", "destructive");
         }
-    };  useEffect(() => {
+    };
+    useEffect(() => {
         if (idOlimpiada) {
-          refreshAreas();
+            refreshAreas();
         }
-      }, [idOlimpiada]);
+    }, [idOlimpiada]);
 
     return (
         <>
@@ -111,12 +109,15 @@ export const Page = () => {
                     </CardTitle>
                     <CardDescription className="mx-auto">
                         Da de baja un area para las olimpiadas
+                    </CardDescription>
+                        <div className="mx-auto">
+
+                        <Label>seleccione una olimpiada</Label>
                         <Select
                             onValueChange={(value) => {
                                 setOlimpiadaSeleccionada(value);
-                             
                             }}
-                        >
+                            >
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Olimpiada" />
                             </SelectTrigger>
@@ -126,22 +127,21 @@ export const Page = () => {
                                 ))}
                             </SelectContent>
                         </Select>
-                    </CardDescription>
+                                </div>
                     <CardContent>
-                        {
-                            idOlimpiada ? 
-
+                        {idOlimpiada ? (
                             <ListArea
-                            areas={areas}
-                            error={error}
-                            onDelete={handleDeleteArea}
-                            eliminar
-                            />:
+                                areas={areas}
+                                error={error}
+                                onDelete={handleDeleteArea}
+                                eliminar
+                            />
+                        ) : (
                             <p>Seleccione una olimpiada</p>
-                        }
+                        )}
                     </CardContent>
                 </Card>
-                {alert && (
+                {alert?.description && (
                     <AlertComponent {...alert} onClose={() => setAlert(null)} />
                 )}
             </div>

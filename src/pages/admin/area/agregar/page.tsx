@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
-import { crearArea, eliminarArea } from "@/api/areas";
+import { crearArea, darDeBajaArea } from "@/api/areas";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
@@ -64,7 +64,7 @@ export const Page = () => {
 
     const handleDeleteArea = async (id: number) => {
         try {
-            await eliminarArea(id);
+            await darDeBajaArea(id);
             showAlert(
                 "Éxito",
                 "El área de competencia se eliminó correctamente.",
@@ -104,8 +104,7 @@ export const Page = () => {
                         Agrega un nuevo area para las olimpiadas
                     </CardDescription>
                     <CardContent>
-                        
-                            <FormAddArea onAdd={handleAddArea} />
+                        <FormAddArea onAdd={handleAddArea} />
                         <ListArea
                             areas={areas}
                             loading={loading}

@@ -26,9 +26,7 @@ export interface Colegio {
     id: string;
     nombre: string;
 }
-export const getCategoriaAreaPorGrado = async (
-    grado: string
-) => {
+export const getCategoriaAreaPorGrado = async (grado: string) => {
     return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}`);
 };
 
@@ -36,7 +34,9 @@ export const getCategoriaAreaPorGradoOlimpiada = async (
     grado: string,
     olimpiada: string
 ) => {
-    return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}/olimpiada/${olimpiada}`);
+    return await request<Categoria[]>(
+        `/api/categorias/areas/curso/${grado}/olimpiada/${olimpiada}`
+    );
 };
 export const crearArea = async (data: { nombre: string }) => {
     return await request("/api/areas", {
@@ -46,9 +46,9 @@ export const crearArea = async (data: { nombre: string }) => {
     });
 };
 
-export const eliminarArea = async (id: number) => {
-    return await request(`/api/areas/${id}`, {
-        method: "DELETE",
+export const darDeBajaArea = async (id: number) => {
+    return await request(`/api/areas/${id}/deactivate`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
     });
 };
