@@ -283,7 +283,7 @@ export default function GestionRegistration({
             {error && (
                 <AlertComponent
                     title="Error"
-                    description={error ? error : "Error desconocido"}
+                    description={error ? error : "No se pudo registrar la gestion, Intente nuevamente"}
                     onClose={() => {
                         setError(null);
                     }}
@@ -293,7 +293,7 @@ export default function GestionRegistration({
             {success && (
                 <AlertComponent
                     title="Éxito"
-                    description="Gestión creada exitosamente"
+                    description="La gestión se créo correctamente"
                     onClose={() => {
                         setSuccess(null);
                     }}
