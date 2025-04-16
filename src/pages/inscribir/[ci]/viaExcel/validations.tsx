@@ -98,7 +98,7 @@ export const validarFila = (
                 campo: campo === 'correo_electronico' ? 'Correo electrónico' : 'Correo de referencia',
                 fila: numFila,
                 ci: fila.ci,
-                mensaje: 'Formato de correo electrónico inválido'
+                mensaje: 'Formato de correo electrónico inválido: tiene que tener un formato como: letras@dominio.com'
             });
         }
     });
@@ -130,29 +130,29 @@ export const validarFila = (
         });
     }
 
-    const departamentoEncontrado = departamentos.find(
-        d => d.nombre.toLowerCase() === fila.departamento.toLowerCase()
-    );
+    const departamentoEncontrado = departamentos.find((d)=>{
+        return d.Nombre?.toLowerCase() === fila.departamento?.toLowerCase();
+    });
 
     if (!departamentoEncontrado) {
         errores.push({
             campo: 'Departamento',
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Departamento no válido'
+            mensaje: 'Departamento no válido: tiene que ser un departamento de Bolivia'
         });
     } else {
-        const provinciaValida = provincias.some(
-            p => p.departamento_id === departamentoEncontrado.id && 
-                 p.nombre.toLowerCase() === fila.provincia.toLowerCase()
-        );
+        const provinciaValida = provincias.some((p)=>{
+            return p.nombre.toLowerCase() === fila.provincia.toLowerCase()
+        });
+
 
         if (!provinciaValida) {
             errores.push({
                 campo: 'Provincia',
                 fila: numFila,
                 ci: fila.ci,
-                mensaje: 'Provincia no válida para el departamento seleccionado'
+                mensaje: 'Provincia no válida para el departamento seleccionado: tiene que ser una provincia de Bolivia'
             });
         }
     }
@@ -162,7 +162,7 @@ export const validarFila = (
             campo: 'Colegio',
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Colegio no válido'
+            mensaje: 'Colegio no válido: tiene que ser un colegio que este en el formato excel'
         });
     }
 
@@ -172,7 +172,7 @@ export const validarFila = (
             campo: 'Grado',
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Grado no válido'
+            mensaje: 'Grado no válido, debe ser un grado que este en el formato excel'
         });
     }
 
@@ -218,7 +218,7 @@ export const validarFila = (
                             campo: `Área-Categoría ${index + 1}`,
                             fila: numFila,
                             ci: fila.ci,
-                            mensaje: `Área-Categoría no válida para el grado seleccionado`
+                            mensaje: `Área-Categoría no válida para el grado seleccionado, revise las categorías de la olimpiada vigente en el excel o en la pagina de la olimpiada`
                         });
                     }
                 }

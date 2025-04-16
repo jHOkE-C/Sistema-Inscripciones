@@ -40,9 +40,9 @@ export const grados = [
     { id: "12", nombre: "6to Secundaria" }
 ];
 export interface Departamento {
-    id: string;
-    nombre: string;
-    abreviatura: string;
+    ID: number;
+    Nombre: string;
+    Provincias: Provincia[];
 }
 
 export interface Provincia {
