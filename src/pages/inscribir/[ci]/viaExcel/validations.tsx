@@ -1,4 +1,4 @@
-import { ExcelPostulante, ValidationError, CONTACTOS_PERMITIDOS } from './types';
+import { ExcelPostulante, ValidationError, CONTACTOS_PERMITIDOS, Postulante } from './types';
 import { Departamento, Provincia, Colegio, CategoriaExtendida } from './types';
 import { grados } from './types';
 
@@ -34,7 +34,8 @@ export const validarFila = (
     departamentos: Departamento[],
     provincias: Provincia[],
     colegios: Colegio[],
-    areasCategorias: Map<string, CategoriaExtendida[]>
+    areasCategorias: Map<string, CategoriaExtendida[]>,
+    postulantesConvertidos: Postulante[]
 ): ValidationError[] => {
     const errores: ValidationError[] = [];
 
@@ -80,7 +81,6 @@ export const validarFila = (
             });
         }
     });
-
     const ciRegex = /^\d{7,8}[A-Za-z]?$/;
     if (!ciRegex.test(fila.ci)) {
         errores.push({
@@ -130,51 +130,6 @@ export const validarFila = (
         });
     }
 
-    const departamentoEncontrado = departamentos.find((d)=>{
-        return d.Nombre?.toLowerCase() === fila.departamento?.toLowerCase();
-    });
-
-    if (!departamentoEncontrado) {
-        errores.push({
-            campo: 'Departamento',
-            fila: numFila,
-            ci: fila.ci,
-            mensaje: 'Departamento no válido: tiene que ser un departamento de Bolivia'
-        });
-    } else {
-        const provinciaValida = provincias.some((p)=>{
-            return p.nombre.toLowerCase() === fila.provincia.toLowerCase()
-        });
-
-
-        if (!provinciaValida) {
-            errores.push({
-                campo: 'Provincia',
-                fila: numFila,
-                ci: fila.ci,
-                mensaje: 'Provincia no válida para el departamento seleccionado: tiene que ser una provincia de Bolivia'
-            });
-        }
-    }
-
-    if (!colegios.some(c => c.nombre.toLowerCase() === fila.colegio.toLowerCase())) {
-        errores.push({
-            campo: 'Colegio',
-            fila: numFila,
-            ci: fila.ci,
-            mensaje: 'Colegio no válido: tiene que ser un colegio que este en el formato excel'
-        });
-    }
-
-    const gradoValido = grados.some(g => g.nombre === fila.grado);
-    if (!gradoValido) {
-        errores.push({
-            campo: 'Grado',
-            fila: numFila,
-            ci: fila.ci,
-            mensaje: 'Grado no válido, debe ser un grado que este en el formato excel'
-        });
-    }
 
     const telefonoRegex = /^\d{7,8}$/;
     if (!telefonoRegex.test(fila.telefono_referencia)) {
@@ -197,34 +152,109 @@ export const validarFila = (
         }
     });
 
-    const gradoId = grados.find(g => g.nombre === fila.grado)?.id;
-        console.log(gradoId);
-        if (gradoId) {
-            const areasDisponibles = areasCategorias.get(gradoId);
-            ['area_categoria1', 'area_categoria2'].forEach((campo, index) => {
-                const areaCategoria = fila[campo as keyof ExcelPostulante];
-                if (areaCategoria && areaCategoria.trim() !== '') {
-                    const areaValida = areasDisponibles?.some(ac =>{
-                            
-                            console.log(`${ac.areaNombre}-${ac.nombre}`.toLowerCase());
-                            console.log(areaCategoria.toLowerCase());
-                            return `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === areaCategoria.toLowerCase()
-                        }
-                    );
-                    console.log(areaValida);
+    const postulante: Postulante = {
+        ...fila,
+        iddepartamento: 0,
+        idprovincia: 0,
+        idcolegio: 0,
+        idgrado: 0,
+        idarea1: 0,
+        idcategoria1: 0,
+        idarea2: -1,
+        idcategoria2: -1
+    };
 
-                    if (!areaValida) {
-                        errores.push({
-                            campo: `Área-Categoría ${index + 1}`,
-                            fila: numFila,
-                            ci: fila.ci,
-                            mensaje: `Área-Categoría no válida para el grado seleccionado, revise las categorías de la olimpiada vigente en el excel o en la pagina de la olimpiada`
-                        });
-                    }
+    const departamentoEncontrado = departamentos.find(d => d.Nombre.toLowerCase() === fila.departamento.toLowerCase());
+    if (!departamentoEncontrado) {
+        errores.push({
+            campo: 'Departamento',
+            fila: numFila,
+            ci: fila.ci,
+            mensaje: 'Departamento no válido'
+        });
+    } else {
+        postulante.iddepartamento = departamentoEncontrado.ID;
+    }
+
+    const provinciaEncontrada = provincias.find(p => 
+        p.nombre.toLowerCase() === fila.provincia.toLowerCase() 
+        && p.departamento_id === departamentoEncontrado?.ID.toString()
+    );
+    if (!provinciaEncontrada) {
+        errores.push({
+            campo: 'Provincia',
+            fila: numFila,
+            ci: fila.ci,
+            mensaje: 'Provincia no válida para el departamento seleccionado'
+        });
+    } else {
+        postulante.idprovincia = provinciaEncontrada.id;
+    }
+
+    const colegioEncontrado = colegios.find(c => c.nombre.toLowerCase() === fila.colegio.toLowerCase());
+    if (!colegioEncontrado) {
+        errores.push({
+            campo: 'Colegio',
+            fila: numFila,
+            ci: fila.ci,
+            mensaje: 'Colegio no válido'
+        });
+    } else {
+        postulante.idcolegio = parseInt(colegioEncontrado.id);
+    }
+
+    const gradoEncontrado = grados.find(g => g.nombre === fila.grado);
+    if (!gradoEncontrado) {
+        errores.push({
+            campo: 'Grado',
+            fila: numFila,
+            ci: fila.ci,
+            mensaje: 'Grado no válido'
+        });
+    } else {
+        postulante.idgrado = parseInt(gradoEncontrado.id);
+    }
+
+    if (gradoEncontrado) {
+        const areasDisponibles = areasCategorias.get(gradoEncontrado.id);
+        if (areasDisponibles) {
+            const areaCategoria1 = areasDisponibles.find(ac => 
+                `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === fila.area_categoria1.toLowerCase()
+            );
+            if (areaCategoria1) {
+                postulante.idarea1 = areaCategoria1.areaId;
+                postulante.idcategoria1 = parseInt(areaCategoria1.id);
+            } else {
+                errores.push({
+                    campo: 'Área-Categoría 1',
+                    fila: numFila,
+                    ci: fila.ci,
+                    mensaje: 'Área-Categoría no válida para el grado seleccionado'
+                });
+            }
+
+            if (fila.area_categoria2) {
+                const areaCategoria2 = areasDisponibles.find(ac => 
+                    `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === fila.area_categoria2.toLowerCase()
+                );
+                if (areaCategoria2) {
+                    postulante.idarea2 = areaCategoria2.areaId;
+                    postulante.idcategoria2 = parseInt(areaCategoria2.id);
+                } else {
+                    errores.push({
+                        campo: 'Área-Categoría 2',
+                        fila: numFila,
+                        ci: fila.ci,
+                        mensaje: 'Área-Categoría no válida para el grado seleccionado'
+                    });
                 }
-            });
+            }
         }
+    }
 
+    if (errores.length === 0) {
+        postulantesConvertidos.push(postulante);
+    }
 
     return errores;
 }; 

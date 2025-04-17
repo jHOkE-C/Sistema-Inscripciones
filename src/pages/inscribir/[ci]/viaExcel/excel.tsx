@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida } from './types';
+import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida, Postulante } from './types';
 import { Loader2, Upload, FileSpreadsheet, Trash2, CalendarDays, Badge, BookOpen } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
@@ -45,7 +45,7 @@ export default function ExcelUploader() {
     const [loading, setLoading] = useState(true);
     const [errores, setErrores] = useState<ValidationError[]>([]);
     const [showDialog, setShowDialog] = useState(false);
-    const [postulantes, setPostulantes] = useState<ExcelPostulante[]>([]);
+    const [postulantes, setPostulantes] = useState<Postulante[]>([]);
     const [cargandoCategorias, setCargandoCategorias] = useState(false);
     const [olimpiada, setOlimpiada] = useState<Olimpiada[]>([]);
     const [alert, setAlert] = useState<{
@@ -58,7 +58,6 @@ export default function ExcelUploader() {
     const [provincias, setProvincias] = useState<Provincia[]>([]);
     const [colegios, setColegios] = useState<Colegio[]>([]);
     const [areasCategorias, setAreasCategorias] = useState<Map<string, CategoriaExtendida[]>>(new Map());
-
     useEffect(() => {
         const fetchOlimpiadas = async () => {
             try {
@@ -70,15 +69,15 @@ export default function ExcelUploader() {
                 const deptResponse = await fetch(`${API_URL}/api/departamentos`);
                 const deptData = await deptResponse.json();
                 setDepartamentos(deptData);
-                
+                console.log('Departamentos:', deptData);
                 const provResponse = await fetch(`${API_URL}/api/provincias`);
                 const provData = await provResponse.json();
                 setProvincias(provData);
-                
+                console.log('Provincias:', provData);
                 const colResponse = await fetch(`${API_URL}/api/colegios`);
                 const colData = await colResponse.json();
                 setColegios(colData);
-
+                console.log('Colegios:', colData);
             } catch (error) {
                 console.error('Error al cargar olimpiadas:', error);
             } finally {
@@ -157,7 +156,6 @@ export default function ExcelUploader() {
             });
             return;
         }
-
         console.log('Archivo seleccionado:', file.name, file.type);
         setLoading(true);
         try {
@@ -168,7 +166,7 @@ export default function ExcelUploader() {
                         throw new Error('No se pudo leer el archivo');
                     }
 
-                    console.log('Resultado de FileReader:', e.target.result);
+                    
                     const data = new Uint8Array(e.target.result as ArrayBuffer);
                     const workbook = XLSX.read(data, { 
                         type: 'array',
@@ -176,16 +174,12 @@ export default function ExcelUploader() {
                         cellNF: true,
                         cellText: false
                     });
-
-                    console.log('Workbook:', workbook);
-                    console.log('Hojas disponibles:', workbook.SheetNames);
-
                     if (!workbook.SheetNames.length) {
                         throw new Error('El archivo no contiene hojas');
                     }
 
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    console.log('Primera hoja:', firstSheet);
+                    
                     
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
                         header: 1,
@@ -194,10 +188,10 @@ export default function ExcelUploader() {
                         dateNF: 'dd/mm/yyyy'
                     }) as (string | null)[][];
 
-                    console.log('Datos convertidos a JSON:', jsonData);
+                    
                     
                     const headers = jsonData[0].map(h => h?.toString() || '') as string[];
-                    console.log('Encabezados:', headers);
+                    
                     
                     const camposFaltantes = validarCamposRequeridos(headers);
                     
@@ -250,14 +244,16 @@ export default function ExcelUploader() {
                     if (postulantesData.length === 0) {
                         throw new Error('No se encontraron datos válidos en el archivo');
                     }
-                    console.log('Errores:', postulantesData);
+                    
                     const todosErrores: ValidationError[] = [];
+                    const postulantesConvertidos: Postulante[] = [];
                     postulantesData.forEach((fila, index) => {
-                        const erroresFila = validarFila(fila, index + 2, departamentos, provincias, colegios, areasCategorias);
+                        const erroresFila = validarFila(fila, index + 2, departamentos, provincias, colegios, areasCategorias, postulantesConvertidos);
                         todosErrores.push(...erroresFila);
                     });
                     
-                    setPostulantes(postulantesData);
+                    setPostulantes(postulantesConvertidos);
+                    console.log('Postulantes convertidos:', postulantesConvertidos);
                     setErrores(todosErrores);
                     setShowDialog(true);
                 } catch (error) {
@@ -398,7 +394,7 @@ export default function ExcelUploader() {
                             <a href="https://ohsansi.up.railway.app/" className="text-blue-500 hover:text-blue-700">https://ohsansi.up.railway.app/</a></span>
                             
                             <div
-                                className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                                className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors hover:bg-zinc-50"
                                 onDrop={handleDrop}
                                 onDragOver={handleDragOver}
                                 onClick={() => document.getElementById('excelInput')?.click()}
