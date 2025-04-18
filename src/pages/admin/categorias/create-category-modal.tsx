@@ -104,11 +104,12 @@ export default function CreateCategoryModal({
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="nombre" className="text-right">
-              Nombre
+              Nombre del nivel de competencia
             </Label>
             <Input
               id="nombre"
               value={nombre}
+              maxLength={40}
               onChange={(e) => setNombre(e.target.value)}
               className="col-span-3"
             />
