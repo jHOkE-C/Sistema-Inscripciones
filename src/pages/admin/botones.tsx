@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {  Layers, FolderTree, Users, Link2 } from "lucide-react";
+import {  Layers, Users, Link as Asociar, Layers2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 
@@ -24,7 +24,7 @@ export default function Botones({ getData }: { getData: () => void }) {
           asChild
         >
           <Link to="/admin/categorias">
-            <FolderTree className="h-8 w-8 mb-1" />
+            <Layers2 className="h-8 w-8 mb-1" />
             <span className="text-lg font-medium">Gestionar categorías</span>
           </Link>
         </Button>
@@ -44,7 +44,7 @@ export default function Botones({ getData }: { getData: () => void }) {
           asChild
         >
           <Link to="/admin/asociar">
-            <Link2 className="h-8 w-8 mb-1" />
+            <Asociar className="h-8 w-8 mb-1" />
             <span className="text-lg font-medium">
               Asociar áreas con categorías
             </span>
