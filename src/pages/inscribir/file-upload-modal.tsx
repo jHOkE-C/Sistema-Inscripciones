@@ -171,7 +171,8 @@ export function FileUploadModal({
                 Explorar
               </Button>
               <p className="text-xs text-muted-foreground mt-2">
-                Solo un archivo. Tamaño máximo {maxSize}MB.
+                Solo un archivo excel (.xlsx o .xls). 
+            
               </p>
             </div>
             <input
