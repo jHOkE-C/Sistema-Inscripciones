@@ -6,7 +6,7 @@ export interface Cronograma {
   tipo_plazo: string;
   fecha_inicio: string;
   fecha_fin: string;
-  olimpiada_id: number;
+  olimpiada_id?: number;
 }
 
 export interface Olimpiada {
