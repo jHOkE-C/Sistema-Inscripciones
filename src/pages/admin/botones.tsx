@@ -20,7 +20,7 @@ export default function Botones({ getData }: { getData: () => void }) {
         </Button>
 
         <Button
-          className="h-auto py-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg"
+          className="h-auto py-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg sm:col-span-2 lg:col-span-1"
           asChild
         >
           <Link to="/admin/categorias">
