@@ -15,12 +15,16 @@ export interface ExcelPostulante {
     area_categoria1: string;
     area_categoria2: string;
 }
-
-export interface ValidationError {
-    campo: string;
-    fila: number;
-    ci: string;
-    mensaje: string;
+export interface Postulante 
+extends Omit<ExcelPostulante, 'departamento' | 'provincia' | 'colegio' | 'grado' | 'area_categoria1' | 'area_categoria2' > {
+    iddepartamento: number;
+    idprovincia: number;
+    idcolegio: number;
+    idgrado: number;
+    idarea1: number;
+    idcategoria1: number;
+    idarea2: number;
+    idcategoria2: number;
 }
 
 export const CONTACTOS_PERMITIDOS = ['ESTUDIANTE', 'MAMA', 'PAPA', 'TUTOR', 'PROFESOR'];
@@ -40,9 +44,9 @@ export const grados = [
     { id: "12", nombre: "6to Secundaria" }
 ];
 export interface Departamento {
-    id: string;
-    nombre: string;
-    abreviatura: string;
+    ID: number;
+    Nombre: string;
+    Provincias: Provincia[];
 }
 
 export interface Provincia {
@@ -76,4 +80,11 @@ export const estadosIniciales: EstadosIniciales = {
 export type CategoriaExtendida = Categoria & {
     areaId: number;
     areaNombre: string;
+};
+
+export type ValidationError = {
+    campo: string;
+    fila: number;
+    ci: string;
+    mensaje: string;
 };

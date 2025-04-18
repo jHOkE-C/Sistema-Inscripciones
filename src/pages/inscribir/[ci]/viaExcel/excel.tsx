@@ -8,21 +8,30 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida } from './types';
-import { Loader2, Upload, FileSpreadsheet } from "lucide-react";
+import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida, Postulante } from './types';
+import { Loader2, Upload, FileSpreadsheet, Trash2, CalendarDays, Badge, BookOpen } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
 import Loading from "@/components/Loading";
 import { validarCamposRequeridos, validarFila } from './validations';
-import { MultiSelect } from "@/components/MultiSelect";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { AlertComponent } from "@/components/AlertComponent";
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-BO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
 
 type AreaConCategorias = {
     id: number;
     nombre: string;
     categorias: Categoria[];
 };
-
 type Olimpiada = {
     id: number;
     nombre: string;
@@ -33,39 +42,42 @@ type Olimpiada = {
 };
 
 export default function ExcelUploader() {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [errores, setErrores] = useState<ValidationError[]>([]);
     const [showDialog, setShowDialog] = useState(false);
-    const [postulantes, setPostulantes] = useState<ExcelPostulante[]>([]);
-    const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
-    const [olimpiadaSeleccionada, setOlimpiadaSeleccionada] = useState<string[]>([]);
+    const [postulantes, setPostulantes] = useState<Postulante[]>([]);
     const [cargandoCategorias, setCargandoCategorias] = useState(false);
+    const [olimpiada, setOlimpiada] = useState<Olimpiada[]>([]);
+    const [alert, setAlert] = useState<{
+        title: string;
+        description?: string;
+        variant?: "default" | "destructive";
+    } | null>(null);
     
     const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
     const [provincias, setProvincias] = useState<Provincia[]>([]);
     const [colegios, setColegios] = useState<Colegio[]>([]);
     const [areasCategorias, setAreasCategorias] = useState<Map<string, CategoriaExtendida[]>>(new Map());
-
     useEffect(() => {
         const fetchOlimpiadas = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/olimpiadas/hoy`);
-                const data = await response.json();
-                setOlimpiadas(data);
-                
+                const olimpiadaResponse = await fetch(`${API_URL}/api/olimpiadas/hoy`);
+                const olimpiadaData = await olimpiadaResponse.json();
+                setOlimpiada(olimpiadaData);
+                console.log(olimpiadaData);
                 setCargandoCategorias(true);
                 const deptResponse = await fetch(`${API_URL}/api/departamentos`);
                 const deptData = await deptResponse.json();
                 setDepartamentos(deptData);
-
+                console.log('Departamentos:', deptData);
                 const provResponse = await fetch(`${API_URL}/api/provincias`);
                 const provData = await provResponse.json();
                 setProvincias(provData);
-
+                console.log('Provincias:', provData);
                 const colResponse = await fetch(`${API_URL}/api/colegios`);
                 const colData = await colResponse.json();
                 setColegios(colData);
-
+                console.log('Colegios:', colData);
             } catch (error) {
                 console.error('Error al cargar olimpiadas:', error);
             } finally {
@@ -78,16 +90,15 @@ export default function ExcelUploader() {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (olimpiadaSeleccionada.length === 0) return;
+            if (!loading) return;
 
             try {
-                const areasConCategorias = await fetch(`${API_URL}/api/areas/categorias/olimpiada/${olimpiadaSeleccionada[0]}`);
+                const areasConCategorias = await fetch(`${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`);
                 const areasConCategoriasData = await areasConCategorias.json() as AreaConCategorias[];
                 const areasMap = new Map<string, CategoriaExtendida[]>();
-                
                 for (const grado of grados) {
-                    const categorias = await getCategoriaAreaPorGradoOlimpiada(grado.id, olimpiadaSeleccionada[0]);
-                
+                    const categorias = await getCategoriaAreaPorGradoOlimpiada(grado.id, olimpiada[0].id.toString());
+                    console.log(categorias);
                     const categoriasConArea: CategoriaExtendida[] = categorias.map((cat) => {
                         const area = areasConCategoriasData.find((a) =>
                             a.categorias.some((c) => c.id === cat.id)
@@ -99,10 +110,12 @@ export default function ExcelUploader() {
                             areaNombre: area?.nombre ?? 'Desconocida',
                         };
                     });
-                
                     areasMap.set(grado.id, categoriasConArea);
                 }
+
                 setAreasCategorias(areasMap);
+                console.log(areasCategorias);
+                console.log(areasMap);
             } catch (error) {
                 console.error('Error al cargar datos de validación:', error);
             } finally {
@@ -111,29 +124,62 @@ export default function ExcelUploader() {
         };
 
         fetchData();
-    }, [olimpiadaSeleccionada]);
+    }, [cargandoCategorias]);
 
     if (loading) {
         return <Loading />;
     }
 
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                    file.type === 'application/vnd.ms-excel')) {
+            const event = {
+                target: {
+                    files: [file]
+                }
+            } as unknown as React.ChangeEvent<HTMLInputElement>;
+            handleFileUpload(event);
+        }
+    };
+
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
+        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+            setAlert({
+                title: "Error",
+                description: "Por favor, suba un archivo Excel (.xlsx o .xls)",
+                variant: "destructive"
+            });
+            return;
+        }
+        console.log('Archivo seleccionado:', file.name, file.type);
         setLoading(true);
         try {
             const reader = new FileReader();
             reader.onload = async (e) => {
                 try {
-                    const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                    if (!e.target?.result) {
+                        throw new Error('No se pudo leer el archivo');
+                    }
+
+                    
+                    const data = new Uint8Array(e.target.result as ArrayBuffer);
                     const workbook = XLSX.read(data, { 
                         type: 'array',
                         cellDates: true,
                         cellNF: true,
                         cellText: false
                     });
+                    if (!workbook.SheetNames.length) {
+                        throw new Error('El archivo no contiene hojas');
+                    }
+
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    
                     
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
                         header: 1,
@@ -141,8 +187,11 @@ export default function ExcelUploader() {
                         raw: false,
                         dateNF: 'dd/mm/yyyy'
                     }) as (string | null)[][];
+
+                    
                     
                     const headers = jsonData[0].map(h => h?.toString() || '') as string[];
+                    
                     
                     const camposFaltantes = validarCamposRequeridos(headers);
                     
@@ -192,25 +241,45 @@ export default function ExcelUploader() {
                             area_categoria2: fila[14]?.toString().trim() || ''
                         }));
 
+                    if (postulantesData.length === 0) {
+                        throw new Error('No se encontraron datos válidos en el archivo');
+                    }
+                    
                     const todosErrores: ValidationError[] = [];
+                    const postulantesConvertidos: Postulante[] = [];
                     postulantesData.forEach((fila, index) => {
-                        const erroresFila = validarFila(fila, index + 2, departamentos, provincias, colegios, areasCategorias);
+                        const erroresFila = validarFila(fila, index + 2, departamentos, provincias, colegios, areasCategorias, postulantesConvertidos);
                         todosErrores.push(...erroresFila);
                     });
-
-                    setPostulantes(postulantesData);
+                    
+                    setPostulantes(postulantesConvertidos);
+                    console.log('Postulantes convertidos:', postulantesConvertidos);
                     setErrores(todosErrores);
                     setShowDialog(true);
-                    console.log(postulantesData);
                 } catch (error) {
                     console.error('Error al procesar el archivo:', error);
-                    alert("No se ha podido validar la lista de postulantes, por favor vuelva a subir el archivo");
+                    setAlert({
+                        title: "Error",
+                        description: error instanceof Error ? error.message : 'Error al procesar el archivo. Por favor, verifique el formato.',
+                        variant: "destructive"
+                    });
                 }
+            };
+            reader.onerror = () => {
+                setAlert({
+                    title: "Error",
+                    description: "Error al leer el archivo. Por favor, intente nuevamente.",
+                    variant: "destructive"
+                });
             };
             reader.readAsArrayBuffer(file);
         } catch (error) {
             console.error('Error al leer el archivo:', error);
-            alert("Error al leer el archivo");
+            setAlert({
+                title: "Error",
+                description: "Error al leer el archivo. Por favor, intente nuevamente.",
+                variant: "destructive"
+            });
         } finally {
             setLoading(false);
         }
@@ -221,29 +290,23 @@ export default function ExcelUploader() {
         
         try {
             setLoading(true);
-            alert('Postulantes registrados exitosamente');
+            setAlert({
+                title: "Éxito",
+                description: "Postulantes registrados exitosamente",
+                variant: "default"
+            });
             console.log(postulantes);
             setShowDialog(false);
             setPostulantes([]);
         } catch (error) {
             console.error('Error al registrar postulantes:', error);
-            alert('Error al registrar postulantes');
+            setAlert({
+                title: "Error",
+                description: "Error al registrar postulantes",
+                variant: "destructive"
+            });
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                    file.type === 'application/vnd.ms-excel')) {
-            const event = {
-                target: {
-                    files: [file]
-                }
-            } as unknown as React.ChangeEvent<HTMLInputElement>;
-            handleFileUpload(event);
         }
     };
 
@@ -251,23 +314,71 @@ export default function ExcelUploader() {
         e.preventDefault();
     };
 
+    const handleEliminarError = (index: number) => {
+        const nuevosErrores = [...errores];
+        nuevosErrores.splice(index, 1);
+        setErrores(nuevosErrores);
+    };
+
     return (
-        <div className="p-4">
+        <div className="pl-4 pr-4">
+            {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
             <div className="max-w-2xl mx-auto">
                 <div className="flex flex-col space-y-4">
-                    <div>
-                        <p className="pb-4 text-lg">Primero, seleccione la olimpiada a la que pertenecen los postulantes</p>
-                        <MultiSelect
-                            values={olimpiadas.map(o => ({ id: o.id.toString(), nombre: o.nombre }))}
-                            value={olimpiadaSeleccionada}
-                            onChange={setOlimpiadaSeleccionada}
-                            placeholder="Seleccione una olimpiada"
-                            label="Olimpiadas"
-                            max={1}
-                        />
+                    <div className='flex flex-col'>                       
+                        {olimpiada.length > 0 ? (
+                            <Card className="flex flex-col h-full hover:bg-zinc-50">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <CardTitle className="text-xl">{olimpiada[0].nombre}</CardTitle>
+                                        <Badge className="ml-2">
+                                            {olimpiada[0].gestion}
+                                        </Badge>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                                            <div>
+                                                <p className="text-sm font-medium">Fecha de inicio:</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {formatDate(olimpiada[0].fecha_inicio)}
+                                                </p>
+                                            </div>
+                                            
+                                        <div className="flex items-center gap-2">
+                                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                                            <div>
+                                                <p className="text-sm font-medium">Fecha de fin:</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {formatDate(olimpiada[0].fecha_fin)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="border-t">
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <BookOpen className="h-4 w-4" />
+                                        <span>
+                                            Categorías disponibles: {Array.from(areasCategorias.values()).reduce((total, valores) => total + valores.length, 0)}
+                                        </span>
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        ) : (
+                            <Card className="flex flex-col h-full hover:bg-zinc-50">
+                                <CardContent className="pt-6">
+                                    <p className='text-lg text-center text-red-500'>No existe una olimpiada vigente</p>
+                                    <p className='text-sm text-gray-500 text-center'>revise las fechas de las olimpiadas</p>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
 
-                    {olimpiadaSeleccionada.length > 0 && cargandoCategorias && (
+                    {cargandoCategorias && olimpiada.length > 0 && (
                         <Alert>
                             <AlertDescription className="flex items-center">
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -276,11 +387,14 @@ export default function ExcelUploader() {
                         </Alert>
                     )}
 
-                    {olimpiadaSeleccionada.length > 0 && !cargandoCategorias && (
+                    {!cargandoCategorias && olimpiada.length > 0 && (
                         <>
-                            <p className="text-lg">Ahora, seleccione el archivo Excel con los postulantes</p>
+                            <p className="text-lg">Seleccione el archivo Excel con los postulantes</p>
+                            <span className="text-sm text-gray-500">recuerde que puede descargar el excel con el formato aquí: 
+                            <a href="https://ohsansi.up.railway.app/" className="text-blue-500 hover:text-blue-700">https://ohsansi.up.railway.app/</a></span>
+                            
                             <div
-                                className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                                className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors hover:bg-zinc-50"
                                 onDrop={handleDrop}
                                 onDragOver={handleDragOver}
                                 onClick={() => document.getElementById('excelInput')?.click()}
@@ -318,8 +432,18 @@ export default function ExcelUploader() {
                                                 </div>
                                                 <p className='text-red-500'>Se han detectado errores de formato en el archivo subido</p>
                                                 {errores.map((error, index) => (
-                                                    <div key={index} className="text-sm text-red-500">
-                                                        {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
+                                                    <div key={index} className="flex items-center justify-between text-sm text-red-500">
+                                                        <div>
+                                                            {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
+                                                        </div>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon"
+                                                            onClick={() => handleEliminarError(index)}
+                                                            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-100"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
                                                     </div>
                                                 ))}
                                             </div>
