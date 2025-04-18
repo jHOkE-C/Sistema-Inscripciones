@@ -78,10 +78,11 @@ export default function Page() {
                 `${API_URL}/api/olimpiadas/${id}/cronogramas`
             );
             setData(res.data);
-            if (res.data.olimpiada.cronogramas.length > 0){
-                setCronos(res.data.olimpiada.cronogramas)
-            }else{
-                CronogramaDefecto[0].fecha_inicio = res.data.olimpiada.fecha_inicio
+            if (res.data.olimpiada.cronogramas.length > 0) {
+                setCronos(res.data.olimpiada.cronogramas);
+            } else {
+                CronogramaDefecto[0].fecha_inicio =
+                    res.data.olimpiada.fecha_inicio;
                 setCronos(CronogramaDefecto);
             }
             setLoading(false);
@@ -95,9 +96,10 @@ export default function Page() {
     if (!data) return <p>No se encontró la olimpiada</p>;
 
     const { olimpiada } = data;
+    console.log(olimpiada.fecha_fin)
     const vStart = new Date(olimpiada.fecha_inicio);
-    const vEnd = new Date(olimpiada.fecha_fin);
-
+    const vEnd = addDays(new Date(olimpiada.fecha_fin),1);
+    
     // al seleccionar fecha en el calendario
     function onSelectDate(
         index: number,
@@ -105,22 +107,23 @@ export default function Page() {
         tipo: string,
         field: "fecha_inicio" | "fecha_fin"
     ) {
+        console.log("selected",date)
         setCronos((prev) =>
             prev.map((c, i) => {
-                if (c.tipo_plazo === tipo) {
-                    return {
-                        ...c,
-                        [field]: date.toISOString().slice(0, 10),
-                    };
-                }
-                // auto-asignar fecha_inicio de la siguiente fase
-                if (field === "fecha_fin" && i === index + 1) {
-                    return {
-                        ...c,
-                        fecha_inicio: date.toISOString().slice(0, 10),
-                    };
-                }
-                return c;
+            if (c.tipo_plazo === tipo) {
+                return {
+                ...c,
+                [field]: date.toISOString().split("T")[0], // Guardar en formato YYYY-MM-DD
+                };
+            }
+            // auto-asignar fecha_inicio de la siguiente fase
+            if (field === "fecha_fin" && i === index + 1) {
+                return {
+                ...c,
+                fecha_inicio: addDays(date, 1).toISOString().split("T")[0], // Guardar en formato YYYY-MM-DD
+                };
+            }
+            return c;
             })
         );
         // cerramos el popover
@@ -220,7 +223,7 @@ export default function Page() {
                         <TableHead>Fase</TableHead>
                         <TableHead>Inicio</TableHead>
                         <TableHead>Fin</TableHead>
-                        <TableHead>Duracion</TableHead>
+                        <TableHead>Duración</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -233,33 +236,33 @@ export default function Page() {
                                     </Badge>
                                 </TableCell>
 
-                                {/* Fecha inicio */}
                                 <TableCell>
                                     <span>
-                                    
                                         {c.fecha_inicio
                                             ? formatDate(c.fecha_inicio)
-                                            : ""}
+                                            : `seleccione la fecha fin de ${cronos[index-1].tipo_plazo}`}
+        
                                     </span>
                                 </TableCell>
                                 <TableCell>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
+                                                disabled={!c.fecha_inicio}
                                                 variant="outline"
                                                 size="sm"
-                                                className="flex items-center"
+                                                className="flex items-center font-normal"
                                             >
                                                 <CalendarIcon className="w-4 h-4 mr-1" />
                                                 {c.fecha_fin
                                                     ? formatDate(c.fecha_fin)
-                                                    : "Seleccione fecha"}
+                                                    : "Seleccione una fecha"}
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="p-0">
                                             <Calendar
                                                 mode="single"
-                                                selected={new Date(c.fecha_fin)}
+                                                selected={addDays(new Date(c.fecha_fin),1)}
                                                 onSelect={(d) =>
                                                     d &&
                                                     onSelectDate(
@@ -284,6 +287,13 @@ export default function Page() {
                                                 }}
                                                 initialFocus
                                                 locale={es}
+                                                defaultMonth={
+                                                    c.fecha_inicio
+                                                        ? new Date(
+                                                              c.fecha_inicio
+                                                          )
+                                                        : undefined
+                                                }
                                             />
                                         </PopoverContent>
                                     </Popover>
