@@ -9,23 +9,14 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida, Postulante } from './types';
-import { Loader2, Upload, FileSpreadsheet, Trash2, CalendarDays, Badge, BookOpen } from "lucide-react";
+import { Loader2, Upload, FileSpreadsheet, Trash2} from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
 import Loading from "@/components/Loading";
 import { validarCamposRequeridos, validarFila } from './validations';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { AlertComponent } from "@/components/AlertComponent";
 
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-BO', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-};
+import { AlertComponent } from "@/components/AlertComponent";
 
 type AreaConCategorias = {
     id: number;
