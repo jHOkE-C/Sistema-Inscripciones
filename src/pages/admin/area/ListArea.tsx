@@ -19,7 +19,8 @@ export interface Categoria {
 export interface Area {
     id: number;
     nombre: string;
-    categorias: Categoria[];
+    categorias?: Categoria[];
+    vigente: boolean;
 }
 interface ListAreaProps {
     areas: Area[];
@@ -34,13 +35,15 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
     const confirmarEliminacion = (area: Area) => {
         setAreaSeleccionada(area);
         setShowConfirm(true);
+        areas.sort((a, b) => Number(b.vigente) - Number(a.vigente));
     };
 
     const eliminarArea = async () => {
         if (areaSeleccionada) await onDelete(areaSeleccionada.id);
         setShowConfirm(false);
     };
-    console.log(areas);
+
+    
 
     if (loading) return <Loading />;
     return (
@@ -60,12 +63,12 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                     {areas.length > 0 ? (
                         areas.map((area) => (
                             <TableRow key={area.id}>
-                                <TableCell className="font-normal">
+                                <TableCell className={"font-normal " + (area.vigente ? "" : "text-gray-500")}>
                                     {area.nombre}
                                 </TableCell>
 
                                 <TableCell className="text-right">
-                                    {eliminar && (
+                                    {eliminar &&area.vigente && (
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -97,21 +100,9 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                 open={showConfirm}
                 onOpenChange={setShowConfirm}
                 title={`¿Está seguro que desea dar de baja el área  ${areaSeleccionada?.nombre}?`}
-                description={
-                    <>
-                        el área tiene las siguientes categorías relacionadas:
-                        <br />
-                        {areaSeleccionada?.categorias.map(
-                            ({ nombre }, index) => (
-                                <span className="ml-3" key={index}>
-                                    {nombre}
-                                    <br />
-                                </span>
-                            )
-                        )}
-                    </>
-                }
                 continueButtonText="Dar de Baja"
+                continueIsDanger
+                
                 onConfirm={eliminarArea}
             />
         </>

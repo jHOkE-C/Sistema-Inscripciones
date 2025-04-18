@@ -1,4 +1,4 @@
-import AlertDialogComponent from "@/components/AlertDialogComponent";
+
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -33,10 +33,8 @@ interface FormAddAreaProps {
 }
 
 const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
-    const [showConfirm, setShowConfirm] = useState(false);
     const [showForm, setShowForm] = useState(false);
 
-    const [formData, setFormData] = useState<{ nombre: string }>();
 
     const form = useForm<z.infer<typeof areaSchema>>({
         resolver: zodResolver(areaSchema),
@@ -46,14 +44,9 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
     });
 
     const onSubmit = async (data: { nombre: string }) => {
-        setShowConfirm(true);
-        setFormData(data);
-    };
-    const saveArea = async () => {
-        if (formData) {
-            await onAdd(formData);
-            setShowForm(false);
-        }
+        
+            await onAdd(data);
+        
     };
 
     return (
@@ -83,8 +76,14 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                                         <FormLabel>Nombre de Area</FormLabel>
                                         <FormControl>
                                             <Input
+                                                maxLength={40}
                                                 placeholder="Astronomia"
-                                                {...field}
+                                                onChange={(e) =>
+                                                    field.onChange(
+                                                        e.target.value.toUpperCase()
+                                                    )
+                                                }
+                                                value={field.value}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -108,14 +107,7 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            <AlertDialogComponent
-                title={`¿Está seguro de registrar el área ${formData?.nombre}?`}
-                onConfirm={saveArea}
-                open={showConfirm}
-                onOpenChange={(e) => {
-                    setShowConfirm(e);
-                }}
-            />
+           
         </>
     );
 };

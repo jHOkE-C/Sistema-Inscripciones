@@ -32,6 +32,7 @@ interface props {
     typeButton?: "button" | "submit" | "reset" | undefined;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    continueIsDanger?:boolean
 
 }
 
@@ -56,7 +57,7 @@ export function AlertDialogComponent(props: props) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogAction onClick={props.onConfirm}>
+                    <AlertDialogAction className={props.continueIsDanger ?"bg-rose-600 hover:bg-rose-600/90":""} onClick={props.onConfirm}>
                         {props.continueButtonText || "Confirmar"}
                     </AlertDialogAction>
                     <AlertDialogCancel onClick={props.onCancel}>

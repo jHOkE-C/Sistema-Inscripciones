@@ -13,15 +13,7 @@ import { ChevronLeft } from "lucide-react";
 import type { Area } from "../ListArea";
 
 import ListArea from "../ListArea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { request } from "@/api/request";
-import { Label } from "@/components/ui/label";
 
 export interface Olimpiada {
     id: string;
@@ -36,23 +28,20 @@ export const Page = () => {
         description?: string;
         variant?: "default" | "destructive";
     } | null>(null);
-    const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
-    const getOlimpiadas = async () => {
-        const data = await request<Olimpiada[]>("/api/olimpiadas");
-        setOlimpiadas(data);
-    };
-    const [idOlimpiada, setOlimpiadaSeleccionada] = useState<string>();
+    // const getOlimpiadas = async () => {
+    //     const data = await request<Olimpiada[]>("/api/olimpiadas");
+    //     setOlimpiadas(data);
+    // };
     const [areas, setAreas] = useState<Area[]>([]);
     useEffect(() => {
-        getOlimpiadas();
+        // getOlimpiadas();
+        refreshAreas();
     }, [request]);
     const [error, setError] = useState<string | null>(null);
 
     const refreshAreas = async () => {
         try {
-            const data = await request<Area[]>(
-                "/api/areas/categorias/olimpiada/" + idOlimpiada
-            );
+            const data = await request<Area[]>("/api/areas");
             setAreas(data);
         } catch (e) {
             setError(String(e));
@@ -69,23 +58,23 @@ export const Page = () => {
     const handleDeleteArea = async (id: number) => {
         try {
             await darDeBajaArea(id);
-            console.log("normal")
+       
             showAlert(
                 "Éxito",
-                "El área de competencia se eliminó correctamente.",
+                "Se dio de baja el área correctamente.",
                 "default"
             );
             refreshAreas();
         } catch (e) {
-            console.log("error")
-            showAlert("Error", e instanceof Error ? e.message: "Hubo un error", "destructive");
+            console.log("error");
+            showAlert(
+                "Error",
+                e instanceof Error ? e.message : "Hubo un error",
+                "destructive"
+            );
         }
     };
-    useEffect(() => {
-        if (idOlimpiada) {
-            refreshAreas();
-        }
-    }, [idOlimpiada]);
+
 
     return (
         <>
@@ -110,35 +99,13 @@ export const Page = () => {
                     <CardDescription className="mx-auto">
                         Da de baja un area para las olimpiadas
                     </CardDescription>
-                        <div className="mx-auto">
-
-                        <Label>seleccione una olimpiada</Label>
-                        <Select
-                            onValueChange={(value) => {
-                                setOlimpiadaSeleccionada(value);
-                            }}
-                            >
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Olimpiada" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {olimpiadas.map(({ id, nombre }) => (
-                                    <SelectItem value={id}>{nombre}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                                </div>
                     <CardContent>
-                        {idOlimpiada ? (
-                            <ListArea
-                                areas={areas}
-                                error={error}
-                                onDelete={handleDeleteArea}
-                                eliminar
-                            />
-                        ) : (
-                            <p>Seleccione una olimpiada</p>
-                        )}
+                        <ListArea
+                            areas={areas}
+                            error={error}
+                            onDelete={handleDeleteArea}
+                            eliminar
+                        />
                     </CardContent>
                 </Card>
                 {alert?.description && (
