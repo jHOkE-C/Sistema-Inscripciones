@@ -42,6 +42,8 @@ type Olimpiada = {
 };
 
 export default function ExcelUploader() {
+    
+    const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(true);
     const [errores, setErrores] = useState<ValidationError[]>([]);
     const [showDialog, setShowDialog] = useState(false);
@@ -143,7 +145,7 @@ export default function ExcelUploader() {
             handleFileUpload(event);
         }
     };
-
+    
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -156,7 +158,11 @@ export default function ExcelUploader() {
             });
             return;
         }
-        console.log('Archivo seleccionado:', file.name, file.type);
+        setFile(file);
+    };
+    const handleProcesar = async () => {
+        if (file === null) return;
+        console.log('Archivo seleccionado:', file?.name, file?.type);
         setLoading(true);
         try {
             const reader = new FileReader();
@@ -283,8 +289,7 @@ export default function ExcelUploader() {
         } finally {
             setLoading(false);
         }
-    };
-
+    }
     const handleConfirmar = async () => {
         if (errores.length > 0) return;
         
@@ -319,80 +324,24 @@ export default function ExcelUploader() {
         nuevosErrores.splice(index, 1);
         setErrores(nuevosErrores);
     };
-
+    const handleDeleteFile = () => {
+        setFile(null);
+    };
     return (
         <div className="pl-4 pr-4">
             {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
             <div className="max-w-2xl mx-auto">
                 <div className="flex flex-col space-y-4">
-                    <div className='flex flex-col'>                       
-                        {olimpiada.length > 0 ? (
-                            <Card className="flex flex-col h-full hover:bg-zinc-50">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <CardTitle className="text-xl">{olimpiada[0].nombre}</CardTitle>
-                                        <Badge className="ml-2">
-                                            {olimpiada[0].gestion}
-                                        </Badge>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="flex-grow">
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                                            <div>
-                                                <p className="text-sm font-medium">Fecha de inicio:</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {formatDate(olimpiada[0].fecha_inicio)}
-                                                </p>
-                                            </div>
-                                            
-                                        <div className="flex items-center gap-2">
-                                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                                            <div>
-                                                <p className="text-sm font-medium">Fecha de fin:</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {formatDate(olimpiada[0].fecha_fin)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="border-t">
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <BookOpen className="h-4 w-4" />
-                                        <span>
-                                            Categorías disponibles: {Array.from(areasCategorias.values()).reduce((total, valores) => total + valores.length, 0)}
-                                        </span>
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        ) : (
-                            <Card className="flex flex-col h-full hover:bg-zinc-50">
-                                <CardContent className="pt-6">
-                                    <p className='text-lg text-center text-red-500'>No existe una olimpiada vigente</p>
-                                    <p className='text-sm text-gray-500 text-center'>revise las fechas de las olimpiadas</p>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
-
-                    {cargandoCategorias && olimpiada.length > 0 && (
-                        <Alert>
-                            <AlertDescription className="flex items-center">
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                <p className='text-sm text-blue-500'>Espere por favor, estamos cargando categorías y áreas...</p>
-                            </AlertDescription>
-                        </Alert>
-                    )}
-
+                    
+                    
+                    
+                    
+                    <p className="text-lg">Seleccione el archivo Excel con los postulantes</p>
+                    <span className="text-sm text-gray-500">recuerde que puede descargar el excel con el formato aquí: 
+                    <a href="https://ohsansi.up.railway.app/" className="text-blue-500 hover:text-blue-700">https://ohsansi.up.railway.app/</a></span>
+                    
                     {!cargandoCategorias && olimpiada.length > 0 && (
                         <>
-                            <p className="text-lg">Seleccione el archivo Excel con los postulantes</p>
-                            <span className="text-sm text-gray-500">recuerde que puede descargar el excel con el formato aquí: 
-                            <a href="https://ohsansi.up.railway.app/" className="text-blue-500 hover:text-blue-700">https://ohsansi.up.railway.app/</a></span>
-                            
                             <div
                                 className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors hover:bg-zinc-50"
                                 onDrop={handleDrop}
@@ -420,16 +369,51 @@ export default function ExcelUploader() {
                                     Solo archivos Excel (.xlsx, .xls)
                                 </p>
                             </div>
-
+                            
+                            {file !== null && (
+                                <>
+                                    <p className="text-lg">Archivo seleccionado</p>
+                                    <div className="flex justify-between text-sm text-gray-600 border-t border p-2 border-gray-400 rounded">
+                                    <div className='flex items-center gap-2'>
+                                        <FileSpreadsheet className="h-4 w-4" />
+                                        <p>Archivo: {file?.name}</p>
+                                        <p>{postulantes.length > 0 ? 'Excel con ' + postulantes.length + ' postulantes' : 'sin postulantes'}</p>
+                                        </div>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon"
+                                            onClick={() => handleDeleteFile()}
+                                            className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-100"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
+                            <div className="flex justify-end">
+                            
+                            <Button 
+                                className='mr-2'
+                                variant="outline" 
+                                onClick={() => handleDeleteFile}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button 
+                                
+                                disabled = {file === null}
+                                onClick={handleProcesar}
+                            >
+                                Confirmar
+                            </Button>
+                            </div>
+                            
                             <Dialog open={showDialog} onOpenChange={setShowDialog}>
                                 <DialogHeader>
                                     <DialogTitle>
                                         {errores.length > 0 ? 
                                             <div className="space-y-2">
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <FileSpreadsheet className="h-4 w-4" />
-                                                    <p>Archivo: {postulantes.length > 0 ? 'Excel con ' + postulantes.length + ' postulantes' : 'No hay archivo'}</p>
-                                                </div>
+                                                
                                                 <p className='text-red-500'>Se han detectado errores de formato en el archivo subido</p>
                                                 {errores.map((error, index) => (
                                                     <div key={index} className="flex items-center justify-between text-sm text-red-500">
@@ -452,40 +436,47 @@ export default function ExcelUploader() {
                                         }
                                     </DialogTitle>
                                 </DialogHeader>
-                                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                                <DialogContent className="max-h-[80vh]">
                                     {errores.length > 0 ? (
-                                        <div className="space-y-2">
+                                        <div className="max-h-[80vh] overflow-y-auto">
                                             {errores.map((error, index) => (
                                                 <div key={index} className="text-sm text-red-500">
                                                     {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
                                                 </div>
                                             ))}
+                                            
                                         </div>
                                     ) : (
-                                        <div >
-                                            <p className='pb-6 text-green-600'>El archivo está listo para ser procesado</p>
-                                            <DialogFooter>
-                                                
-                                                <Button 
-                                                    
-                                                    onClick={handleConfirmar}
-                                                >
-                                                    Confirmar
-                                                </Button>
-                                                <Button 
-                                                    variant="outline" 
-                                                    onClick={() => setShowDialog(false)}
-                                                >
-                                                    Cancelar
-                                                </Button>
-                                                
-                                            </DialogFooter>
-                                        </div>
+                                        <p className='pb-6 text-green-600'>El archivo está listo para ser procesado</p>    
                                     )}
+                                    <DialogFooter>        
+                                        <Button 
+                                            variant="outline" 
+                                            onClick={() => setShowDialog(false)}
+                                        >
+                                            Cancelar
+                                        </Button>
+
+                                        <Button 
+                                            disabled = {errores.length > 0}
+                                            onClick={handleConfirmar}
+                                        >
+                                            Confirmar
+                                        </Button>                                        
+                                    </DialogFooter>
                                 </DialogContent>
                             </Dialog>
                         </>
                     )}
+                    {cargandoCategorias && olimpiada.length > 0 && (
+                        <Alert>
+                            <AlertDescription className="flex items-center">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <p className='text-sm text-blue-500'>Espere por favor, estamos cargando categorías y áreas...</p>
+                            </AlertDescription>
+                        </Alert>
+                    )}
+
                 </div>
             </div>
         </div>

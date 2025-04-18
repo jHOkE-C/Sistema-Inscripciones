@@ -178,7 +178,7 @@ export const validarFila = (
 
     const provinciaEncontrada = provincias.find(p => 
         p.nombre.toLowerCase() === fila.provincia.toLowerCase() 
-        && p.departamento_id === departamentoEncontrado?.ID.toString()
+      //&& p.departamento_id === departamentoEncontrado?.ID.toString()
     );
     if (!provinciaEncontrada) {
         errores.push({
