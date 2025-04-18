@@ -11,6 +11,7 @@ import NotFoundPage from "../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
+import { FileUploadModal } from "./file-upload-modal";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -50,49 +51,57 @@ const Page = () => {
     };
     if (loading) return <Loading />;
     return (
-        <>
-            <ReturnComponent to={`/`} />
-            {openFormResponsable && (
-                <FormResponsable
-                    onClose={() => {
-                        setOpenFormResponsable(false);
-                        setSuccess("¡Registro de Responsable Exitoso!");
-                    }}
+      <>
+        <ReturnComponent to={`/`} />
+        {openFormResponsable && (
+          <FormResponsable
+            onClose={() => {
+              setOpenFormResponsable(false);
+              setSuccess("¡Registro de Responsable Exitoso!");
+            }}
+          />
+        )}
+        <div className="min-h-screen py-5">
+          <div className="container mx-auto ">
+            <Card>
+              <CardTitle>
+                <h1 className="text-2xl font-bold text-center">
+                  Listas de Postulantes
+                </h1>
+              </CardTitle>
+              <CardContent className="space-y-5">
+                <FileUploadModal
+                  maxFiles={1}
+                  maxSize={10}
+                  accept=".xlsx,.xls"
+                  onFilesChange={(files) =>
+                    console.log("Files changed:", files)
+                  }
+                  triggerText="Subir archivo"
+                  title="Añadir archivo excel"
+                  description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
                 />
-            )}
-            <div className="min-h-screen py-5">
-                <div className="container mx-auto ">
-                    <Card>
-                        <CardTitle>
-                            <h1 className="text-2xl font-bold text-center">
-                                Listas de Postulantes
-                            </h1>
-                        </CardTitle>
-                        <CardContent className="space-y-5">
-                            <CreateList
-                                refresh={fetchData}
-                                number={data.length + 1}
-                            />
-                            <DataTable columns={columns} data={data} />
-                        </CardContent>
-                    </Card>
-                </div>
-                <ShareUrl />
-            </div>
-            {error && (
-                <AlertComponent
-                    description={error}
-                    variant="destructive"
-                    onClose={() => setError(null)}
-                />
-            )}
-            {success && (
-                <AlertComponent
-                    description={success}
-                    onClose={() => setSuccess(null)}
-                />
-            )}
-        </>
+                <CreateList refresh={fetchData} number={data.length + 1} />
+                <DataTable columns={columns} data={data} />
+              </CardContent>
+            </Card>
+          </div>
+          <ShareUrl />
+        </div>
+        {error && (
+          <AlertComponent
+            description={error}
+            variant="destructive"
+            onClose={() => setError(null)}
+          />
+        )}
+        {success && (
+          <AlertComponent
+            description={success}
+            onClose={() => setSuccess(null)}
+          />
+        )}
+      </>
     );
 };
 
