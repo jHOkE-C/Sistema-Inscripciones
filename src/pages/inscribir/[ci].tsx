@@ -13,6 +13,7 @@ import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import { FileUploadModal } from "./file-upload-modal";
 import { Download } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const Page = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -52,8 +53,10 @@ const Page = () => {
   };
   if (loading) return <Loading />;
   return (
-    <>
-      <ReturnComponent to={`/`} />
+    <div className="flex flex-col min-h-screen">
+      <div className="p-2">
+        <ReturnComponent to={`/`} />
+      </div>
       {openFormResponsable && (
         <FormResponsable
           onClose={() => {
@@ -62,9 +65,9 @@ const Page = () => {
           }}
         />
       )}
-      <div className="min-h-screen py-5">
+      <div className="m py-5">
         <div className="container mx-auto ">
-          <Card>
+          <Card className="border-0 shadow-white">
             <CardTitle>
               <h1 className="text-2xl font-bold text-center">
                 Listas de Postulantes
@@ -114,7 +117,8 @@ const Page = () => {
           onClose={() => setSuccess(null)}
         />
       )}
-    </>
+      <Footer />
+    </div>
   );
 };
 

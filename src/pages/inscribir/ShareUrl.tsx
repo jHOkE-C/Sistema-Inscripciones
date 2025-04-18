@@ -5,7 +5,7 @@ import { Copy, QrCodeIcon, Share2 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
-import {QRCode} from "react-qrcode-logo";
+import { QRCode } from "react-qrcode-logo";
 
 export default function ShareUrl() {
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -23,12 +23,10 @@ export default function ShareUrl() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="default"
-          className="fixed bottom-4 right-4 p-3 rounded-full shadow-lg  text-white hover:"
-        >
+        <div className="fixed bottom-1/12 right-5 p-3 rounded-full shadow-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-300 cursor-pointer">
           <Share2 className="w-6 h-6   dark:text-white" />
-        </Button>
+        </div>
+       
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center p-4 w-80 max-w-full">
         <p className="text-lg font-semibold mb-4">Compartir enlace</p>
@@ -47,15 +45,21 @@ export default function ShareUrl() {
           onClick={() => setShowQrCode(!showQrCode)}
           className="w-full mb-2"
         >
-          <QrCodeIcon/>
+          <QrCodeIcon />
           QR
         </Button>
-        <QRCode value={currentUrl} logoImage="/logo_umss.png"  logoWidth={50} logoPadding={2} size={200}/>
+        <QRCode
+          value={currentUrl}
+          logoImage="/logo_umss.png"
+          logoWidth={50}
+          logoPadding={2}
+          size={200}
+        />
         {showQrCode && (
           <Card className="w-full mt-4">
             <CardTitle className="text-center">Escanea el código QR</CardTitle>
             <CardContent className="flex justify-center">
-              <QRCodeCanvas  value={currentUrl} size={200} />
+              <QRCodeCanvas value={currentUrl} size={200} />
             </CardContent>
           </Card>
         )}
