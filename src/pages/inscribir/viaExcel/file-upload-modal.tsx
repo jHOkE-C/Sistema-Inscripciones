@@ -390,28 +390,54 @@ export default function FileUploadModal({
                     </DialogTitle>
                     {errores.length > 0 ? (
                       <div className="h-auto overflow-y-auto">
+                        <p className="text-sm pb-4 text-zinc-500">
+                          Se encontraron errores en el archivo. puede usar los
+                          checkbox para marcar los errores que vas corrigiendo.
+                        </p>
                         {errores.map((error, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between text-sm text-red-500"
+                            className="flex items-center justify-between text-sm mb-2 text-red-500 transition-all duration-200"
                           >
-                            <div>
+                            <div className="error-text border-1 p-2 rounded-md">
                               {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
                             </div>
-                            <input type="checkbox" />
+                            <input
+                              type="checkbox"
+                              className="h-4 w-4 cursor-pointer ml-2"
+                              onChange={(e) => {
+                                // Get the parent div and the text element
+                                const parentDiv =
+                                  e.currentTarget.closest("div");
+                                const textElement =
+                                  parentDiv?.querySelector(".error-text");
+
+                                if (e.currentTarget.checked) {
+                                  // Apply completed styling
+                                  parentDiv?.classList.remove("text-red-500");
+                                  parentDiv?.classList.add("text-zinc-400");
+                                  textElement?.classList.add("line-through");
+                                } else {
+                                  // Remove completed styling
+                                  parentDiv?.classList.remove("text-zinc-400");
+                                  parentDiv?.classList.add("text-red-500");
+                                  textElement?.classList.remove("line-through");
+                                }
+                              }}
+                            />
                           </div>
                         ))}
-                          <DialogFooter className="mt-4">
-                            <Button onClick={()=>setShowDialog(false)}>
-                                Cerrar
-                            </Button>
-                          </DialogFooter>
+                        <DialogFooter className="mt-4">
+                          <Button onClick={() => setShowDialog(false)}>
+                            Cerrar
+                          </Button>
+                        </DialogFooter>
                       </div>
                     ) : (
                       <>
                         <p className="text-sm pb-4 text-zinc-500">
-                          El archivo fue procesado correctamente.
-                          No se encontraron errores.
+                          El archivo fue procesado correctamente. No se
+                          encontraron errores.
                         </p>
                         <DialogFooter>
                           <Button
