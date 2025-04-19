@@ -30,6 +30,8 @@ import { validarCamposRequeridos, validarFila } from "./validations";
 import FileUpload from "./fileUpload";
 import axios from "axios";
 import { toast } from "sonner";
+import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
+import { HoverCardContent } from "@/components/ui/hover-card";
 
 type AreaConCategorias = {
   id: number;
@@ -373,12 +375,26 @@ export default function FileUploadModal({
                   <Button variant="outline" onClick={() => handleCancel()}>
                     Cancelar
                   </Button>
-                  <Button
-                    disabled={files.length === 0 || files.length > maxFiles}
-                    onClick={handleProcesar}
-                  >
-                    Confirmar
-                  </Button>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <div>
+                        <Button
+                          disabled={
+                            files.length === 0 || files.length > maxFiles
+                          }
+                          onClick={handleProcesar}
+                        >
+                          Confirmar
+                        </Button>
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent className=" p-2">
+                      <p className="text-sm text-zinc-500">
+                        No se ha seleccionado ningun archivo o el archivo es muy
+                        grande.
+                      </p>
+                    </HoverCardContent>
+                  </HoverCard>
                 </DialogFooter>
 
                 <Dialog open={showDialog} onOpenChange={setShowDialog}>
