@@ -265,8 +265,9 @@ export default function FileUploadModal({
                 setErrores(todosErrores);
                 setShowDialog(true);
             } catch (error) {
-                console.error('Error al procesar el archivo:', error);}
+                console.error('Error al procesar el archivo:', error);
                 toast.error('Error al procesar el archivo. Por favor, verifique el formato.');      
+            }
         };
         reader.onerror = () => {
             toast.error('Error al leer el archivo. Por favor, intente nuevamente.');
