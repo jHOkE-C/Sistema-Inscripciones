@@ -89,6 +89,7 @@ export default function FileUploadModal({
             const provResponse = await axios.get(`${API_URL}/api/provincias`);
             setProvincias(provResponse.data);
             
+            console.log('Provincias cargadas'+provResponse.data);
             const colResponse = await axios.get(`${API_URL}/api/colegios`);
             setColegios(colResponse.data);
             
@@ -307,7 +308,9 @@ export default function FileUploadModal({
             variant: "default"
         });
         console.log(postulantes);
-        handleCancel();
+        setFiles([]);
+        setPostulantes([]);
+        setShowDialog(false);
     } catch (error) {
         console.error('Error al registrar postulantes:', error);
         setAlert({
@@ -329,6 +332,8 @@ export default function FileUploadModal({
   };
 
   return (
+    <>
+    {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>{triggerText}</Button>
@@ -347,7 +352,7 @@ export default function FileUploadModal({
                             </AlertDescription>
                         </Alert>
                     )}
-                    {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
+       
                     
                     {!cargandoCategorias && (
                         <>
@@ -415,5 +420,6 @@ export default function FileUploadModal({
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
