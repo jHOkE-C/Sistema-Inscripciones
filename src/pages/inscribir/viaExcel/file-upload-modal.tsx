@@ -89,12 +89,12 @@ export default function FileUploadModal({
             const provResponse = await axios.get(`${API_URL}/api/provincias`);
             setProvincias(provResponse.data);
             
-            console.log('Provincias cargadas'+provResponse.data);
+            
             const colResponse = await axios.get(`${API_URL}/api/colegios`);
             setColegios(colResponse.data);
             
             setCargandoCategorias(true);
-            console.log('Cargando categorias');
+            
         } catch (error) {
             console.error('Error al cargar olimpiadas:', error);
         } finally {
@@ -144,7 +144,7 @@ export default function FileUploadModal({
             );
             areasMap.set(grado.id, categoriasConArea);
           });
-          console.log('Categorias cargadas222222');
+          
           setAreasCategorias(areasMap);
         } catch (error) {
           console.error("Error al cargar datos de validación:", error);
@@ -265,7 +265,7 @@ export default function FileUploadModal({
                 });
                 
                 setPostulantes(postulantesConvertidos);
-                console.log('Postulantes convertidos:', postulantesConvertidos);
+                
                 setErrores(todosErrores);
                 setShowDialog(true);
             } catch (error) {
@@ -396,9 +396,9 @@ export default function FileUploadModal({
                                             
                                         </div>
                                     ) : (
+                                      <>
                                         <p className='pb-6 text-green-600'>El archivo está listo para ser procesado</p>    
-                                    )}
-                                    <DialogFooter>        
+                                        <DialogFooter>        
                                         <Button 
                                             variant="outline" 
                                             onClick={() => setShowDialog(false)}
@@ -412,7 +412,10 @@ export default function FileUploadModal({
                                         >
                                             Confirmar
                                         </Button>                                        
-                                    </DialogFooter>
+                                        </DialogFooter>
+                                      </>
+                                    )}
+                                    
                                 </DialogContent>
                             </Dialog>
                         </>
