@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Calendar, Medal, Trophy, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { OlimpiadasCarousel } from "./carousel";
 
 const PageHome = () => {
   const ci = localStorage.getItem("ci");
@@ -32,7 +33,9 @@ const PageHome = () => {
 
       {/* Main */}
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white">
+        <section className="w-full py-12 md:py-24 lg:py-5 bg-gradient-to-b from-zinc-50 to-white">
+            <h2 className="text-3xl md:text-5xl text-center md:p-10 text-zinc-800 tracking-wide">OLIMPIADAS NACIONALES <br/> SAN SIMÓN {new Date().getFullYear()}</h2>
+          <OlimpiadasCarousel />
           <div className="px-6 md:px-10">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="space-y-4">
