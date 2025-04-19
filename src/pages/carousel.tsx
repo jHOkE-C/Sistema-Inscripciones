@@ -32,6 +32,7 @@ interface Fase {
   olimpiada_id: number;
 }
 
+
 interface Olimpiada {
   id: number;
   nombre: string;
@@ -142,7 +143,7 @@ export function OlimpiadasCarousel() {
                     )}
                   </CardContent>
                   <CardFooter className="p-4 pt-0 mt-auto">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled={olimpiada.fase_actual?.tipo_plazo != 'Inscripcion'}>
                       Inscribite Ahora
                     </Button>
                   </CardFooter>
