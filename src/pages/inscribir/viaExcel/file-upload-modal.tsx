@@ -20,6 +20,7 @@ import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationEr
 import { validarCamposRequeridos, validarFila } from './validations';
 import { AlertComponent } from "@/components/AlertComponent";
 import FileUpload from "./fileUpload";
+import axios from "axios";
 
 type AreaConCategorias = {
   id: number;
@@ -79,18 +80,18 @@ export default function FileUploadModal({
   useEffect(() => {
     const fetchOlimpiadas = async () => {
         try {
-            const olimpiadaResponse = await fetch(`${API_URL}/api/olimpiadas/hoy`);
-            const olimpiadaData = await olimpiadaResponse.json();
-            setOlimpiada(olimpiadaData);
-            const deptResponse = await fetch(`${API_URL}/api/departamentos`);
-            const deptData = await deptResponse.json();
-            setDepartamentos(deptData);
-            const provResponse = await fetch(`${API_URL}/api/provincias`);
-            const provData = await provResponse.json();
-            setProvincias(provData);
-            const colResponse = await fetch(`${API_URL}/api/colegios`);
-            const colData = await colResponse.json();
-            setColegios(colData);
+            const olimpiadaResponse = await axios.get(`${API_URL}/api/olimpiadas/hoy`);
+            setOlimpiada(olimpiadaResponse.data);
+            
+            const deptResponse = await axios.get(`${API_URL}/api/departamentos`);
+            setDepartamentos(deptResponse.data);
+            
+            const provResponse = await axios.get(`${API_URL}/api/provincias`);
+            setProvincias(provResponse.data);
+            
+            const colResponse = await axios.get(`${API_URL}/api/colegios`);
+            setColegios(colResponse.data);
+            
             setCargandoCategorias(true);
         } catch (error) {
             console.error('Error al cargar olimpiadas:', error);
@@ -106,8 +107,8 @@ export default function FileUploadModal({
     if (loading || !open || !cargandoCategorias) return;
     const fetchData = async () => {
         try {
-            const areasConCategorias = await fetch(`${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`);
-            const areasConCategoriasData = await areasConCategorias.json() as AreaConCategorias[];
+            const areasConCategorias = await axios.get(`${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`);
+            const areasConCategoriasData = areasConCategorias.data as AreaConCategorias[];
             const areasMap = new Map<string, CategoriaExtendida[]>();
             for (const grado of grados) {
                 const categorias = await getCategoriaAreaPorGradoOlimpiada(grado.id, olimpiada[0].id.toString());
