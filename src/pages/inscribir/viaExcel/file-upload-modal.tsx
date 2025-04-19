@@ -308,10 +308,6 @@ export default function FileUploadModal({
     setOpen(false);
   };
 
-  const handleDeleteFile = () => {
-    setFiles([]);
-  };
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -336,7 +332,7 @@ export default function FileUploadModal({
                             
                             <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
                               <Button variant="outline"
-                                  onClick={() => handleDeleteFile()}
+                                  onClick={() => handleCancel()}
                               >
                                   Cancelar
                               </Button>
