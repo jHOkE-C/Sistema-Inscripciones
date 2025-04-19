@@ -2,7 +2,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CreateList } from "./CreateList";
 import { DataTable } from "./TableList";
 import { columns, ListaPostulantes } from "./columns";
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ShareUrl from "./ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
@@ -11,7 +11,7 @@ import NotFoundPage from "../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
-import { FileUploadModal } from "./file-upload-modal";
+const FileUploadModal = React.lazy(() => import("./viaExcel/file-upload-modal"));
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
 
@@ -84,17 +84,20 @@ const Page = () => {
                 </Link>
 
                 <div className="flex gap-2 items-center">
-                  <FileUploadModal
-                    maxFiles={1}
-                    maxSize={10}
-                    accept=".xlsx,.xls"
-                    onFilesChange={(files) =>
-                      console.log("Files changed:", files)
-                    }
-                    triggerText="Añadir archivo excel"
-                    title="Añadir archivo excel"
-                    description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
-                  />
+                  <Suspense fallback={<Loading />}>
+                    <FileUploadModal
+                        maxFiles={1}
+                        maxSize={10}
+                        accept=".xlsx,.xls"
+                      onFilesChange={(files) =>
+                        console.log("Files changed:", files)
+                      }
+                      triggerText="Añadir archivo excel"
+                      title="Añadir archivo excel"
+                      description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
+                    />
+                  </Suspense>
+                  
                   <CreateList refresh={fetchData} number={data.length + 1} />
                 </div>
               </div>
