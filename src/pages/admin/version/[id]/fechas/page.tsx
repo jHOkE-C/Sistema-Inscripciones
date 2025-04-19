@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import { differenceInCalendarDays, addDays } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -183,10 +183,12 @@ export default function Page() {
         if (!validateAll()) return;
         try {
             await axios.post(`${API_URL}/api/cronogramas/fases`, data);
-            toast.success("Se registró el rango de fechas exitosamente.");
+            toast.success("Se registró exitosamente.");
             //nav(`/admin/olimpiadas/${id}`);
-        } catch {
-            toast.error("Error al guardar. Inténtalo de nuevo.");
+        } catch(e) {
+
+            const errorMessage = (e as AxiosError<{ error?: string }>).response?.data?.error || "Error al guardar. Inténtalo de nuevo.";
+            toast.error(errorMessage);
         }
     }
     const getTipoPlazoLabel = (text: string) => {
