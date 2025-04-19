@@ -401,6 +401,11 @@ export default function FileUploadModal({
                             <input type="checkbox" />
                           </div>
                         ))}
+                          <DialogFooter className="mt-4">
+                            <Button onClick={()=>setShowDialog(false)}>
+                                Cerrar
+                            </Button>
+                          </DialogFooter>
                       </div>
                     ) : (
                       <>
