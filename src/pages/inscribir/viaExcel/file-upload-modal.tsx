@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import {
@@ -343,7 +343,9 @@ export default function FileUploadModal({
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>{triggerText}</Button>
+          <Button>
+            <Plus /> {triggerText}
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[500px] md:max-w-[600px]">
           <DialogHeader>
@@ -384,7 +386,7 @@ export default function FileUploadModal({
                           }
                           onClick={handleProcesar}
                         >
-                          Confirmar
+                          Continuar
                         </Button>
                       </div>
                     </HoverCardTrigger>

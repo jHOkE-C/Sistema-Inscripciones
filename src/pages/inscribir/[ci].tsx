@@ -14,7 +14,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 const FileUploadModal = React.lazy(
   () => import("./viaExcel/file-upload-modal")
 );
-import { Download } from "lucide-react";
+import { Download} from "lucide-react";
 import Footer from "@/components/Footer";
 import {Toaster } from "sonner";
 
@@ -71,7 +71,7 @@ const Page = () => {
         <div className="container mx-auto ">
           <Card className="border-0 shadow-white">
             <CardTitle>
-              <h1 className="text-2xl font-bold text-center">
+              <h1 className="text-3xl font-bold text-center">
                 Listas de Postulantes
               </h1>
             </CardTitle>
@@ -94,8 +94,8 @@ const Page = () => {
                       onFilesChange={(files) =>
                         console.log("Files changed:", files)
                       }
-                      triggerText="Añadir archivo excel"
-                      title="Añadir archivo excel"
+                      triggerText="Añadir archivo Excel"
+                      title="Añadir archivo Excel"
                       description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
                     />
                   </Suspense>
