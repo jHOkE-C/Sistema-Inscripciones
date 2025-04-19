@@ -106,32 +106,49 @@ export default function FileUploadModal({
   useEffect(() => {
     if (loading || !open || !cargandoCategorias) return;
     const fetchData = async () => {
-        try {
-            const areasConCategorias = await axios.get(`${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`);
-            const areasConCategoriasData = areasConCategorias.data as AreaConCategorias[];
-            const areasMap = new Map<string, CategoriaExtendida[]>();
-            for (const grado of grados) {
-                const categorias = await getCategoriaAreaPorGradoOlimpiada(grado.id, olimpiada[0].id.toString());
-                const categoriasConArea: CategoriaExtendida[] = categorias.map((cat) => {
-                    const area = areasConCategoriasData.find((a) =>
-                        a.categorias.some((c) => c.id === cat.id)
-                    );
-            
-                    return {
-                        ...cat,
-                        areaId: area?.id ?? 0,
-                        areaNombre: area?.nombre ?? 'Desconocida',
-                    };
-                });
-                areasMap.set(grado.id, categoriasConArea);
-            }
+      try {
+        // Hacer todas las peticiones en paralelo
+        const [areasConCategorias, ...gradosCategorias] = await Promise.all([
+          axios.get(
+            `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
+          ),
+          ...grados.map((grado) =>
+            getCategoriaAreaPorGradoOlimpiada(
+              grado.id,
+              olimpiada[0].id.toString()
+            )
+          ),
+        ]);
 
-            setAreasCategorias(areasMap);
-        } catch (error) {
-            console.error('Error al cargar datos de validación:', error);
-        } finally {
-            setCargandoCategorias(false);
-        }
+        const areasConCategoriasData =
+          areasConCategorias.data as AreaConCategorias[];
+        const areasMap = new Map<string, CategoriaExtendida[]>();
+
+        // Procesar resultados
+        grados.forEach((grado, index) => {
+          const categorias = gradosCategorias[index];
+          const categoriasConArea: CategoriaExtendida[] = categorias.map(
+            (cat) => {
+              const area = areasConCategoriasData.find((a) =>
+                a.categorias.some((c) => c.id === cat.id)
+              );
+
+              return {
+                ...cat,
+                areaId: area?.id ?? 0,
+                areaNombre: area?.nombre ?? "Desconocida",
+              };
+            }
+          );
+          areasMap.set(grado.id, categoriasConArea);
+        });
+
+        setAreasCategorias(areasMap);
+      } catch (error) {
+        console.error("Error al cargar datos de validación:", error);
+      } finally {
+        setCargandoCategorias(false);
+      }
     };
 
     fetchData();
