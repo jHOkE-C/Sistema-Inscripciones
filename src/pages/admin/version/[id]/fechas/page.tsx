@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { differenceInCalendarDays, addDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ChevronLeft } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import {
     Table,
@@ -196,168 +196,188 @@ export default function Page() {
     };
 
     return (
-        <div className="container mx-auto p-6">
-            <Toaster />
-            <Card className="mb-4">
-                <CardHeader>
-                    <CardTitle>
-                        <h1 className="text-2xl font-bold ">
-                            Definicion de Fases
-                        </h1>
-                    </CardTitle>
-                    <CardDescription>
-                        <h2 className="text-xl font-semibold ">
-                            Version de Olimpiada {olimpiada.nombre} –{" "}
-                            {olimpiada.gestion}
-                        </h2>
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                            <CalendarIcon className="h-5 w-5 text-blue-600" />
-                            <div>
-                                <p className="text-sm text-muted-foreground">
-                                    Fecha de inicio:
-                                </p>
-                                <p className="font-medium">
-                                    {formatDate(olimpiada.fecha_inicio)}
-                                </p>
+        <>
+            <div className="pl-4 pt-4">
+                <Link to="/admin" className="">
+                    <Button
+                        variant="ghost"
+                        className="flex items-center gap-1 mb-4"
+                    >
+                        <ChevronLeft className="h" />
+                        Volver
+                    </Button>
+                </Link>
+            </div>
+            <div className="container mx-auto p-6">
+                <Toaster />
+                <Card className="mb-4">
+                    <CardHeader>
+                        <CardTitle>
+                            <h1 className="text-2xl font-bold ">
+                                Definicion de Fases de Version de Olimpiada
+                            </h1>
+                        </CardTitle>
+                        <CardDescription>
+                            <h2 className="text-xl font-semibold ">
+                                {olimpiada.nombre} – {olimpiada.gestion}
+                            </h2>
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4  p-4 bg-gray-50 rounded-lg">
+                            <div className="flex items-center gap-2">
+                                <CalendarIcon className="h-5 w-5 text-blue-600" />
+                                <div>
+                                    <p className="text-sm text-muted-foreground">
+                                        Fecha de inicio:
+                                    </p>
+                                    <p className="font-medium">
+                                        {formatDate(olimpiada.fecha_inicio)}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <CalendarIcon className="h-5 w-5 text-blue-600" />
+                                <div>
+                                    <p className="text-sm text-muted-foreground">
+                                        Fecha de finalización:
+                                    </p>
+                                    <p className="font-medium">
+                                        {formatDate(olimpiada.fecha_fin)}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <CalendarIcon className="h-5 w-5 text-blue-600" />
-                            <div>
-                                <p className="text-sm text-muted-foreground">
-                                    Fecha de finalización:
-                                </p>
-                                <p className="font-medium">
-                                    {formatDate(olimpiada.fecha_fin)}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
 
-            <Card>
-                <CardContent>
-                    <Table >
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Fase</TableHead>
-                                <TableHead>Inicio</TableHead>
-                                <TableHead>Fin</TableHead>
-                                <TableHead>Duración</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {cronos.map((c, index) => {
-                                return (
-                                    <TableRow key={c.tipo_plazo}>
-                                        <TableCell>
-                                            <Badge variant="outline">
-                                                {getTipoPlazoLabel(
-                                                    c.tipo_plazo
-                                                )}
-                                            </Badge>
-                                        </TableCell>
+                <Card>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Fase</TableHead>
+                                    <TableHead>Inicio</TableHead>
+                                    <TableHead>Fin</TableHead>
+                                    <TableHead>Duración</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {cronos.map((c, index) => {
+                                    return (
+                                        <TableRow key={c.tipo_plazo}>
+                                            <TableCell>
+                                                <Badge variant="outline">
+                                                    {getTipoPlazoLabel(
+                                                        c.tipo_plazo
+                                                    )}
+                                                </Badge>
+                                            </TableCell>
 
-                                        <TableCell>
-                                            <span>
-                                                {c.fecha_inicio
-                                                    ? formatDate(c.fecha_inicio)
-                                                    : `seleccione la fecha fin de ${
-                                                          cronos[index - 1]
-                                                              .tipo_plazo
-                                                      }`}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        disabled={
-                                                            !c.fecha_inicio
-                                                        }
-                                                        variant="link"
-                                                        size="sm"
-                                                        className="flex items-center font-normal "
-                                                    >
-                                                        <CalendarIcon className="w-4 h-4 mr-1" />
-                                                        {c.fecha_fin
-                                                            ? formatDate(
-                                                                  c.fecha_fin
-                                                              )
-                                                            : "Seleccione una fecha"}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="p-0">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={addDays(
-                                                            new Date(
-                                                                c.fecha_fin
-                                                            ),
-                                                            1
-                                                        )}
-                                                        onSelect={(d) =>
-                                                            d &&
-                                                            onSelectDate(
-                                                                index,
-                                                                d,
-                                                                c.tipo_plazo,
-                                                                "fecha_fin"
-                                                            )
-                                                        }
-                                                        disabled={(date) => {
-                                                            const minEnd =
-                                                                addDays(
-                                                                    new Date(
-                                                                        c.fecha_inicio
-                                                                    ),
-                                                                    1
-                                                                );
-                                                            return (
-                                                                date < minEnd ||
-                                                                date < vStart ||
-                                                                date > vEnd
-                                                            );
-                                                        }}
-                                                        initialFocus
-                                                        locale={es}
-                                                        defaultMonth={
-                                                            c.fecha_inicio
-                                                                ? new Date(
-                                                                      c.fecha_inicio
+                                            <TableCell>
+                                                <span>
+                                                    {c.fecha_inicio
+                                                        ? formatDate(
+                                                              c.fecha_inicio
+                                                          )
+                                                        : `seleccione la fecha fin de ${
+                                                              cronos[index - 1]
+                                                                  .tipo_plazo
+                                                          }`}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            disabled={
+                                                                !c.fecha_inicio
+                                                            }
+                                                            variant="link"
+                                                            size="sm"
+                                                            className="flex items-center font-normal "
+                                                        >
+                                                            <CalendarIcon className="w-4 h-4 mr-1" />
+                                                            {c.fecha_fin
+                                                                ? formatDate(
+                                                                      c.fecha_fin
                                                                   )
-                                                                : undefined
-                                                        }
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                        </TableCell>
-                                        <TableCell>
-                                            {c.fecha_inicio && c.fecha_fin
-                                                ? differenceInCalendarDays(
-                                                      new Date(c.fecha_fin),
-                                                      new Date(c.fecha_inicio)
-                                                  )
-                                                : "N/A"}{" "}
-                                            días
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                    <div className="">
-                        <Button onClick={onSave}>Guardar Cambios</Button>
-                    </div>
-                </CardFooter>
-            </Card>
-        </div>
+                                                                : "Seleccione una fecha"}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={addDays(
+                                                                new Date(
+                                                                    c.fecha_fin
+                                                                ),
+                                                                1
+                                                            )}
+                                                            onSelect={(d) =>
+                                                                d &&
+                                                                onSelectDate(
+                                                                    index,
+                                                                    d,
+                                                                    c.tipo_plazo,
+                                                                    "fecha_fin"
+                                                                )
+                                                            }
+                                                            disabled={(
+                                                                date
+                                                            ) => {
+                                                                const minEnd =
+                                                                    addDays(
+                                                                        new Date(
+                                                                            c.fecha_inicio
+                                                                        ),
+                                                                        1
+                                                                    );
+                                                                return (
+                                                                    date <
+                                                                        minEnd ||
+                                                                    date <
+                                                                        vStart ||
+                                                                    date > vEnd
+                                                                );
+                                                            }}
+                                                            initialFocus
+                                                            locale={es}
+                                                            defaultMonth={
+                                                                c.fecha_inicio
+                                                                    ? new Date(
+                                                                          c.fecha_inicio
+                                                                      )
+                                                                    : undefined
+                                                            }
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </TableCell>
+                                            <TableCell>
+                                                {c.fecha_inicio && c.fecha_fin
+                                                    ? differenceInCalendarDays(
+                                                          new Date(c.fecha_fin),
+                                                          new Date(
+                                                              c.fecha_inicio
+                                                          )
+                                                      )
+                                                    : "N/A"}{" "}
+                                                días
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                    <CardFooter className="flex justify-end">
+                        <div className="">
+                            <Button onClick={onSave}>Guardar Cambios</Button>
+                        </div>
+                    </CardFooter>
+                </Card>
+            </div>
+        </>
     );
 }
