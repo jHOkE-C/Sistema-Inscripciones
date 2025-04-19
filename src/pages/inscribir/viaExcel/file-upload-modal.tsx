@@ -18,9 +18,9 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
 import { grados, Departamento, Provincia, Colegio, ExcelPostulante, ValidationError, CategoriaExtendida, Postulante } from './types';
 import { validarCamposRequeridos, validarFila } from './validations';
-import { AlertComponent } from "@/components/AlertComponent";
 import FileUpload from "./fileUpload";
 import axios from "axios";
+import { toast } from "sonner";
 
 type AreaConCategorias = {
   id: number;
@@ -66,11 +66,6 @@ export default function FileUploadModal({
   const [postulantes, setPostulantes] = useState<Postulante[]>([]);
   const [cargandoCategorias, setCargandoCategorias] = useState(false);
   const [olimpiada, setOlimpiada] = useState<Olimpiada[]>([]);
-  const [alert, setAlert] = useState<{
-      title: string;
-      description?: string;
-      variant?: "default" | "destructive";
-  } | null>(null);
   
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [provincias, setProvincias] = useState<Provincia[]>([]);
@@ -208,6 +203,7 @@ export default function FileUploadModal({
                 const camposFaltantes = validarCamposRequeridos(headers);
                 
                 if (camposFaltantes.length > 0) {
+                    toast.error(`Faltan las siguientes columnas: ${camposFaltantes.join(', ')}`);
                     setErrores([{
                         campo: 'Archivo',
                         fila: 0,
@@ -269,29 +265,16 @@ export default function FileUploadModal({
                 setErrores(todosErrores);
                 setShowDialog(true);
             } catch (error) {
-                console.error('Error al procesar el archivo:', error);
-                setAlert({
-                    title: "Error",
-                    description: error instanceof Error ? error.message : 'Error al procesar el archivo. Por favor, verifique el formato.',
-                    variant: "destructive"
-                });
-            }
+                console.error('Error al procesar el archivo:', error);}
+                toast.error('Error al procesar el archivo. Por favor, verifique el formato.');      
         };
         reader.onerror = () => {
-            setAlert({
-                title: "Error",
-                description: "Error al leer el archivo. Por favor, intente nuevamente.",
-                variant: "destructive"
-            });
+            toast.error('Error al leer el archivo. Por favor, intente nuevamente.');
         };
         reader.readAsArrayBuffer(selectedFile);
     } catch (error) {
         console.error('Error al leer el archivo:', error);
-        setAlert({
-            title: "Error",
-            description: "Error al leer el archivo. Por favor, intente nuevamente.",
-            variant: "destructive"
-        });
+        toast.error('Error al leer el archivo. Por favor, intente nuevamente.');
     } finally {
         setLoading(false);
     }
@@ -302,22 +285,14 @@ export default function FileUploadModal({
     
     try {
         setLoading(true);
-        setAlert({
-            title: "Éxito",
-            description: "Postulantes registrados exitosamente",
-            variant: "default"
-        });
+        toast.success('Postulantes registrados exitosamente');
         console.log(postulantes);
         setFiles([]);
         setPostulantes([]);
         setShowDialog(false);
     } catch (error) {
         console.error('Error al registrar postulantes:', error);
-        setAlert({
-            title: "Error",
-            description: "Error al registrar postulantes",
-            variant: "destructive"
-        });
+        toast.error('Error al registrar postulantes');
     } finally {
         setLoading(false);
     }
@@ -333,7 +308,6 @@ export default function FileUploadModal({
 
   return (
     <>
-    {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>{triggerText}</Button>

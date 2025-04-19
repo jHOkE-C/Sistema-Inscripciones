@@ -11,9 +11,12 @@ import NotFoundPage from "../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
-const FileUploadModal = React.lazy(() => import("./viaExcel/file-upload-modal"));
+const FileUploadModal = React.lazy(
+  () => import("./viaExcel/file-upload-modal")
+);
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
+import {Toaster } from "sonner";
 
 const Page = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -35,10 +38,8 @@ const Page = () => {
     setLoading(true);
     try {
       const data = await getListasPostulantes(ci);
-      console.log(data);
       setData(data.data);
     } catch {
-      //setError(e instanceof Error ? e.message : "error desconocido");
       setOpenFormResponsable(true);
     } finally {
       setLoading(false);
@@ -54,6 +55,7 @@ const Page = () => {
   if (loading) return <Loading />;
   return (
     <div className="flex flex-col min-h-screen">
+      <Toaster />
       <div className="p-2">
         <ReturnComponent to={`/`} />
       </div>
@@ -86,9 +88,9 @@ const Page = () => {
                 <div className="flex gap-2 items-center">
                   <Suspense fallback={<Loading />}>
                     <FileUploadModal
-                        maxFiles={1}
-                        maxSize={10}
-                        accept=".xlsx,.xls"
+                      maxFiles={1}
+                      maxSize={10}
+                      accept=".xlsx,.xls"
                       onFilesChange={(files) =>
                         console.log("Files changed:", files)
                       }
@@ -97,7 +99,7 @@ const Page = () => {
                       description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
                     />
                   </Suspense>
-                  
+
                   <CreateList refresh={fetchData} number={data.length + 1} />
                 </div>
               </div>
