@@ -66,7 +66,7 @@ export function OlimpiadasCarousel() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto md:px-4 lg:px-0">
       <Carousel
         opts={{
           align: "start",
@@ -78,9 +78,9 @@ export function OlimpiadasCarousel() {
           {olimpiadas.map((olimpiada) => (
             <CarouselItem
               key={olimpiada.id}
-              className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 "
+              className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3  "
             >
-              <div className="p-6 md:p-1 h-[390px]">
+              <div className="p-6 md:p-1 h-[390px] ">
                 <Card className="overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full -py-1 gap-0">
                   <CardHeader className="p-4 pb-2 bg-blue-600 text-white">
                     <div className="flex items-center justify-between mb-2">
