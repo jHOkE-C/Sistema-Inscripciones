@@ -93,6 +93,7 @@ export default function FileUploadModal({
             setColegios(colResponse.data);
             
             setCargandoCategorias(true);
+            console.log('Cargando categorias');
         } catch (error) {
             console.error('Error al cargar olimpiadas:', error);
         } finally {
@@ -104,55 +105,56 @@ export default function FileUploadModal({
   }, []);
 
   useEffect(() => {
-    if (loading || !open || !cargandoCategorias) return;
-    const fetchData = async () => {
-      try {
-        // Hacer todas las peticiones en paralelo
-        const [areasConCategorias, ...gradosCategorias] = await Promise.all([
-          axios.get(
-            `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
-          ),
-          ...grados.map((grado) =>
-            getCategoriaAreaPorGradoOlimpiada(
-              grado.id,
-              olimpiada[0].id.toString()
-            )
-          ),
-        ]);
+    if (!loading && open && cargandoCategorias){
+      const fetchData = async () => {
+        try {
+          // Hacer todas las peticiones en paralelo
+          const [areasConCategorias, ...gradosCategorias] = await Promise.all([
+            axios.get(
+              `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
+            ),
+            ...grados.map((grado) =>
+              getCategoriaAreaPorGradoOlimpiada(
+                grado.id,
+                olimpiada[0].id.toString()
+              )
+            ),
+          ]);
 
-        const areasConCategoriasData =
-          areasConCategorias.data as AreaConCategorias[];
-        const areasMap = new Map<string, CategoriaExtendida[]>();
+          const areasConCategoriasData =
+            areasConCategorias.data as AreaConCategorias[];
+          const areasMap = new Map<string, CategoriaExtendida[]>();
 
-        // Procesar resultados
-        grados.forEach((grado, index) => {
-          const categorias = gradosCategorias[index];
-          const categoriasConArea: CategoriaExtendida[] = categorias.map(
-            (cat) => {
-              const area = areasConCategoriasData.find((a) =>
-                a.categorias.some((c) => c.id === cat.id)
-              );
+          // Procesar resultados
+          grados.forEach((grado, index) => {
+            const categorias = gradosCategorias[index];
+            const categoriasConArea: CategoriaExtendida[] = categorias.map(
+              (cat) => {
+                const area = areasConCategoriasData.find((a) =>
+                  a.categorias.some((c) => c.id === cat.id)
+                );
 
-              return {
-                ...cat,
-                areaId: area?.id ?? 0,
-                areaNombre: area?.nombre ?? "Desconocida",
-              };
-            }
-          );
-          areasMap.set(grado.id, categoriasConArea);
-        });
+                return {
+                  ...cat,
+                  areaId: area?.id ?? 0,
+                  areaNombre: area?.nombre ?? "Desconocida",
+                };
+              }
+            );
+            areasMap.set(grado.id, categoriasConArea);
+          });
+          console.log('Categorias cargadas222222');
+          setAreasCategorias(areasMap);
+        } catch (error) {
+          console.error("Error al cargar datos de validación:", error);
+        } finally {
+          setCargandoCategorias(false);
+        }
+      };
 
-        setAreasCategorias(areasMap);
-      } catch (error) {
-        console.error("Error al cargar datos de validación:", error);
-      } finally {
-        setCargandoCategorias(false);
-      }
-    };
-
-    fetchData();
-  }, [open]);
+      fetchData();
+    }
+  }, [loading, open, cargandoCategorias]);
 
   const handleFilesChange = (newFiles: File[]) => {
     setFiles(newFiles);
@@ -337,6 +339,14 @@ export default function FileUploadModal({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="py-4">
+                    {cargandoCategorias && olimpiada.length > 0 && (
+                        <Alert>
+                            <AlertDescription className="flex items-center">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <p className='text-sm text-blue-500'>Espere por favor, estamos cargando categorías y áreas...</p>
+                            </AlertDescription>
+                        </Alert>
+                    )}
                     {alert && <AlertComponent {...alert} onClose={() => setAlert(null)} />}
                     
                     {!cargandoCategorias && (
@@ -401,14 +411,6 @@ export default function FileUploadModal({
                                 </DialogContent>
                             </Dialog>
                         </>
-                    )}
-                    {cargandoCategorias && olimpiada.length > 0 && (
-                        <Alert>
-                            <AlertDescription className="flex items-center">
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                <p className='text-sm text-blue-500'>Espere por favor, estamos cargando categorías y áreas...</p>
-                            </AlertDescription>
-                        </Alert>
                     )}
         </div>
       </DialogContent>
