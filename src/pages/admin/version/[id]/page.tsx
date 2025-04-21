@@ -261,7 +261,6 @@ export default function OlimpiadaPage() {
                 </Link>
             </div>
             <div className="p-4 container mx-auto">
-                <Toaster />
                 <Card className="mb-4">
                     <CardHeader>
                         <CardTitle>

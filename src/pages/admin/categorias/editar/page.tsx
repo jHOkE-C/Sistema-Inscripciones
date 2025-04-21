@@ -73,7 +73,7 @@ const Page = () => {
     return (
         <>
             <div className="container mx-auto max-w-6xl px-4 py-10">
-                <Toaster />
+
                 <Suspense fallback={<div>Cargando...</div>}></Suspense>
                 <Card>
                     <CardContent>

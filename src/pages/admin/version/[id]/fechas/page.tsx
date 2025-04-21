@@ -211,7 +211,7 @@ export default function Page() {
                 </Link>
             </div>
             <div className="container mx-auto p-6">
-                <Toaster />
+               
                 <Card className="mb-4">
                     <CardHeader>
                         <CardTitle>
