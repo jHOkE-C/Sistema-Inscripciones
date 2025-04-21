@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import {
@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
 import {
@@ -27,11 +26,12 @@ import {
   Postulante,
 } from "./types";
 import { validarCamposRequeridos, validarFila } from "./validations";
-import FileUpload from "./fileUpload";
+import FileUpload from "../../../components/fileUpload";
 import axios from "axios";
 import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { HoverCardContent } from "@/components/ui/hover-card";
+import LoadingAlert from "@/components/loading-alert";
 
 type AreaConCategorias = {
   id: number;
@@ -170,7 +170,7 @@ export default function FileUploadModal({
       onFilesChange(newFiles);
     }
   };
-
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const handleProcesar = async () => {
     if (files.length === 0) return;
 
@@ -181,6 +181,8 @@ export default function FileUploadModal({
       selectedFile?.type
     );
     setLoading(true);
+    setShowDialog(true);
+    await sleep(1);
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
@@ -229,7 +231,7 @@ export default function FileUploadModal({
                 )}`,
               },
             ]);
-            setShowDialog(true);
+            setLoading(false);
             return;
           }
 
@@ -290,9 +292,9 @@ export default function FileUploadModal({
           });
 
           setPostulantes(postulantesConvertidos);
-
+          setLoading(false);
           setErrores(todosErrores);
-          setShowDialog(true);
+          console.log(postulantesConvertidos);
         } catch (error) {
           console.error("Error al procesar el archivo:", error);
           toast.error(
@@ -352,16 +354,9 @@ export default function FileUploadModal({
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="">
             {cargandoCategorias && olimpiada.length > 0 && (
-              <Alert>
-                <AlertDescription className="flex items-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  <p className="text-sm text-blue-500">
-                    Espere por favor, estamos cargando categorías y áreas...
-                  </p>
-                </AlertDescription>
-              </Alert>
+              <LoadingAlert message="Espere por favor, estamos cargando categorías y áreas..." />
             )}
 
             {!cargandoCategorias && (
@@ -373,7 +368,7 @@ export default function FileUploadModal({
                   onFilesChange={handleFilesChange}
                 />
 
-                <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+                <DialogFooter className="flex flex-col sm:flex-row gap-2">
                   <Button variant="outline" onClick={() => handleCancel()}>
                     Cancelar
                   </Button>
@@ -398,9 +393,16 @@ export default function FileUploadModal({
                     </HoverCardContent>
                   </HoverCard>
                 </DialogFooter>
+              </>
+            )}
+          </div>
 
-                <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                  <DialogContent className="h-auto gap-2">
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogContent className="h-auto gap-2">
+              {loading ?
+                <LoadingAlert message="Espere por favor, estamos procesando el archivo..."/>
+                : (
+                  <>
                     <DialogTitle>
                       {errores.length > 0
                         ? "Errores de formato"
@@ -467,11 +469,10 @@ export default function FileUploadModal({
                         </DialogFooter>
                       </>
                     )}
-                  </DialogContent>
-                </Dialog>
-              </>
-            )}
-          </div>
+                  </>
+                )}
+            </DialogContent>
+          </Dialog>
         </DialogContent>
       </Dialog>
     </>
