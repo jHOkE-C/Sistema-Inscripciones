@@ -11,7 +11,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
 import {  formatDate, OlimpiadaData } from "./types";
-import { Toaster } from "@/components/ui/sonner";
+
 
 import {
     Card,

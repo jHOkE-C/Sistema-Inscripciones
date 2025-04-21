@@ -6,7 +6,7 @@ import { es } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronLeft } from "lucide-react";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import {
     Table,
     TableHeader,

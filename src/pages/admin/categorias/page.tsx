@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Building2, ChevronLeft, Edit, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Toaster } from "sonner";
+
 import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card";

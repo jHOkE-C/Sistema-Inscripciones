@@ -18,7 +18,7 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
 import CreateCategoryModal from "../create-category-modal";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Toaster } from "@/components/ui/sonner";
+}
 const Page = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

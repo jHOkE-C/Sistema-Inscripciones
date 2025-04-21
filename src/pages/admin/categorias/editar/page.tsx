@@ -17,7 +17,7 @@ import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Toaster } from "@/components/ui/sonner";
+
 import EditCategoryModal from "../edit-modal";
 const Page = () => {
     const [categories, setCategories] = useState<Category[]>([]);
