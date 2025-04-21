@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import FormPostulante from "../FormPostulante";
+import FormPostulante from "../../FormPostulante";
 import { type Postulante } from "./columns";
 import {
     Table,

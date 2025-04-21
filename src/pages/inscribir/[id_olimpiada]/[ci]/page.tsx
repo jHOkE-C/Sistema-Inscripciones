@@ -1,18 +1,18 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { CreateList } from "./CreateList";
-import { DataTable } from "./TableList";
-import { columns, ListaPostulantes } from "./columns";
+import { CreateList } from "../../CreateList";
+import { DataTable } from "../../TableList";
+import { columns, ListaPostulantes } from "../../columns";
 import React, { Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import ShareUrl from "./ShareUrl";
+import ShareUrl from "../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
-import FormResponsable from "./FormResponsable";
-import NotFoundPage from "../404";
+import FormResponsable from "../../FormResponsable";
+import NotFoundPage from "../../../404";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 const FileUploadModal = React.lazy(
-    () => import("./viaExcel/file-upload-modal")
+    () => import("../../viaExcel/file-upload-modal")
 );
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
@@ -24,6 +24,7 @@ const Page = () => {
     const [error, setError] = useState<string | null>();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
+    //const [olimpiada,setOlipiada] = useState<Olimpiada>()
 
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();

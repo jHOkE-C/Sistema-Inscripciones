@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { UserIcon } from "lucide-react";
@@ -30,13 +30,14 @@ const formSchema = z.object({
 });
 
 const FormCI = () => {
+    const {id_olimpiada} = useParams()
     const form = useForm({ resolver: zodResolver(formSchema) });
     const navigate = useNavigate();
 
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
         localStorage.setItem('ci', ci);
         toast.success("CI registrada correctamente");
-        navigate("/inscribir/" + ci);
+        navigate("/inscribir/"+ id_olimpiada +"/" + ci);
     };
 
     return (

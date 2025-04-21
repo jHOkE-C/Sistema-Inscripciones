@@ -1,5 +1,5 @@
 import { Toaster } from "sonner";
-import FormCI from "./FormCI";
+import FormCI from "../FormCI";
 
 const Page = () => {
     return (

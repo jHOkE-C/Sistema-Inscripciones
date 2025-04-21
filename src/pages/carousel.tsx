@@ -25,7 +25,7 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
 
 // Tipos para los datos de olimpiadas
-interface Fase {
+export interface Fase {
     id: number;
     tipo_plazo: string;
     fecha_inicio: string;
@@ -33,7 +33,7 @@ interface Fase {
     olimpiada_id: number;
 }
 
-interface Olimpiada {
+export interface Olimpiada {
     id: number;
     nombre: string;
     fecha_inicio: string;
@@ -173,7 +173,7 @@ export function OlimpiadasCarousel() {
                                             }
                                             variant={"link"}
                                         >
-                                            <Link to={"/inscribir"}>
+                                            <Link to={`/inscribir/${olimpiada.id}`}>
                                                 Inscribite Ahora
                                             </Link>
                                         </Button>

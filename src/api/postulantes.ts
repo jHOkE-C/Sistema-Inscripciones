@@ -1,6 +1,6 @@
 import type { ListaPostulantes } from "@/pages/inscribir/columns";
 import { request } from "./request";
-import type { Postulante } from "@/pages/inscribir/[ci]/columns";
+import type { Postulante } from "@/pages/inscribir/[id_olimpiada]/[ci]/columns";
 
 export const postDataPostulante = async (
     values: Record<
