@@ -19,53 +19,69 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { toast } from "sonner";
+import { UserIcon } from "lucide-react";
+
 const formSchema = z.object({
     ci: z
         .string()
         .min(7, "La Cédula de Identidad debe tener al menos 7 dígitos")
-        .max(10, "La Cédula de Identidad no puede tener más de 10 digitos")
+        .max(10, "La Cédula de Identidad no puede tener más de 10 dígitos")
 });
+
 const FormCI = () => {
     const form = useForm({ resolver: zodResolver(formSchema) });
     const navigate = useNavigate();
+
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
-        localStorage.setItem('ci',ci)
+        localStorage.setItem('ci', ci);
+        toast.success("CI registrada correctamente");
         navigate("/inscribir/" + ci);
     };
+
     return (
-        <>
-            <Card className="w-full max-w-md shadow-lg rounded-2xl">
-                <CardHeader>
-                    <CardTitle>Ingresar al Sistema</CardTitle>
-                </CardHeader>
-                <CardContent className="">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)}>
-                            <FormField
-                                control={form.control}
-                                name="ci"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Cédula de Identidad
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </form>
-                    </Form>
-                </CardContent>
-                <CardFooter>
-                    <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
-                        Ingresar
-                    </Button>
-                </CardFooter>
-            </Card>
-        </>
+        <Card className="w-full max-w-md shadow-lg rounded-2xl">
+            <CardHeader className="text-center space-y-2">
+                <div className="flex justify-center">
+                    <UserIcon className="h-10 w-10 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Ingresar al Sistema</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                    Por favor, introduce tu número de Cédula de Identidad para continuar.
+                </p>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="ci"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Cédula de Identidad</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder="Ej. 12345678"
+                                            type="text"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit" className="w-full">
+                            Ingresar
+                        </Button>
+                    </form>
+                </Form>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+                <Button variant="ghost" onClick={() => toast.info("Solicita ayuda al administrador")}>
+                    ¿Necesitas ayuda?
+                </Button>
+            </CardFooter>
+        </Card>
     );
 };
 
