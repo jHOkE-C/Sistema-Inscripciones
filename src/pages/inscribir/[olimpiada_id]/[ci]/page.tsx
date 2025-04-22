@@ -16,29 +16,42 @@ const FileUploadModal = React.lazy(
 );
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
+//import type { Olimpiada } from "@/pages/carousel";
+//import { getOlimpiada } from "@/api/olimpiada";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
-    const { ci } = useParams();
+    const { ci, olimpiada_id } = useParams();
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [error, setError] = useState<string | null>();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
-    //const [olimpiada,setOlipiada] = useState<Olimpiada>()
+    //const [olimpiada, setOlipiada] = useState<Olimpiada>();
 
+    // const getData = async () => {
+    //     if (!olimpiada_id || !ci) return;
+    //     try {
+    //         const data = await getOlimpiada(olimpiada_id);
+    //         setOlipiada(data);
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // };
     useEffect(() => {
+    //    getData();
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
     }, []);
 
     if (!ci || ci.length < 7 || ci.length > 10) {
         return <NotFoundPage />;
     }
+    if (!olimpiada_id) return;
 
     const refresh = async () => {
         setLoading(true);
         try {
-            const data = await getListasPostulantes(ci);
-            setData(data.data);
+            const { data } = await getListasPostulantes(ci);
+            setData(data.filter(({ olimpiada_id: id }) => id == olimpiada_id));
         } catch {
             setOpenFormResponsable(true);
         } finally {
@@ -70,7 +83,9 @@ const Page = () => {
             <div className="m py-5">
                 <div className="container mx-auto ">
                     <Card className="border-0 shadow-white">
+                        
                         <CardTitle>
+                            
                             <h1 className="text-3xl font-bold text-center">
                                 Listas de Postulantes
                             </h1>
@@ -84,7 +99,6 @@ const Page = () => {
                                     <Download className="h-4 w-4" />
                                     <span>Descargar plantilla de Excel</span>
                                 </Link>
-
                                 <div className="flex gap-2 items-center">
                                     <Suspense fallback={<Loading />}>
                                         <FileUploadModal

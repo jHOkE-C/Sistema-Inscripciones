@@ -30,14 +30,13 @@ const formSchema = z.object({
 });
 
 const FormCI = () => {
-    const {id_olimpiada} = useParams()
+    const {olimpiada_id} = useParams()
     const form = useForm({ resolver: zodResolver(formSchema) });
     const navigate = useNavigate();
 
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
         localStorage.setItem('ci', ci);
-        toast.success("CI registrada correctamente");
-        navigate("/inscribir/"+ id_olimpiada +"/" + ci);
+        navigate("/inscribir/"+ olimpiada_id +"/" + ci);
     };
 
     return (

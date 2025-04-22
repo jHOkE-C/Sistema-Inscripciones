@@ -8,6 +8,7 @@ export type ListaPostulantes = {
     fecha_creacion: Date;
     nombre_lista: string;
     postulantes_count: number;
+    olimpiada_id: string;
 };
 
 export const columns: ColumnDef<ListaPostulantes>[] = [

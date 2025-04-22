@@ -29,19 +29,21 @@ export function CreateList({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [nombre, setNombre] = useState<string>();
-    const [loading, setLoading] = useState(false); 
-    const { ci } = useParams();
+    const [loading, setLoading] = useState(false);
+    const { ci, olimpiada_id } = useParams();
+
 
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (loading) return; 
+        if (loading) return;
         try {
-            setLoading(true); 
-            if (!ci) return;
+            setLoading(true);
+            if (!ci || !olimpiada_id) return;
 
             await crearListaPostulante({
                 ci,
+                olimpiada_id,
                 nombre_lista: nombre || `Lista ${number}`,
             });
 
@@ -68,7 +70,7 @@ export function CreateList({
                         Crear Lista
                     </Button>
                 </DialogTrigger>
-            
+
                 <DialogContent className="sm:max-w-[425px]">
                     <form onSubmit={onSubmit}>
                         <DialogHeader>

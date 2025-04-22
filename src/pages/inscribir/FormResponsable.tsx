@@ -1,5 +1,4 @@
 import { registrarResponsable } from "@/api/responsables";
-import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -12,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
@@ -34,7 +32,6 @@ const formSchema = z.object({
 });
 
 const FormResponsable = ({ onClose }: { onClose: () => void }) => {
-    const [error, setError] = useState<string | null>(null);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
     });
@@ -47,7 +44,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
             toast.success("Responsable registrado correctamente");
             onClose();
         } catch (error: unknown) {
-            setError(
+            toast.error(
                 error instanceof Error ? error.message : "Error desconocido"
             );
         }
@@ -160,15 +157,6 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                         </div>
                     </form>
                 </Form>
-
-                {error && (
-                    <AlertComponent
-                        title="Error"
-                        variant="destructive"
-                        description={error}
-                        onClose={() => setError(null)}
-                    />
-                )}
             </div>
         </div>
     );

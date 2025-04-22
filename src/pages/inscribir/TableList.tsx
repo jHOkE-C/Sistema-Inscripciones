@@ -41,16 +41,16 @@ export function DataTable<TData, TValue>({
     });
 
     const navigate = useNavigate();
-    const { ci } = useParams();
+    const { ci, olimpiada_id } = useParams();
     return (
         <div className="rounded-md border">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
+                        <TableRow key={headerGroup.id} >
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableHead key={header.id}>
+                                    <TableHead key={header.id} >
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -73,8 +73,9 @@ export function DataTable<TData, TValue>({
                                 onClick={() => {
                                     const codigo = row.getValue("codigo_lista");
                                     console.log("abriendo", ci, codigo);
-                                    navigate(`/inscribir/${ci}/${codigo}`);
+                                    navigate(`/inscribir/${olimpiada_id}/${ci}/${codigo}`);
                                 }}
+                                className="hover:text-primary hover:cursor-pointer hover:bg-primary/10"
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell

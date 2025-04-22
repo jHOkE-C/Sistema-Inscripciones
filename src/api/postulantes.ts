@@ -1,6 +1,6 @@
 import type { ListaPostulantes } from "@/pages/inscribir/columns";
 import { request } from "./request";
-import type { Postulante } from "@/pages/inscribir/[id_olimpiada]/[ci]/columns";
+import type { Postulante } from "@/pages/inscribir/[olimpiada_id]/[ci]/columns";
 
 export const postDataPostulante = async (
     values: Record<
@@ -17,7 +17,7 @@ export const postDataPostulante = async (
 };
 export const getListasPostulantes = async (ci: string) => {
     return request<{ data: ListaPostulantes[] }>(
-        "/api/listas/responsables/" + ci + "/listas",
+        "/api/listas/responsable/" + ci,
         {
             method: "GET",
         }
@@ -26,6 +26,7 @@ export const getListasPostulantes = async (ci: string) => {
 
 export const crearListaPostulante = async (data: {
     ci: string;
+    olimpiada_id: string;
     nombre_lista: string;
 }) => {
     console.log(data);

@@ -17,6 +17,8 @@ import { getInscritosPorLista } from "@/api/postulantes";
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
 import ReturnComponent from "@/components/ReturnComponent";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
@@ -44,6 +46,10 @@ export default function Page() {
             setLoading(false);
         }
     };
+
+    const terminarRegistro = async ()=>{
+        console.log("terminando registro")
+    }
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;
 
@@ -59,7 +65,36 @@ export default function Page() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="overflow-x-auto space-y-5">
+                            <div className="flex justify-between">
+
                             <FormPostulante refresh={refresh} />
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button >
+                                        Finalizar registro
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Esta seguro que deseas finalizar el registro?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta accion impedira el registro de nuevos postulantes a la lista
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Cancel
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction onClick={terminarRegistro}>
+                                            Continuar
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            </div>
                             <Table>
                                 {data.length === 0 && (
                                     <TableCaption>
