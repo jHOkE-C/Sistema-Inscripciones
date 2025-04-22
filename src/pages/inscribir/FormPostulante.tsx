@@ -746,6 +746,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                                 transformed
                                                                             );
                                                                         }}
+                                                                        messageWithoutValues="No hay areas disponibles seleccione otro grado"
                                                                     />
                                                                 </FormControl>
                                                                 <FormMessage />
