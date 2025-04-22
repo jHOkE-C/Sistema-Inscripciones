@@ -329,11 +329,8 @@ export default function Page() {
                                                                 date
                                                             ) => {
                                                                 const minEnd =
-                                                                    addDays(
-                                                                        new Date(
-                                                                            c.fecha_inicio
-                                                                        ),
-                                                                        1
+                                                                    new Date(
+                                                                        c.fecha_inicio
                                                                     );
                                                                 return (
                                                                     date <
@@ -363,7 +360,7 @@ export default function Page() {
                                                           new Date(
                                                               c.fecha_inicio
                                                           )
-                                                      )
+                                                      ) + 1
                                                     : "N/A"}{" "}
                                                 días
                                             </TableCell>
