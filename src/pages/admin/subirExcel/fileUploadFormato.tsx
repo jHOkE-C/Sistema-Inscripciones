@@ -126,9 +126,7 @@ const FileUploadFormato: React.FC = () => {
                 variant: "default",
             });
             setShowConfirmDialog(false);
-            setUploadedFiles([]);
             setFileToConfirm(null);
-
         } catch (err) {
             console.error("Error al procesar o subir el archivo:", err);
             let errorMessage = "Ocurrió un error al procesar o subir el archivo.";
