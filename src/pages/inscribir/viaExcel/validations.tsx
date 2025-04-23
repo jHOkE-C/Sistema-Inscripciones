@@ -103,23 +103,9 @@ export const validarFila = (
         }
     });
 
-    let fechaValida = false;
-    if (typeof fila.fecha_nacimiento === 'string') {
-        const numeroFecha = parseFloat(fila.fecha_nacimiento);
-        if (!isNaN(numeroFecha)) {
-            const fecha = new Date((numeroFecha - 25569) * 86400 * 1000);
-            if (!isNaN(fecha.getTime())) {
-                const dia = fecha.getDate().toString().padStart(2, '0');
-                const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-                const año = fecha.getFullYear();
-                fila.fecha_nacimiento = `${dia}/${mes}/${año}`;
-                fechaValida = true;
-            }
-        } else {
-            const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-            fechaValida = fechaRegex.test(fila.fecha_nacimiento);
-        }
-    }
+    
+    const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    const fechaValida = fechaRegex.test(fila.fecha_nacimiento);
 
     if (!fechaValida) {
         errores.push({
@@ -141,28 +127,43 @@ export const validarFila = (
         });
     }
 
+    const postulante: Postulante = {
+        nombres: fila.nombres,
+        apellidos: fila.apellidos,
+        ci: fila.ci,
+        fecha_nacimiento: fila.fecha_nacimiento,        // formato ISO (DD-MM-YYYY)
+        correo_postulante: fila.correo_electronico,
+        email_contacto: fila.correo_electronico,
+        tipo_contacto_email: 1,
+        telefono_contacto: fila.telefono_referencia,
+        tipo_contacto_telefono: 1,  
+
+        idDepartamento: 0,
+        idProvincia: 0,
+        idColegio: 0,
+        idCurso: 0,
+        idArea1: 0,
+        idCategoria1: 0,
+        idArea2: -1,
+        idCategoria2: -1
+    };
     ['telefono_pertenece_a', 'correo_pertenece_a'].forEach(campo => {
-        if (!CONTACTOS_PERMITIDOS.includes(fila[campo as keyof ExcelPostulante].toUpperCase())) {
+        const contacto = CONTACTOS_PERMITIDOS.find(c => c.contacto.toLowerCase() === fila[campo as keyof ExcelPostulante].toUpperCase())
+        if (!contacto) {
             errores.push({
                 campo: campo === 'telefono_pertenece_a' ? 'Teléfono pertenece a' : 'Correo pertenece a',
                 fila: numFila,
                 ci: fila.ci,
-                mensaje: 'Valor no permitido. Debe ser: Estudiante, MAMA, PAPA, PROFESOR o TUTOR'
+                mensaje: 'Valor no permitido. Debe ser: Estudiante, Madre/Padre, Responsable'
             });
+        }else{
+            if(campo === 'correo_pertenece_a'){
+                postulante.tipo_contacto_email = Number(contacto.id);
+            }else{
+                postulante.tipo_contacto_telefono = Number(contacto.id);
+            }
         }
     });
-
-    const postulante: Postulante = {
-        ...fila,
-        iddepartamento: 0,
-        idprovincia: 0,
-        idcolegio: 0,
-        idgrado: 0,
-        idarea1: 0,
-        idcategoria1: 0,
-        idarea2: -1,
-        idcategoria2: -1
-    };
 
     const departamentoEncontrado = departamentos.find(d => d.Nombre.toLowerCase() === fila.departamento.toLowerCase());
     if (!departamentoEncontrado) {
@@ -173,7 +174,7 @@ export const validarFila = (
             mensaje: 'Departamento no válido'
         });
     } else {
-        postulante.iddepartamento = departamentoEncontrado.ID;
+        postulante.idDepartamento = departamentoEncontrado.ID;
     }
 
     const provinciaEncontrada = provincias.find(p => 
@@ -188,7 +189,7 @@ export const validarFila = (
             mensaje: 'Provincia no válida para el departamento seleccionado'
         });
     } else {
-        postulante.idprovincia = provinciaEncontrada.id;
+        postulante.idProvincia = provinciaEncontrada.id;
     }
 
     const colegioEncontrado = colegios.find(c => c.nombre.toLowerCase() === fila.colegio.toLowerCase());
@@ -200,7 +201,7 @@ export const validarFila = (
             mensaje: 'Colegio no válido'
         });
     } else {
-        postulante.idcolegio = parseInt(colegioEncontrado.id);
+        postulante.idColegio = parseInt(colegioEncontrado.id);
     }
 
     const gradoEncontrado = grados.find(g => g.nombre === fila.grado);
@@ -212,7 +213,7 @@ export const validarFila = (
             mensaje: 'Grado no válido'
         });
     } else {
-        postulante.idgrado = parseInt(gradoEncontrado.id);
+        postulante.idCurso = parseInt(gradoEncontrado.id);
     }
 
     if (gradoEncontrado) {
@@ -222,8 +223,8 @@ export const validarFila = (
                 `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === fila.area_categoria1.toLowerCase()
             );
             if (areaCategoria1) {
-                postulante.idarea1 = areaCategoria1.areaId;
-                postulante.idcategoria1 = parseInt(areaCategoria1.id);
+                postulante.idArea1 = areaCategoria1.areaId;
+                postulante.idCategoria1 = parseInt(areaCategoria1.id);
             } else {
                 errores.push({
                     campo: 'Área-Categoría 1',
@@ -238,8 +239,8 @@ export const validarFila = (
                     `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === fila.area_categoria2.toLowerCase()
                 );
                 if (areaCategoria2) {
-                    postulante.idarea2 = areaCategoria2.areaId;
-                    postulante.idcategoria2 = parseInt(areaCategoria2.id);
+                    postulante.idArea2 = areaCategoria2.areaId;
+                    postulante.idCategoria2 = parseInt(areaCategoria2.id);
                 } else {
                     errores.push({
                         campo: 'Área-Categoría 2',

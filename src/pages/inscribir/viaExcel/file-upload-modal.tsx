@@ -24,6 +24,7 @@ import {
   ValidationError,
   CategoriaExtendida,
   Postulante,
+  UploadResponse,
 } from "./types";
 import { validarCamposRequeridos, validarFila } from "./validations";
 import FileUpload from "../../../components/fileUpload";
@@ -319,6 +320,9 @@ export default function FileUploadModal({
 
     try {
       setLoading(true);
+      const response = await axios.post<UploadResponse>(`${API_URL}/api/Upload-ExcelFormato`, postulantes);
+      console.log("Respuesta del servidor:", response.data);
+      
       toast.success("Postulantes registrados exitosamente");
       console.log(postulantes);
       setOpen(false);
@@ -409,11 +413,12 @@ export default function FileUploadModal({
                         : "El archivo es válido"}
                     </DialogTitle>
                     {errores.length > 0 ? (
-                      <div className="h-auto overflow-y-auto">
+                      <div className="">
                         <p className="text-sm pb-4 text-zinc-500">
                           Se encontraron errores en el archivo. puede usar los
                           checkbox para marcar los errores que vas corrigiendo.
                         </p>
+                        <div className="max-h-96 overflow-y-auto space-y-2">
                         {errores.map((error, index) => (
                           <div
                             key={index}
@@ -447,6 +452,7 @@ export default function FileUploadModal({
                             />
                           </div>
                         ))}
+                        </div>
                         <DialogFooter className="mt-4">
                           <Button onClick={() => setShowDialog(false)}>
                             Cerrar
