@@ -18,7 +18,19 @@ import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
 import ReturnComponent from "@/components/ReturnComponent";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { request } from "@/api/request";
+import { toast } from "sonner";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
@@ -47,9 +59,24 @@ export default function Page() {
         }
     };
 
-    const terminarRegistro = async ()=>{
-        console.log("terminando registro")
-    }
+    const terminarRegistro = async () => {
+        console.log("terminando registro");
+        try {
+            await request(`/api/listas/${codigo}/estado`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ estado: "pendiente" }),
+            });
+
+            toast.success("El registro fue completado con exito")
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("An unexpected error occurred");
+            }
+        }
+    };
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;
 
@@ -66,34 +93,35 @@ export default function Page() {
                         </CardHeader>
                         <CardContent className="overflow-x-auto space-y-5">
                             <div className="flex justify-between">
+                                <FormPostulante refresh={refresh} />
 
-                            <FormPostulante refresh={refresh} />
-
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button >
-                                        Finalizar registro
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            Esta seguro que deseas finalizar el registro?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta accion impedira el registro de nuevos postulantes a la lista
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                            Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction onClick={terminarRegistro}>
-                                            Continuar
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button>Finalizar registro</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                Esta seguro que deseas finalizar
+                                                el registro?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Esta accion impedira el registro
+                                                de nuevos postulantes a la lista
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Cancel
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={terminarRegistro}
+                                            >
+                                                Continuar
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                             <Table>
                                 {data.length === 0 && (

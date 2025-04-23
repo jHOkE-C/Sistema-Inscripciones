@@ -9,7 +9,12 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -18,6 +23,7 @@ import { toast } from "sonner";
 import { request } from "@/api/request";
 import type { Area, Categoria } from "@/api/areas";
 import { useParams } from "react-router-dom";
+
 interface Asociacion {
     id: string;
     nombre: string;
@@ -27,15 +33,20 @@ export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
     const [categories, setCategories] = useState<Categoria[]>([]);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
-    const [checked, setChecked] = useState<Record<string, boolean>>({});
+
+    // checked guarda el estado actual de cada categoría
+    const [checked, setChecked] = useState<Record<number, boolean>>({});
+    // initialChecked guarda los IDs que ya estaban asociados al abrir el diálogo
+    const [initialChecked, setInitialChecked] = useState<number[]>([]);
+
     const [dialogOpen, setDialogOpen] = useState(false);
+    const { id: olimpiada_id } = useParams();
 
     useEffect(() => {
         fetchAreas();
         fetchCategories();
     }, []);
 
-    const { id: olimpiada_id } = useParams();
     const fetchAreas = async () => {
         try {
             const data = await request<Area[]>("/api/areas", { method: "GET" });
@@ -61,28 +72,53 @@ export default function Page() {
     };
 
     const fetchAsociacion = async () => {
+        if (!selectedArea) return;
         try {
             const data = await request<Asociacion[]>(
-                `/api/areas/${selectedArea?.id}/categorias/olimpiada/${olimpiada_id}`
+                `/api/areas/${selectedArea.id}/categorias/olimpiada/${olimpiada_id}`
             );
-            setChecked(data.reduce((acc, { id }) => ({ ...acc, [id]: true }), {}));
+            // convertir a número y armar ambos estados
+            const ids = data.map((a) => Number(a.id));
+            setInitialChecked(ids);
+            setChecked(
+                ids.reduce((acc, id) => {
+                    acc[id] = true;
+                    return acc;
+                }, {} as Record<number, boolean>)
+            );
         } catch (e) {
             toast.error(
-                e instanceof Error ? e.message : "Error al cargar categorías"
+                e instanceof Error ? e.message : "Error al cargar asociaciones"
             );
         }
     };
-
-    useEffect(() => {
-        if (!selectedArea) return;
-        fetchAsociacion();
-    }, [selectedArea]);
-
-    const openDialog = (area: Area) => {
+    const openDialog = async (area: Area) => {
         setSelectedArea(area);
         setChecked({});
+        setInitialChecked([]);
         setDialogOpen(true);
+
+        // arrancar el fetch aquí mismo
+        try {
+            const data = await request<Asociacion[]>(
+                `/api/areas/${area.id}/categorias/olimpiada/${olimpiada_id}`
+            );
+            const ids = data.map((a) => Number(a.id));
+            setInitialChecked(ids);
+            setChecked(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
+        } catch (e) {
+            toast.error(
+                e instanceof Error ? e.message : "Error al cargar asociaciones"
+            );
+        }
     };
+    // cada vez que cambie selectedArea recargamos las asociaciones
+    useEffect(() => {
+        if (selectedArea && dialogOpen) {
+            fetchAsociacion();
+        }
+        fetchAsociacion();
+    }, [selectedArea, dialogOpen]);
 
     const toggleCategory = (id: number) => {
         setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -90,28 +126,43 @@ export default function Page() {
 
     const handleSave = async () => {
         if (!selectedArea) return;
+
+        // IDs marcados ahora
         const selectedIds = Object.entries(checked)
-            .filter(([, checked]) => checked)
+            .filter(([, isChecked]) => isChecked)
             .map(([id]) => Number(id));
 
+        // calculamos a agregar / quitar
+        const toAdd = selectedIds.filter((id) => !initialChecked.includes(id));
+        const toRemove = initialChecked.filter(
+            (id) => !selectedIds.includes(id)
+        );
+
         try {
-            for (const id of selectedIds) {
-                const asociacion = {
-                    "categoria_id": id.toString(),
-                    "area_id": selectedArea.id.toString(),
-                    "olimpiada_id":olimpiada_id,
-                };
-                 console.log(asociacion);
-                await request(`/api/categoria/area/olimpiada`, {
-                    method: "POST",
-                    body: JSON.stringify(asociacion),
-                });
-            }
-            toast.success("Se asociaron las categorías correctamente");
+            // petición única al endpoint bulk
+            const payload = {
+                id_area: Number(selectedArea.id),
+                id_olimpiada: Number(olimpiada_id),
+                agregar: toAdd,
+                quitar: toRemove,
+            };
+            await request<{
+                message: string;
+                agregadas: number[];
+                eliminadas: number[];
+            }>("/api/categorias/area/olimpiada", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            toast.success("Se asociaron las categorias correctamente");
             setDialogOpen(false);
         } catch (e: unknown) {
             toast.error(
-                e instanceof Error ? e.message : "Error al asociar categorías"
+                e instanceof Error
+                    ? e.message
+                    : "Error al sincronizar asociaciones"
             );
         }
     };
@@ -120,7 +171,7 @@ export default function Page() {
         <div className="p-6 space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Gestión de Áreas</CardTitle>
+                    <CardTitle>Asociar de Áreas</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -165,11 +216,11 @@ export default function Page() {
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="max-w-md">
-                <DialogHeader>
-                    <DialogTitle>
-                        Asociar a {selectedArea?.nombre}
-                    </DialogTitle>
-                </DialogHeader>
+                    <DialogHeader>
+                        <DialogTitle>
+                            Asociar a {selectedArea?.nombre}
+                        </DialogTitle>
+                    </DialogHeader>
                     <ScrollArea className="h-60 w-full space-y-2 pr-2">
                         <div className="grid grid-cols-2 gap-4">
                             {categories.map((cat) => (
@@ -179,7 +230,7 @@ export default function Page() {
                                 >
                                     <Checkbox
                                         id={`cat-${cat.id}`}
-                                        checked={!!checked[cat.id]}
+                                        checked={!!checked[Number(cat.id)]}
                                         onCheckedChange={() =>
                                             toggleCategory(Number(cat.id))
                                         }
@@ -195,7 +246,7 @@ export default function Page() {
                         </div>
                     </ScrollArea>
                     <div className="mt-4 flex justify-end space-x-2">
-                        <Button onClick={handleSave}>Guardar</Button>
+                        <Button onClick={handleSave}>Asociar categorías</Button>
                         <Button
                             variant="ghost"
                             onClick={() => setDialogOpen(false)}

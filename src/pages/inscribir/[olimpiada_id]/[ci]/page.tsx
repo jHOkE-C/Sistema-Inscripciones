@@ -9,7 +9,6 @@ import ShareUrl from "../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
 import FormResponsable from "../../FormResponsable";
 import NotFoundPage from "../../../404";
-import { AlertComponent } from "@/components/AlertComponent";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 const FileUploadModal = React.lazy(
@@ -18,11 +17,12 @@ const FileUploadModal = React.lazy(
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
 import { API_URL } from "@/hooks/useApiRequest";
+import { Button } from "@/components/ui/button";
+import type { ColumnDef } from "@tanstack/react-table";
 //import type { Olimpiada } from "@/pages/carousel";
 //import { getOlimpiada } from "@/api/olimpiada";
 
-
-type Olimpiada={
+type Olimpiada = {
     id: number;
     nombre: string;
     gestion: string;
@@ -30,26 +30,26 @@ type Olimpiada={
     fecha_fin: string;
     vigente: boolean;
     url_plantilla: string;
-}
+};
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { ci, olimpiada_id } = useParams();
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
-    const [error, setError] = useState<string | null>();
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState<string | null>(null);
     const [olimpiada, setOlipiada] = useState<Olimpiada>();
 
     const getData = async () => {
-         //if (!olimpiada_id || !ci) return;
-         try {
-            const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${1}`);
-             setOlipiada(response.data);
-             console.log(response.data);
-         } catch (e) {
-             console.log(e);
-         }
+        //if (!olimpiada_id || !ci) return;
+        try {
+            const response = await axios.get<Olimpiada>(
+                `${API_URL}/api/olimpiadas/${1}`
+            );
+            setOlipiada(response.data);
+            console.log(response.data);
+        } catch (e) {
+            console.log(e);
+        }
     };
     useEffect(() => {
         getData();
@@ -78,9 +78,8 @@ const Page = () => {
         console.log(url);
         const link = document.createElement("a");
         link.href = url;
-        link.download = 'lista-postulantes.xlsx';
+        link.download = "lista-postulantes.xlsx";
         link.click();
-        
     };
     const fetchData = async () => {
         try {
@@ -89,6 +88,29 @@ const Page = () => {
             console.error("Error al obtener las listas de postulantes");
         }
     };
+    const generarOrdenDePago = (codigo_lista: string) => {
+        console.log("Generando orden para", codigo_lista);
+    };
+    const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
+        ...columns,
+        {
+            id: "acciones",
+            header: "Acciones",
+            cell: ({ row }) =>
+                row.original.estado === "pendiente" ? (
+                    <Button
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation(); // para que no dispare el onClick de la fila
+                            generarOrdenDePago(row.getValue("codigo_lista"));
+                        }}
+                    >
+                        Generar orden de pago
+                    </Button>
+                ) : null,
+        },
+    ];
+
     if (loading) return <Loading />;
     if (openFormResponsable)
         return (
@@ -107,9 +129,7 @@ const Page = () => {
             <div className="m py-5">
                 <div className="container mx-auto ">
                     <Card className="border-0 shadow-white">
-                        
                         <CardTitle>
-                            
                             <h1 className="text-3xl font-bold text-center">
                                 Listas de Postulantes
                             </h1>
@@ -118,14 +138,15 @@ const Page = () => {
                             <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
                                 {olimpiada?.url_plantilla && (
                                     <button
-                                        onClick={ (e) => handleDownload(e)} 
+                                        onClick={(e) => handleDownload(e)}
                                         className="text-sm inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-2"
                                     >
                                         <Download className="h-4 w-4" />
-                                        <span>Descargar plantilla de Excel</span>
+                                        <span>
+                                            Descargar plantilla de Excel
+                                        </span>
                                     </button>
-                                    )
-                                }
+                                )}
                                 <div className="flex gap-2 items-center">
                                     <Suspense fallback={<Loading />}>
                                         <FileUploadModal
@@ -141,7 +162,9 @@ const Page = () => {
                                             triggerText="Añadir archivo Excel"
                                             title="Añadir archivo Excel"
                                             description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
-                                            olimpiadaP={olimpiada? [olimpiada]:[]}
+                                            olimpiadaP={
+                                                olimpiada ? [olimpiada] : []
+                                            }
                                         />
                                     </Suspense>
 
@@ -151,25 +174,16 @@ const Page = () => {
                                     />
                                 </div>
                             </div>
-                            <DataTable columns={columns} data={data} />
+                            <DataTable
+                                columns={columnsWithActions}
+                                data={data}
+                            />
                         </CardContent>
                     </Card>
                 </div>
                 <ShareUrl />
             </div>
-            {error && (
-                <AlertComponent
-                    description={error}
-                    variant="destructive"
-                    onClose={() => setError(null)}
-                />
-            )}
-            {success && (
-                <AlertComponent
-                    description={success}
-                    onClose={() => setSuccess(null)}
-                />
-            )}
+
             <Footer />
         </div>
     );
