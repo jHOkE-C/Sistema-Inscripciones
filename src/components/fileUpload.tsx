@@ -1,25 +1,56 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, FileText, ImageIcon, FileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { API_URL } from '@/hooks/useApiRequest';
+
+
+type UploadFile = File & { url_plantilla?: string };
 
 interface FileUploadProps {
     maxFiles?: number;
     maxSize?: number;
     accept?: string;
-    onFilesChange?: (files: File[]) => void;
+    onFilesChange?: (files: UploadFile[]) => void;
+    filesRefresh?: UploadFile[];
 }
 
 export default function FileUpload({
     maxFiles = 1,
     maxSize = 10,
     accept = ".xlsx,.xls",
-    onFilesChange
+    onFilesChange,
+    filesRefresh
 }: FileUploadProps) {
-    const [files, setFiles] = useState<File[]>([]);
+    const [files, setFiles] = useState<UploadFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        if (filesRefresh) {
+            setFiles(filesRefresh);
+        }
+    }, [filesRefresh]);
+
+    
+    const handleDownload = (e: React.MouseEvent<HTMLButtonElement>, file: UploadFile) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (file.url_plantilla) {
+            const url = `${API_URL}/storage/${file.url_plantilla}`;
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = file.name;
+            link.click();
+        } else {
+            const url = URL.createObjectURL(file);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = file.name;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    };
 
     const handleFileChange = (selectedFiles: FileList | null) => {
         console.log('selectedFiles', selectedFiles);
@@ -30,7 +61,7 @@ export default function FileUpload({
         setError(null);
 
         const currentSelectedFiles = Array.from(selectedFiles); 
-        const validNewFiles: File[] = [];
+        const validNewFiles: UploadFile[] = [];
         let cumulativeError: string | null = null;
 
         for (const file of currentSelectedFiles) {
@@ -45,7 +76,7 @@ export default function FileUpload({
                  cumulativeError = `El archivo "${file.name}" (${fileExtension}) no tiene un formato válido (${accept}).`;
                  break;
             }
-            validNewFiles.push(file);
+            validNewFiles.push(file as UploadFile);
         }
 
         if (cumulativeError) {
@@ -57,7 +88,7 @@ export default function FileUpload({
             return;
         }
 
-        let updatedFiles: File[];
+        let updatedFiles: UploadFile[];
 
         if (maxFiles === 1) {
             updatedFiles = validNewFiles.length > 0 ? [validNewFiles[0]] : [];
@@ -112,7 +143,7 @@ export default function FileUpload({
         }
     };
 
-    const getFileIcon = (file: File) => {
+    const getFileIcon = (file: UploadFile) => {
          const extension = file.name.split('.').pop()?.toLowerCase();
          if (file.type.startsWith("image/")) {
             return <ImageIcon className="h-5 w-5 text-blue-500 flex-shrink-0" />;
@@ -204,7 +235,13 @@ export default function FileUpload({
                                 >
                                     <div className="flex items-center gap-2 truncate min-w-0">
                                         {getFileIcon(file)}
-                                        <span className="text-sm truncate flex-1">{file.name}</span>
+                                        <button
+                                            type="button"
+                                            className="text-sm truncate flex-1 text-blue-600 underline text-left"
+                                            onClick={(e) => handleDownload(e, file)}
+                                        >
+                                            {file.name}
+                                        </button>
                                         <span className="text-xs text-muted-foreground whitespace-nowrap">
                                             ({(file.size / (1024 * 1024)).toFixed(2)} MB)
                                         </span>

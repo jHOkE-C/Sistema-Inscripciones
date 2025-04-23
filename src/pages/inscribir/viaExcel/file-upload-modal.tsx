@@ -373,10 +373,12 @@ export default function FileUploadModal({
             {!cargandoCategorias && (
               <>
                 <FileUpload
+                  key={files[0]?.name}
                   maxFiles={maxFiles}
                   maxSize={maxSize}
                   accept={accept}
                   onFilesChange={handleFilesChange}
+                  filesRefresh={files}
                 />
 
                 <DialogFooter className="flex flex-col sm:flex-row gap-2">
