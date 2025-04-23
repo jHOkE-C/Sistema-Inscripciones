@@ -159,6 +159,8 @@ export const validarFila = (
     let fechaNacimientoNormalizada = fila.fecha_nacimiento;
     if (fechaParts.length === 3 && fechaParts[2].length === 2) {
         fechaNacimientoNormalizada = `${fechaParts[0]}-${fechaParts[1]}-20${fechaParts[2]}`;
+    }else if (fechaParts.length === 3 && fechaParts[2].length === 4) {
+        fechaNacimientoNormalizada = `${fechaParts[0]}-${fechaParts[1]}-${fechaParts[2]}`;
     }
 
     const postulante: Postulante = {
@@ -178,8 +180,8 @@ export const validarFila = (
         idCurso: 0,
         idArea1: 0,
         idCategoria1: 0,
-        idArea2: -1,
-        idCategoria2: -1,
+        idArea2: 0,
+        idCategoria2: 0,
     };
 
     ["telefono_pertenece_a", "correo_pertenece_a"].forEach((campo) => {
@@ -280,6 +282,9 @@ export const validarFila = (
             if (areaCategoria1) {
                 postulante.idArea1 = areaCategoria1.areaId;
                 postulante.idCategoria1 = parseInt(areaCategoria1.id);
+
+                postulante.idArea2 = areaCategoria1.areaId;
+                postulante.idCategoria2 = parseInt(areaCategoria1.id);
             } else {
                 errores.push({
                     campo: "Área-Categoría 1",

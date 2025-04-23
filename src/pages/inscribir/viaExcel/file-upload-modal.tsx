@@ -333,12 +333,7 @@ export default function FileUploadModal({
         ci: ci,
         nombre_lista: nombreLista,
         olimpiada_id:'1',              // como número
-        listaPostulantes: postulantes.map(p => ({
-          ...p,
-          // Asegúrate de incluir idArea2/idCategoria2 aunque sean null:
-          idArea2: p.idArea2==-1 ? null: p.idArea2,
-          idCategoria2: p.idCategoria2==-1 ? null: p.idCategoria2
-        })),
+        listaPostulantes: postulantes,
       }
       console.log(payload)
       const response = await axios.post<UploadResponse>(`${API_URL}/api/inscripciones/bulk`, payload);
