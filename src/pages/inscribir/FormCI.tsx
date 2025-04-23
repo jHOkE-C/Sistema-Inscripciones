@@ -64,6 +64,13 @@ const FormCI = () => {
                                             {...field}
                                             placeholder="Ej. 12345678"
                                             type="text"
+                                            maxLength={10}
+                                            onChange={(e) => {
+                                                const value = e.target.value
+                                                    .toUpperCase()
+                                                    .replace(/[^A-Z0-9]/g, "");
+                                                field.onChange(value);
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
