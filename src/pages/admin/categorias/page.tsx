@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building2, ChevronLeft, Edit, PlusCircle } from "lucide-react";
+import { Building2, ChevronLeft, Edit, PlusCircle, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -9,7 +9,7 @@ import {
 export default function Page() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="pt-4 px-4 max-w-6xl mx-auto">
+      <div className=" px-4 max-w-6xl mx-auto">
         <Link to="/admin">
           <Button variant="ghost" className="flex items-center gap-2 mb-6">
             <ChevronLeft className="h-5 w-5" />
@@ -70,6 +70,28 @@ export default function Page() {
               <Link to="/admin/categorias/editar" className="w-full">
                 <Button className="w-full bg-amber-600 hover:bg-amber-700">
                   Ir a Editar Categoria
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+          <Card className="shadow-lg hover:shadow-2xl transform hover:scale-101 transition hover:border-red-600">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3">
+                <Trash2 className="h-6 w-6 text-red-600" />
+                <CardTitle className="text-xl font-semibold">Dar de Baja</CardTitle>
+              </div>
+              <CardDescription>Desactiva una categoría obsoleta</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500">
+              Marca categorías que ya no sean necesarias para que no aparezcan
+              en futuras convocatorias.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link to="/admin/categorias/dar-de-baja" className="w-full">
+                <Button className="w-full bg-red-600 hover:bg-red-700">
+                Ir a Dar de Baja Área
                 </Button>
               </Link>
             </CardFooter>
