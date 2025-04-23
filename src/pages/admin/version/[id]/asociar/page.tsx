@@ -146,7 +146,7 @@ export default function Page() {
                 agregar: toAdd,
                 quitar: toRemove,
             };
-            const resp = await request<{
+            await request<{
                 message: string;
                 agregadas: number[];
                 eliminadas: number[];
@@ -156,7 +156,7 @@ export default function Page() {
                 body: JSON.stringify(payload),
             });
 
-            toast.success(resp.message);
+            toast.success("Se asociaron las categorias correctamente");
             setDialogOpen(false);
         } catch (e: unknown) {
             toast.error(
@@ -246,7 +246,7 @@ export default function Page() {
                         </div>
                     </ScrollArea>
                     <div className="mt-4 flex justify-end space-x-2">
-                        <Button onClick={handleSave}>Guardar</Button>
+                        <Button onClick={handleSave}>Asociar categorías</Button>
                         <Button
                             variant="ghost"
                             onClick={() => setDialogOpen(false)}
