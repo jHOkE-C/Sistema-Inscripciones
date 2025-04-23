@@ -18,7 +18,6 @@ const FileUploadModal = React.lazy(
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
 import { API_URL } from "@/hooks/useApiRequest";
-import { url } from "inspector";
 //import type { Olimpiada } from "@/pages/carousel";
 //import { getOlimpiada } from "@/api/olimpiada";
 
