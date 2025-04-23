@@ -14,6 +14,7 @@ import { ChevronLeft } from "lucide-react";
 import type { Area } from "../ListArea";
 import FormAddArea from "../FormAddArea";
 import ListArea from "../ListArea";
+import { toast } from "sonner";
 
 export const Page = () => {
     const {
@@ -45,19 +46,14 @@ export const Page = () => {
     const handleAddArea = async (data: { nombre: string }) => {
         try {
             await crearArea(data);
-            showAlert(
-                "Exito",
-                "El área de competencia se creo correctamente.",
-                "default"
-            );
+            toast.success("El área de competencia se creó correctamente.");
             refreshAreas();
-        } catch (error: unknown) {
-            showAlert(
-                "Error",
+        } catch (error: unknown) 
+        {
+            toast.error(
                 error instanceof Error && error.message
                     ? error.message
-                    : "El registro no se guardó, inténtelo de nuevo",
-                "destructive"
+                    : "El registro no se guardó, inténtelo de nuevo"
             );
         }
     };
@@ -83,7 +79,7 @@ export const Page = () => {
     return (
         <>
             <div className="pt-4 px-4">
-                <Link to="/admin">
+                <Link to="/admin/area">
                     <Button
                         variant="ghost"
                         className="flex items-center gap-1 mb-4"

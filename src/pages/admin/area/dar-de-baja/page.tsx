@@ -79,7 +79,7 @@ export const Page = () => {
     return (
         <>
             <div className="pt-4 px-4">
-                <Link to="/admin">
+                <Link to="/admin/area">
                     <Button
                         variant="ghost"
                         className="flex items-center gap-1 mb-4"

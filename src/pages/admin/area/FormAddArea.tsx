@@ -1,21 +1,20 @@
-
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,92 +23,99 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 const areaSchema = z.object({
-    nombre: z
-        .string()
-        .min(3, "El nombre del área debe tener al menos 3 caracteres"),
+  nombre: z
+    .string()
+    .min(3, "El nombre del área debe tener al menos 3 caracteres"),
 });
 interface FormAddAreaProps {
-    onAdd: (data: { nombre: string }) => void;
+  onAdd: (data: { nombre: string }) => void;
 }
 
 const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
-    const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
+  const form = useForm<z.infer<typeof areaSchema>>({
+    resolver: zodResolver(areaSchema),
+    defaultValues: {
+      nombre: "",
+    },
+  });
 
-    const form = useForm<z.infer<typeof areaSchema>>({
-        resolver: zodResolver(areaSchema),
-        defaultValues: {
-            nombre: "",
-        },
-    });
+  const onSubmit = async (data: { nombre: string }) => {
+    await onAdd(data);
+    form.reset({ nombre: "" });
+    setShowForm(false);
+  };
 
-    const onSubmit = async (data: { nombre: string }) => {
-        
-            await onAdd(data);
-        
-    };
-
-    return (
-        <>
-            <Dialog open={showForm} onOpenChange={setShowForm}>
-                <DialogTrigger asChild>
-                    <div className="flex justify-end items-center w-full p-4">
-                        <Button>
-                            <Plus /> Agregar Area
-                        </Button>
-                    </div>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Agregar Area</DialogTitle>
-                        <DialogDescription>
-                            Crea un nuevo area para las olimpiadas.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Form {...form}>
-                        <form action="" onSubmit={form.handleSubmit(onSubmit)}>
-                            <FormField
-                                control={form.control}
-                                name="nombre"
-                                render={({ field }) => (
-                                    <FormItem className="">
-                                        <FormLabel>Nombre de Area</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                maxLength={40}
-                                                placeholder="Astronomia"
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        e.target.value.toUpperCase()
-                                                    )
-                                                }
-                                                value={field.value}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </form>
-                    </Form>
-                    <DialogFooter>
-                        <Button onClick={form.handleSubmit(onSubmit)}>
-                            Registrar
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setShowForm(false);
-                            }}
-                        >
-                            Cancelar
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-           
-        </>
-    );
+  return (
+    <>
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogTrigger asChild>
+          <div className="flex justify-end items-center w-full p-4">
+            <Button>
+              <Plus /> Agregar Area
+            </Button>
+          </div>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Agregar Area</DialogTitle>
+            <DialogDescription>
+              Crea un nuevo area para las olimpiadas.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form action="" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="nombre"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel>Nombre de Area</FormLabel>
+                    <FormControl>
+                      <Input
+                        maxLength={40}
+                        placeholder="Astronomia"
+                        onChange={(e) => {
+                          const noAccents = e.target.value.replace(
+                            /[áéíóúÁÉÍÓÚ]/g,
+                            (match) => {
+                              return "aeiouAEIOU"["áéíóúÁÉÍÓÚ".indexOf(match)];
+                            }
+                          );
+                          field.onChange(noAccents.toUpperCase());
+                        }}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+          <DialogFooter>
+            <Button
+              onClick={
+                form.handleSubmit(onSubmit)
+              }
+            >
+              Registrar
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                form.reset({ nombre: "" });
+                setShowForm(false);
+              }}
+            >
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 export default FormAddArea;
