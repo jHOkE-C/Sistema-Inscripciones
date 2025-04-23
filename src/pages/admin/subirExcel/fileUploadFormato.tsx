@@ -80,7 +80,8 @@ const FileUploadFormato: React.FC = () => {
             if (olimpiadaDetail.url_plantilla) {
                 const fileName = olimpiadaDetail.url_plantilla.split('/').pop() || `plantilla-${value}`;
                 const templateFile = new File([], fileName);
-                (templateFile as any).url_plantilla = olimpiadaDetail.url_plantilla;
+                const templateFileWithUrl = templateFile as File & { url_plantilla: string };
+                templateFileWithUrl.url_plantilla = olimpiadaDetail.url_plantilla;
                 setUploadedFiles([templateFile]);
                 setFileToConfirm(templateFile);
             }

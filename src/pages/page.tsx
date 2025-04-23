@@ -34,8 +34,7 @@ const PageHome = () => {
       {/* Main */}
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-5 bg-gradient-to-b from-zinc-50 to-white">
-            <h2 className="text-3xl md:text-5xl text-center md:p-10 text-zinc-800 tracking-wide">OLIMPIADAS NACIONALES <br/> SAN SIMÓN {new Date().getFullYear()}</h2>
-          <OlimpiadasCarousel />
+           
           <div className="px-6 md:px-10">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="space-y-4">
@@ -47,17 +46,14 @@ const PageHome = () => {
                   más emocionantes del año.
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link to={`/inscribir/${ci ? ci : ""}`}>
-                    <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                      {ci ? "Continuar con la Inscripcion" : "Inscríbete Ahora"}
-                    </Button>
-                  </Link>
+ 
 
                   <Button size="lg" variant="outline">
                     Conoce Más
                   </Button>
                 </div>
               </div>
+              
               <div className="mx-auto lg:mr-0 w-full max-w-[500px] h-[350px] aspect-video rounded-xl overflow-hidden">
                 <img
                   alt="Olimpiadas ohSansi"
@@ -68,6 +64,8 @@ const PageHome = () => {
             </div>
           </div>
         </section>
+        <h2 className="text-3xl md:text-5xl text-center md:p-10 text-zinc-800 tracking-wide">OLIMPIADAS NACIONALES <br/> SAN SIMÓN {new Date().getFullYear()}</h2>
+        <OlimpiadasCarousel />
 
         {/* Características */}
         <section className="w-full py-12 md:py-24 lg:py-32">
