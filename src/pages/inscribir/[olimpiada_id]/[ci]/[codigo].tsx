@@ -11,7 +11,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getInscritosPorLista } from "@/api/postulantes";
 
 import Loading from "@/components/Loading";
@@ -29,12 +29,13 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { request } from "@/api/request";
 import { toast } from "sonner";
+import { cambiarEstadoLista } from "@/api/listas";
 
 export default function Page() {
+    const navigate = useNavigate()
     const [data, setData] = useState<Postulante[]>([]);
-    const { ci, codigo } = useParams();
+    const { ci, codigo,olimpiada_id } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -43,14 +44,14 @@ export default function Page() {
     if (!codigo) return;
     const refresh = async () => {
         const data = await getInscritosPorLista(codigo);
-        setData(data.data.inscripciones);
+        setData(data.data);
     };
 
     const fetchData = async () => {
         setLoading(true);
         try {
             const data = await getInscritosPorLista(codigo);
-            setData(data.data.inscripciones);
+            setData(data.data);
             setNotFound(false);
         } catch {
             setNotFound(true);
@@ -62,13 +63,8 @@ export default function Page() {
     const terminarRegistro = async () => {
         console.log("terminando registro");
         try {
-            await request(`/api/listas/${codigo}/estado`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ estado: "pendiente" }),
-            });
-
-            toast.success("El registro fue completado con exito")
+            await cambiarEstadoLista(codigo,"Pago Pendiente")
+            navigate(`/inscribir/${olimpiada_id}/${ci}`)
         } catch (error) {
             if (error instanceof Error) {
                 toast.error(error.message);

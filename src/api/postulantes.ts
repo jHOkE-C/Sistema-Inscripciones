@@ -38,7 +38,7 @@ export const crearListaPostulante = async (data: {
 };
 
 export const getInscritosPorLista = (codigo: string) => {
-    return request<{ data: { inscripciones: Postulante[] } }>(
+    return request<{ data: Postulante[] }>(
         "/api/listas/codigo/" + codigo,
         {
             method: "GET",
