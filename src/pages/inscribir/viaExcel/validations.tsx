@@ -1,35 +1,42 @@
-import { ExcelPostulante, ValidationError, CONTACTOS_PERMITIDOS, Postulante } from './types';
-import { Departamento, Provincia, Colegio, CategoriaExtendida } from './types';
-import { grados } from './types';
+import {
+    ExcelPostulante,
+    ValidationError,
+    CONTACTOS_PERMITIDOS,
+    Postulante,
+} from "./types";
+import { Departamento, Provincia, Colegio, CategoriaExtendida } from "./types";
+import { grados } from "./types";
 
 export const validarCamposRequeridos = (headers: string[]): string[] => {
     const camposRequeridos = [
-        { columna: 'A', nombre: 'Nombre' },
-        { columna: 'B', nombre: 'Apellidos' },
-        { columna: 'C', nombre: 'CI' },
-        { columna: 'D', nombre: 'Fecha de nacimiento' },
-        { columna: 'E', nombre: 'Correo electrónico' },
-        { columna: 'F', nombre: 'Departamento' },
-        { columna: 'G', nombre: 'Provincia' },
-        { columna: 'H', nombre: 'Colegio' },
-        { columna: 'I', nombre: 'Grado' },
-        { columna: 'J', nombre: 'Teléfono de referencia' },
-        { columna: 'K', nombre: 'Teléfono pertenece a' },
-        { columna: 'L', nombre: 'Correo de referencia' },
-        { columna: 'M', nombre: 'Correo pertenece a' },
-        { columna: 'N', nombre: 'Área categoría 1' }
+        { columna: "A", nombre: "Nombre" },
+        { columna: "B", nombre: "Apellidos" },
+        { columna: "C", nombre: "CI" },
+        { columna: "D", nombre: "Fecha de nacimiento" },
+        { columna: "E", nombre: "Correo electrónico" },
+        { columna: "F", nombre: "Departamento" },
+        { columna: "G", nombre: "Provincia" },
+        { columna: "H", nombre: "Colegio" },
+        { columna: "I", nombre: "Grado" },
+        { columna: "J", nombre: "Teléfono de referencia" },
+        { columna: "K", nombre: "Teléfono pertenece a" },
+        { columna: "L", nombre: "Correo de referencia" },
+        { columna: "M", nombre: "Correo pertenece a" },
+        { columna: "N", nombre: "Área categoría 1" },
     ];
 
-    const camposFaltantes = camposRequeridos.filter(campo => {
-        const indice = headers.findIndex(h => h === campo.nombre);
+    const camposFaltantes = camposRequeridos.filter((campo) => {
+        const indice = headers.findIndex((h) => h === campo.nombre);
         return indice === -1;
     });
 
-    return camposFaltantes.map(campo => `${campo.nombre} (Columna ${campo.columna})`);
+    return camposFaltantes.map(
+        (campo) => `${campo.nombre} (Columna ${campo.columna})`
+    );
 };
 
 export const validarFila = (
-    fila: ExcelPostulante, 
+    fila: ExcelPostulante,
     numFila: number,
     departamentos: Departamento[],
     provincias: Provincia[],
@@ -40,14 +47,26 @@ export const validarFila = (
     const errores: ValidationError[] = [];
 
     const camposParaVerificar = [
-        'nombres', 'apellidos', 'ci', 'fecha_nacimiento', 'correo_electronico',
-        'departamento', 'provincia', 'colegio', 'grado', 'telefono_referencia',
-        'telefono_pertenece_a', 'correo_referencia', 'correo_pertenece_a', 'area_categoria1'
+        "nombres",
+        "apellidos",
+        "ci",
+        "fecha_nacimiento",
+        "correo_electronico",
+        "departamento",
+        "provincia",
+        "colegio",
+        "grado",
+        "telefono_referencia",
+        "telefono_pertenece_a",
+        "correo_referencia",
+        "correo_pertenece_a",
+        "area_categoria1",
     ];
 
-    const filaVacia = camposParaVerificar.every(campo => 
-        !fila[campo as keyof ExcelPostulante] || 
-        fila[campo as keyof ExcelPostulante].toString().trim() === ''
+    const filaVacia = camposParaVerificar.every(
+        (campo) =>
+            !fila[campo as keyof ExcelPostulante] ||
+            fila[campo as keyof ExcelPostulante].toString().trim() === ""
     );
 
     if (filaVacia) {
@@ -55,80 +74,88 @@ export const validarFila = (
     }
 
     const camposObligatorios = [
-        { campo: 'nombres', nombre: 'Nombre' },
-        { campo: 'apellidos', nombre: 'Apellidos' },
-        { campo: 'ci', nombre: 'CI' },
-        { campo: 'fecha_nacimiento', nombre: 'Fecha de nacimiento' },
-        { campo: 'correo_electronico', nombre: 'Correo electrónico' },
-        { campo: 'departamento', nombre: 'Departamento' },
-        { campo: 'provincia', nombre: 'Provincia' },
-        { campo: 'colegio', nombre: 'Colegio' },
-        { campo: 'grado', nombre: 'Grado' },
-        { campo: 'telefono_referencia', nombre: 'Teléfono de referencia' },
-        { campo: 'telefono_pertenece_a', nombre: 'Teléfono pertenece a' },
-        { campo: 'correo_referencia', nombre: 'Correo de referencia' },
-        { campo: 'correo_pertenece_a', nombre: 'Correo pertenece a' },
-        { campo: 'area_categoria1', nombre: 'Área categoría 1' }
+        { campo: "nombres", nombre: "Nombre" },
+        { campo: "apellidos", nombre: "Apellidos" },
+        { campo: "ci", nombre: "CI" },
+        { campo: "fecha_nacimiento", nombre: "Fecha de nacimiento" },
+        { campo: "correo_electronico", nombre: "Correo electrónico" },
+        { campo: "departamento", nombre: "Departamento" },
+        { campo: "provincia", nombre: "Provincia" },
+        { campo: "colegio", nombre: "Colegio" },
+        { campo: "grado", nombre: "Grado" },
+        { campo: "telefono_referencia", nombre: "Teléfono de referencia" },
+        { campo: "telefono_pertenece_a", nombre: "Teléfono pertenece a" },
+        { campo: "correo_referencia", nombre: "Correo de referencia" },
+        { campo: "correo_pertenece_a", nombre: "Correo pertenece a" },
+        { campo: "area_categoria1", nombre: "Área categoría 1" },
     ];
 
     camposObligatorios.forEach(({ campo, nombre }) => {
-        if (!fila[campo as keyof ExcelPostulante] || fila[campo as keyof ExcelPostulante].toString().trim() === '') {
+        if (
+            !fila[campo as keyof ExcelPostulante] ||
+            fila[campo as keyof ExcelPostulante].toString().trim() === ""
+        ) {
             errores.push({
                 campo: nombre,
                 fila: numFila,
                 ci: fila.ci,
-                mensaje: 'Campo obligatorio vacío'
+                mensaje: "Campo obligatorio vacío",
             });
         }
     });
     const ciRegex = /^\d{7,8}[A-Za-z]?$/;
     if (!ciRegex.test(fila.ci)) {
         errores.push({
-            campo: 'CI',
+            campo: "CI",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Formato de CI inválido. Debe tener 7-8 dígitos y opcionalmente una letra al final'
+            mensaje:
+                "Formato de CI inválido. Debe tener 7-8 dígitos y opcionalmente una letra al final",
         });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    ['correo_electronico', 'correo_referencia'].forEach(campo => {
+    ["correo_electronico", "correo_referencia"].forEach((campo) => {
         if (!emailRegex.test(fila[campo as keyof ExcelPostulante])) {
             errores.push({
-                campo: campo === 'correo_electronico' ? 'Correo electrónico' : 'Correo de referencia',
+                campo:
+                    campo === "correo_electronico"
+                        ? "Correo electrónico"
+                        : "Correo de referencia",
                 fila: numFila,
                 ci: fila.ci,
-                mensaje: 'Formato de correo electrónico inválido: tiene que tener un formato como: letras@dominio.com'
+                mensaje:
+                    "Formato de correo electrónico inválido: tiene que tener un formato como: letras@dominio.com",
             });
         }
     });
 
-    console.log(fila.fecha_nacimiento)
-    const fechaRegex = /^\d{2}\/\d{2}\/\d{2,4}$/;
+    console.log(fila.fecha_nacimiento);
+    const fechaRegex = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
     const fechaValida = fechaRegex.test(fila.fecha_nacimiento);
 
     if (!fechaValida) {
         errores.push({
-            campo: 'Fecha de nacimiento',
+            campo: "Fecha de nacimiento",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Formato de fecha inválido. Debe ser DD/MM/AAAA o una fecha válida de Excel'
+            mensaje:
+                "Formato de fecha inválido. Debe ser DD/MM/AAAA o una fecha válida de Excel",
         });
     }
-
 
     const telefonoRegex = /^\d{7,8}$/;
     if (!telefonoRegex.test(fila.telefono_referencia)) {
         errores.push({
-            campo: 'Teléfono de referencia',
+            campo: "Teléfono de referencia",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Teléfono debe tener entre 7 y 8 dígitos'
+            mensaje: "Teléfono debe tener entre 7 y 8 dígitos",
         });
     }
 
     // Normalize fecha_nacimiento to DD/MM/YYYY if year is 2-digit
-    const fechaParts = fila.fecha_nacimiento.split('/');
+    const fechaParts = fila.fecha_nacimiento.split("/");
     let fechaNacimientoNormalizada = fila.fecha_nacimiento;
     if (fechaParts.length === 3 && fechaParts[2].length === 2) {
         fechaNacimientoNormalizada = `${fechaParts[0]}-${fechaParts[1]}-20${fechaParts[2]}`;
@@ -138,12 +165,12 @@ export const validarFila = (
         nombres: fila.nombres,
         apellidos: fila.apellidos,
         ci: fila.ci,
-        fecha_nacimiento: fechaNacimientoNormalizada,        // formato ISO (DD-MM-YYYY)
+        fecha_nacimiento: fechaNacimientoNormalizada, // formato ISO (DD-MM-YYYY)
         correo_postulante: fila.correo_electronico,
         email_contacto: fila.correo_electronico,
         tipo_contacto_email: 1,
         telefono_contacto: fila.telefono_referencia,
-        tipo_contacto_telefono: 1,  
+        tipo_contacto_telefono: 1,
 
         idDepartamento: 0,
         idProvincia: 0,
@@ -152,80 +179,91 @@ export const validarFila = (
         idArea1: 0,
         idCategoria1: 0,
         idArea2: -1,
-        idCategoria2: -1
+        idCategoria2: -1,
     };
 
-    ['telefono_pertenece_a', 'correo_pertenece_a'].forEach(campo => {
-        console.log(fila[campo as keyof ExcelPostulante])
-        
-        const valorCampo = String(fila[campo as keyof ExcelPostulante] ?? '').trim().toLowerCase();
-        const contacto = CONTACTOS_PERMITIDOS.find(c => c.contacto.toLowerCase() === valorCampo);
-        console.log(contacto)
+    ["telefono_pertenece_a", "correo_pertenece_a"].forEach((campo) => {
+        console.log(fila[campo as keyof ExcelPostulante]);
+
+        const valorCampo = String(fila[campo as keyof ExcelPostulante] ?? "")
+            .trim()
+            .toLowerCase();
+        const contacto = CONTACTOS_PERMITIDOS.find(
+            (c) => c.contacto.toLowerCase() === valorCampo
+        );
+        console.log(contacto);
         if (!contacto) {
             errores.push({
-                campo: campo === 'telefono_pertenece_a' ? 'Teléfono pertenece a' : 'Correo pertenece a',
+                campo:
+                    campo === "telefono_pertenece_a"
+                        ? "Teléfono pertenece a"
+                        : "Correo pertenece a",
                 fila: numFila,
                 ci: fila.ci,
-                mensaje: 'Valor no permitido. Debe ser: Estudiante, Madre/Padre, Responsable'
+                mensaje:
+                    "Valor no permitido. Debe ser: Estudiante, Madre/Padre, Responsable",
             });
-        }else{
-            if(campo === 'correo_pertenece_a'){
+        } else {
+            if (campo === "correo_pertenece_a") {
                 postulante.tipo_contacto_email = Number(contacto.id);
-            }else{
+            } else {
                 postulante.tipo_contacto_telefono = Number(contacto.id);
             }
         }
     });
 
-
-    const departamentoEncontrado = departamentos.find(d => d.nombre.toLowerCase() === fila.departamento.toLowerCase());
+    const departamentoEncontrado = departamentos.find(
+        (d) => d.nombre.toLowerCase() === fila.departamento.toLowerCase()
+    );
 
     if (!departamentoEncontrado) {
         errores.push({
-            campo: 'Departamento',
+            campo: "Departamento",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Departamento no válido'
+            mensaje: "Departamento no válido",
         });
     } else {
         postulante.idDepartamento = departamentoEncontrado.id;
         console.log(departamentoEncontrado);
     }
 
-    const provinciaEncontrada = provincias.find(p => 
-        p.nombre.toLowerCase() === fila.provincia.toLowerCase() 
-      //&& p.departamento_id === departamentoEncontrado?.ID.toString()
+    const provinciaEncontrada = provincias.find(
+        (p) => p.nombre.toLowerCase() === fila.provincia.toLowerCase()
+        //&& p.departamento_id === departamentoEncontrado?.ID.toString()
     );
     if (!provinciaEncontrada) {
         errores.push({
-            campo: 'Provincia',
+            campo: "Provincia",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Provincia no válida para el departamento seleccionado'
+            mensaje: "Provincia no válida para el departamento seleccionado",
         });
     } else {
         postulante.idProvincia = provinciaEncontrada.id;
     }
 
-    const colegioEncontrado = colegios.find(c => c.nombre.toLowerCase() === fila.colegio.toLowerCase());
+    const colegioEncontrado = colegios.find(
+        (c) => c.nombre.toLowerCase() === fila.colegio.toLowerCase()
+    );
     if (!colegioEncontrado) {
         errores.push({
-            campo: 'Colegio',
+            campo: "Colegio",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Colegio no válido'
+            mensaje: "Colegio no válido",
         });
     } else {
         postulante.idColegio = parseInt(colegioEncontrado.id);
     }
 
-    const gradoEncontrado = grados.find(g => g.nombre === fila.grado);
+    const gradoEncontrado = grados.find((g) => g.nombre === fila.grado);
     if (!gradoEncontrado) {
         errores.push({
-            campo: 'Grado',
+            campo: "Grado",
             fila: numFila,
             ci: fila.ci,
-            mensaje: 'Grado no válido'
+            mensaje: "Grado no válido",
         });
     } else {
         postulante.idCurso = parseInt(gradoEncontrado.id);
@@ -234,34 +272,40 @@ export const validarFila = (
     if (gradoEncontrado) {
         const areasDisponibles = areasCategorias.get(gradoEncontrado.id);
         if (areasDisponibles) {
-            const areaCategoria1 = areasDisponibles.find(ac => 
-                `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === fila.area_categoria1.toLowerCase()
+            const areaCategoria1 = areasDisponibles.find(
+                (ac) =>
+                    `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() ===
+                    fila.area_categoria1.toLowerCase()
             );
             if (areaCategoria1) {
                 postulante.idArea1 = areaCategoria1.areaId;
                 postulante.idCategoria1 = parseInt(areaCategoria1.id);
             } else {
                 errores.push({
-                    campo: 'Área-Categoría 1',
+                    campo: "Área-Categoría 1",
                     fila: numFila,
                     ci: fila.ci,
-                    mensaje: 'Área-Categoría no válida para el grado seleccionado'
+                    mensaje:
+                        "Área-Categoría no válida para el grado seleccionado",
                 });
             }
 
             if (fila.area_categoria2) {
-                const areaCategoria2 = areasDisponibles.find(ac => 
-                    `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() === fila.area_categoria2.toLowerCase()
+                const areaCategoria2 = areasDisponibles.find(
+                    (ac) =>
+                        `${ac.areaNombre} - ${ac.nombre}`.toLowerCase() ===
+                        fila.area_categoria2.toLowerCase()
                 );
                 if (areaCategoria2) {
                     postulante.idArea2 = areaCategoria2.areaId;
                     postulante.idCategoria2 = parseInt(areaCategoria2.id);
                 } else {
                     errores.push({
-                        campo: 'Área-Categoría 2',
+                        campo: "Área-Categoría 2",
                         fila: numFila,
                         ci: fila.ci,
-                        mensaje: 'Área-Categoría no válida para el grado seleccionado'
+                        mensaje:
+                            "Área-Categoría no válida para el grado seleccionado",
                     });
                 }
             }
@@ -273,4 +317,4 @@ export const validarFila = (
     }
 
     return errores;
-}; 
+};
