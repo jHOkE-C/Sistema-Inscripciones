@@ -79,11 +79,9 @@ export default function GestionRegistration({
             setOpen(false);
             refresh();
             toast.success("La Olimpiada se creó correctamente.");
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const data = error.response?.data.error;
-                setError(data[0]);
-            }
+        } catch  {
+            toast.error("No se pudo registrar la gestion. Intente nuevamente")
+  
         }
     };
 
