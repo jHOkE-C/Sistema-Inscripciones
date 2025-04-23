@@ -1,3 +1,7 @@
+
+export type UploadResponse = {
+    message: string;
+};
 export interface ExcelPostulante {
     nombres: string;
     apellidos: string;
@@ -15,19 +19,33 @@ export interface ExcelPostulante {
     area_categoria1: string;
     area_categoria2: string;
 }
-export interface Postulante 
-extends Omit<ExcelPostulante, 'departamento' | 'provincia' | 'colegio' | 'grado' | 'area_categoria1' | 'area_categoria2' > {
-    iddepartamento: number;
-    idprovincia: number;
-    idcolegio: number;
-    idgrado: number;
-    idarea1: number;
-    idcategoria1: number;
-    idarea2: number;
-    idcategoria2: number;
+
+export interface Postulante {
+    nombres: string;
+    apellidos: string;
+    ci: string;
+    fecha_nacimiento: string;        // formato ISO (DD-MM-YYYY)
+    correo_postulante: string;
+    email_contacto: string;
+    tipo_contacto_email: number;
+    telefono_contacto: string;
+    tipo_contacto_telefono: number;  
+
+    idDepartamento: number;
+    idProvincia: number;
+    idColegio: number;
+    idCurso: number;
+    idArea1: number;
+    idCategoria1: number;
+    idArea2: number;
+    idCategoria2: number;
 }
 
-export const CONTACTOS_PERMITIDOS = ['ESTUDIANTE', 'MAMA', 'PAPA', 'TUTOR', 'PROFESOR'];
+export const CONTACTOS_PERMITIDOS = [
+    {id:3, contacto: "Estudiante"}, 
+    {id:1, contacto: "Madre/Padre"}, 
+    {id:2, contacto: "Responsable"}
+];
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },

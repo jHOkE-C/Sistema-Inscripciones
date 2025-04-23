@@ -3,7 +3,8 @@ import { CreateList } from "../../CreateList";
 import { DataTable } from "../../TableList";
 import { columns, ListaPostulantes } from "../../columns";
 import React, { Suspense, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import ShareUrl from "../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
 import FormResponsable from "../../FormResponsable";
@@ -16,6 +17,8 @@ const FileUploadModal = React.lazy(
 );
 import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
+import { API_URL } from "@/hooks/useApiRequest";
+import { url } from "inspector";
 //import type { Olimpiada } from "@/pages/carousel";
 //import { getOlimpiada } from "@/api/olimpiada";
 
@@ -58,6 +61,24 @@ const Page = () => {
             setLoading(false);
         }
     };
+    interface Olimpiada {
+        id: number;
+        nombre: string;
+        url_plantilla: string;
+    }
+    const handleDownload = async (numero: number, e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${numero}`);
+        console.log(response.data);
+        const olim:Olimpiada= response.data;
+        console.log(olim);
+        const url = `${API_URL}/storage/${olim.url_plantilla}`;
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = 'lista-postulantes.xlsx';
+        link.click();
+        
+    };
     const fetchData = async () => {
         try {
             refresh();
@@ -92,13 +113,13 @@ const Page = () => {
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
                             <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
-                                <Link
-                                    to="/plantilla-excel.xlsx"
+                                <button
+                                    onClick={ (e) => handleDownload(1, e)} 
                                     className="text-sm inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-2"
                                 >
                                     <Download className="h-4 w-4" />
                                     <span>Descargar plantilla de Excel</span>
-                                </Link>
+                                </button>
                                 <div className="flex gap-2 items-center">
                                     <Suspense fallback={<Loading />}>
                                         <FileUploadModal

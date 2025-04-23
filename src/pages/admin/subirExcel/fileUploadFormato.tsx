@@ -93,12 +93,12 @@ const FileUploadFormato: React.FC = () => {
         try {
             const base64String = await readFileAsBase64(fileToConfirm);
             const payload = {
-                olimpiadaId: selectedOlimpiada,
+                olimpiadaId: Number(selectedOlimpiada),
                 fileName: fileToConfirm.name,
                 fileContentBase64: base64String,
             };
-
-            const response = await axios.post<UploadResponse>(`${API_URL}/api/upload-formato`, payload);
+            console.log("payload", payload);
+            const response = await axios.post<UploadResponse>(`${API_URL}/api/olimpiadas/upload-excel`, payload);
 
             console.log("Respuesta del servidor:", response.data);
             setAlertInfo({
