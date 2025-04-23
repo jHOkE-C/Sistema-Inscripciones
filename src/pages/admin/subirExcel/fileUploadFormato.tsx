@@ -16,9 +16,15 @@ import { Loader2 } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from '@/components/Loading';
+
 type Olimpiada = {
     id: number;
     nombre: string;
+    gestion: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    vigente: boolean;
+    url_plantilla: string;
 };
 
 type UploadResponse = {
@@ -65,9 +71,22 @@ const FileUploadFormato: React.FC = () => {
         }
     };
 
-    const handleOlimpiadaChange = (value: string) => {
+    const handleOlimpiadaChange = async (value: string) => {
         setSelectedOlimpiada(value);
         handleCancelSelection();
+        try {
+            const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${value}`);
+            const olimpiadaDetail = response.data;
+            if (olimpiadaDetail.url_plantilla) {
+                const fileName = olimpiadaDetail.url_plantilla.split('/').pop() || `plantilla-${value}`;
+                const templateFile = new File([], fileName);
+                (templateFile as any).url_plantilla = olimpiadaDetail.url_plantilla;
+                setUploadedFiles([templateFile]);
+                setFileToConfirm(templateFile);
+            }
+        } catch (err) {
+            console.error("Error al obtener la plantilla de la olimpiada:", err);
+        }
     };
 
     const handleOpenConfirmDialog = () => {
@@ -107,9 +126,7 @@ const FileUploadFormato: React.FC = () => {
                 variant: "default",
             });
             setShowConfirmDialog(false);
-            setUploadedFiles([]);
             setFileToConfirm(null);
-
         } catch (err) {
             console.error("Error al procesar o subir el archivo:", err);
             let errorMessage = "Ocurrió un error al procesar o subir el archivo.";
@@ -208,6 +225,7 @@ const FileUploadFormato: React.FC = () => {
                             maxSize={10}
                             accept=".xlsx,.xls"
                             onFilesChange={handleFilesChange}
+                            filesRefresh={uploadedFiles}
                         />
                         <div className="flex justify-end gap-2 mt-3">
                             <Button variant="outline" size="sm" onClick={handleCancelSelection}>

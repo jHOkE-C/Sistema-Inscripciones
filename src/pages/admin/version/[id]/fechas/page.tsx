@@ -325,6 +325,24 @@ export default function Page() {
                                                             setOpenPopover(null);
                                                         }
                                                     }}
+                                                    disabled={(
+                                                        date
+                                                    ) => {
+                                                        const minEnd =
+                                                            new Date(
+                                                                c.fecha_inicio
+                                                            );
+                                                        return (
+                                                            date <
+                                                                minEnd ||
+                                                            date <
+                                                                vStart ||
+                                                            date > vEnd
+                                                        );
+                                                    }}
+                                                    initialFocus
+                                                  
+                                                   
                                                 />
                                             </PopoverContent>
                                           </Popover>

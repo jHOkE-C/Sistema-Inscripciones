@@ -1,21 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Building2, ChevronLeft, Edit, PlusCircle, Trash2 } from "lucide-react";
+import { Building2,  Edit, PlusCircle, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card";
+import ReturnComponent from "@/components/ReturnComponent";
 
 export default function Page() {
   return (
+    <>
+    <ReturnComponent to="/admin" />
     <div className="min-h-screen bg-gray-50">
       <div className=" px-4 max-w-6xl mx-auto">
-        <Link to="/admin">
-          <Button variant="ghost" className="flex items-center gap-2 mb-6">
-            <ChevronLeft className="h-5 w-5" />
-            Volver
-          </Button>
-        </Link>
 
         <header className="text-center mb-12">
           <div className="inline-flex items-center justify-center bg-primary/10 p-4 rounded-full mb-4">
@@ -100,5 +97,6 @@ export default function Page() {
       </div>
 
     </div>
+    </>
   );
 }
