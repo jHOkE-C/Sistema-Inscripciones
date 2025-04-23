@@ -1,119 +1,250 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/hooks/useApiRequest";
+import { toast } from "sonner";
+
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardTitle,
-} from "@/components/ui/card";
-import { AlertComponent } from "@/components/AlertComponent";
-import { darDeBajaArea } from "@/api/areas";
-import { Link } from "react-router-dom";
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import type { Area } from "../ListArea";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trash2, RefreshCw } from "lucide-react";
+import ReturnComponent from "@/components/ReturnComponent";
 
-import ListArea from "../ListArea";
-import { request } from "@/api/request";
-
-export interface Olimpiada {
-    id: string;
+export interface Area {
+    id: number;
     nombre: string;
-    gestion: string;
     vigente: boolean;
 }
 
-export const Page = () => {
-    const [alert, setAlert] = useState<{
-        title: string;
-        description?: string;
-        variant?: "default" | "destructive";
-    } | null>(null);
-    // const getOlimpiadas = async () => {
-    //     const data = await request<Olimpiada[]>("/api/olimpiadas");
-    //     setOlimpiadas(data);
-    // };
+export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
+    const [disabledAreas, setDisabledAreas] = useState<Area[]>([]);
+    const [selected, setSelected] = useState<Area | null>(null);
+    const [action, setAction] = useState<"deactivate" | "activate" | null>(
+        null
+    );
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    // carga inicial
+    const fetchAreas = async () => {
+        try {
+            const { data } = await axios.get<Area[]>(`${API_URL}/api/areas`);
+            setAreas(data.filter((a) => a.vigente));
+            setDisabledAreas(data.filter((a) => !a.vigente));
+        } catch (e) {
+            console.error(e);
+            toast.error("Error al cargar áreas");
+        }
+    };
+
     useEffect(() => {
-        // getOlimpiadas();
-        refreshAreas();
-    }, [request]);
-    const [error, setError] = useState<string | null>(null);
+        fetchAreas();
+    }, []);
 
-    const refreshAreas = async () => {
+    // abre modal, el segundo parámetro indica si es “dar de baja” o “habilitar”
+    const openDialog = (area: Area, act: "deactivate" | "activate") => {
+        setSelected(area);
+        setAction(act);
+        setDialogOpen(true);
+    };
+
+    // confirmación de baja/alta
+    const handleConfirm = async () => {
+        if (!selected || !action) return;
+
         try {
-            const data = await request<Area[]>("/api/areas");
-            setAreas(data);
+            if (action === "deactivate") {
+                await axios.put(
+                    `${API_URL}/api/areas/${selected.id}/deactivate`
+                );
+                toast.success(`Se dio de baja el área "${selected.nombre}"`);
+                // mover de activas a bajas
+                setAreas((prev) => prev.filter((a) => a.id !== selected.id));
+                setDisabledAreas((prev) => [...prev, selected]);
+            } else {
+                await axios.put(`${API_URL}/api/areas/${selected.id}/activate`);
+                toast.success(`Se habilitó el área "${selected.nombre}"`);
+                // mover de bajas a activas
+                setDisabledAreas((prev) =>
+                    prev.filter((a) => a.id !== selected.id)
+                );
+                setAreas((prev) => [...prev, selected]);
+            }
         } catch (e) {
-            setError(String(e));
+            console.error(e);
+            toast.error(
+                action === "deactivate"
+                    ? "Ocurrió un error al dar de baja el área"
+                    : "Ocurrió un error al habilitar el área"
+            );
+        } finally {
+            setDialogOpen(false);
+            setSelected(null);
+            setAction(null);
         }
     };
-    const showAlert = (
-        title: string,
-        description?: string,
-        variant?: "default" | "destructive"
-    ) => {
-        setAlert({ title, description, variant });
-    };
-
-    const handleDeleteArea = async (id: number) => {
-        try {
-            await darDeBajaArea(id);
-       
-            showAlert(
-                "Éxito",
-                "Se dio de baja el área correctamente.",
-                "default"
-            );
-            refreshAreas();
-        } catch (e) {
-            console.log("error");
-            showAlert(
-                "Error",
-                e instanceof Error ? e.message : "Hubo un error",
-                "destructive"
-            );
-        }
-    };
-
 
     return (
         <>
-            <div className="pt-4 px-4">
-                <Link to="/admin/area">
-                    <Button
-                        variant="ghost"
-                        className="flex items-center gap-1 mb-4"
-                    >
-                        <ChevronLeft className="h" />
-                        Volver
-                    </Button>
-                </Link>
-            </div>
-            <div className="w-4/5 mx-auto mt-10">
+                <ReturnComponent to="/admin/area" />
+            <div className="container mx-auto max-w-4xl py-5 space-y-8">
                 <Card>
-                    <CardTitle>
-                        <h1 className="text-4xl font-bold text-center py-5">
-                            Dar Áreas de baja
-                        </h1>
-                    </CardTitle>
-                    <CardDescription className="mx-auto">
-                        Da de baja un area para las olimpiadas
-                    </CardDescription>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Trash2 className="text-red-600" /> Dar de Baja
+                            Áreas
+                        </CardTitle>
+                    </CardHeader>
                     <CardContent>
-                        <ListArea
-                            areas={areas}
-                            error={error}
-                            onDelete={handleDeleteArea}
-                            eliminar
-                        />
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Área</TableHead>
+                                    <TableHead className="text-right">
+                                        Acción
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {areas.map((area) => (
+                                    <TableRow key={area.id}>
+                                        <TableCell>{area.nombre}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() =>
+                                                    openDialog(
+                                                        area,
+                                                        "deactivate"
+                                                    )
+                                                }
+                                            >
+                                                Dar de Baja
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {areas.length === 0 && (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={2}
+                                            className="text-center py-4"
+                                        >
+                                            No hay áreas vigentes
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
-                {alert?.description && (
-                    <AlertComponent {...alert} onClose={() => setAlert(null)} />
+
+                {disabledAreas.length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <RefreshCw className="text-gray-600" /> Áreas
+                                dadas de baja
+                            </CardTitle>
+                        </CardHeader>
+                        
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Área</TableHead>
+                                        <TableHead className="text-right">
+                                            Acción
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {disabledAreas.map((area) => (
+                                        <TableRow
+                                            key={area.id}
+                                            className=""
+                                        >
+                                            <TableCell className="opacity-50">{area.nombre}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        openDialog(
+                                                            area,
+                                                            "activate"
+                                                        )
+                                                    }
+                                                >
+                                                    Habilitar
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
                 )}
+
+                {/* diálogo de confirmación */}
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogContent aria-describedby="dialog-desc">
+                        <DialogHeader>
+                            <DialogTitle>
+                                {action === "deactivate"
+                                    ? "Confirmar Dar de Baja"
+                                    : "Confirmar Habilitar"}
+                            </DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription id="dialog-desc" className="px-6">
+                            {action === "deactivate" ? (
+                                <>
+                                    ¿Estás seguro de dar de baja el área “
+                                    {selected?.nombre}”?
+                                </>
+                            ) : (
+                                <>
+                                    ¿Estás seguro de habilitar el área “
+                                    {selected?.nombre}”?
+                                </>
+                            )}
+                        </DialogDescription>
+                        <DialogFooter className="flex justify-end space-x-2">
+                            <Button
+                                variant="ghost"
+                                onClick={() => setDialogOpen(false)}
+                            >
+                                Cancelar
+                            </Button>
+                            <Button
+                                variant={
+                                    action === "deactivate"
+                                        ? "destructive"
+                                        : undefined
+                                }
+                                onClick={handleConfirm}
+                            >
+                                Confirmar
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );
-};
-
-export default Page;
+}
