@@ -1,6 +1,7 @@
 import type { ListaPostulantes } from "@/pages/inscribir/columns";
 import { request } from "./request";
 import type { Postulante } from "@/pages/inscribir/[olimpiada_id]/[ci]/columns";
+import type { EstadoLista } from "./listas";
 
 export const postDataPostulante = async (
     values: Record<
@@ -38,10 +39,11 @@ export const crearListaPostulante = async (data: {
 };
 
 export const getInscritosPorLista = (codigo: string) => {
-    return request<{ data: Postulante[] }>(
-        "/api/listas/codigo/" + codigo,
-        {
-            method: "GET",
-        }
-    );
+    return request<{
+        data: Postulante[];
+        codigo_lista: string;
+        estado: EstadoLista;
+    }>("/api/listas/codigo/" + codigo, {
+        method: "GET",
+    });
 };
