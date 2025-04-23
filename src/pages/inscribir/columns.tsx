@@ -5,7 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 export type ListaPostulantes = {
     codigo_lista: string;
     estado: string;
-    fecha_creacion: Date;
+    created_at: Date;
     nombre_lista: string;
     postulantes_count: number;
     olimpiada_id: string;
@@ -65,7 +65,7 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
         },
     },
     {
-        accessorKey: "fecha_creacion",
+        accessorKey: "created_at",
         header: ({ column }) => {
             return (
                 <Button
@@ -80,4 +80,5 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
             );
         },
     },
+    
 ];
