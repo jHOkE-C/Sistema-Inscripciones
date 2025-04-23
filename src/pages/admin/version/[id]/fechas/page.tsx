@@ -342,13 +342,7 @@ export default function Page() {
                                                     }}
                                                     initialFocus
                                                   
-                                                    defaultMonth={
-                                                        c.fecha_inicio
-                                                            ? new Date(
-                                                                  c.fecha_inicio
-                                                              )
-                                                            : undefined
-                                                    }
+                                                   
                                                 />
                                             </PopoverContent>
                                           </Popover>
