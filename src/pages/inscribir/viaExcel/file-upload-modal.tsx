@@ -200,12 +200,14 @@ export default function FileUploadModal({
             cellNF: true,
             cellText: false,
           });
+          console.log(workbook);
           if (!workbook.SheetNames.length) {
             throw new Error("El archivo no contiene hojas");
           }
 
           const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
+          console.log(firstSheet);
           const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
             header: 1,
             defval: null,
