@@ -63,7 +63,7 @@ export const grados = [
 ];
 export interface Departamento {
     ID: number;
-    Nombre: string;
+    nombre: string;
     Provincias: Provincia[];
 }
 

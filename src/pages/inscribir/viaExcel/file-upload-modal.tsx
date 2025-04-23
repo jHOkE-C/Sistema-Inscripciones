@@ -57,6 +57,7 @@ interface FileUploadModalProps {
   triggerText?: string;
   title?: string;
   description?: string;
+  olimpiadaP: Olimpiada[];
 }
 
 export default function FileUploadModal({
@@ -67,6 +68,7 @@ export default function FileUploadModal({
   triggerText = "Subir archivos",
   title = "Añadir archivo excel",
   description = "Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí.",
+  olimpiadaP = [],
 }: FileUploadModalProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
@@ -88,17 +90,14 @@ export default function FileUploadModal({
   useEffect(() => {
     const fetchOlimpiadas = async () => {
       try {
-        const olimpiadaResponse = await axios.get(
-          `${API_URL}/api/olimpiadas/hoy`
-        );
-        setOlimpiada(olimpiadaResponse.data);
+        setOlimpiada(olimpiadaP);
 
         const deptResponse = await axios.get(`${API_URL}/api/departamentos`);
         setDepartamentos(deptResponse.data);
-
+        console.log(deptResponse.data);
         const provResponse = await axios.get(`${API_URL}/api/provincias`);
         setProvincias(provResponse.data);
-
+        console.log(provResponse.data);
         const colResponse = await axios.get(`${API_URL}/api/colegios`);
         setColegios(colResponse.data);
 

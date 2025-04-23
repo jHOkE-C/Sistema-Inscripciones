@@ -21,6 +21,17 @@ import { API_URL } from "@/hooks/useApiRequest";
 //import type { Olimpiada } from "@/pages/carousel";
 //import { getOlimpiada } from "@/api/olimpiada";
 
+
+type Olimpiada={
+    id: number;
+    nombre: string;
+    gestion: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    vigente: boolean;
+    url_plantilla: string;
+}
+
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { ci, olimpiada_id } = useParams();
@@ -28,19 +39,20 @@ const Page = () => {
     const [error, setError] = useState<string | null>();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
-    //const [olimpiada, setOlipiada] = useState<Olimpiada>();
+    const [olimpiada, setOlipiada] = useState<Olimpiada>();
 
-    // const getData = async () => {
-    //     if (!olimpiada_id || !ci) return;
-    //     try {
-    //         const data = await getOlimpiada(olimpiada_id);
-    //         setOlipiada(data);
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // };
+    const getData = async () => {
+         //if (!olimpiada_id || !ci) return;
+         try {
+            const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${1}`);
+             setOlipiada(response.data);
+             console.log(response.data);
+         } catch (e) {
+             console.log(e);
+         }
+    };
     useEffect(() => {
-    //    getData();
+        getData();
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
     }, []);
 
@@ -60,18 +72,10 @@ const Page = () => {
             setLoading(false);
         }
     };
-    interface Olimpiada {
-        id: number;
-        nombre: string;
-        url_plantilla: string;
-    }
-    const handleDownload = async (numero: number, e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${numero}`);
-        console.log(response.data);
-        const olim:Olimpiada= response.data;
-        console.log(olim);
-        const url = `${API_URL}/storage/${olim.url_plantilla}`;
+        const url = `${API_URL}/storage/${olimpiada?.url_plantilla}`;
+        console.log(url);
         const link = document.createElement("a");
         link.href = url;
         link.download = 'lista-postulantes.xlsx';
@@ -112,13 +116,16 @@ const Page = () => {
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
                             <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
-                                <button
-                                    onClick={ (e) => handleDownload(1, e)} 
-                                    className="text-sm inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-2"
-                                >
-                                    <Download className="h-4 w-4" />
-                                    <span>Descargar plantilla de Excel</span>
-                                </button>
+                                {olimpiada?.url_plantilla && (
+                                    <button
+                                        onClick={ (e) => handleDownload(e)} 
+                                        className="text-sm inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-2"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        <span>Descargar plantilla de Excel</span>
+                                    </button>
+                                    )
+                                }
                                 <div className="flex gap-2 items-center">
                                     <Suspense fallback={<Loading />}>
                                         <FileUploadModal
@@ -134,6 +141,7 @@ const Page = () => {
                                             triggerText="Añadir archivo Excel"
                                             title="Añadir archivo Excel"
                                             description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
+                                            olimpiadaP={olimpiada? [olimpiada]:[]}
                                         />
                                     </Suspense>
 

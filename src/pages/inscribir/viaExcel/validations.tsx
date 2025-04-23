@@ -165,7 +165,8 @@ export const validarFila = (
         }
     });
 
-    const departamentoEncontrado = departamentos.find(d => d.Nombre.toLowerCase() === fila.departamento.toLowerCase());
+
+    const departamentoEncontrado = departamentos.find(d => d.nombre.toLowerCase() === fila.departamento.toLowerCase());
     if (!departamentoEncontrado) {
         errores.push({
             campo: 'Departamento',
