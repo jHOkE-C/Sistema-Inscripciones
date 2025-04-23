@@ -9,5 +9,5 @@ export interface Category {
   minimo_grado: number;
   maximo_grado: number;
   areas: Area[];
-  vigente: boolean;
+  vigente?: boolean;
 }
