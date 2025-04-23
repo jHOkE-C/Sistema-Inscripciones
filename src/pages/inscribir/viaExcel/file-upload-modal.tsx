@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { HoverCardContent } from "@/components/ui/hover-card";
 import LoadingAlert from "@/components/loading-alert";
+import { useParams } from "react-router-dom";
 
 type AreaConCategorias = {
   id: number;
@@ -73,6 +74,7 @@ export default function FileUploadModal({
   const [files, setFiles] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
 
+  const {ci} = useParams()
   const [loading, setLoading] = useState(true);
   const [errores, setErrores] = useState<ValidationError[]>([]);
   const [showDialog, setShowDialog] = useState(false);
@@ -319,7 +321,11 @@ export default function FileUploadModal({
 
     try {
       setLoading(true);
-      const response = await axios.post<UploadResponse>(`${API_URL}/api/Upload-ExcelFormato`, postulantes);
+      const payload = {
+        listaPostulantes: postulantes, 
+        ciResponsable: ci
+      };
+      const response = await axios.post<UploadResponse>(`${API_URL}/api/inscribir/ViaExcel`, payload);
       console.log("Respuesta del servidor:", response.data);
       
       toast.success("Postulantes registrados exitosamente");

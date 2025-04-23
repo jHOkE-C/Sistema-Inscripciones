@@ -103,7 +103,7 @@ export const validarFila = (
         }
     });
 
-    
+    console.log(fila.fecha_nacimiento)
     const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     const fechaValida = fechaRegex.test(fila.fecha_nacimiento);
 
@@ -147,8 +147,12 @@ export const validarFila = (
         idArea2: -1,
         idCategoria2: -1
     };
+
     ['telefono_pertenece_a', 'correo_pertenece_a'].forEach(campo => {
+        console.log(fila[campo as keyof ExcelPostulante])
+        
         const contacto = CONTACTOS_PERMITIDOS.find(c => c.contacto.toLowerCase() === fila[campo as keyof ExcelPostulante].toUpperCase())
+        console.log(contacto)
         if (!contacto) {
             errores.push({
                 campo: campo === 'telefono_pertenece_a' ? 'Teléfono pertenece a' : 'Correo pertenece a',
