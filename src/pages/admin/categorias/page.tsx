@@ -24,7 +24,7 @@ export default function Page() {
           <h1 className="text-4xl font-extrabold mb-2">Gestión de Categorías</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Administra las categorías de la olimpiada de manera eficiente:
-            crea, edita o desactiva áreas según tus necesidades.
+            crea, edita o desactiva categoria según tus necesidades.
           </p>
         </header>
 
@@ -36,7 +36,7 @@ export default function Page() {
                 <PlusCircle className="h-6 w-6 text-primary" />
                 <CardTitle className="text-xl font-semibold">Agregar</CardTitle>
               </div>
-              <CardDescription>Crea una nueva categoría</CardDescription>
+              <CardDescription>Agrega una nueva categoría</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-500">
@@ -46,7 +46,7 @@ export default function Page() {
             </CardContent>
             <CardFooter>
               <Link to="/admin/categorias/crear" className="w-full">
-                <Button className="w-full">Ir a Agregar Área</Button>
+                <Button className="w-full">Ir a Agregar Categoria</Button>
               </Link>
             </CardFooter>
           </Card>
@@ -69,35 +69,11 @@ export default function Page() {
             <CardFooter>
               <Link to="/admin/categorias/editar" className="w-full">
                 <Button className="w-full bg-amber-600 hover:bg-amber-700">
-                  Ir a Editar Área
+                  Ir a Editar Categoria
                 </Button>
               </Link>
             </CardFooter>
           </Card>
-
-          {/* Dar de baja */}
-          {/* <Card className="shadow-lg hover:shadow-2xl transform hover:scale-105 transition">
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-3">
-                <Trash2 className="h-8 w-8 text-red-600" />
-                <CardTitle className="text-xl font-semibold">Dar de baja</CardTitle>
-              </div>
-              <CardDescription>Desactiva una categoría obsoleta</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-500">
-                Marca categorías que ya no sean necesarias para que no aparezcan
-                en futuras convocatorias.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Link to="/admin/categorias/dar-de-baja" className="w-full">
-                <Button variant="outline" className="w-full text-red-600 border-red-400">
-                  Ir a Dar de Baja Área
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card> */}
         </div>
       </div>
 

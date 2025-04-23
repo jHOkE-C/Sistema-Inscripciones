@@ -47,7 +47,7 @@ const Page = () => {
             );
             console.log("Categoría creada correctamente:", newCategory);
             fetchData();
-            toast.success("El nivel de competencia se registro correctamente.");
+            toast.success("La categoría se registro correctamente.");
             setIsCreateModalOpen(false);
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -72,17 +72,17 @@ const Page = () => {
                         <CardTitle>
                             <h1 className="text-2xl text-primary font-bold mb-2 flex items-center gap-3">
                                 <PlusCircle/>
-                                Crear Categorías
+                                Agregar Categorías
                             </h1>
                             <p className="mb-4 text-gray-600">
-                                Crea categorías personalizadas para las
+                                Agregar categorías personalizadas para las
                                 competiciones de las olimpiadas.
                             </p>
                             <div className="flex justify-end">
                                 <Button
                                     onClick={() => setIsCreateModalOpen(true)}
                                 >
-                                    <Plus className="mr-2 h-4 w-4" /> Crear
+                                    <Plus className="mr-2 h-4 w-4" /> Agregar
                                     Categoría
                                 </Button>
                             </div>

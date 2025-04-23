@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Category } from "./types";
+import { toast } from "sonner";
 
 interface CreateCategoryModalProps {
   isOpen: boolean;
@@ -39,33 +40,31 @@ export default function CreateCategoryModal({
   const handleSubmit = () => {
     // Validate form
     if (!nombre.trim()) {
-      setError("El nombre es requerido");
+      toast.error("El nombre es requerido");
       return;
     }
 
     if (minimoGrado === null) {
-      setError("El grado mínimo es requerido");
+      toast.error("El grado mínimo es requerido");
       return;
     }
 
     if (maximoGrado === null) {
-      setError("El grado máximo es requerido");
+      toast.error("El grado máximo es requerido");
       return;
     }
 
     if (minimoGrado > maximoGrado) {
-      setError("El grado mínimo no puede ser mayor que el grado máximo");
+      toast.error("El grado mínimo no puede ser mayor que el grado máximo");
       return;
     }
 
-    // Create new category
     onCreateCategory({
       nombre,
       minimo_grado: minimoGrado,
       maximo_grado: maximoGrado,
     });
 
-    // Reset form
     setNombre("");
     setMinimoGrado(null);
     setMaximoGrado(null);
@@ -80,7 +79,6 @@ export default function CreateCategoryModal({
     onClose();
   };
 
-  // Generate grade options (1ro primaria to 6to secundaria)
   const gradeOptions = Array.from({ length: 12 }, (_, i) => {
     const grade = i + 1;
     const label =
@@ -104,7 +102,7 @@ export default function CreateCategoryModal({
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="nombre" className="text-right">
-              Nombre del nivel de competencia
+              Nombre de la Categoría
             </Label>
             <Input
               id="nombre"
@@ -143,23 +141,29 @@ export default function CreateCategoryModal({
             <Select
               onValueChange={(value) => setMaximoGrado(Number.parseInt(value))}
               value={maximoGrado?.toString() || ""}
+              disabled={!minimoGrado} // Deshabilitar si no se ha seleccionado el grado mínimo
             >
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Seleccionar grado" />
               </SelectTrigger>
               <SelectContent>
-                {gradeOptions.map((grade) => (
-                  <SelectItem key={grade.value} value={grade.value.toString()}>
-                    {grade.label}
-                  </SelectItem>
-                ))}
+                {gradeOptions
+                  .filter((grade) => !minimoGrado || grade.value >= minimoGrado) // Filtrar opciones según el grado mínimo
+                  .map((grade) => (
+                    <SelectItem
+                      key={grade.value}
+                      value={grade.value.toString()}
+                    >
+                      {grade.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSubmit}>Crear Categoría</Button>
+          <Button onClick={handleSubmit}>Agrear Categoría</Button>
           <Button variant="outline" onClick={handleClose}>
             Cancelar
           </Button>
