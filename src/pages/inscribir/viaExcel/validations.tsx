@@ -104,7 +104,7 @@ export const validarFila = (
     });
 
     console.log(fila.fecha_nacimiento)
-    const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    const fechaRegex = /^\d{2}\/\d{2}\/\d{2,4}$/;
     const fechaValida = fechaRegex.test(fila.fecha_nacimiento);
 
     if (!fechaValida) {
@@ -127,11 +127,18 @@ export const validarFila = (
         });
     }
 
+    // Normalize fecha_nacimiento to DD/MM/YYYY if year is 2-digit
+    const fechaParts = fila.fecha_nacimiento.split('/');
+    let fechaNacimientoNormalizada = fila.fecha_nacimiento;
+    if (fechaParts.length === 3 && fechaParts[2].length === 2) {
+        fechaNacimientoNormalizada = `${fechaParts[0]}/${fechaParts[1]}/20${fechaParts[2]}`;
+    }
+
     const postulante: Postulante = {
         nombres: fila.nombres,
         apellidos: fila.apellidos,
         ci: fila.ci,
-        fecha_nacimiento: fila.fecha_nacimiento,        // formato ISO (DD-MM-YYYY)
+        fecha_nacimiento: fechaNacimientoNormalizada,        // formato ISO (DD-MM-YYYY)
         correo_postulante: fila.correo_electronico,
         email_contacto: fila.correo_electronico,
         tipo_contacto_email: 1,
@@ -151,7 +158,8 @@ export const validarFila = (
     ['telefono_pertenece_a', 'correo_pertenece_a'].forEach(campo => {
         console.log(fila[campo as keyof ExcelPostulante])
         
-        const contacto = CONTACTOS_PERMITIDOS.find(c => c.contacto.toLowerCase() === fila[campo as keyof ExcelPostulante].toUpperCase())
+        const valorCampo = String(fila[campo as keyof ExcelPostulante] ?? '').trim().toLowerCase();
+        const contacto = CONTACTOS_PERMITIDOS.find(c => c.contacto.toLowerCase() === valorCampo);
         console.log(contacto)
         if (!contacto) {
             errores.push({
