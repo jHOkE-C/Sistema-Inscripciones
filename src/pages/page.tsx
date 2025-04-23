@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { OlimpiadasCarousel } from "./carousel";
 
 const PageHome = () => {
-  const ci = localStorage.getItem("ci");
   return (
     <div className="flex min-h-screen flex-col ">
       {/* Header */}
