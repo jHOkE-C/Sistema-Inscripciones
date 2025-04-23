@@ -30,7 +30,7 @@ export function CreateList({
     const [success, setSuccess] = useState<string | null>(null);
     const [nombre, setNombre] = useState<string>();
     const [loading, setLoading] = useState(false);
-    const { ci, olimpiada_id } = useParams();
+    const { ci} = useParams();
 
 
 
@@ -39,8 +39,8 @@ export function CreateList({
         if (loading) return;
         try {
             setLoading(true);
-            if (!ci || !olimpiada_id) return;
-
+            if (!ci) return;
+            const olimpiada_id = '1';
             await crearListaPostulante({
                 ci,
                 olimpiada_id,

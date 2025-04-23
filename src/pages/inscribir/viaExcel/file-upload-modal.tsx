@@ -317,17 +317,31 @@ export default function FileUploadModal({
       setLoading(false);
     }
   };
-
+  function generarSufijo() {
+    return Math.random()
+      .toString(36)       
+      .substring(2, 10);   
+  }
   const handleConfirm = async () => {
     if (errores.length > 0) return;
 
+
     try {
       setLoading(true);
+      const nombreLista = `excel${generarSufijo()}`;
       const payload = {
-        listaPostulantes: postulantes, 
-        ciResponsable: ci
-      };
-      const response = await axios.post<UploadResponse>(`${API_URL}/api/inscribir/ViaExcel`, payload);
+        ci: ci,
+        nombre_lista: nombreLista,
+        olimpiada_id:'1',              // como número
+        listaPostulantes: postulantes.map(p => ({
+          ...p,
+          // Asegúrate de incluir idArea2/idCategoria2 aunque sean null:
+          idArea2: p.idArea2==-1 ? null: p.idArea2,
+          idCategoria2: p.idCategoria2==-1 ? null: p.idCategoria2
+        })),
+      }
+      console.log(payload)
+      const response = await axios.post<UploadResponse>(`${API_URL}/api/inscripciones/bulk`, payload);
       console.log("Respuesta del servidor:", response.data);
       
       toast.success("Postulantes registrados exitosamente");
@@ -336,9 +350,8 @@ export default function FileUploadModal({
       setFiles([]);
       setPostulantes([]);
       setShowDialog(false);
-    } catch (error) {
-      console.error("Error al registrar postulantes:", error);
-      toast.error("Error al registrar postulantes");
+    } catch (err: any) {
+      console.error('🛑 Errores de validación:', err.response?.data)
     } finally {
       setLoading(false);
     }
@@ -394,14 +407,13 @@ export default function FileUploadModal({
                           }
                           onClick={handleProcesar}
                         >
-                          Continuar
+                          Subir Archivo
                         </Button>
                       </div>
                     </HoverCardTrigger>
                     <HoverCardContent className=" p-2">
                       <p className="text-sm text-zinc-500">
-                        No se ha seleccionado ningun archivo o el archivo es muy
-                        grande.
+                        No se ha seleccionado ningun archivo
                       </p>
                     </HoverCardContent>
                   </HoverCard>

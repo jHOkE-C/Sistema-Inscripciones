@@ -234,7 +234,7 @@ const FileUploadFormato: React.FC = () => {
                             <Button
                                 disabled={!fileToConfirm}
                                 size="sm" onClick={() => handleOpenConfirmDialog()}>
-                                Confirmar Archivo
+                                Subir Archivo
                             </Button>
                         </div>
                     </div>

@@ -131,7 +131,7 @@ export const validarFila = (
     const fechaParts = fila.fecha_nacimiento.split('/');
     let fechaNacimientoNormalizada = fila.fecha_nacimiento;
     if (fechaParts.length === 3 && fechaParts[2].length === 2) {
-        fechaNacimientoNormalizada = `${fechaParts[0]}/${fechaParts[1]}/20${fechaParts[2]}`;
+        fechaNacimientoNormalizada = `${fechaParts[0]}-${fechaParts[1]}-20${fechaParts[2]}`;
     }
 
     const postulante: Postulante = {
@@ -179,6 +179,7 @@ export const validarFila = (
 
 
     const departamentoEncontrado = departamentos.find(d => d.nombre.toLowerCase() === fila.departamento.toLowerCase());
+
     if (!departamentoEncontrado) {
         errores.push({
             campo: 'Departamento',
@@ -187,7 +188,8 @@ export const validarFila = (
             mensaje: 'Departamento no válido'
         });
     } else {
-        postulante.idDepartamento = departamentoEncontrado.ID;
+        postulante.idDepartamento = departamentoEncontrado.id;
+        console.log(departamentoEncontrado);
     }
 
     const provinciaEncontrada = provincias.find(p => 

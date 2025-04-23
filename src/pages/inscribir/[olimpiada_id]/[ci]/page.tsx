@@ -66,7 +66,7 @@ const Page = () => {
         setLoading(true);
         try {
             const { data } = await getListasPostulantes(ci);
-            setData(data.filter(({ olimpiada_id: id }) => id == olimpiada_id));
+            setData(data.filter(({ olimpiada_id: id }) => id == '1'));
         } catch {
             setOpenFormResponsable(true);
         } finally {
