@@ -35,6 +35,7 @@ import { es } from "date-fns/locale";
 import { AlertComponent } from "@/components/AlertComponent";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
+import { toast } from "sonner";
 
 export default function GestionRegistration({
     refresh,
@@ -77,7 +78,7 @@ export default function GestionRegistration({
             setEndDate(undefined);
             setOpen(false);
             refresh();
-            setSuccess("La gestión se creó correctamente.");
+            toast.success("La Olimpiada se creó correctamente.");
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 const data = error.response?.data.error;
@@ -100,7 +101,7 @@ export default function GestionRegistration({
                         <div>
                             <PlusCircle className="h-8 w-8 mb-1" />
                             <span className="text-lg font-medium">
-                                Crear versión
+                                Crear Olimpiada
                             </span>
                         </div>
                     </Button>
