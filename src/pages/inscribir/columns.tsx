@@ -1,10 +1,11 @@
+import type { EstadoLista } from "@/api/listas";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 export type ListaPostulantes = {
     codigo_lista: string;
-    estado: string;
+    estado: EstadoLista;
     created_at: Date;
     nombre_lista: string;
     postulantes_count: number;

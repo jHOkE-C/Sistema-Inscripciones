@@ -179,7 +179,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                         console.error(`Error al obtener ${endpoint.label}`);
                     } else {
                         const data = await response.json();
-                        console.log(endpoint.label, data);
+                      //  console.log(endpoint.label, data);
                         endpoint.setData(data);
                     }
                 } catch (error) {

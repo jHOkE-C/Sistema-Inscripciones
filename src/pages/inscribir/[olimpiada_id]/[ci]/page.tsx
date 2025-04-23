@@ -3,7 +3,7 @@ import { CreateList } from "../../CreateList";
 import { DataTable } from "../../TableList";
 import { columns, ListaPostulantes } from "../../columns";
 import React, { Suspense, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import ShareUrl from "../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
@@ -97,17 +97,25 @@ const Page = () => {
             id: "acciones",
             header: "Acciones",
             cell: ({ row }) =>
-                row.original.estado === "pendiente" ? (
-                    <Button
+                row.original.estado === "Pago Pendiente" ? (
+                    <Button variant={"link"}
                         size="sm"
                         onClick={(e) => {
-                            e.stopPropagation(); // para que no dispare el onClick de la fila
+                            e.stopPropagation(); 
                             generarOrdenDePago(row.getValue("codigo_lista"));
                         }}
                     >
                         Generar orden de pago
                     </Button>
-                ) : null,
+                ) : (
+                    <Link
+                        to={`/inscribir/${olimpiada_id}/${ci}/${row.getValue(
+                            "codigo_lista"
+                        )}`}
+                    >
+                        <Button variant={"link"}>Abrir lista</Button>
+                    </Link>
+                ),
         },
     ];
 

@@ -33,11 +33,12 @@ import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/api/listas";
 
 export default function Page() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [data, setData] = useState<Postulante[]>([]);
-    const { ci, codigo,olimpiada_id } = useParams();
+    const { ci, codigo, olimpiada_id } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [editar, setEditar] = useState(true);
     useEffect(() => {
         fetchData();
     }, []);
@@ -52,6 +53,8 @@ export default function Page() {
         try {
             const data = await getInscritosPorLista(codigo);
             setData(data.data);
+            console.log(data.estado,data.estado !== "Preinscrito")
+            setEditar(data.estado === "Preinscrito");
             setNotFound(false);
         } catch {
             setNotFound(true);
@@ -63,8 +66,8 @@ export default function Page() {
     const terminarRegistro = async () => {
         console.log("terminando registro");
         try {
-            await cambiarEstadoLista(codigo,"Pago Pendiente")
-            navigate(`/inscribir/${olimpiada_id}/${ci}`)
+            await cambiarEstadoLista(codigo, "Pago Pendiente");
+            navigate(`/inscribir/${olimpiada_id}/${ci}`);
         } catch (error) {
             if (error instanceof Error) {
                 toast.error(error.message);
@@ -89,11 +92,13 @@ export default function Page() {
                         </CardHeader>
                         <CardContent className="overflow-x-auto space-y-5">
                             <div className="flex justify-between">
-                                <FormPostulante refresh={refresh} />
+                                {editar && <FormPostulante refresh={refresh} />}
 
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button>Finalizar registro</Button>
+                                        {editar && (
+                                            <Button>Finalizar registro</Button>
+                                        )}
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
