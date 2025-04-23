@@ -13,6 +13,7 @@ export interface Categoria {
     areas: Area[];
     areaId: number;
     areaNombre: string;
+    vigente: boolean;
 }
 export interface Provincia {
     id: string;

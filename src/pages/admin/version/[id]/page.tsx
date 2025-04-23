@@ -3,15 +3,14 @@
 import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, CalendarDays } from "lucide-react";
+import { CalendarIcon, ChevronLeft, CalendarDays, Link2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { API_URL } from "@/hooks/useApiRequest";
-import {  formatDate, OlimpiadaData } from "./types";
-
+import { formatDate, OlimpiadaData } from "./types";
 
 import {
     Card,
@@ -38,14 +37,13 @@ const editOlimpiadaSchema = z
         }
     );
 
-
 export default function OlimpiadaPage() {
     const params = useParams();
     const id = Number(params.id);
     // State
     const [data, setData] = useState<OlimpiadaData | null>(null);
     const [loading, setLoading] = useState(true);
- 
+
     const fetchData = async () => {
         try {
             const response = await axios.get<OlimpiadaData>(
@@ -308,9 +306,20 @@ export default function OlimpiadaPage() {
                         asChild
                     >
                         <Link to={`/admin/version/${id}/fechas`}>
-                            <CalendarDays className="size-7 " />
+                            <CalendarDays className="size-7" />
                             <span className="text-lg font-medium">
                                 Definir Fases
+                            </span>
+                        </Link>
+                    </Button>
+                    <Button
+                        className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-2"
+                        asChild
+                    >
+                        <Link to={`/admin/version/${id}/asociar`}>
+                            <Link2 className="size-7" />
+                            <span className="text-lg font-medium">
+                                Asociar áreas con categorías
                             </span>
                         </Link>
                     </Button>
