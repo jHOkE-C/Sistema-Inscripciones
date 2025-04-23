@@ -19,6 +19,7 @@ import Footer from "@/components/Footer";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
+import OrdenPago from "./orden-pago";
 //import type { Olimpiada } from "@/pages/carousel";
 //import { getOlimpiada } from "@/api/olimpiada";
 
@@ -88,9 +89,7 @@ const Page = () => {
             console.error("Error al obtener las listas de postulantes");
         }
     };
-    const generarOrdenDePago = (codigo_lista: string) => {
-        console.log("Generando orden para", codigo_lista);
-    };
+    
     const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
         ...columns,
         {
@@ -98,15 +97,7 @@ const Page = () => {
             header: "Acciones",
             cell: ({ row }) =>
                 row.original.estado === "Pago Pendiente" ? (
-                    <Button variant={"link"}
-                        size="sm"
-                        onClick={(e) => {
-                            e.stopPropagation(); 
-                            generarOrdenDePago(row.getValue("codigo_lista"));
-                        }}
-                    >
-                        Generar orden de pago
-                    </Button>
+                    <OrdenPago codigo={row.getValue("codigo_lista")}/>
                 ) : (
                     <Link
                         to={`/inscribir/${olimpiada_id}/${ci}/${row.getValue(

@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
@@ -39,9 +39,8 @@ export function DataTable<TData, TValue>({
             sorting,
         },
     });
-
-    const navigate = useNavigate();
-    const { ci, olimpiada_id } = useParams();
+    
+    const { ci } = useParams();
     return (
         <div className="rounded-md border">
             <Table>
@@ -73,7 +72,6 @@ export function DataTable<TData, TValue>({
                                 onClick={() => {
                                     const codigo = row.getValue("codigo_lista");
                                     console.log("abriendo", ci, codigo);
-                                    navigate(`/inscribir/${olimpiada_id}/${ci}/${codigo}`);
                                 }}
                                 className="hover:text-primary hover:cursor-pointer hover:bg-primary/10"
                             >
