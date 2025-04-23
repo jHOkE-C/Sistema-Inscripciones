@@ -1,3 +1,4 @@
+
 import { request } from "./request";
 
 export interface Area {
@@ -26,8 +27,9 @@ export interface Colegio {
     id: string;
     nombre: string;
 }
-export const getCategoriaAreaPorGrado = async (grado: string) => {
-    return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}`);
+
+export const getCategoriaAreaPorGrado = async (grado: string,olimpiada_id:string) => {
+    return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}/olimpiada/${olimpiada_id}`);
 };
 
 export const getCategoriaAreaPorGradoOlimpiada = async (

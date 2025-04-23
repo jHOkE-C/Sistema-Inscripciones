@@ -149,7 +149,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
     const [error, setError] = useState<string | null>();
     const [success, setSuccess] = useState<string | null>();
     const [showForm, setShowForm] = useState(false);
-    const { codigo } = useParams();
+    const { codigo, olimpiada_id } = useParams();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -191,9 +191,12 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
         fetchData();
     }, []);
     useEffect(() => {
-        if (!selectedGrado) return;
+        if (!selectedGrado || !olimpiada_id) return;
         const fetchArea = async () => {
-            const areas = await getCategoriaAreaPorGrado(selectedGrado);
+            const areas = await getCategoriaAreaPorGrado(
+                selectedGrado,
+                olimpiada_id
+            );
             setCategorias(areas);
         };
         fetchArea();
@@ -727,7 +730,7 @@ const FormPostulante = ({ refresh = () => {} }: { refresh?: () => void }) => {
                                                                                         const [
                                                                                             idArea,
                                                                                             idCat,
-                                                                                        ] = 
+                                                                                        ] =
                                                                                             item
                                                                                                 .split(
                                                                                                     "-"
