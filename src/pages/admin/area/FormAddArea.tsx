@@ -77,13 +77,9 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                         maxLength={40}
                         placeholder="Astronomia"
                         onChange={(e) => {
-                          const noAccents = e.target.value.replace(
-                            /[áéíóúÁÉÍÓÚ]/g,
-                            (match) => {
-                              return "aeiouAEIOU"["áéíóúÁÉÍÓÚ".indexOf(match)];
-                            }
-                          );
-                          field.onChange(noAccents.toUpperCase());
+
+                          
+                          field.onChange(e.target.value.toUpperCase());
                         }}
                         value={field.value}
                       />
