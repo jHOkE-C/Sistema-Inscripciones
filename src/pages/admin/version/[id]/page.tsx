@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, CalendarDays, Link2 } from "lucide-react";
+import { CalendarIcon, ChevronLeft, } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -263,7 +263,7 @@ export default function OlimpiadaPage() {
                     <CardHeader>
                         <CardTitle>
                             <h1 className="text-2xl font-bold ">
-                                Gestion de Version de Olimpiada
+                                Información de Olimpiada
                             </h1>
                         </CardTitle>
                         <CardDescription>
@@ -299,31 +299,9 @@ export default function OlimpiadaPage() {
                         </div>
                     </CardContent>
                 </Card>
-
-                <div className="flex flex-col space-y-4 p-6 max-w-3xl mx-auto">
-                    <Button
-                        className="h-auto py-6 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-2"
-                        asChild
-                    >
-                        <Link to={`/admin/version/${id}/fechas`}>
-                            <CalendarDays className="size-7" />
-                            <span className="text-lg font-medium">
-                                Definir Fases
-                            </span>
-                        </Link>
-                    </Button>
-                    <Button
-                        className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-2"
-                        asChild
-                    >
-                        <Link to={`/admin/version/${id}/asociar`}>
-                            <Link2 className="size-7" />
-                            <span className="text-lg font-medium">
-                                Asociar áreas con categorías
-                            </span>
-                        </Link>
-                    </Button>
-                </div>
+                <h2 className="text-xl font-semibold ">
+                    Convocatoria de la olimpiada
+                </h2>
             </div>
             {/* Edit Olimpiada Dialog */}
             {/* <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
