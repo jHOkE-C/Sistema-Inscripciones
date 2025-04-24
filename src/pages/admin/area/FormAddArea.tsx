@@ -77,8 +77,6 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                         maxLength={40}
                         placeholder="Astronomia"
                         onChange={(e) => {
-
-                          
                           field.onChange(e.target.value.toUpperCase());
                         }}
                         value={field.value}

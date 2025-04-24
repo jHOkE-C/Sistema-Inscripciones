@@ -84,8 +84,9 @@ export default function Page() {
                 );
                 setAreas((prev) => [...prev, selected]);
             }
-        } catch (e) {
-            console.error(e);
+        } catch (e:unknown) {
+            console.error(e instanceof Error && e.message);
+            
             toast.error(
                 action === "deactivate"
                     ? "Ocurrió un error al dar de baja el área"

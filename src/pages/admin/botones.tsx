@@ -41,13 +41,36 @@ export default function Botones({ getData }: { getData: () => void }) {
 
    
         <Button
-          className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-2"
+          className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
           asChild
           >
           <Link to="/admin/subirExcel">
             <Asociar className="h-8 w-8 mb-1" />
             <span className="text-lg font-medium">
               Subir Excel
+            </span>
+          </Link>
+        </Button>
+
+        <Button
+          className="h-auto py-6 bg-pink-600 hover:bg-pink-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
+          asChild
+          >
+          <Link to="/admin/definirFases">
+            <Asociar className="h-8 w-8 mb-1" />
+            <span className="text-lg font-medium">
+              Definir fases
+            </span>
+          </Link>
+        </Button>
+        <Button
+          className="h-auto py-6 bg-slate-600 hover:bg-slate-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
+          asChild
+          >
+          <Link to="/admin/asociarAreas">
+            <Asociar className="h-8 w-8 mb-1" />
+            <span className="text-md font-medium">
+              Asociar áreas con categorías
             </span>
           </Link>
         </Button>
