@@ -102,14 +102,14 @@ export class ApiClient {
         return request<T>(endpoint, { method: "GET" });
     }
 
-    post<T>(endpoint: string, body: JSON) {
+    post<T,U>(endpoint: string, body: U) {
         return request<T>(endpoint, {
             method: "POST",
             body: JSON.stringify(body),
         });
     }
 
-    put<T>(endpoint: string, body: JSON) {
+    put<T,U>(endpoint: string, body: U) {
         return request<T>(endpoint, {
             method: "PUT",
             body: JSON.stringify(body),

@@ -20,7 +20,7 @@ export default function Botones({ getData }: { getData: () => void }) {
         </Button>
 
         <Button
-          className="h-auto py-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg sm:col-span-2 lg:col-span-1"
+          className="h-auto py-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
           asChild
         >
           <Link to="/admin/categorias">
@@ -30,7 +30,7 @@ export default function Botones({ getData }: { getData: () => void }) {
         </Button>
 
         <Button
-          className="h-auto py-6 bg-purple-600 hover:bg-purple-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
+          className="h-auto py-6 bg-purple-600 hover:bg-purple-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
           asChild
         >
           <Link to="/gestionar-postulantes">
@@ -41,7 +41,7 @@ export default function Botones({ getData }: { getData: () => void }) {
 
    
         <Button
-          className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
+          className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
           asChild
           >
           <Link to="/admin/subirExcel">
@@ -53,7 +53,7 @@ export default function Botones({ getData }: { getData: () => void }) {
         </Button>
 
         <Button
-          className="h-auto py-6 bg-pink-600 hover:bg-pink-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
+          className="h-auto py-6 bg-pink-600 hover:bg-pink-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
           asChild
           >
           <Link to="/admin/definirFases">
@@ -64,13 +64,24 @@ export default function Botones({ getData }: { getData: () => void }) {
           </Link>
         </Button>
         <Button
-          className="h-auto py-6 bg-slate-600 hover:bg-slate-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg md:col-span-2 lg:col-span-1"
+          className="h-auto py-6 bg-slate-600 hover:bg-slate-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
           asChild
           >
           <Link to="/admin/asociarAreas">
             <Asociar className="h-8 w-8 mb-1" />
-            <span className="text-md font-medium">
-              Asociar áreas con categorías
+            <span className="text-lg font-medium">
+              Asociar áreas
+            </span>
+          </Link>
+        </Button>
+        <Button
+          className="h-auto py-6 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+          asChild
+          >
+          <Link to="/admin/asociarCategorias">
+            <Asociar className="h-8 w-8 mb-1" />
+            <span className="text-lg font-medium">
+              Asociar Categorías
             </span>
           </Link>
         </Button>

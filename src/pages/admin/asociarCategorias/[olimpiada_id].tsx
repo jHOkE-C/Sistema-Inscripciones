@@ -171,7 +171,7 @@ export default function Page() {
         <div className="p-6 space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Asociar de Áreas</CardTitle>
+                    <CardTitle>Asociar de Categorias</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>

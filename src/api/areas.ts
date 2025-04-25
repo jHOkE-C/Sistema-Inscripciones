@@ -4,6 +4,8 @@ import { request } from "./request";
 export interface Area {
     id: string;
     nombre: string;
+    vigente: boolean;
+    categorias?: Categoria[]
 }
 export interface Categoria {
     id: string;

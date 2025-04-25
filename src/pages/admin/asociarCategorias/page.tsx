@@ -39,7 +39,7 @@ const Admin = () => {
       <div className="flex flex-col min-h-screen">
         <div className="w-full p-4 md:w-4/5 mx-auto">
           <h1 className="text-4xl font-bold text-center py-4">
-            Seleccione una olimpiada para asociar áreas
+            Seleccione una olimpiada para asociar categorías a áreas
           </h1>
           {versiones.length > 0 ? (
             <Versiones versiones={versiones} />
