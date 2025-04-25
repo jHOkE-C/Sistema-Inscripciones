@@ -67,13 +67,14 @@ export default function Page() {
         }
     };
 
-    const handleAssociate = async (areaId: string) => {
+    const handleAssociate = async (area: Area) => {
         try {
             await apiClient.post(`/api/olimpiada/area`, {
-                area_id: areaId,
+                area_id: area.id,
                 olimpiada_id,
             });
-            setAssociatedIds((prev) => new Set(prev).add(areaId));
+            setAssociatedIds((prev) => new Set(prev).add(area.id));
+            setAssociatedAreas([...areas, area]);
             toast.success("Área asociada correctamente");
         } catch (e: unknown) {
             toast.error(
@@ -133,7 +134,7 @@ export default function Page() {
                                             <Button
                                                 size="sm"
                                                 onClick={() =>
-                                                    handleAssociate(area.id)
+                                                    handleAssociate(area)
                                                 }
                                             >
                                                 Asociar

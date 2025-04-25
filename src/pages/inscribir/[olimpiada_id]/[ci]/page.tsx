@@ -14,14 +14,11 @@ import ReturnComponent from "@/components/ReturnComponent";
 const FileUploadModal = React.lazy(
     () => import("../../viaExcel/file-upload-modal")
 );
-import { Download } from "lucide-react";
 import Footer from "@/components/Footer";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "./orden-pago";
-//import type { Olimpiada } from "@/pages/carousel";
-//import { getOlimpiada } from "@/api/olimpiada";
 
 type Olimpiada = {
     id: number;
@@ -73,15 +70,7 @@ const Page = () => {
             setLoading(false);
         }
     };
-    const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        const url = `${API_URL}/storage/${olimpiada?.url_plantilla}`;
-        console.log(url);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "lista-postulantes.xlsx";
-        link.click();
-    };
+
     const fetchData = async () => {
         try {
             refresh();
@@ -134,18 +123,8 @@ const Page = () => {
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
-                            <div className="flex flex-col md:flex-row gap-2 items-center justify-between">
-                                {olimpiada?.url_plantilla && (
-                                    <button
-                                        onClick={(e) => handleDownload(e)}
-                                        className="text-sm inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-2"
-                                    >
-                                        <Download className="h-4 w-4" />
-                                        <span>
-                                            Descargar plantilla de Excel
-                                        </span>
-                                    </button>
-                                )}
+                            <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
+                                
                                 <div className="flex gap-2 items-center">
                                     <Suspense fallback={<Loading />}>
                                         <FileUploadModal

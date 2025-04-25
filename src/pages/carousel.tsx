@@ -19,7 +19,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Calendar, Clock, Trophy } from "lucide-react";
+import { Calendar, Clock, Download, Trophy } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
@@ -40,6 +40,7 @@ export interface Olimpiada {
     fecha_fin: string;
     gestion: string;
     fase_actual?: Fase;
+    url_plantilla?: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -163,7 +164,29 @@ export function OlimpiadasCarousel() {
                                             </div>
                                         )}
                                     </CardContent>
-                                    <CardFooter className="p-4 pt-0 mt-auto flex justify-center">
+                                    <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
+                                        {olimpiada.url_plantilla && (
+                                            <Button
+                                                variant={"link"}
+                                                className="text text-green-600"
+                                                onClick={() => {
+                                                    const link =
+                                                        document.createElement(
+                                                            "a"
+                                                        );
+                                                    link.href =
+                                                        olimpiada.url_plantilla ||
+                                                        "";
+                                                    link.download =
+                                                        "plantilla.xlsx";
+                                                    link.click();
+                                                }}
+                                            >
+                                                <Download/>
+                                                Descargar Plantilla de
+                                                Excel
+                                            </Button>
+                                        )}
                                         <Button
                                             className=""
                                             disabled={
@@ -173,7 +196,9 @@ export function OlimpiadasCarousel() {
                                             }
                                             variant={"link"}
                                         >
-                                            <Link to={`/inscribir/${olimpiada.id}`}>
+                                            <Link
+                                                to={`/inscribir/${olimpiada.id}`}
+                                            >
                                                 Inscribite Ahora
                                             </Link>
                                         </Button>
