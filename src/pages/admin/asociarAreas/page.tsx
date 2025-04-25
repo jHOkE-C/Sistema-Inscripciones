@@ -1,10 +1,9 @@
 "use client";
-
-import { Versiones } from "./VersionSelectAreas";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/hooks/useApiRequest";
 import Footer from "@/components/Footer";
+import { Versiones } from "../Versiones";
 
 export type Version = {
     id: number;

@@ -40,23 +40,12 @@ export default function Page() {
     const [initialChecked, setInitialChecked] = useState<number[]>([]);
 
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { id: olimpiada_id } = useParams();
+    const { olimpiada_id } = useParams();
 
     useEffect(() => {
         fetchAreas();
         fetchCategories();
     }, []);
-
-    const fetchAreas = async () => {
-        try {
-            const data = await request<Area[]>("/api/areas", { method: "GET" });
-            setAreas(data);
-        } catch (e: unknown) {
-            toast.error(
-                e instanceof Error ? e.message : "Error al cargar áreas"
-            );
-        }
-    };
 
     const fetchCategories = async () => {
         try {
@@ -71,13 +60,13 @@ export default function Page() {
         }
     };
 
-    const fetchAsociacion = async () => {
-        if (!selectedArea) return;
+    const fetchAreas = async () => {
         try {
-            const data = await request<Asociacion[]>(
-                `/api/areas/${selectedArea.id}/categorias/olimpiada/${olimpiada_id}`
+            const data = await request<Area[]>(
+                `/api/areas/categorias/olimpiada/${olimpiada_id}`
             );
             // convertir a número y armar ambos estados
+            setAreas(data);
             const ids = data.map((a) => Number(a.id));
             setInitialChecked(ids);
             setChecked(
@@ -113,12 +102,12 @@ export default function Page() {
         }
     };
     // cada vez que cambie selectedArea recargamos las asociaciones
-    useEffect(() => {
-        if (selectedArea && dialogOpen) {
-            fetchAsociacion();
-        }
-        fetchAsociacion();
-    }, [selectedArea, dialogOpen]);
+    // useEffect(() => {
+    //     if (selectedArea && dialogOpen) {
+    //         fetchAsociacion();
+    //     }
+    //     fetchAsociacion();
+    // }, [selectedArea, dialogOpen]);
 
     const toggleCategory = (id: number) => {
         setChecked((prev) => ({ ...prev, [id]: !prev[id] }));

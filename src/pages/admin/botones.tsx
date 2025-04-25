@@ -1,91 +1,105 @@
 import { Button } from "@/components/ui/button";
-import {  Layers, Users, Link as Asociar, Layers2 } from "lucide-react";
+import { Layers, Users, Link as Asociar, Layers2, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 
-export default function Botones({ getData }: { getData: () => void }) {
-  return (
-    <div className="flex flex-col space-y-4 p-6 max-w-3xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <GestionRegistration refresh={getData} />
+export default function Botones() {
+    return (
+        <div className="flex flex-col space-y-4 p-6 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <GestionRegistration refresh={() => {}} />
 
-        <Button
-          className="h-auto py-6 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg"
-          asChild
-        >
-          <Link to="/admin/area">
-            <Layers className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">Gestionar áreas</span>
-          </Link>
-        </Button>
+                <Button
+                    className="h-auto py-6 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg"
+                    asChild
+                >
+                    <Link to="/admin/area">
+                        <Layers className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Gestionar áreas
+                        </span>
+                    </Link>
+                </Button>
 
-        <Button
-          className="h-auto py-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
-          asChild
-        >
-          <Link to="/admin/categorias">
-            <Layers2 className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">Gestionar categorías</span>
-          </Link>
-        </Button>
+                <Button
+                    className="h-auto py-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
+                    asChild
+                >
+                    <Link to="/admin/categorias">
+                        <Layers2 className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Gestionar categorías
+                        </span>
+                    </Link>
+                </Button>
 
-        <Button
-          className="h-auto py-6 bg-purple-600 hover:bg-purple-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
-          asChild
-        >
-          <Link to="/gestionar-postulantes">
-            <Users className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">Gestionar postulantes</span>
-          </Link>
-        </Button>
+                <Button
+                    className="h-auto py-6 bg-purple-600 hover:bg-purple-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="/gestionar-postulantes">
+                        <Users className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Gestionar postulantes
+                        </span>
+                    </Link>
+                </Button>
 
-   
-        <Button
-          className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
-          asChild
-          >
-          <Link to="/admin/subirExcel">
-            <Asociar className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">
-              Subir Excel
-            </span>
-          </Link>
-        </Button>
+                <Button
+                    className="h-auto py-6 bg-rose-600 hover:bg-rose-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="/admin/subirExcel">
+                        <Asociar className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">Subir Excel</span>
+                    </Link>
+                </Button>
 
-        <Button
-          className="h-auto py-6 bg-pink-600 hover:bg-pink-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
-          asChild
-          >
-          <Link to="/admin/definirFases">
-            <Asociar className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">
-              Definir fases
-            </span>
-          </Link>
-        </Button>
-        <Button
-          className="h-auto py-6 bg-slate-600 hover:bg-slate-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
-          asChild
-          >
-          <Link to="/admin/asociarAreas">
-            <Asociar className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">
-              Asociar áreas
-            </span>
-          </Link>
-        </Button>
-        <Button
-          className="h-auto py-6 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
-          asChild
-          >
-          <Link to="/admin/asociarCategorias">
-            <Asociar className="h-8 w-8 mb-1" />
-            <span className="text-lg font-medium">
-              Asociar Categorías
-            </span>
-          </Link>
-        </Button>
-      </div>
-    </div>
-  );
+                <Button
+                    className="h-auto py-6 bg-pink-600 hover:bg-pink-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="/admin/definirFases">
+                        <Asociar className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Definir fases
+                        </span>
+                    </Link>
+                </Button>
+                <Button
+                    className="h-auto py-6 bg-slate-600 hover:bg-slate-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="/admin/asociarAreas">
+                        <Asociar className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Asociar áreas
+                        </span>
+                    </Link>
+                </Button>
+                <Button
+                    className="h-auto py-6 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="/admin/asociarCategorias">
+                        <Asociar className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Asociar Categorías
+                        </span>
+                    </Link>
+                </Button>
+                <Button
+                    className="h-auto py-6 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="version">
+                        <Trophy className="h-8 w-8 mb-1" />
+                        <span className="text-lg font-medium">
+                            Versiones de Olimpiada
+                        </span>
+                    </Link>
+                </Button>
+            </div>
+        </div>
+    );
 }
