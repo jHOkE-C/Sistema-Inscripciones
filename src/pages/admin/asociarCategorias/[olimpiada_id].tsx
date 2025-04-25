@@ -8,12 +8,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,90 +27,49 @@ import { request } from "@/api/request";
 import type { Area, Categoria } from "@/api/areas";
 import { useParams } from "react-router-dom";
 
-interface Asociacion {
-    id: string;
-    nombre: string;
-}
-
 export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
     const [categories, setCategories] = useState<Categoria[]>([]);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
 
-    // checked guarda el estado actual de cada categoría
     const [checked, setChecked] = useState<Record<number, boolean>>({});
-    // initialChecked guarda los IDs que ya estaban asociados al abrir el diálogo
     const [initialChecked, setInitialChecked] = useState<number[]>([]);
+
+    const [searchArea, setSearchArea] = useState("");
+    const [searchCategory, setSearchCategory] = useState("");
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const { olimpiada_id } = useParams();
 
     useEffect(() => {
-        fetchAreas();
-        fetchCategories();
+        loadData();
     }, []);
 
-    const fetchCategories = async () => {
+    const loadData = async () => {
         try {
-            const data = await request<Categoria[]>("/api/categorias", {
-                method: "GET",
-            });
-            setCategories(data);
-        } catch (e: unknown) {
+            const [areasData, catsData] = await Promise.all([
+                request<Area[]>(
+                    `/api/areas/categorias/olimpiada/${olimpiada_id}`
+                ),
+                request<Categoria[]>("/api/categorias"),
+            ]);
+            setAreas(areasData);
+            setCategories(catsData);
+        } catch (e) {
             toast.error(
-                e instanceof Error ? e.message : "Error al cargar categorías"
+                e instanceof Error ? e.message : "Error al cargar datos"
             );
         }
     };
 
-    const fetchAreas = async () => {
-        try {
-            const data = await request<Area[]>(
-                `/api/areas/categorias/olimpiada/${olimpiada_id}`
-            );
-            // convertir a número y armar ambos estados
-            setAreas(data);
-            const ids = data.map((a) => Number(a.id));
-            setInitialChecked(ids);
-            setChecked(
-                ids.reduce((acc, id) => {
-                    acc[id] = true;
-                    return acc;
-                }, {} as Record<number, boolean>)
-            );
-        } catch (e) {
-            toast.error(
-                e instanceof Error ? e.message : "Error al cargar asociaciones"
-            );
-        }
-    };
-    const openDialog = async (area: Area) => {
+    const openDialog = (area: Area) => {
         setSelectedArea(area);
-        setChecked({});
-        setInitialChecked([]);
+        const ids = area.categorias?.map((c) => Number(c.id)) || [];
+        setInitialChecked(ids);
+        setChecked(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
+        setSearchCategory("");
         setDialogOpen(true);
-
-        // arrancar el fetch aquí mismo
-        try {
-            const data = await request<Asociacion[]>(
-                `/api/areas/${area.id}/categorias/olimpiada/${olimpiada_id}`
-            );
-            const ids = data.map((a) => Number(a.id));
-            setInitialChecked(ids);
-            setChecked(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
-        } catch (e) {
-            toast.error(
-                e instanceof Error ? e.message : "Error al cargar asociaciones"
-            );
-        }
     };
-    // cada vez que cambie selectedArea recargamos las asociaciones
-    // useEffect(() => {
-    //     if (selectedArea && dialogOpen) {
-    //         fetchAsociacion();
-    //     }
-    //     fetchAsociacion();
-    // }, [selectedArea, dialogOpen]);
 
     const toggleCategory = (id: number) => {
         setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -115,134 +77,150 @@ export default function Page() {
 
     const handleSave = async () => {
         if (!selectedArea) return;
-
-        // IDs marcados ahora
         const selectedIds = Object.entries(checked)
-            .filter(([, isChecked]) => isChecked)
-            .map(([id]) => Number(id));
-
-        // calculamos a agregar / quitar
+            .filter(([, v]) => v)
+            .map(([k]) => Number(k));
         const toAdd = selectedIds.filter((id) => !initialChecked.includes(id));
         const toRemove = initialChecked.filter(
             (id) => !selectedIds.includes(id)
         );
-
         try {
-            // petición única al endpoint bulk
-            const payload = {
-                id_area: Number(selectedArea.id),
-                id_olimpiada: Number(olimpiada_id),
-                agregar: toAdd,
-                quitar: toRemove,
-            };
-            await request<{
-                message: string;
-                agregadas: number[];
-                eliminadas: number[];
-            }>("/api/categorias/area/olimpiada", {
+            await request("/api/categorias/area/olimpiada", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({
+                    id_area: Number(selectedArea.id),
+                    id_olimpiada: Number(olimpiada_id),
+                    agregar: toAdd,
+                    quitar: toRemove,
+                }),
             });
-
-            toast.success("Se asociaron las categorias correctamente");
+            toast.success("Categorías sincronizadas");
             setDialogOpen(false);
-        } catch (e: unknown) {
-            toast.error(
-                e instanceof Error
-                    ? e.message
-                    : "Error al sincronizar asociaciones"
-            );
+            loadData();
+        } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Error al guardar");
         }
     };
+
+    const filteredAreas = areas.filter((a) =>
+        a.nombre.toLowerCase().includes(searchArea.toLowerCase())
+    );
+
+    const selectedCount = Object.values(checked).filter(Boolean).length;
 
     return (
         <div className="p-6 space-y-6">
             <Card>
-                <CardHeader>
-                    <CardTitle>Asociar de Categorias</CardTitle>
+                <CardHeader className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                        <CardTitle>Áreas</CardTitle>
+                        <Badge>{filteredAreas.length}</Badge>
+                    </div>
+                    <Input
+                        placeholder="Buscar área..."
+                        value={searchArea}
+                        onChange={(e) => setSearchArea(e.target.value)}
+                        className="max-w-xs"
+                    />
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Área</TableHead>
-                                <TableHead className="text-right">
-                                    Acción
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {areas.map((area) => (
-                                <TableRow key={area.id}>
-                                    <TableCell className="font-medium">
-                                        {area.nombre}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button
-                                            size="sm"
-                                            onClick={() => openDialog(area)}
-                                        >
-                                            Asociar categorías
-                                        </Button>
+                    <ScrollArea className="h-64">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Área</TableHead>
+                                    <TableHead className="text-right">
+                                        Acción
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredAreas.map((area) => (
+                                    <TableRow key={area.id}>
+                                        <TableCell>{area.nombre}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => openDialog(area)}
+                                            >
+                                                Categorías
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={2}
+                                        className="text-gray-500"
+                                    >
+                                        Total: {filteredAreas.length}
                                     </TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TableCell
-                                    colSpan={2}
-                                    className="text-gray-500"
-                                >
-                                    Total de áreas: {areas.length}
-                                </TableCell>
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
+                            </TableFooter>
+                        </Table>
+                    </ScrollArea>
                 </CardContent>
             </Card>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-lg">
                     <DialogHeader>
                         <DialogTitle>
-                            Asociar a {selectedArea?.nombre}
+                            Categorías para {selectedArea?.nombre} (
+                            <span className="font-semibold">
+                                {selectedCount}
+                            </span>
+                            )
                         </DialogTitle>
                     </DialogHeader>
-                    <ScrollArea className="h-60 w-full space-y-2 pr-2">
+                    <div className="mb-4 flex items-center space-x-2">
+                        <Input
+                            placeholder="Buscar categoría..."
+                            value={searchCategory}
+                            onChange={(e) => setSearchCategory(e.target.value)}
+                            className="flex-1"
+                        />
+                        <Badge>{selectedCount} seleccionadas</Badge>
+                    </div>
+                    <ScrollArea className="h-80 w-full space-y-2 pr-2">
                         <div className="grid grid-cols-2 gap-4">
-                            {categories.map((cat) => (
-                                <div
-                                    key={cat.id}
-                                    className="flex items-center space-x-2"
-                                >
-                                    <Checkbox
-                                        id={`cat-${cat.id}`}
-                                        checked={!!checked[Number(cat.id)]}
-                                        onCheckedChange={() =>
-                                            toggleCategory(Number(cat.id))
-                                        }
-                                    />
-                                    <Label
-                                        htmlFor={`cat-${cat.id}`}
-                                        className="text-base font-normal"
+                            {categories
+                                .filter((c) =>
+                                    c.nombre
+                                        .toLowerCase()
+                                        .includes(searchCategory.toLowerCase())
+                                )
+                                .map((cat) => (
+                                    <div
+                                        key={cat.id}
+                                        className="flex items-center space-x-2"
                                     >
-                                        {cat.nombre}
-                                    </Label>
-                                </div>
-                            ))}
+                                        <Checkbox
+                                            id={`cat-${cat.id}`}
+                                            checked={!!checked[Number(cat.id)]}
+                                            onCheckedChange={() =>
+                                                toggleCategory(Number(cat.id))
+                                            }
+                                        />
+                                        <Label htmlFor={`cat-${cat.id}`}>
+                                            {cat.nombre}
+                                        </Label>
+                                    </div>
+                                ))}
                         </div>
                     </ScrollArea>
-                    <div className="mt-4 flex justify-end space-x-2">
-                        <Button onClick={handleSave}>Asociar categorías</Button>
+                    <DialogFooter>
                         <Button
                             variant="ghost"
                             onClick={() => setDialogOpen(false)}
                         >
                             Cancelar
                         </Button>
-                    </div>
+                        <Button onClick={handleSave}>Guardar</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
