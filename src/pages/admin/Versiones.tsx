@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Version } from "./page";
+import { Version } from "@/types/versiones.type";
 import { Link } from "react-router-dom";
 import { formatDate } from "./version/[id]/types";
 

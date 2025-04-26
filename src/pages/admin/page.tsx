@@ -1,16 +1,6 @@
 import Botones from "./botones";
 import Footer from "@/components/Footer";
 
-export type Version = {
-    id: number;
-    nombre: string;
-    gestion: string;
-    fecha_inicio: string;
-    fecha_fin: string;
-    created_at: string;
-    updated_at: string;
-};
-
 const Admin = () => {
     return (
         <div className="flex flex-col min-h-screen">

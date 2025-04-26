@@ -16,6 +16,7 @@ import { Loader2 } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from '@/components/Loading';
+import ReturnComponent from '@/components/ReturnComponent';
 
 type Olimpiada = {
     id: number;
@@ -169,8 +170,11 @@ const FileUploadFormato: React.FC = () => {
         return <Loading />;
     }
     return (
-
-        <div className="w-full max-w-lg p-6 border rounded-lg shadow-md bg-card text-card-foreground space-y-5">
+        <div className="flex flex-col items-center min-h-screen p-4">
+          <div className="w-full">
+            <ReturnComponent to="/admin" />
+          </div>
+          <div className="w-full max-w-lg p-6 border rounded-lg shadow-md bg-card text-card-foreground space-y-5">
             <h2 className="text-xl font-semibold text-center">Cargar Archivo de Formato</h2>
 
             {alertInfo && (
@@ -263,6 +267,7 @@ const FileUploadFormato: React.FC = () => {
             </Dialog>
         </div>
 
+        </div>
     );
 };
 
