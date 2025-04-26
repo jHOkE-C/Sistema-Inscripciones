@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, } from "lucide-react";
+import { CalendarIcon, ChevronLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +19,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import Loading from "@/components/Loading";
 // Define types for our data
 
 const editOlimpiadaSchema = z
@@ -226,11 +227,7 @@ export default function OlimpiadaPage() {
     // };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p className="text-lg">Cargando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     if (!data) {
