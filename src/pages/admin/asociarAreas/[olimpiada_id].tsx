@@ -25,6 +25,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
@@ -33,6 +35,8 @@ export default function Page() {
     const [selectedArea, setSelectedArea] = useState<Area>();
     const { olimpiada_id } = useParams();
     const [associatedAreas, setAssociatedAreas] = useState<Area[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchAssociatedTerm, setSearchAssociatedTerm] = useState("");
 
     useEffect(() => {
         fetchAreas();
@@ -55,9 +59,8 @@ export default function Page() {
             const data = await request<Area[]>(
                 `/api/areas/categorias/olimpiada/${olimpiada_id}`
             );
-            const ids = data.map((a) => a.id);
-            setAssociatedIds(new Set(ids));
             setAssociatedAreas(data);
+            setAssociatedIds(new Set(data.map((a) => a.id)));
         } catch (e: unknown) {
             toast.error(
                 e instanceof Error
@@ -69,12 +72,12 @@ export default function Page() {
 
     const handleAssociate = async (area: Area) => {
         try {
-            await apiClient.post(`/api/olimpiada/area`, {
+            await apiClient.post("/api/olimpiada/area", {
                 area_id: area.id,
                 olimpiada_id,
             });
             setAssociatedIds((prev) => new Set(prev).add(area.id));
-            setAssociatedAreas([...areas, area]);
+            setAssociatedAreas((prev) => [...prev, area]);
             toast.success("Área asociada correctamente");
         } catch (e: unknown) {
             toast.error(
@@ -87,11 +90,9 @@ export default function Page() {
         if (!selectedArea) return;
         const { id } = selectedArea;
         try {
-            await request(`/api/olimpiada/area`, {
+            await request("/api/olimpiada/area", {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ area_id: id, olimpiada_id }),
             });
             setAssociatedIds((prev) => {
@@ -99,21 +100,41 @@ export default function Page() {
                 next.delete(id);
                 return next;
             });
+            setAssociatedAreas((prev) => prev.filter((a) => a.id !== id));
             toast.success("Área desasociada correctamente");
         } catch (e: unknown) {
             toast.error(
                 e instanceof Error ? e.message : "Error al desasociar área"
             );
+        } finally {
+            setOpenDialog(false);
         }
     };
 
-    const availableAreas = areas.filter((a) => !associatedIds.has(a.id));
+    const availableAreas = areas
+        .filter((a) => !associatedIds.has(a.id))
+        .filter((a) =>
+            a.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+    const filteredAssociatedAreas = associatedAreas.filter((a) =>
+        a.nombre.toLowerCase().includes(searchAssociatedTerm.toLowerCase())
+    );
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
-                <CardHeader>
+                <CardHeader className="flex items-center justify-between">
                     <CardTitle>Áreas Disponibles</CardTitle>
+                    <div className="flex items-center space-x-2">
+                        <Input
+                            placeholder="Buscar área..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-48"
+                        />
+                        <Search className="w-5 h-5 text-gray-500" />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <ScrollArea>
@@ -128,7 +149,10 @@ export default function Page() {
                             </TableHeader>
                             <TableBody>
                                 {availableAreas.map((area) => (
-                                    <TableRow key={area.id}>
+                                    <TableRow
+                                        key={area.id}
+                                        className="hover:bg-gray-50"
+                                    >
                                         <TableCell>{area.nombre}</TableCell>
                                         <TableCell className="text-right">
                                             <Button
@@ -142,6 +166,16 @@ export default function Page() {
                                         </TableCell>
                                     </TableRow>
                                 ))}
+                                {availableAreas.length === 0 && (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={2}
+                                            className="text-center text-gray-500"
+                                        >
+                                            No se encontraron áreas
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
@@ -159,8 +193,19 @@ export default function Page() {
             </Card>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="flex items-center justify-between">
                     <CardTitle>Áreas Asociadas</CardTitle>
+                    <div className="flex items-center space-x-2">
+                        <Input
+                            placeholder="Buscar área asociada..."
+                            value={searchAssociatedTerm}
+                            onChange={(e) =>
+                                setSearchAssociatedTerm(e.target.value)
+                            }
+                            className="w-48"
+                        />
+                        <Search className="w-5 h-5 text-gray-500" />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <ScrollArea>
@@ -174,16 +219,19 @@ export default function Page() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {associatedAreas.map((area) => (
-                                    <TableRow key={area.id}>
+                                {filteredAssociatedAreas.map((area) => (
+                                    <TableRow
+                                        key={area.id}
+                                        className="hover:bg-gray-50"
+                                    >
                                         <TableCell>{area.nombre}</TableCell>
                                         <TableCell className="text-right">
                                             <Button
                                                 variant="destructive"
                                                 size="sm"
                                                 onClick={() => {
-                                                    setOpenDialog(true);
                                                     setSelectedArea(area);
+                                                    setOpenDialog(true);
                                                 }}
                                             >
                                                 Desasociar
@@ -191,6 +239,16 @@ export default function Page() {
                                         </TableCell>
                                     </TableRow>
                                 ))}
+                                {filteredAssociatedAreas.length === 0 && (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={2}
+                                            className="text-center text-gray-500"
+                                        >
+                                            No se encontraron áreas asociadas
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
@@ -198,7 +256,7 @@ export default function Page() {
                                         colSpan={2}
                                         className="text-gray-500"
                                     >
-                                        Total: {associatedAreas.length}
+                                        Total: {filteredAssociatedAreas.length}
                                     </TableCell>
                                 </TableRow>
                             </TableFooter>
@@ -206,29 +264,30 @@ export default function Page() {
                     </ScrollArea>
                 </CardContent>
             </Card>
-
             <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Esta seguro que desea desasociar el area{" "}
-                            {selectedArea?.nombre}
+                            Desasociar área "{selectedArea?.nombre}"?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta accion no se puede deshacer.
-                            <br />
-                            {selectedArea &&
-                                "El área tiene las siguientes categorias asociadas: " +
-                                    selectedArea?.categorias
-                                        ?.map(({ nombre }) => nombre)
-                                        .join(", ") +
-                                    " todas las categorias asociadas seran eliminadas."}
+                            Esta acción no se puede deshacer.
+                            {selectedArea && selectedArea.categorias && (
+                                <p className="mt-2">
+                                    El área tiene las siguientes categorías
+                                    asociadas:{" "}
+                                    {selectedArea.categorias
+                                        .map((c) => c.nombre)
+                                        .join(", ")}
+                                    . Todas serán eliminadas.
+                                </p>
+                            )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={handleUnassociate}>
-                            Continuar
+                            Confirmar
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

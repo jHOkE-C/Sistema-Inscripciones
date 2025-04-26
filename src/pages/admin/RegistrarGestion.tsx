@@ -79,9 +79,8 @@ export default function GestionRegistration({
             setOpen(false);
             refresh();
             toast.success("La Olimpiada se creó correctamente.");
-        } catch  {
-            toast.error("No se pudo registrar la gestion. Intente nuevamente")
-  
+        } catch {
+            toast.error("No se pudo registrar la gestion. Intente nuevamente");
         }
     };
 
@@ -97,8 +96,8 @@ export default function GestionRegistration({
                         asChild
                     >
                         <div>
-                            <PlusCircle className="h-8 w-8 mb-1" />
-                            <span className="text-lg font-medium">
+                            <PlusCircle className="size-8 mb-1" />
+                            <span className="text-lg font-semibold">
                                 Crear Olimpiada
                             </span>
                         </div>

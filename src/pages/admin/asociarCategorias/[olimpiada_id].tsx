@@ -125,7 +125,7 @@ export default function Page() {
                     />
                 </CardHeader>
                 <CardContent>
-                    <ScrollArea className="h-64">
+                    <ScrollArea className="h-full">
                         <Table>
                             <TableHeader>
                                 <TableRow>
