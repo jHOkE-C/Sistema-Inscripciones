@@ -33,7 +33,7 @@ import { Olimpiada } from "@/types/versiones.type";
 
 interface FileUploadModalProps {
   maxFiles?: number;
-  maxSize?: number; // in MB
+  maxSize?: number;
   accept?: string;
   onFilesChange?: (files: File[]) => void;
   triggerText?: string;
@@ -43,8 +43,8 @@ interface FileUploadModalProps {
 }
 
 export default function FileUploadModal({
-  maxFiles = 1, // Default to 1 file maximum
-  maxSize = 10, // 10MB default
+  maxFiles = 1,
+  maxSize = 10,
   accept = ".xlsx,.xls",
   onFilesChange,
   triggerText = "Subir archivos",
@@ -136,6 +136,7 @@ export default function FileUploadModal({
           });
 
           setAreasCategorias(areasMap);
+          console.log(areasMap)
         } catch (error) {
           console.error("Error al cargar datos de validación:", error);
         } finally {
@@ -412,8 +413,8 @@ export default function FileUploadModal({
                     {errores.length > 0 ? (
                       <div className="">
                         <p className="text-sm pb-4 text-zinc-500">
-                          Se encontraron errores en el archivo. puede usar los
-                          checkbox para marcar los errores que vas corrigiendo.
+                          Se encontraron errores en el archivo. 
+                          puede usar los checkbox para marcar los errores que vas corrigiendo.
                         </p>
                         <div className="max-h-96 overflow-y-auto space-y-2">
                         {errores.map((error, index) => (
@@ -459,8 +460,8 @@ export default function FileUploadModal({
                     ) : (
                       <>
                         <p className="text-sm pb-4 text-zinc-500">
-                          El archivo fue procesado correctamente. No se
-                          encontraron errores.
+                          El archivo fue procesado correctamente, no se encontraron errores.
+                          Presione aceptar para subir los postulantes.
                         </p>
                         <DialogFooter>
                           <Button

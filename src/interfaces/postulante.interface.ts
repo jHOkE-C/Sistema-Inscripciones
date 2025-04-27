@@ -63,18 +63,18 @@ export type UploadResponse = {
     message: string;
 };
 
-
+//utilizado para el response de una peticion de all areas con categorias
 export type AreaConCategorias = {
     id: number;
     nombre: string;
     categorias: Categoria[];
-  };
+};
 
+//utilizado para el mapeo de categorias utilizadas en el evento
 export interface Categoria {
     id: string;
     nombre: string;
 }
-
 export interface CategoriaExtendida extends Categoria {
     areaId: number;
     areaNombre: string;

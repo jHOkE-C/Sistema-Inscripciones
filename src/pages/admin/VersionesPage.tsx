@@ -1,5 +1,5 @@
 "use client";
-
+//utilizen si quieren esto por que hay mucho codigo repetido tal cual a este tsx
 import { Versiones } from "@/pages/admin/Versiones";
 import axios from "axios";
 import { useEffect, useState } from "react";
