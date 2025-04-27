@@ -62,11 +62,11 @@ export default function Page() {
     const [openAdd, setOpenAdd] = useState(false);
     const [selectedTipos, setSelectedTipos] = useState<string[]>([]);
 
-    // cronogramas locales para edición
     const [cronos, setCronos] = useState<Cronograma[]>([]);
     const [errors, setErrors] = useState<{ start: boolean; end: boolean }[]>(
         []
     );
+    const [removedTipos, setRemovedTipos] = useState<string[]>([]);
 
     useEffect(() => {
         fetchData();
@@ -78,9 +78,16 @@ export default function Page() {
                 `${API_URL}/api/olimpiadas/${olimpiada_id}/cronogramas`
             );
             setData(res.data);
-            if (res.data.olimpiada.cronogramas.length > 0) {
-                setCronos(res.data.olimpiada.cronogramas);
+            const cronogramas = res.data.olimpiada.cronogramas;
+            if (cronogramas.length > 0) {
+                setCronos(cronogramas);
             }
+
+            let selected: string[] = [];
+            cronogramas.forEach(({ tipo_plazo }) => {
+                selected = [...selected, tipo_plazo];
+            });
+            setSelectedTipos(selected);
             setLoading(false);
         } catch (err) {
             console.error(err);
@@ -198,11 +205,16 @@ export default function Page() {
 
     async function onSave() {
         cronos[0].fecha_inicio = olimpiada.fecha_inicio;
-        const data = { id_olimpiada: olimpiada.id, cronogramas: cronos };
+        const payload = {
+            id_olimpiada: olimpiada.id,
+            cronogramas: cronos,
+            removed: removedTipos,
+        };
         // console.log(data);
         if (!validateAll()) return;
         try {
-            await axios.post(`${API_URL}/api/cronogramas/fases`, data);
+            console.log(payload);
+            await axios.post(`${API_URL}/api/cronogramas/fases`, payload);
             toast.success("Se registró el rango de fechas exitosamente.");
             nav(`/admin/`);
         } catch (e) {
@@ -249,6 +261,7 @@ export default function Page() {
                 ...newPhases.map(() => ({ start: false, end: false })),
                 ...prev,
             ]);
+            setRemovedTipos((prev) => prev.filter((rt) => !toAdd.includes(rt)));
         }
 
         if (toRemove.length > 0) {
@@ -260,6 +273,10 @@ export default function Page() {
                     selectedTipos.includes(cronos[index].tipo_plazo)
                 )
             );
+            setRemovedTipos((prev) => [
+                ...prev,
+                ...toRemove.map((c) => c.tipo_plazo),
+            ]);
         }
 
         setOpenAdd(false);
@@ -316,9 +333,7 @@ export default function Page() {
                         <div className="flex justify-end mt-4">
                             <Dialog open={openAdd} onOpenChange={setOpenAdd}>
                                 <DialogTrigger asChild>
-                                    <Button  size="sm">
-                                        Agregar Fase
-                                    </Button>
+                                    <Button size="sm">Agregar Fase</Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-md p-6 rounded-2xl shadow-lg">
                                     <DialogHeader>
