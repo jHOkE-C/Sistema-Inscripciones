@@ -11,3 +11,7 @@ export interface ErroresDeFormato {
     hoja: number;
     campo: string;
 };
+
+export interface ErrorCheckboxRowProps { 
+    message: string; 
+}

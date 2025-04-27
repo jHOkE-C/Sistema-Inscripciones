@@ -17,9 +17,10 @@ import Loading from '@/components/Loading';
 import ReturnComponent from '@/components/ReturnComponent';
 import { useParams } from 'react-router-dom';
 import { Olimpiada } from "@/types/versiones.type";
-import { parseExcel } from '@/utils/excelParser';
+import { ExcelParser } from '@/lib/ExcelParser';
 import LoadingAlert from '@/components/loading-alert';
 import { ErroresDeFormato } from '@/interfaces/error.interface';
+import { ErrorCheckboxRow } from '@/components/ErrorCheckboxRow';
 type UploadResponse = {
     message: string;
 };
@@ -167,14 +168,15 @@ const FileUploadFormato: React.FC = () => {
         setIsProcessing(true);
         await sleep(1000);
         try {
-            const { jsonData, erroresDeFormato } = await parseExcel(selectedFile);
+            const { jsonData, erroresDeFormato } = await ExcelParser(selectedFile);
             setErroresDeFormato(erroresDeFormato);
-            console.log(jsonData)
+            console.log({ erroresDeFormato, jsonData });
         } catch (error) {
+            setShowConfirmDialog(false);
             console.error('Error al procesar el archivo:', error);
             setAlertInfo({
                 title: "Error",
-                description: "Ocurrió un error al procesar el archivo."+error,
+                description: "Ocurrió un error al procesar el archivo, verifique si el archivo no esta corrompido-vacio"+error,
                 variant: "destructive",
             });
         } finally {
@@ -235,79 +237,59 @@ const FileUploadFormato: React.FC = () => {
                 </div>
                 <Dialog open={showConfirmDialog} onOpenChange={handleDialogClose}>
                     <DialogContent className="h-auto gap-2">
-                        {isProcessing ?
-                            <LoadingAlert message="Espere por favor, estamos procesando el archivo..." />
-                            : (
-                                <>
-                                    <DialogTitle>
-                                        {erroresDeFormato.length > 0
-                                            ? "Errores de formato"
-                                            : "El archivo es válido"}
-                                    </DialogTitle>
-                                    {erroresDeFormato.length > 0 ? (
-                                        <div className="">
-                                            <DialogDescription>
-                                                Se encontraron errores en el archivo.
-                                                puede usar los checkbox para marcar los errores que vas corrigiendo.
-                                            </DialogDescription>
+                        {isProcessing ? (
+                            <>
+                                <DialogTitle>Procesando archivo</DialogTitle>
+                                <DialogDescription>Espere por favor, estamos procesando el archivo...</DialogDescription>
+                                <LoadingAlert message="Espere por favor, estamos procesando el archivo..." />
+                            </>
+                        ) : (
+                            <>
+                                <DialogTitle>
+                                    {erroresDeFormato.length > 0
+                                        ? "Errores de formato"
+                                        : "El archivo es válido"}
+                                </DialogTitle>
+                                {erroresDeFormato.length > 0 ? (
+                                    <div className="">
+                                        <DialogDescription>
+                                            Se encontraron errores en el archivo.
+                                            puede usar los checkbox para marcar los errores que vas corrigiendo.
+                                        </DialogDescription>
 
-                                            <div className="max-h-96 overflow-y-auto space-y-2">
-                                                {erroresDeFormato.map((error, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-center justify-between text-sm mb-2 text-red-500 transition-all duration-200"
-                                                    >
-                                                        <div className="error-text border-1 p-2 rounded-md">
-                                                            {`El campo [${error.columna}] en la fila [${error.fila}] en la hoja [${error.hoja}] tiene el siguiente error: ${error.mensaje}`}
-                                                        </div>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="h-4 w-4 cursor-pointer ml-2"
-                                                            onChange={(e) => {
-                                                                const parentDiv =
-                                                                    e.currentTarget.closest("div");
-                                                                const textElement =
-                                                                    parentDiv?.querySelector(".error-text");
-
-                                                                if (e.currentTarget.checked) {
-                                                                    parentDiv?.classList.remove("text-red-500");
-                                                                    parentDiv?.classList.add("text-zinc-400");
-                                                                    textElement?.classList.add("line-through");
-                                                                } else {
-                                                                    parentDiv?.classList.remove("text-zinc-400");
-                                                                    parentDiv?.classList.add("text-red-500");
-                                                                    textElement?.classList.remove("line-through");
-                                                                }
-                                                            }}
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            <DialogFooter className="mt-4">
-                                                <Button onClick={() => handleDialogClose(false)}>
-                                                    Cerrar
-                                                </Button>
-                                            </DialogFooter>
+                                        <div className="max-h-96 overflow-y-auto space-y-2">
+                                            {erroresDeFormato.map((error, index) => (
+                                                <ErrorCheckboxRow
+                                                    key={index}
+                                                    message={`El campo [${error.columna}] en la fila [${error.fila}] en la hoja [${error.hoja}] tiene el siguiente error: ${error.mensaje}`}
+                                                />
+                                            ))}
                                         </div>
-                                    ) : (
-                                        <>
-                                            <DialogDescription>
-                                                ¿Estás seguro de que deseas subir y procesar el archivo "{fileToConfirm?.name}" para la olimpiada seleccionada?
-                                            </DialogDescription>
-                                            <DialogFooter>
-                                                <DialogClose asChild>
-                                                    <Button variant="outline" disabled={isProcessing}>Cancelar</Button>
-                                                </DialogClose>
-                                                <Button onClick={handleConfirmUpload} disabled={isProcessing}>
-                                                    {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                                    {isProcessing ? "Procesando..." : "Confirmar y Subir"}
-                                                </Button>
-                                            </DialogFooter>
-                                        </>
-                                    )}
-                                </>
-                            )}
+
+                                        <DialogFooter className="mt-4">
+                                            <Button onClick={() => handleDialogClose(false)}>
+                                                Cerrar
+                                            </Button>
+                                        </DialogFooter>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <DialogDescription>
+                                            ¿Estás seguro de que deseas subir y procesar el archivo "{fileToConfirm?.name}" para la olimpiada seleccionada?
+                                        </DialogDescription>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button variant="outline" disabled={isProcessing}>Cancelar</Button>
+                                            </DialogClose>
+                                            <Button onClick={handleConfirmUpload} disabled={isProcessing}>
+                                                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                                {isProcessing ? "Procesando..." : "Confirmar y Subir"}
+                                            </Button>
+                                        </DialogFooter>
+                                    </>
+                                )}
+                            </>
+                        )}
                     </DialogContent>
                 </Dialog>
             </div>

@@ -3,21 +3,13 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import * as XLSX from "xlsx";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGradoOlimpiada } from "@/api/areas";
 import { CategoriaExtendida, grados, ExcelPostulante, Postulante, UploadResponse, AreaConCategorias } from "@/interfaces/postulante.interface";
 import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
-import { ValidationError } from "@/interfaces/error.interface";
+import { ValidationError, ErroresDeFormato } from "@/interfaces/error.interface";
+import { ErrorCheckboxRow } from "@/components/ErrorCheckboxRow";
 import { validarCamposRequeridos, validarFila } from "./validations";
 import FileUpload from "../../../../../components/fileUpload";
 import axios from "axios";
@@ -27,9 +19,7 @@ import { HoverCardContent } from "@/components/ui/hover-card";
 import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
 import { Olimpiada } from "@/types/versiones.type";
-
-
-
+import { ExcelParser } from "@/lib/ExcelParser";
 
 interface FileUploadModalProps {
   maxFiles?: number;
@@ -41,6 +31,7 @@ interface FileUploadModalProps {
   description?: string;
   olimpiadaP: Olimpiada[];
 }
+
 
 export default function FileUploadModal({
   maxFiles = 1,
@@ -58,6 +49,7 @@ export default function FileUploadModal({
   const {ci} = useParams()
   const [loading, setLoading] = useState(true);
   const [errores, setErrores] = useState<ValidationError[]>([]);
+  const [erroresDeFormatoExcel, setErroresDeFormatoExcel] = useState<ErroresDeFormato[]>([]);
   const [showDialog, setShowDialog] = useState(false);
   const [postulantes, setPostulantes] = useState<Postulante[]>([]);
   const [cargandoCategorias, setCargandoCategorias] = useState(false);
@@ -168,151 +160,100 @@ export default function FileUploadModal({
     setShowDialog(true);
     await sleep(1);
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          if (!e.target?.result) {
-            toast.error("No se pudo leer el archivo");
-            setErrores([
-              {
-                campo: "Archivo",
-                fila: 0,
-                ci: "",
-                mensaje: "No se pudo leer el archivo",
-              },
-            ]);
-            throw new Error("No se pudo leer el archivo");
-          }
+      const { jsonData, erroresDeFormato: formatoErrors } = await ExcelParser(selectedFile);
+      setErroresDeFormatoExcel(formatoErrors);
+      if (formatoErrors.length > 0) {
+        setLoading(false);
+        return;
+      }
 
-          const data = new Uint8Array(e.target.result as ArrayBuffer);
-          const workbook = XLSX.read(data, {
-            type: "array",
-            cellDates: true,
-            cellNF: true,
-            cellText: false,
-          });
-          console.log(workbook);
-          if (!workbook.SheetNames.length) {
-            toast.error("El archivo no contiene hojas");
-            setErrores([
-              {
-                campo: "Archivo",
-                fila: 0,
-                ci: "",
-                mensaje: "El archivo no contiene hojas",
-              },
-            ]);
-            throw new Error("El archivo no contiene hojas");
-          }
+      const headers = jsonData[0].map(
+        (h) => h?.toString() || ""
+      ) as string[];
 
-          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const camposFaltantes = validarCamposRequeridos(headers);
 
-          console.log(firstSheet);
-          const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
-            header: 1,
-            defval: null,
-            raw: false,
-            dateNF: "dd/mm/yyyy",
-          }) as (string | null)[][];
+      if (camposFaltantes.length > 0) {
+        toast.error(
+          `Faltan las siguientes columnas: ${camposFaltantes.join(", ")}`
+        );
+        setErrores([
+          {
+            campo: "Archivo",
+            fila: 0,
+            ci: "",
+            mensaje: `Faltan las siguientes columnas: ${camposFaltantes.join(", ")}`,
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
 
-          const headers = jsonData[0].map(
-            (h) => h?.toString() || ""
-          ) as string[];
+      let encontroFilaVacia = false;
+      const postulantesData: ExcelPostulante[] = jsonData
+        .slice(1)
+        .filter((fila) => {
+          if (encontroFilaVacia) return false;
 
-          const camposFaltantes = validarCamposRequeridos(headers);
-
-          if (camposFaltantes.length > 0) {
-            toast.error(
-              `Faltan las siguientes columnas: ${camposFaltantes.join(", ")}`
-            );
-            setErrores([
-              {
-                campo: "Archivo",
-                fila: 0,
-                ci: "",
-                mensaje: `Faltan las siguientes columnas: ${camposFaltantes.join(
-                  ", "
-                )}`,
-              },
-            ]);
-            setLoading(false);
-            return;
-          }
-
-          let encontroFilaVacia = false;
-          const postulantesData: ExcelPostulante[] = jsonData
-            .slice(1)
-            .filter((fila) => {
-              if (encontroFilaVacia) return false;
-
-              const filaVacia = fila.every(
-                (campo) =>
-                  campo === null ||
-                  (typeof campo === "string" && campo.trim() === "")
-              );
-
-              if (filaVacia) {
-                encontroFilaVacia = true;
-                return false;
-              }
-
-              return true;
-            })
-            .map((fila) => ({
-              nombres: fila[0]?.toString().trim() || "",
-              apellidos: fila[1]?.toString().trim() || "",
-              ci: fila[2]?.toString().trim() || "",
-              fecha_nacimiento: fila[3]?.toString().trim() || "",
-              correo_electronico: fila[4]?.toString().trim() || "",
-              departamento: fila[5]?.toString().trim() || "",
-              provincia: fila[6]?.toString().trim() || "",
-              colegio: fila[7]?.toString().trim() || "",
-              grado: fila[8]?.toString().trim() || "",
-              telefono_referencia: fila[9]?.toString().trim() || "",
-              telefono_pertenece_a: fila[10]?.toString().trim() || "",
-              correo_referencia: fila[11]?.toString().trim() || "",
-              correo_pertenece_a: fila[12]?.toString().trim() || "",
-              area_categoria1: fila[13]?.toString().trim() || "",
-              area_categoria2: fila[14]?.toString().trim() || "",
-            }));
-
-          if (postulantesData.length === 0) {
-            throw new Error("No se encontraron datos válidos en el archivo");
-          }
-
-          const todosErrores: ValidationError[] = [];
-          const postulantesConvertidos: Postulante[] = [];
-          postulantesData.forEach((fila, index) => {
-            const erroresFila = validarFila(
-              fila,
-              index + 2,
-              departamentos,
-              provincias,
-              colegios,
-              areasCategorias,
-              postulantesConvertidos
-            );
-            todosErrores.push(...erroresFila);
-          });
-
-          setPostulantes(postulantesConvertidos);
-          setLoading(false);
-          setErrores(todosErrores);
-          console.log(postulantesConvertidos);
-        } catch (error) {
-          console.error("Error al procesar el archivo:", error);
-          toast.error(
-            "Error al procesar el archivo. Por favor, verifique el formato."
+          const filaVacia = fila.every(
+            (campo) =>
+              campo === null ||
+              (typeof campo === "string" && campo.trim() === "")
           );
-        }
-      };
-      reader.onerror = () => {
-        toast.error("Error al leer el archivo. Por favor, intente nuevamente.");
-      };
-      reader.readAsArrayBuffer(selectedFile);
+
+          if (filaVacia) {
+            encontroFilaVacia = true;
+            return false;
+          }
+
+          return true;
+        })
+        .map((fila) => ({
+          nombres: fila[0]?.toString().trim() || "",
+          apellidos: fila[1]?.toString().trim() || "",
+          ci: fila[2]?.toString().trim() || "",
+          fecha_nacimiento: fila[3]?.toString().trim() || "",
+          correo_electronico: fila[4]?.toString().trim() || "",
+          departamento: fila[5]?.toString().trim() || "",
+          provincia: fila[6]?.toString().trim() || "",
+          colegio: fila[7]?.toString().trim() || "",
+          grado: fila[8]?.toString().trim() || "",
+          telefono_referencia: fila[9]?.toString().trim() || "",
+          telefono_pertenece_a: fila[10]?.toString().trim() || "",
+          correo_referencia: fila[11]?.toString().trim() || "",
+          correo_pertenece_a: fila[12]?.toString().trim() || "",
+          area_categoria1: fila[13]?.toString().trim() || "",
+          area_categoria2: fila[14]?.toString().trim() || "",
+        }));
+
+      if (postulantesData.length === 0) {
+        throw new Error("No se encontraron datos válidos en el archivo");
+      }
+
+      const todosErrores: ValidationError[] = [];
+      const postulantesConvertidos: Postulante[] = [];
+      postulantesData.forEach((fila, index) => {
+        const erroresFila = validarFila(
+          fila,
+          index + 2,
+          departamentos,
+          provincias,
+          colegios,
+          areasCategorias,
+          postulantesConvertidos
+        );
+        todosErrores.push(...erroresFila);
+      });
+
+      setPostulantes(postulantesConvertidos);
+      setLoading(false);
+      setErrores(todosErrores);
+      console.log(postulantesConvertidos);
     } catch (error) {
-      console.error("Error al leer el archivo:", error);
-      toast.error("Error al leer el archivo. Por favor, intente nuevamente.");
+      console.error("Error al procesar el archivo:", error);
+      toast.error(
+        "Error al procesar el archivo. Por favor, verifique el formato."
+      );
     } finally {
       setLoading(false);
     }
@@ -424,49 +365,28 @@ export default function FileUploadModal({
                 : (
                   <>
                     <DialogTitle>
-                      {errores.length > 0
+                      {errores.length > 0 || erroresDeFormatoExcel.length > 0
                         ? "Errores de formato"
                         : "El archivo es válido"}
                     </DialogTitle>
-                    {errores.length > 0 ? (
+                    {(errores.length > 0 || erroresDeFormatoExcel.length > 0) ? (
                       <div className="">
                         <p className="text-sm pb-4 text-zinc-500">
                           Se encontraron errores en el archivo. 
                           puede usar los checkbox para marcar los errores que vas corrigiendo.
                         </p>
                         <div className="max-h-96 overflow-y-auto space-y-2">
-                        {errores.map((error, index) => (
-                          <div
+                        {erroresDeFormatoExcel.map((error, index) => (
+                          <ErrorCheckboxRow
                             key={index}
-                            className="flex items-center justify-between text-sm mb-2 text-red-500 transition-all duration-200"
-                          >
-                            <div className="error-text border-1 p-2 rounded-md">
-                              {`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
-                            </div>
-                            <input
-                              type="checkbox"
-                              className="h-4 w-4 cursor-pointer ml-2"
-                              onChange={(e) => {
-                                // Get the parent div and the text element
-                                const parentDiv =
-                                  e.currentTarget.closest("div");
-                                const textElement =
-                                  parentDiv?.querySelector(".error-text");
-
-                                if (e.currentTarget.checked) {
-                                  // Apply completed styling
-                                  parentDiv?.classList.remove("text-red-500");
-                                  parentDiv?.classList.add("text-zinc-400");
-                                  textElement?.classList.add("line-through");
-                                } else {
-                                  // Remove completed styling
-                                  parentDiv?.classList.remove("text-zinc-400");
-                                  parentDiv?.classList.add("text-red-500");
-                                  textElement?.classList.remove("line-through");
-                                }
-                              }}
-                            />
-                          </div>
+                            message={`El campo [${error.columna}] en la fila [${error.fila}] en la hoja [${error.hoja}] tiene el siguiente error: ${error.mensaje}`}
+                          />
+                        ))}
+                        {errores.map((error, index) => (
+                          <ErrorCheckboxRow
+                            key={index}
+                            message={`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
+                          />
                         ))}
                         </div>
                         <DialogFooter className="mt-4">
@@ -483,7 +403,7 @@ export default function FileUploadModal({
                         </p>
                         <DialogFooter>
                           <Button
-                            disabled={errores.length > 0}
+                            disabled={errores.length > 0 || erroresDeFormatoExcel.length > 0}
                             onClick={handleConfirm}
                           >
                             Aceptar
