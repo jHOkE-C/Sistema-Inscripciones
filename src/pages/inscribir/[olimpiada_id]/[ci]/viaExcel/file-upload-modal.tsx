@@ -14,18 +14,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { API_URL } from "@/hooks/useApiRequest";
-import { getCategoriaAreaPorGradoOlimpiada, Categoria } from "@/api/areas";
-import {
-  grados,
-  Departamento,
-  Provincia,
-  Colegio,
-  ExcelPostulante,
-  ValidationError,
-  CategoriaExtendida,
-  Postulante,
-  UploadResponse,
-} from "./types";
+import { getCategoriaAreaPorGradoOlimpiada } from "@/api/areas";
+import { CategoriaExtendida, grados, ExcelPostulante, Postulante, UploadResponse, AreaConCategorias } from "@/interfaces/postulante.interface";
+import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
+import { ValidationError } from "@/interfaces/error.interface";
 import { validarCamposRequeridos, validarFila } from "./validations";
 import FileUpload from "../../../../../components/fileUpload";
 import axios from "axios";
@@ -34,21 +26,10 @@ import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { HoverCardContent } from "@/components/ui/hover-card";
 import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
+import { Olimpiada } from "@/types/versiones.type";
 
-type AreaConCategorias = {
-  id: number;
-  nombre: string;
-  categorias: Categoria[];
-};
 
-type Olimpiada = {
-  id: number;
-  nombre: string;
-  gestion: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  vigente: boolean;
-};
+
 
 interface FileUploadModalProps {
   maxFiles?: number;

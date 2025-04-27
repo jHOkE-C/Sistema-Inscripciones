@@ -17,16 +17,7 @@ import { AlertComponent } from "@/components/AlertComponent";
 import Loading from '@/components/Loading';
 import ReturnComponent from '@/components/ReturnComponent';
 import { useParams } from 'react-router-dom';
-
-type Olimpiada = {
-    id: number;
-    nombre: string;
-    gestion: string;
-    fecha_inicio: string;
-    fecha_fin: string;
-    vigente: boolean;
-    url_plantilla: string;
-};
+import { Olimpiada } from "@/types/versiones.type";
 
 type UploadResponse = {
     message: string;

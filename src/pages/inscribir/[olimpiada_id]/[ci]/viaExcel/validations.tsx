@@ -1,11 +1,6 @@
-import {
-    ExcelPostulante,
-    ValidationError,
-    CONTACTOS_PERMITIDOS,
-    Postulante,
-} from "./types";
-import { Departamento, Provincia, Colegio, CategoriaExtendida } from "./types";
-import { grados } from "./types";
+import { CategoriaExtendida, grados, ExcelPostulante, Postulante, CONTACTOS_PERMITIDOS } from "@/interfaces/postulante.interface";
+import { ValidationError } from "@/interfaces/error.interface";
+import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
 
 export const validarCamposRequeridos = (headers: string[]): string[] => {
     const camposRequeridos = [

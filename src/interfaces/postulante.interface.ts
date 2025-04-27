@@ -1,7 +1,3 @@
-
-export type UploadResponse = {
-    message: string;
-};
 export interface ExcelPostulante {
     nombres: string;
     apellidos: string;
@@ -61,48 +57,25 @@ export const grados = [
     { id: "11", nombre: "5to Secundaria" },
     { id: "12", nombre: "6to Secundaria" }
 ];
-export interface Departamento {
-    id: number;
-    nombre: string;
-    Provincias: Provincia[];
-}
 
-export interface Provincia {
-    departamento_id: string;
-    nombre: string;
+// Moved types from viaExcel/types.ts
+export type UploadResponse = {
+    message: string;
+};
+
+
+export type AreaConCategorias = {
     id: number;
-}
-export interface Colegio {
-    id: string;
     nombre: string;
-}
+    categorias: Categoria[];
+  };
+
 export interface Categoria {
     id: string;
     nombre: string;
-}   
-// Estados iniciales
-export interface EstadosIniciales {
-    departamentos: Departamento[];
-    provincias: Provincia[];
-    colegios: Colegio[];
-    areasCategoriasPorGrado: Map<string, Categoria[]>;
 }
 
-export const estadosIniciales: EstadosIniciales = {
-    departamentos: [],
-    provincias: [],
-    colegios: [],
-    areasCategoriasPorGrado: new Map()
-};
-
-export type CategoriaExtendida = Categoria & {
+export interface CategoriaExtendida extends Categoria {
     areaId: number;
     areaNombre: string;
-};
-
-export type ValidationError = {
-    campo: string;
-    fila: number;
-    ci: string;
-    mensaje: string;
-};
+}
