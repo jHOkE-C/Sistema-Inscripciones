@@ -172,6 +172,15 @@ export default function FileUploadModal({
       reader.onload = async (e) => {
         try {
           if (!e.target?.result) {
+            toast.error("No se pudo leer el archivo");
+            setErrores([
+              {
+                campo: "Archivo",
+                fila: 0,
+                ci: "",
+                mensaje: "No se pudo leer el archivo",
+              },
+            ]);
             throw new Error("No se pudo leer el archivo");
           }
 
@@ -184,6 +193,15 @@ export default function FileUploadModal({
           });
           console.log(workbook);
           if (!workbook.SheetNames.length) {
+            toast.error("El archivo no contiene hojas");
+            setErrores([
+              {
+                campo: "Archivo",
+                fila: 0,
+                ci: "",
+                mensaje: "El archivo no contiene hojas",
+              },
+            ]);
             throw new Error("El archivo no contiene hojas");
           }
 
