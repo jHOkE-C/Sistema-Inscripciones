@@ -1,51 +1,55 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { CreateList } from "../../CreateList";
-import { DataTable } from "../../TableList";
-import { columns, ListaPostulantes } from "../../columns";
-import { useEffect, useState } from "react";
+import { DataTable } from "../../../TableList";
+import { columns, ListaPostulantes } from "../../../columns";
+import React, { Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import ShareUrl from "../../ShareUrl";
+import axios from "axios";
+import ShareUrl from "../../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
-import FormResponsable from "../../FormResponsable";
-import NotFoundPage from "../../../404";
+import FormResponsable from "../../../FormResponsable";
+import NotFoundPage from "../../../../404";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
+const FileUploadModal = React.lazy(
+    () => import("../viaExcel/file-upload-modal")
+);
 import Footer from "@/components/Footer";
+import { API_URL } from "@/hooks/useApiRequest";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
-import OrdenPago from "./orden-pago";
-import ButtonsGrid from "@/components/ButtonsGrid";
-import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { NotebookPen , FileIcon, List } from "lucide-react";
+import OrdenPago from "../orden-pago";
 
+type Olimpiada = {
+    id: number;
+    nombre: string;
+    gestion: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    vigente: boolean;
+    url_plantilla: string;
+};
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
-    
+    const { ci, olimpiada_id } = useParams();
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { ci, olimpiada_id } = useParams();
-    const buttons: ButtonConfig[] = [
-        {
-            label: "Inscribir por Excel",
-            to: `/inscribir/${olimpiada_id}/${ci}/viaExcel`,
-            Icon: FileIcon,
-            color: "indigo"
-        },
-        {
-            label: "Inscribir",
-            to: `/viaExcel`,
-            Icon: NotebookPen ,
-            color: "purple"
-        },
-        {
-            label: "Listas de postulantes",
-            to: `/viaExcel`,
-            Icon: List,
-            color: "amber"
-        },
-    ]
+    const [olimpiada, setOlipiada] = useState<Olimpiada>();
+    
+    const getData = async () => {
+        //if (!olimpiada_id || !ci) return;
+        try {
+            const response = await axios.get<Olimpiada>(
+                `${API_URL}/api/olimpiadas/${1}`
+            );
+            setOlipiada(response.data);
+            console.log(response.data);
+        } catch (e) {
+            console.log(e);
+        }
+    };
     useEffect(() => {
+        getData();
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
     }, []);
 
@@ -58,7 +62,10 @@ const Page = () => {
         setLoading(true);
         try {
             const { data } = await getListasPostulantes(ci);
-            setData(data.filter(({ olimpiada_id: id }) => id == olimpiada_id));
+            const filtrados = data.filter(({ olimpiada_id: id }) => id == olimpiada_id)
+            console.log(filtrados)
+            const excel = filtrados.filter(({ nombre_lista }) => nombre_lista.includes("excel"))
+            setData(excel);
         } catch {
             setOpenFormResponsable(true);
         } finally {
@@ -106,11 +113,7 @@ const Page = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
-                <ReturnComponent to={`/`} />
-            </div>
-            
-            <div className="w-full p-4 md:w-3/5 mx-auto">
-                <ButtonsGrid buttons={buttons} />
+                <ReturnComponent to={`/inscribir/${olimpiada_id}/${ci}`} />
             </div>
             <div className="m py-5">
                 <div className="container mx-auto ">
@@ -124,10 +127,25 @@ const Page = () => {
                             <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
                                 
                                 <div className="flex gap-2 items-center">
-                                    <CreateList
-                                        refresh={fetchData}
-                                        number={data.length + 1}
-                                    />
+                                    <Suspense fallback={<Loading />}>
+                                        <FileUploadModal
+                                            maxFiles={1}
+                                            maxSize={10}
+                                            accept=".xlsx,.xls"
+                                            onFilesChange={(files) =>
+                                                console.log(
+                                                    "Files changed:",
+                                                    files
+                                                )
+                                            }
+                                            triggerText="Añadir archivo Excel"
+                                            title="Añadir archivo Excel"
+                                            description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
+                                            olimpiadaP={
+                                                olimpiada ? [olimpiada] : []
+                                            }
+                                        />
+                                    </Suspense>
                                 </div>
                             </div>
                             <DataTable
@@ -139,7 +157,7 @@ const Page = () => {
                 </div>
                 <ShareUrl />
             </div>
-            
+
             <Footer />
         </div>
     );

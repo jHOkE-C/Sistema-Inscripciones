@@ -81,7 +81,7 @@ export default function Page() {
 
     return (
         <>
-            <ReturnComponent to={`/inscribir/${ci}`} />
+            <ReturnComponent to={`/inscribir/${olimpiada_id}/${ci}`} />
             <div className="min-h-screen py-5">
                 <div className="container mx-auto ">
                     <Card>

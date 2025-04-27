@@ -27,7 +27,7 @@ import {
   UploadResponse,
 } from "./types";
 import { validarCamposRequeridos, validarFila } from "./validations";
-import FileUpload from "../../../components/fileUpload";
+import FileUpload from "../../../../../components/fileUpload";
 import axios from "axios";
 import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
