@@ -12,6 +12,7 @@ interface FileUploadProps {
     maxSize?: number;
     accept?: string;
     onFilesChange?: (files: UploadFile[]) => void;
+    oldFiles?: UploadFile[];
     filesRefresh?: UploadFile[];
 }
 
@@ -20,7 +21,8 @@ export default function FileUpload({
     maxSize = 10,
     accept = ".xlsx,.xls",
     onFilesChange,
-    filesRefresh
+    filesRefresh,
+    oldFiles,
 }: FileUploadProps) {
     const [files, setFiles] = useState<UploadFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
@@ -211,7 +213,38 @@ export default function FileUpload({
             <div className="mt-2 min-h-[1.25rem] text-sm text-destructive">
                  {error && <span>{error}</span>}
             </div>
-
+            {oldFiles && oldFiles.length > 0 && (
+            <div
+                className={cn(
+                   "overflow-hidden transition-all duration-500 ease-in-out mt-2 mb-6",
+                   oldFiles.length > 0
+                        ? 'max-h-[300px] opacity-100'
+                        : 'max-h-0 opacity-0'
+               )}
+                style={{ maxHeight: oldFiles.length > 0 ? '300px' : '0px' }}
+           >
+                <div className="">
+                    <h4 className="text-sm font-medium mb-2">
+                        {maxFiles === 1 ? "Archivo subido anteriormente:" : `Archivos subidos anteriormente: (${oldFiles.length}/${maxFiles})`}
+                    </h4>
+                    <ul className="space-y-2">
+                       {oldFiles.map((file, index) => (
+                           <li key={`${file.name}-${file.lastModified}-${index}`} className="flex items-center justify-between rounded-md border p-2">
+                               <div className="flex items-center gap-2 truncate min-w-0">
+                                   {getFileIcon(file)}
+                                   <button type="button" className="text-sm truncate flex-1 text-blue-600 underline text-left" onClick={(e)=> handleDownload(e, file)}>
+                                       {file.name}
+                                   </button>
+                                   <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                       ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                                   </span>
+                               </div>
+                           </li>
+                       ))}
+                   </ul>
+                </div>
+            </div>
+            )}
             <div
                  className={cn(
                     "overflow-hidden transition-all duration-500 ease-in-out mt-2 mb-6",
@@ -260,10 +293,12 @@ export default function FileUpload({
                                     </Button>
                                 </li>
                             ))}
+                            
                         </ul>
                     </div>
                  )}
              </div>
+
         </>
     );
 }

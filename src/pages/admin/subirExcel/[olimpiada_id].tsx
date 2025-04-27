@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FileUpload from '../../../components/fileUpload';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -17,6 +16,7 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
 import Loading from '@/components/Loading';
 import ReturnComponent from '@/components/ReturnComponent';
+import { useParams } from 'react-router-dom';
 
 type Olimpiada = {
     id: number;
@@ -33,33 +33,29 @@ type UploadResponse = {
 };
 
 const FileUploadFormato: React.FC = () => {
+    const { olimpiada_id } = useParams();
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [fileToConfirm, setFileToConfirm] = useState<File | null>(null);
-    const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
-    const [selectedOlimpiada, setSelectedOlimpiada] = useState<string | null>(null);
-    const [loadingOlimpiadas, setLoadingOlimpiadas] = useState<boolean>(true);
-    const [errorOlimpiadas, setErrorOlimpiadas] = useState<string | null>(null);
+    const [oldFiles, setOldFiles] = useState<File[]>([]);
     const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [alertInfo, setAlertInfo] = useState<{ title: string, description: string, variant: "default" | "destructive" } | null>(null);
+    const [loadingOlimpiada, setLoadingOlimpiada] = useState<boolean>(true);
+    const [errorOlimpiada, setErrorOlimpiada] = useState<string | null>(null);
+    const [showUploadAnimation, setShowUploadAnimation] = useState<boolean>(false);
 
     useEffect(() => {
-        const fetchOlimpiadas = async () => {
-            try {
-                setLoadingOlimpiadas(true);
-                setErrorOlimpiadas(null);
-                const response = await axios.get<Olimpiada[]>(`${API_URL}/api/olimpiadas/hoy`);
-                setOlimpiadas(response.data);
-            } catch (err) {
-                console.error("Error al obtener las olimpiadas:", err);
-                setErrorOlimpiadas("No se pudieron cargar las olimpiadas. Inténtalo de nuevo más tarde.");
-            } finally {
-                setLoadingOlimpiadas(false);
-            }
-        };
-
-        fetchOlimpiadas();
+        getOlimpiada();
     }, []);
+
+    useEffect(() => {
+        if (!loadingOlimpiada) {
+            const timer = setTimeout(() => setShowUploadAnimation(true), 100);
+            return () => clearTimeout(timer);
+        } else {
+            setShowUploadAnimation(false);
+        }
+    }, [loadingOlimpiada]);
 
     const handleFilesChange = (files: File[]) => {
         if (files.length > 0) {
@@ -72,22 +68,25 @@ const FileUploadFormato: React.FC = () => {
         }
     };
 
-    const handleOlimpiadaChange = async (value: string) => {
-        setSelectedOlimpiada(value);
-        handleCancelSelection();
+    const getOlimpiada = async () => {
         try {
-            const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${value}`);
+            const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${olimpiada_id}`);
             const olimpiadaDetail = response.data;
             if (olimpiadaDetail.url_plantilla) {
-                const fileName = olimpiadaDetail.url_plantilla.split('/').pop() || `plantilla-${value}`;
+                console.log("url_plantilla", olimpiadaDetail.url_plantilla);
+                const fileName = olimpiadaDetail.url_plantilla.split('/').pop() || `plantilla-${olimpiada_id}`;
                 const templateFile = new File([], fileName);
                 const templateFileWithUrl = templateFile as File & { url_plantilla: string };
                 templateFileWithUrl.url_plantilla = olimpiadaDetail.url_plantilla;
-                setUploadedFiles([templateFile]);
-                setFileToConfirm(templateFile);
+                setOldFiles([templateFile]);
+                console.log("oldFiles", oldFiles);
             }
         } catch (err) {
             console.error("Error al obtener la plantilla de la olimpiada:", err);
+            setErrorOlimpiada("Ocurrió un error al obtener la plantilla de la olimpiada.");
+            console.log(errorOlimpiada)
+        } finally {
+            setLoadingOlimpiada(false);
         }
     };
 
@@ -106,7 +105,7 @@ const FileUploadFormato: React.FC = () => {
     };
 
     const handleConfirmUpload = async () => {
-        if (!fileToConfirm || !selectedOlimpiada) return;
+        if (!fileToConfirm) return;
 
         setIsProcessing(true);
         setAlertInfo(null);
@@ -114,7 +113,7 @@ const FileUploadFormato: React.FC = () => {
         try {
             const base64String = await readFileAsBase64(fileToConfirm);
             const payload = {
-                olimpiadaId: Number(selectedOlimpiada),
+                olimpiadaId: Number(olimpiada_id),
                 fileName: fileToConfirm.name,
                 fileContentBase64: base64String,
             };
@@ -166,13 +165,14 @@ const FileUploadFormato: React.FC = () => {
     const handleDialogClose = (open: boolean) => {
         setShowConfirmDialog(open);
     }
-    if (loadingOlimpiadas) {
+    if (loadingOlimpiada) {
         return <Loading />;
     }
+    
     return (
         <div className="flex flex-col items-center min-h-screen p-4">
           <div className="w-full">
-            <ReturnComponent to="/admin" />
+            <ReturnComponent to="/admin/subirExcel" />
           </div>
           <div className="w-full max-w-lg p-6 border rounded-lg shadow-md bg-card text-card-foreground space-y-5">
             <h2 className="text-xl font-semibold text-center">Cargar Archivo de Formato</h2>
@@ -185,67 +185,38 @@ const FileUploadFormato: React.FC = () => {
                     onClose={() => setAlertInfo(null)}
                 />
             )}
-
-            <div>
-                <label htmlFor="olimpiada-select" className="block text-sm font-medium text-muted-foreground mb-1">
-                    1. Selecciona la Olimpiada
-                </label>
-                {loadingOlimpiadas ? (
-                    <div className="h-9 flex items-center text-sm text-muted-foreground">Cargando olimpiadas...</div>
-                ) : errorOlimpiadas ? (
-                    <p className="text-sm text-red-500">{errorOlimpiadas}</p>
-                ) : (
-                    <Select onValueChange={handleOlimpiadaChange} value={selectedOlimpiada ?? undefined}>
-                        <SelectTrigger id="olimpiada-select" className="w-full">
-                            <SelectValue placeholder="-- Elige una olimpiada --" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {olimpiadas.length > 0 ? (
-                                olimpiadas.map((olimpiada) => (
-                                    <SelectItem key={olimpiada.id} value={olimpiada.id.toString()}>
-                                        {olimpiada.nombre}
-                                    </SelectItem>
-                                ))
-                            ) : (
-                                <div className="p-2 text-sm text-muted-foreground">No hay olimpiadas disponibles.</div>
-                            )}
-                        </SelectContent>
-                    </Select>
-                )}
-            </div>
-
             <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${selectedOlimpiada || uploadedFiles.length > 0 ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                    }`}
-                style={{ maxHeight: selectedOlimpiada || uploadedFiles.length > 0 ? '500px' : '0px' }}
+                className="overflow-hidden transition-all duration-1000 ease-in-out"
+                style={{
+                    maxHeight: showUploadAnimation ? '500px' : '0px',
+                    opacity: showUploadAnimation ? 1 : 0,
+                }}
             >
-                {selectedOlimpiada && (
-                    <div className="pt-4">
-                        <label className="block text-sm font-medium text-muted-foreground">
-                            2. Sube el archivo Excel (.xlsx o .xls)
-                        </label>
-                        <FileUpload
-                            key={selectedOlimpiada + (uploadedFiles.length === 0 ? '-reset' : '')}
-                            maxFiles={1}
-                            maxSize={10}
-                            accept=".xlsx,.xls"
-                            onFilesChange={handleFilesChange}
-                            filesRefresh={uploadedFiles}
-                        />
-                        <div className="flex justify-end gap-2 mt-3">
-                            <Button variant="outline" size="sm" onClick={handleCancelSelection}>
-                                Cancelar
-                            </Button>
-                            <Button
-                                disabled={!fileToConfirm}
-                                size="sm" onClick={() => handleOpenConfirmDialog()}>
-                                Subir Archivo
-                            </Button>
-                        </div>
+                <div className="pt-4">
+                    <label className="block text-sm font-medium text-muted-foreground">
+                        Sube el archivo Excel (.xlsx o .xls)
+                    </label>
+                    <FileUpload
+                        key={olimpiada_id + (uploadedFiles.length === 0 ? '-reset' : '')}
+                        maxFiles={1}
+                        maxSize={10}
+                        accept=".xlsx,.xls"
+                        onFilesChange={handleFilesChange}
+                        filesRefresh={uploadedFiles}
+                        oldFiles={oldFiles}
+                    />
+                    <div className="flex justify-end gap-2 mt-3">
+                        <Button variant="outline" size="sm" onClick={handleCancelSelection}>
+                            Cancelar
+                        </Button>
+                        <Button
+                            disabled={!fileToConfirm}
+                            size="sm" onClick={() => handleOpenConfirmDialog()}>
+                            Subir Archivo
+                        </Button>
                     </div>
-                )}
+                </div>
             </div>
-
             <Dialog open={showConfirmDialog} onOpenChange={handleDialogClose}>
                 <DialogContent>
                     <DialogHeader>
