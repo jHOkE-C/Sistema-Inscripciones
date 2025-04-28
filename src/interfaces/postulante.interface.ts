@@ -44,18 +44,18 @@ export const CONTACTOS_PERMITIDOS = [
 ];
 
 export const grados = [
-    { id: "1", nombre: "1ro Primaria" },
-    { id: "2", nombre: "2do Primaria" },
-    { id: "3", nombre: "3ro Primaria" },
-    { id: "4", nombre: "4to Primaria" },
-    { id: "5", nombre: "5to Primaria" },
-    { id: "6", nombre: "6to Primaria" },
-    { id: "7", nombre: "1ro Secundaria" },
-    { id: "8", nombre: "2do Secundaria" },
-    { id: "9", nombre: "3ro Secundaria" },
-    { id: "10", nombre: "4to Secundaria" },
-    { id: "11", nombre: "5to Secundaria" },
-    { id: "12", nombre: "6to Secundaria" }
+    { id: "1", nombre: "_1ro_Primaria" },
+    { id: "2", nombre: "_2do_Primaria" },
+    { id: "3", nombre: "_3ro_Primaria" },
+    { id: "4", nombre: "_4to_Primaria" },
+    { id: "5", nombre: "_5to_Primaria" },
+    { id: "6", nombre: "_6to_Primaria" },
+    { id: "7", nombre: "_1ro_Secundaria" },
+    { id: "8", nombre: "_2do_Secundaria" },
+    { id: "9", nombre: "_3ro_Secundaria" },
+    { id: "10", nombre: "_4to_Secundaria" },
+    { id: "11", nombre: "_5to_Secundaria" },
+    { id: "12", nombre: "_6to_Secundaria" }
 ];
 
 // Moved types from viaExcel/types.ts

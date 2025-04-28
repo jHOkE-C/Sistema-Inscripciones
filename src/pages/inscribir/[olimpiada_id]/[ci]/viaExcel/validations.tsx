@@ -126,8 +126,10 @@ export const validarFila = (
     });
 
     console.log(fila.fecha_nacimiento);
-    const fechaRegex = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+    const fechaRegex = /^\d{2}-\d{2}-\d{4}$/;
     const fechaValida = fechaRegex.test(fila.fecha_nacimiento);
+
+    const fechaNacimientoNormalizada = fila.fecha_nacimiento;
 
     if (!fechaValida) {
         errores.push({
@@ -135,7 +137,7 @@ export const validarFila = (
             fila: numFila,
             ci: fila.ci,
             mensaje:
-                "Formato de fecha inválido. Debe ser DD/MM/AAAA o una fecha válida de Excel",
+                "Formato de fecha inválido debe ser DD/MM/AAAA. Revise que la columna de fecha tenga el formato de celdas en FECHA(DD/MM/AAAA)",
         });
     }
 
@@ -147,15 +149,6 @@ export const validarFila = (
             ci: fila.ci,
             mensaje: "Teléfono debe tener entre 7 y 8 dígitos",
         });
-    }
-
-    // Normalize fecha_nacimiento to DD/MM/YYYY if year is 2-digit
-    const fechaParts = fila.fecha_nacimiento.split("/");
-    let fechaNacimientoNormalizada = fila.fecha_nacimiento;
-    if (fechaParts.length === 3 && fechaParts[2].length === 2) {
-        fechaNacimientoNormalizada = `${fechaParts[0]}-${fechaParts[1]}-20${fechaParts[2]}`;
-    }else if (fechaParts.length === 3 && fechaParts[2].length === 4) {
-        fechaNacimientoNormalizada = `${fechaParts[0]}-${fechaParts[1]}-${fechaParts[2]}`;
     }
 
     const postulante: Postulante = {
@@ -209,8 +202,16 @@ export const validarFila = (
         }
     });
 
+    let nombreDepartamento = "";
+    if(fila.departamento === "La_Paz"){
+        nombreDepartamento = "la paz";
+    }else if( fila.departamento === "Santa_Cruz"){
+        nombreDepartamento = "santa cruz";
+    }else{
+        nombreDepartamento = fila.departamento.toLowerCase();
+    }
     const departamentoEncontrado = departamentos.find(
-        (d) => d.nombre.toLowerCase() === fila.departamento.toLowerCase()
+        (d) => d.nombre.toLowerCase() === nombreDepartamento
     );
 
     if (!departamentoEncontrado) {
@@ -254,7 +255,13 @@ export const validarFila = (
         postulante.idColegio = parseInt(colegioEncontrado.id);
     }
 
-    const gradoEncontrado = grados.find((g) => g.nombre === fila.grado);
+    const gradoEncontrado = grados.find((g) => {
+        console.log(g.nombre);
+        console.log(fila.grado);
+        return g.nombre.toLowerCase() == fila.grado.toLowerCase()
+    });
+    console.log(gradoEncontrado);
+    
     if (!gradoEncontrado) {
         errores.push({
             campo: "Grado",

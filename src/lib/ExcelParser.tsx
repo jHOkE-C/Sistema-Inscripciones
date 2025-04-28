@@ -27,14 +27,26 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
       throw new Error('El archivo no contiene hojas');
     }
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    // Convert to JSON table
-    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+    const rawData = XLSX.utils.sheet_to_json(firstSheet, {
       header: 1,
       defval: null,
-      raw: false,
-      dateNF: 'dd/mm/yyyy',
-    }) as (string | null)[][];
-    // Validate required headers
+      raw: true,
+    }) as any[][];
+    
+    const jsonData = rawData.map((row, rowIdx) =>
+      row.map((cell, colIdx) => {
+        if (rowIdx > 0 && colIdx === 3 && (cell as any) instanceof Date) {
+          const date = cell as Date;
+          const dd = date.getDate().toString().padStart(2, '0');
+          const mm = (date.getMonth() + 1).toString().padStart(2, '0');
+          const yyyy = date.getFullYear().toString();
+          return `${dd}-${mm}-${yyyy}`;
+        }
+        return cell != null ? String(cell) : null;
+      })
+    ) as (string | null)[][];
+    console.log(jsonData);
+
     const headers = jsonData[0].map(h => h?.toString() || '') as string[];
     const camposFaltantes = validarCamposRequeridos(headers);
     if (camposFaltantes.length > 0) {
