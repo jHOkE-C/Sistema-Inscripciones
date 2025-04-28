@@ -16,7 +16,9 @@ import { AlertComponent } from "@/components/AlertComponent";
 import Loading from '@/components/Loading';
 import ReturnComponent from '@/components/ReturnComponent';
 import { useParams } from 'react-router-dom';
-import { Olimpiada } from "@/types/versiones.type";
+import { Olimpiada } from '@/types/versiones.type';
+import { Departamento, Colegio } from '@/interfaces/ubicacion.interface';
+import { AreaConCategorias, Categoria, CategoriaExtendida, grados, CONTACTOS_PERMITIDOS } from '@/interfaces/postulante.interface';
 import { ExcelParser } from '@/lib/ExcelParser';
 import LoadingAlert from '@/components/loading-alert';
 import { ErroresDeFormato } from '@/interfaces/error.interface';
@@ -36,10 +38,13 @@ const FileUploadFormato: React.FC = () => {
     const [errorOlimpiada, setErrorOlimpiada] = useState<string | null>(null);
     const [showUploadAnimation, setShowUploadAnimation] = useState<boolean>(false);
     const [erroresDeFormato, setErroresDeFormato] = useState<ErroresDeFormato[]>([]);
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    const [colegios, setColegios] = useState<Colegio[]>([]);
+    const [departamentosProvincias, setDepartamentosProvincias] = useState<Departamento[]>([]);
+    const [categoriasConAreaPorGrado, setCategoriasConAreaPorGrado] = useState<Map<string, CategoriaExtendida[]>>(new Map());
 
     useEffect(() => {
         getOlimpiada();
+        getDatos()
     }, []);
 
     useEffect(() => {
@@ -50,6 +55,49 @@ const FileUploadFormato: React.FC = () => {
             setShowUploadAnimation(false);
         }
     }, [loadingOlimpiada]);
+
+    const getDatos = async () => {
+
+        const colResponse = await axios.get(`${API_URL}/api/colegios`);
+        setColegios(colResponse.data);
+        console.log(colResponse.data);
+        const departamentosProvincias = await axios.get(`${API_URL}/api/departamentos/with-provinces`);
+        setDepartamentosProvincias(departamentosProvincias.data);
+        console.log(departamentosProvincias.data);
+        const areasConCategoriasResponse = await axios.get(
+            `${API_URL}/api/areas/categorias/olimpiada/${olimpiada_id}`
+        );
+        const gradosCategoriasResponse = await axios.get(
+            `${API_URL}/api/categorias/olimpiada/${olimpiada_id}`
+        );
+        console.log(areasConCategoriasResponse.data);
+        console.log(gradosCategoriasResponse.data);
+
+
+        const areasConCategoriasData = areasConCategoriasResponse.data as AreaConCategorias[];
+        const gradosCategoriasData = gradosCategoriasResponse.data as Categoria[][];
+        const areasMap = new Map<string, CategoriaExtendida[]>();
+
+        grados.forEach((grado, index) => {
+            const categorias = gradosCategoriasData[index] || [];
+            const categoriasConArea: CategoriaExtendida[] = categorias.map(
+                (cat) => {
+                    const area = areasConCategoriasData.find((a) =>
+                        a.categorias.some((c) => c.id === cat.id)
+                    );
+
+                    return {
+                        ...cat,
+                        areaId: area?.id ?? 0,
+                        areaNombre: area?.nombre ?? "Desconocida",
+                    };
+                }
+            );
+            areasMap.set(grado.id, categoriasConArea);
+        });
+        setCategoriasConAreaPorGrado(areasMap);
+        console.log(areasMap);
+    }
 
     const handleFilesChange = (files: File[]) => {
         if (files.length > 0) {
@@ -162,23 +210,108 @@ const FileUploadFormato: React.FC = () => {
     }
 
     const handleProcesar = async () => {
-        if (uploadedFiles.length === 0) return;
-        const selectedFile = uploadedFiles[0];
-        console.log('Archivo seleccionado:', selectedFile.name, selectedFile.type);
+        if (!fileToConfirm) return;
         setIsProcessing(true);
-        await sleep(1000);
+        setErroresDeFormato([]); 
         try {
-            const { jsonData, erroresDeFormato } = await ExcelParser(selectedFile);
-            setErroresDeFormato(erroresDeFormato);
-            console.log({ erroresDeFormato, jsonData });
-        } catch (error) {
-            setShowConfirmDialog(false);
+            const result = await ExcelParser(fileToConfirm);
+            const errores = [...result.erroresDeFormato]; 
+
+            const hoja2Data = result.jsonData[1];
+            console.log(hoja2Data);
+            if (hoja2Data && hoja2Data.length > 1) {
+                const departamentosNombres = new Set(departamentosProvincias.map(d => d.nombre.toLocaleLowerCase()));
+                const colegiosNombres = new Set(colegios.map(c => c.nombre.toLocaleLowerCase()));
+                const gradosNombres = new Set(grados.map(g => g.nombre.toLocaleLowerCase()));
+                const pertenencias = new Set(CONTACTOS_PERMITIDOS.map(p => p.contacto.toLocaleLowerCase()));
+                let mayorColumna:number = 0;
+                if (hoja2Data && hoja2Data.length > 0 && Array.isArray(hoja2Data[0])) {
+                    for (let i = 0; i < hoja2Data[0].length; i++) { 
+                        const currentLength = hoja2Data[0][i]?.length;
+                        if (typeof currentLength === 'number' && currentLength > mayorColumna) {
+                            mayorColumna = currentLength;
+                        }
+                    }
+                }
+                for (let i = 1; i < hoja2Data.length; i++) {
+                    const fila = hoja2Data[i];
+                    const numeroFilaExcel = i + 1;
+                    const departamento = fila[0]?.toString().trim().replace(/_/g, ' ').toLowerCase() || ''; // Added check for null/undefined
+                    if (departamento && !departamentosNombres.has(departamento)) {
+                        errores.push({
+                            fila: numeroFilaExcel,
+                            columna: 'Departamento(A)',
+                            mensaje: `El departamento "${fila[0]}" no es válido o no se encuentra registrado.`,
+                            hoja: 2,
+                            campo: 'Departamento'
+                        });
+                        
+                     
+                    }
+                    const colegio = fila[2]?.toString().trim().toLowerCase();
+                    if (colegio && !colegiosNombres.has(colegio)) {
+                        errores.push({
+                            fila: numeroFilaExcel,
+                            columna: 'Colegio(C)', 
+                            mensaje: `El colegio "${fila[1]}" no es válido o no se encuentra registrado.`,
+                            hoja: 2,
+                            campo: 'Colegio'
+                        });
+                        
+                    }
+                    const grado = fila[3]
+                    if (grado !== null) {
+                        const gradoCon = grado?.toString().trim().toLowerCase();
+                        if (!gradosNombres.has(gradoCon)) {
+                            errores.push({
+                                fila: numeroFilaExcel,
+                                columna: 'Grado(D)',
+                                mensaje: `El grado "${gradoCon}" no es válido.`,
+                                hoja: 2,
+                            campo: 'Grado'
+                        });
+                        }
+                    }
+                    const pertenencia = fila[4]?.toString().trim().toLowerCase();
+                    if (pertenencia && !pertenencias.has(pertenencia)) {
+                        errores.push({
+                            fila: numeroFilaExcel,
+                            columna: 'Pertenencia(E)',
+                            mensaje: `La pertenencia "${fila[3]}" no es válida.`,
+                            hoja: 2,
+                            campo: 'Pertenencia'
+                        });
+                    }
+                    for (let j = 6; j < 18; j++) {
+                        const categoria = fila[j]
+                        if (categoria!==null) {
+                            const string = String(j-5)
+                            const categoria2 = categoria.trim();
+                            const categorias = categoriasConAreaPorGrado.get(string);
+                            
+                            const existeCategoria = categorias?.some(cat => 
+                                `${cat.areaNombre} - ${cat.nombre}`.toLowerCase() ===
+                                categoria2
+                            ) ?? false;
+                            if (!existeCategoria) {
+                                errores.push({
+                                    fila: numeroFilaExcel,
+                                    columna: grados[j-6].nombre,
+                                    mensaje: `La categoría "${fila[j]}" no es válida.`,
+                                    hoja: 2,
+                                    campo: categoria
+                                });
+                                console.log("dcategoria");
+                            }
+                        }
+                    }
+                }
+                
+            }
+            setErroresDeFormato(errores);
+        } catch (error: any) {
             console.error('Error al procesar el archivo:', error);
-            setAlertInfo({
-                title: "Error",
-                description: "Ocurrió un error al procesar el archivo, verifique si el archivo no esta corrompido-vacio"+error,
-                variant: "destructive",
-            });
+            setErroresDeFormato([{ fila: 0, columna: 'General', mensaje: error.message || 'Error desconocido al procesar', hoja: 1, campo: 'General' }]);
         } finally {
             setIsProcessing(false);
         }

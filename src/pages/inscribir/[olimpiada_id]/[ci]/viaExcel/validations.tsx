@@ -168,8 +168,8 @@ export const validarFila = (
         idCurso: 0,
         idArea1: 0,
         idCategoria1: 0,
-        idArea2: 0,
-        idCategoria2: 0,
+        idArea2: -1,
+        idCategoria2: -1,
     };
 
     ["telefono_pertenece_a", "correo_pertenece_a"].forEach((campo) => {
@@ -202,16 +202,11 @@ export const validarFila = (
         }
     });
 
-    let nombreDepartamento = "";
-    if(fila.departamento === "La_Paz"){
-        nombreDepartamento = "la paz";
-    }else if( fila.departamento === "Santa_Cruz"){
-        nombreDepartamento = "santa cruz";
-    }else{
-        nombreDepartamento = fila.departamento.toLowerCase();
-    }
+
+    const normalizedInputDepartamento = fila.departamento?.replace(/_/g, ' ').toLowerCase() || ''; 
+
     const departamentoEncontrado = departamentos.find(
-        (d) => d.nombre.toLowerCase() === nombreDepartamento
+        (d) => d.nombre.toLowerCase() === normalizedInputDepartamento 
     );
 
     if (!departamentoEncontrado) {
@@ -284,9 +279,6 @@ export const validarFila = (
             if (areaCategoria1) {
                 postulante.idArea1 = areaCategoria1.areaId;
                 postulante.idCategoria1 = parseInt(areaCategoria1.id);
-
-                postulante.idArea2 = areaCategoria1.areaId;
-                postulante.idCategoria2 = parseInt(areaCategoria1.id);
             } else {
                 errores.push({
                     campo: "Área-Categoría 1",

@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 import { validarCamposRequeridos } from '@/pages/inscribir/[olimpiada_id]/[ci]/viaExcel/validations';
 
 export interface FileParseResult {
-  jsonData: (string | null)[][];
+  jsonData: (string | null)[][][];
   erroresDeFormato: { fila: number; columna: string; mensaje: string; hoja: number; campo: string }[];
 }
 
@@ -32,7 +32,6 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
       defval: null,
       raw: true,
     }) as any[][];
-    
     const jsonData = rawData.map((row, rowIdx) =>
       row.map((cell, colIdx) => {
         if (rowIdx > 0 && colIdx === 3 && (cell as any) instanceof Date) {
@@ -46,7 +45,6 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
       })
     ) as (string | null)[][];
     console.log(jsonData);
-
     const headers = jsonData[0].map(h => h?.toString() || '') as string[];
     const camposFaltantes = validarCamposRequeridos(headers);
     if (camposFaltantes.length > 0) {
@@ -60,7 +58,19 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
         }))
       );
     }
-    return { jsonData, erroresDeFormato };
+    const secondSheet = workbook.Sheets[workbook.SheetNames[1]];
+    const secondRawData = XLSX.utils.sheet_to_json(secondSheet, {
+      header: 1,
+      defval: null,
+      raw: true,
+    }) as (string | null)[][];
+    const treeSheet = workbook.Sheets[workbook.SheetNames[2]];
+    const treeRawData = XLSX.utils.sheet_to_json(treeSheet, {
+      header: 1,
+      defval: null,
+      raw: true,
+    }) as (string | null)[][];
+    return { jsonData: [jsonData, secondRawData, treeRawData], erroresDeFormato };
   } catch (error) {
     console.error('Error al procesar el archivo:', error);
     throw new Error('Error al procesar el archivo');

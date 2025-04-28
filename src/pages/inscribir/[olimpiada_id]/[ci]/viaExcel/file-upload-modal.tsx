@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { API_URL } from "@/hooks/useApiRequest";
-import { getCategoriaAreaPorGradoOlimpiada } from "@/api/areas";
+import { Categoria } from "@/api/areas";
 import { CategoriaExtendida, grados, ExcelPostulante, Postulante, UploadResponse, AreaConCategorias } from "@/interfaces/postulante.interface";
 import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
 import { ValidationError, ErroresDeFormato } from "@/interfaces/error.interface";
@@ -91,44 +91,38 @@ export default function FileUploadModal({
     if (!loading && open && cargandoCategorias) {
       const fetchData = async () => {
         try {
-          // Hacer todas las peticiones en paralelo
-          const [areasConCategorias, ...gradosCategorias] = await Promise.all([
-            axios.get(
-              `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
-            ),
-            ...grados.map((grado) =>
-              getCategoriaAreaPorGradoOlimpiada(
-                grado.id,
-                olimpiada[0].id.toString()
-              )
-            ),
-          ]);
+          const areasConCategoriasResponse = await axios.get(
+            `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
+        );
+        const gradosCategoriasResponse = await axios.get(
+            `${API_URL}/api/categorias/olimpiada/${olimpiada[0].id}`
+        );
+        console.log(areasConCategoriasResponse.data);
+        console.log(gradosCategoriasResponse.data);
 
-          const areasConCategoriasData =
-            areasConCategorias.data as AreaConCategorias[];
-          const areasMap = new Map<string, CategoriaExtendida[]>();
 
-          // Procesar resultados
-          grados.forEach((grado, index) => {
-            const categorias = gradosCategorias[index];
+        const areasConCategoriasData = areasConCategoriasResponse.data as AreaConCategorias[];
+        const gradosCategoriasData = gradosCategoriasResponse.data as Categoria[][];
+        const areasMap = new Map<string, CategoriaExtendida[]>();
+
+        grados.forEach((grado, index) => {
+            const categorias = gradosCategoriasData[index] || [];
             const categoriasConArea: CategoriaExtendida[] = categorias.map(
-              (cat) => {
-                const area = areasConCategoriasData.find((a) =>
-                  a.categorias.some((c) => c.id === cat.id)
-                );
+                (cat) => {
+                    const area = areasConCategoriasData.find((a) =>
+                        a.categorias.some((c) => c.id === cat.id)
+                    );
 
-                return {
-                  ...cat,
-                  areaId: area?.id ?? 0,
-                  areaNombre: area?.nombre ?? "Desconocida",
-                };
-              }
+                    return {
+                        ...cat,
+                        areaId: area?.id ?? 0,
+                        areaNombre: area?.nombre ?? "Desconocida",
+                    };
+                }
             );
             areasMap.set(grado.id, categoriasConArea);
-          });
-
-          setAreasCategorias(areasMap);
-          console.log(areasMap)
+        });
+        setAreasCategorias(areasMap);
         } catch (error) {
           console.error("Error al cargar datos de validación:", error);
         } finally {
@@ -167,7 +161,7 @@ export default function FileUploadModal({
         return;
       }
 
-      const headers = jsonData[0].map(
+      const headers = jsonData[0][0].map(
         (h) => h?.toString() || ""
       ) as string[];
 
@@ -190,7 +184,7 @@ export default function FileUploadModal({
       }
 
       let encontroFilaVacia = false;
-      const postulantesData: ExcelPostulante[] = jsonData
+      const postulantesData: ExcelPostulante[] = jsonData[0]
         .slice(1)
         .filter((fila) => {
           if (encontroFilaVacia) return false;
