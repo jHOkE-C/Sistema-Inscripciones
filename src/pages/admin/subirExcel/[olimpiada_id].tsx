@@ -17,7 +17,7 @@ import Loading from '@/components/Loading';
 import ReturnComponent from '@/components/ReturnComponent';
 import { useParams } from 'react-router-dom';
 import { Olimpiada } from '@/types/versiones.type';
-import { Departamento, Colegio } from '@/interfaces/ubicacion.interface';
+import { Departamento, Colegio, Provincia } from '@/interfaces/ubicacion.interface';
 import { AreaConCategorias, Categoria, CategoriaExtendida, grados, CONTACTOS_PERMITIDOS } from '@/interfaces/postulante.interface';
 import { ExcelParser } from '@/lib/ExcelParser';
 import LoadingAlert from '@/components/loading-alert';
@@ -93,6 +93,7 @@ const FileUploadFormato: React.FC = () => {
                     };
                 }
             );
+            
             const uniqueCategoriasConArea = categoriasConArea.filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i);
             areasMap.set(grado.id, uniqueCategoriasConArea);
         });
@@ -230,15 +231,7 @@ const FileUploadFormato: React.FC = () => {
                 const foundGrados = new Set<string>();
                 const foundPertenenciasSet = new Set<string>();
                 const foundCategoriasSet = new Set<string>();
-                let mayorColumna:number = 0;
-                if (hoja2Data && hoja2Data.length > 0 && Array.isArray(hoja2Data[0])) {
-                    for (let i = 0; i < hoja2Data[0].length; i++) { 
-                        const currentLength = hoja2Data[0][i]?.length;
-                        if (typeof currentLength === 'number' && currentLength > mayorColumna) {
-                            mayorColumna = currentLength;
-                        }
-                    }
-                }
+                
                 for (let i = 1; i < hoja2Data.length; i++) {
                     const fila = hoja2Data[i];
                     const numeroFilaExcel = i + 1;
@@ -320,24 +313,117 @@ const FileUploadFormato: React.FC = () => {
                 // Verificar datos faltantes en Excel
                 const missingDepartamentos = Array.from(departamentosNombres).filter(dep => !foundDepartamentos.has(dep));
                 if (missingDepartamentos.length > 0) {
-                    errores.push({ fila: 0, columna: 'Departamento', mensaje: `Faltan departamentos en el Excel: ${missingDepartamentos.join(', ')}`, hoja: 2, campo: 'Departamento' });
+                    errores.push({ 
+                        fila: 0, 
+                        columna: 'Departamento', 
+                        mensaje: `Faltan departamentos en el Excel: ${missingDepartamentos.join(', ')}`, 
+                        hoja: 2, 
+                        campo: 'Departamento' 
+                    });
                 }
                 const missingColegios = Array.from(colegiosNombres).filter(item => !foundColegios.has(item));
                 if (missingColegios.length > 0) {
-                    errores.push({ fila: 0, columna: 'Colegio', mensaje: `Faltan colegios en el Excel: ${missingColegios.join(', ')}`, hoja: 2, campo: 'Colegio' });
+                    errores.push({ 
+                        fila: 0, 
+                        columna: 'Colegio', 
+                        mensaje: `Faltan colegios en el Excel: ${missingColegios.join(', ')}`, 
+                        hoja: 2, 
+                        campo: 'Colegio' 
+                    });
                 }
                 const missingGrados = Array.from(gradosNombres).filter(item => !foundGrados.has(item));
                 if (missingGrados.length > 0) {
-                    errores.push({ fila: 0, columna: 'Grado', mensaje: `Faltan grados en el Excel: ${missingGrados.join(', ')}`, hoja: 2, campo: 'Grado' });
+                    errores.push({ 
+                        fila: 0, 
+                        columna: 'Grado', 
+                        mensaje: `Faltan grados en el Excel: ${missingGrados.join(', ')}`, 
+                        hoja: 2, 
+                        campo: 'Grado' 
+                    });
                 }
                 const missingPertenencias = Array.from(pertenencias).filter(item => !foundPertenenciasSet.has(item));
                 if (missingPertenencias.length > 0) {
-                    errores.push({ fila: 0, columna: 'Pertenencia', mensaje: `Faltan pertenencias en el Excel: ${missingPertenencias.join(', ')}`, hoja: 2, campo: 'Pertenencia' });
+                    errores.push({ 
+                        fila: 0, 
+                        columna: 'Pertenencia', 
+                        mensaje: `Faltan pertenencias en el Excel: ${missingPertenencias.join(', ')}`, 
+                        hoja: 2, 
+                        campo: 'Pertenencia' 
+                    });
                 }
                 const expectedCategorias = Array.from(categoriasConAreaPorGrado.values()).flat().map(cat => `${cat.areaNombre} - ${cat.nombre}`.toLowerCase());
                 const missingCategorias = expectedCategorias.filter(cat => !foundCategoriasSet.has(cat.toLowerCase()));
                 if (missingCategorias.length > 0) {
-                    errores.push({ fila: 0, columna: 'Categoría', mensaje: `Faltan categorías en el Excel: ${missingCategorias.join(', ')}`, hoja: 2, campo: 'Categoría' });
+                    errores.push({ 
+                        fila: 0, 
+                        columna: 'Categoría', 
+                        mensaje: `Faltan categorías en el Excel: ${missingCategorias.join(', ')}`, 
+                        hoja: 2, 
+                        campo: 'Categoría' 
+                    });
+                }
+            }
+            const hoja3Data = result.jsonData[2];
+            console.log(hoja3Data);
+            if (hoja3Data && hoja3Data.length > 1) {
+                const map = new Map<string, Provincia[]>(
+                    departamentosProvincias.map(item => [item.nombre.toLocaleLowerCase(), item.provincias])
+                );
+                const headers = hoja3Data[0];
+                const departamentos = [
+                    {columna: 'A', nombre: 'Beni'}, 
+                    {columna: 'B', nombre: 'Chuquisaca'}, 
+                    {columna: 'C', nombre: 'Cochabamba'}, 
+                    {columna: 'D', nombre: 'La Paz'}, 
+                    {columna: 'E', nombre: 'Oruro'}, 
+                    {columna: 'F', nombre: 'Pando'}, 
+                    {columna: 'G', nombre: 'Potosi'}, 
+                    {columna: 'H', nombre: 'Santa Cruz'}, 
+                    {columna: 'I', nombre: 'Tarija'}
+                ];
+                let noHayUnDepartamento = false;
+                for (let i = 0; i < headers.length; i++) {
+                    const header = headers[i];
+                    const departamentoNombre = header?.toLocaleLowerCase();
+                    if (!departamentos.some(departamento => departamento.nombre.toLocaleLowerCase() === departamentoNombre)) {
+                        errores.push({ 
+                            fila: 0, 
+                            columna: departamentos[i].columna, 
+                            mensaje: `Departamento no encontrado: ${departamentoNombre}`, 
+                            hoja: 3, 
+                            campo: "" 
+                        });
+                        noHayUnDepartamento = true;
+                    }
+                }
+                if(!noHayUnDepartamento){
+                    for (let fila = 1; fila < hoja3Data.length; fila++) {
+                        const numeroFilaExcel = fila + 1;
+                        for (let columna = 0; columna < hoja3Data[fila].length; columna++) {                        
+                            const key = departamentos[columna].nombre;
+                            console.log(key);
+                            const valor = hoja3Data[fila][columna];
+                            console.log(valor);
+                            const provincia = map.get(key.toLowerCase());
+                            if(valor!==null)
+                            {
+                                const existeProvincia = provincia?.some(prov => 
+                                    prov.nombre.toLocaleLowerCase() === valor.toLocaleLowerCase()
+                                );
+                                console.log(existeProvincia);
+                                if (!existeProvincia) {
+                                    errores.push({ 
+                                        fila: numeroFilaExcel, 
+                                        columna: departamentos[columna].columna, 
+                                        mensaje: `Provincia ${valor} no encontrada en el departamento ${key} `, 
+                                        hoja: 3, 
+                                        campo: departamentos[columna].nombre
+                                    });
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
             setErroresDeFormato(errores);
