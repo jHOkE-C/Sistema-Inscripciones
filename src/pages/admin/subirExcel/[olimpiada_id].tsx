@@ -93,7 +93,8 @@ const FileUploadFormato: React.FC = () => {
                     };
                 }
             );
-            areasMap.set(grado.id, categoriasConArea);
+            const uniqueCategoriasConArea = categoriasConArea.filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i);
+            areasMap.set(grado.id, uniqueCategoriasConArea);
         });
         setCategoriasConAreaPorGrado(areasMap);
         console.log(areasMap);
@@ -224,6 +225,11 @@ const FileUploadFormato: React.FC = () => {
                 const colegiosNombres = new Set(colegios.map(c => c.nombre.toLocaleLowerCase()));
                 const gradosNombres = new Set(grados.map(g => g.nombre.toLocaleLowerCase()));
                 const pertenencias = new Set(CONTACTOS_PERMITIDOS.map(p => p.contacto.toLocaleLowerCase()));
+                const foundDepartamentos = new Set<string>();
+                const foundColegios = new Set<string>();
+                const foundGrados = new Set<string>();
+                const foundPertenenciasSet = new Set<string>();
+                const foundCategoriasSet = new Set<string>();
                 let mayorColumna:number = 0;
                 if (hoja2Data && hoja2Data.length > 0 && Array.isArray(hoja2Data[0])) {
                     for (let i = 0; i < hoja2Data[0].length; i++) { 
@@ -236,7 +242,8 @@ const FileUploadFormato: React.FC = () => {
                 for (let i = 1; i < hoja2Data.length; i++) {
                     const fila = hoja2Data[i];
                     const numeroFilaExcel = i + 1;
-                    const departamento = fila[0]?.toString().trim().replace(/_/g, ' ').toLowerCase() || ''; // Added check for null/undefined
+                    const departamento = fila[0]?.toString().trim().replace(/_/g, ' ').toLowerCase() || ''; 
+                    foundDepartamentos.add(departamento);
                     if (departamento && !departamentosNombres.has(departamento)) {
                         errores.push({
                             fila: numeroFilaExcel,
@@ -248,7 +255,8 @@ const FileUploadFormato: React.FC = () => {
                         
                      
                     }
-                    const colegio = fila[2]?.toString().trim().toLowerCase();
+                    const colegio = fila[2]?.toString().trim().toLowerCase() || '';
+                    foundColegios.add(colegio);
                     if (colegio && !colegiosNombres.has(colegio)) {
                         errores.push({
                             fila: numeroFilaExcel,
@@ -261,7 +269,8 @@ const FileUploadFormato: React.FC = () => {
                     }
                     const grado = fila[3]
                     if (grado !== null) {
-                        const gradoCon = grado?.toString().trim().toLowerCase();
+                        const gradoCon = grado?.toString().trim().toLowerCase() || '';
+                        foundGrados.add(gradoCon);
                         if (!gradosNombres.has(gradoCon)) {
                             errores.push({
                                 fila: numeroFilaExcel,
@@ -272,7 +281,8 @@ const FileUploadFormato: React.FC = () => {
                         });
                         }
                     }
-                    const pertenencia = fila[4]?.toString().trim().toLowerCase();
+                    const pertenencia = fila[4]?.toString().trim().toLowerCase() || '';
+                    foundPertenenciasSet.add(pertenencia);
                     if (pertenencia && !pertenencias.has(pertenencia)) {
                         errores.push({
                             fila: numeroFilaExcel,
@@ -287,11 +297,12 @@ const FileUploadFormato: React.FC = () => {
                         if (categoria!==null) {
                             const string = String(j-5)
                             const categoria2 = categoria.trim();
+                            foundCategoriasSet.add(categoria2.toLowerCase());
                             const categorias = categoriasConAreaPorGrado.get(string);
                             
                             const existeCategoria = categorias?.some(cat => 
                                 `${cat.areaNombre} - ${cat.nombre}`.toLowerCase() ===
-                                categoria2
+                                categoria2.toLowerCase()
                             ) ?? false;
                             if (!existeCategoria) {
                                 errores.push({
@@ -306,7 +317,28 @@ const FileUploadFormato: React.FC = () => {
                         }
                     }
                 }
-                
+                // Verificar datos faltantes en Excel
+                const missingDepartamentos = Array.from(departamentosNombres).filter(dep => !foundDepartamentos.has(dep));
+                if (missingDepartamentos.length > 0) {
+                    errores.push({ fila: 0, columna: 'Departamento', mensaje: `Faltan departamentos en el Excel: ${missingDepartamentos.join(', ')}`, hoja: 2, campo: 'Departamento' });
+                }
+                const missingColegios = Array.from(colegiosNombres).filter(item => !foundColegios.has(item));
+                if (missingColegios.length > 0) {
+                    errores.push({ fila: 0, columna: 'Colegio', mensaje: `Faltan colegios en el Excel: ${missingColegios.join(', ')}`, hoja: 2, campo: 'Colegio' });
+                }
+                const missingGrados = Array.from(gradosNombres).filter(item => !foundGrados.has(item));
+                if (missingGrados.length > 0) {
+                    errores.push({ fila: 0, columna: 'Grado', mensaje: `Faltan grados en el Excel: ${missingGrados.join(', ')}`, hoja: 2, campo: 'Grado' });
+                }
+                const missingPertenencias = Array.from(pertenencias).filter(item => !foundPertenenciasSet.has(item));
+                if (missingPertenencias.length > 0) {
+                    errores.push({ fila: 0, columna: 'Pertenencia', mensaje: `Faltan pertenencias en el Excel: ${missingPertenencias.join(', ')}`, hoja: 2, campo: 'Pertenencia' });
+                }
+                const expectedCategorias = Array.from(categoriasConAreaPorGrado.values()).flat().map(cat => `${cat.areaNombre} - ${cat.nombre}`.toLowerCase());
+                const missingCategorias = expectedCategorias.filter(cat => !foundCategoriasSet.has(cat.toLowerCase()));
+                if (missingCategorias.length > 0) {
+                    errores.push({ fila: 0, columna: 'Categoría', mensaje: `Faltan categorías en el Excel: ${missingCategorias.join(', ')}`, hoja: 2, campo: 'Categoría' });
+                }
             }
             setErroresDeFormato(errores);
         } catch (error: any) {
