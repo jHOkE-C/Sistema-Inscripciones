@@ -62,7 +62,7 @@ export const Page = () => {
           <Card className="border-2 border-destructive/10 hover:border-destructive/30 transition-all duration-300 shadow-md">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2">
-                <Trash2 className="h-5 w-5 text-destructive" />
+                <Trash2 className="h-5 w-5 text-red-600" />
                 Dar de Baja un Área
               </CardTitle>
               <CardDescription>
@@ -78,8 +78,7 @@ export const Page = () => {
             <CardFooter>
               <Link to="/admin/area/dar-de-baja" className="w-full">
                 <Button
-                  variant="outline"
-                  className="w-full border-destructive/50 text-destructive hover:bg-destructive/10"
+                  className="w-full  bg-red-600 hover:bg-red-700"
                 >
                   Ir a Dar de Baja Área
                 </Button>

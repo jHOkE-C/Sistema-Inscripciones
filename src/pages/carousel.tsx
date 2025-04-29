@@ -84,8 +84,8 @@ export function OlimpiadasCarousel() {
                             className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3  "
                         >
                             <div className="p-6 md:p-1 h-[390px] ">
-                                <Card className="overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full -py-1 gap-0">
-                                    <CardHeader className="p-4 pb-2 bg-blue-600 text-white">
+                                <Card className="overflow-hidden transition-all duration-300 shadow-foreground/20 hover:-translate-y-1 h-full -py-1 gap-0 bg-background  ">
+                                    <CardHeader className="p-4 pb-2 bg-primary text-white">
                                         <div className="flex items-center justify-between mb-2">
                                             <Badge
                                                 variant="outline"
@@ -103,10 +103,10 @@ export function OlimpiadasCarousel() {
                                         <div className="flex items-start gap-2">
                                             <Calendar className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
                                             <div>
-                                                <p className="text-sm font-medium text-gray-700">
+                                                <p className="text-sm font-medium text-background-700">
                                                     Fecha de finalización:
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-background-600">
                                                     {formatDate(
                                                         olimpiada.fecha_fin
                                                     )}
@@ -168,7 +168,7 @@ export function OlimpiadasCarousel() {
                                         {olimpiada.url_plantilla && (
                                             <Button
                                                 variant={"link"}
-                                                className="text text-green-600"
+                                                className="text text-green-600 dark:text-green-500"
                                                 onClick={() => {
                                                     const link =
                                                         document.createElement(
@@ -182,13 +182,11 @@ export function OlimpiadasCarousel() {
                                                     link.click();
                                                 }}
                                             >
-                                                <Download/>
-                                                Descargar Plantilla de
-                                                Excel
+                                                <Download />
+                                                Descargar Plantilla de Excel
                                             </Button>
                                         )}
                                         <Button
-                                            className=""
                                             disabled={
                                                 olimpiada.fase_actual
                                                     ?.tipo_plazo !=

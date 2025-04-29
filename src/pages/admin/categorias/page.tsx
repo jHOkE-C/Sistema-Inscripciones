@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <>
     <ReturnComponent to="/admin" />
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className=" px-4 max-w-6xl mx-auto">
 
         <header className="text-center mb-12">
@@ -19,7 +19,7 @@ export default function Page() {
             <Building2 className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-4xl font-extrabold mb-2">Gestión de Categorías</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-foreground/60 max-w-2xl mx-auto">
             Administra las categorías de la olimpiada de manera eficiente:
             crea, edita o desactiva categoria según tus necesidades.
           </p>
@@ -36,7 +36,7 @@ export default function Page() {
               <CardDescription>Agrega una nueva categoría</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-foreground/50">
                 Define y añade nuevas áreas de competencia para organizar
                 las diferentes disciplinas de la olimpiada.
               </p>
@@ -58,7 +58,7 @@ export default function Page() {
               <CardDescription>Modifica las categorías existentes</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-foreground/50">
                 Actualiza nombres, descripciones o atributos de las
                 categorías activas en tu plataforma.
               </p>
@@ -80,7 +80,7 @@ export default function Page() {
               <CardDescription>Desactiva una categoría obsoleta</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-foreground/50">
               Marca categorías que ya no sean necesarias para que no aparezcan
               en futuras convocatorias.
               </p>

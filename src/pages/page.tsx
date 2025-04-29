@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Medal, Trophy, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { OlimpiadasCarousel } from "./carousel";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const PageHome = () => {
   return (
@@ -26,13 +27,14 @@ const PageHome = () => {
             >
               Contacto
             </Link>
+            <ModeToggle/>
           </nav>
         </div>
       </header>
 
       {/* Main */}
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-5 bg-gradient-to-b from-zinc-50 to-white">
+        <section className="w-full py-12 md:py-24 lg:py-5 bg-gradient-to-b from-background-50 to-background">
            
           <div className="px-6 md:px-10">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
@@ -40,7 +42,7 @@ const PageHome = () => {
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                   Sistema de Inscripciones para las Olimpiadas ohSansi
                 </h1>
-                <p className="max-w-[600px] text-gray-500 md:text-xl">
+                <p className="max-w-[600px] text-foreground/70 md:text-xl">
                   Regístrate, sigue los eventos y participa en las competencias
                   más emocionantes del año.
                 </p>
@@ -55,15 +57,16 @@ const PageHome = () => {
               
               <div className="mx-auto lg:mr-0 w-full max-w-[500px] h-[350px] aspect-video rounded-xl overflow-hidden">
                 <img
+
                   alt="Olimpiadas ohSansi"
-                  className="object-cover w-full h-full"
-                  src="/o!sansi.jpg"
+                  className="object-cover w-full h-full drop-shadow-white drop-shadow-xs"
+                  src="/ohsansi.png"
                 />
               </div>
             </div>
           </div>
         </section>
-        <h2 className="text-3xl md:text-5xl text-center md:p-10 text-zinc-800 tracking-wide">OLIMPIADAS NACIONALES <br/> SAN SIMÓN {new Date().getFullYear()}</h2>
+        <h2 className="text-3xl md:text-5xl text-center md:p-10 text-foreground tracking-wide">OLIMPIADAS NACIONALES <br/> SAN SIMÓN {new Date().getFullYear()}</h2>
         <OlimpiadasCarousel />
 
         {/* Características */}
