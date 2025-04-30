@@ -161,28 +161,6 @@ export default function FileUploadModal({
         return;
       }
 
-      const headers = jsonData[0][0].map(
-        (h) => h?.toString() || ""
-      ) as string[];
-
-      const camposFaltantes = validarCamposRequeridos(headers);
-
-      if (camposFaltantes.length > 0) {
-        toast.error(
-          `Faltan las siguientes columnas: ${camposFaltantes.join(", ")}`
-        );
-        setErrores([
-          {
-            campo: "Archivo",
-            fila: 0,
-            ci: "",
-            mensaje: `Faltan las siguientes columnas: ${camposFaltantes.join(", ")}`,
-          },
-        ]);
-        setLoading(false);
-        return;
-      }
-
       let encontroFilaVacia = false;
       const postulantesData: ExcelPostulante[] = jsonData[0]
         .slice(1)

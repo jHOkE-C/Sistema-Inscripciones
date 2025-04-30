@@ -17,7 +17,7 @@ import Loading from '@/components/Loading';
 import ReturnComponent from '@/components/ReturnComponent';
 import { useParams } from 'react-router-dom';
 import { Olimpiada } from '@/types/versiones.type';
-import { Departamento, Colegio, Provincia } from '@/interfaces/ubicacion.interface';
+import { Departamento, Colegio, Provincia, excelCol } from '@/interfaces/ubicacion.interface';
 import { AreaConCategorias, Categoria, CategoriaExtendida, grados, CONTACTOS_PERMITIDOS } from '@/interfaces/postulante.interface';
 import { ExcelParser } from '@/lib/ExcelParser';
 import LoadingAlert from '@/components/loading-alert';
@@ -405,7 +405,7 @@ const FileUploadFormato: React.FC = () => {
                         if (faltantes.length > 0) {
                             errores.push({
                                 fila: 0,
-                                columna: grados[i].nombre,
+                                columna: excelCol[i+6].columna,
                                 mensaje: `En la columna ${grados[i].nombre}, Faltan las categorías: ${faltantes.join(', ')}`,
                                 hoja: 2,
                                 campo: ''

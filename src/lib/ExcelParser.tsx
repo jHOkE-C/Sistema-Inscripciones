@@ -52,9 +52,9 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
         ...camposFaltantes.map(col => ({
           fila: 0,
           columna: col,
-          mensaje: `Falta columna ${col}`,
+          mensaje: `Falta la columna ${col}`,
           hoja: 0,
-          campo: col,
+          campo: '',
         }))
       );
     }
