@@ -571,8 +571,7 @@ const FileUploadFormato: React.FC = () => {
                         {isProcessing ? (
                             <>
                                 <DialogTitle>Procesando archivo</DialogTitle>
-                                <DialogDescription>Espere por favor, estamos procesando el archivo...</DialogDescription>
-                                <LoadingAlert message="Espere por favor, estamos procesando el archivo..." />
+                                <LoadingAlert message="Espere por favor, estamos procesando para verificar que no existan errores..."/>
                             </>
                         ) : (
                             <>
@@ -587,7 +586,6 @@ const FileUploadFormato: React.FC = () => {
                                             Se encontraron errores en el archivo.
                                             puede usar los checkbox para marcar los errores que vas corrigiendo.
                                         </DialogDescription>
-
                                         <div className="max-h-96 overflow-y-auto space-y-2">
                                             {erroresDeFormato.map((error, index) => (
                                                 <ErrorCheckboxRow
@@ -606,7 +604,12 @@ const FileUploadFormato: React.FC = () => {
                                 ) : (
                                     <>
                                         <DialogDescription>
-                                            ¿Estás seguro de que deseas subir y procesar el archivo "{fileToConfirm?.name}" para la olimpiada seleccionada?
+                                            ¿Estás seguro de que deseas subir "{fileToConfirm?.name}" para la olimpiada seleccionada?
+                                            {oldFiles.length > 0 && (
+                                                <p className="text-indigo-500">
+                                                    Se encontró una plantilla previa para esta olimpiada, si subes un nuevo archivo, se sobreescribirá.
+                                                </p>
+                                            )}
                                         </DialogDescription>
                                         <DialogFooter>
                                             <DialogClose asChild>

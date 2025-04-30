@@ -10,7 +10,7 @@ import { CategoriaExtendida, grados, ExcelPostulante, Postulante, UploadResponse
 import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
 import { ValidationError, ErroresDeFormato } from "@/interfaces/error.interface";
 import { ErrorCheckboxRow } from "@/components/ErrorCheckboxRow";
-import { validarCamposRequeridos, validarFila } from "./validations";
+import { validarFila } from "./validations";
 import FileUpload from "../../../../../components/fileUpload";
 import axios from "axios";
 import { toast } from "sonner";
@@ -334,7 +334,10 @@ export default function FileUploadModal({
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogContent className="h-auto gap-2">
               {loading ?
-                <LoadingAlert message="Espere por favor, estamos procesando el archivo..."/>
+                <>
+                  <DialogTitle>Procesando archivo</DialogTitle>
+                  <LoadingAlert message="Espere por favor, estamos procesando para verificar que no existan errores..."/>
+                </>
                 : (
                   <>
                     <DialogTitle>
@@ -371,7 +374,7 @@ export default function FileUploadModal({
                     ) : (
                       <>
                         <p className="text-sm pb-4 text-zinc-500">
-                          El archivo fue procesado correctamente, no se encontraron errores.
+                          En el archivo no se encontraron errores.
                           Presione aceptar para subir los postulantes.
                         </p>
                         <DialogFooter>
