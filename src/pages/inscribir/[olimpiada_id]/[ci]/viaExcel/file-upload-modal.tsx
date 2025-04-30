@@ -222,6 +222,7 @@ export default function FileUploadModal({
       setErrores(todosErrores);
       console.log(postulantesConvertidos);
     } catch (error) {
+      setShowDialog(false);
       console.error("Error al procesar el archivo:", error);
       toast.error(
         "Error al procesar el archivo. Por favor, verifique el formato."

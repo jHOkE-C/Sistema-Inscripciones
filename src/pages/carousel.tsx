@@ -64,6 +64,16 @@ export function OlimpiadasCarousel() {
         setIsMounted(true);
     }, []);
 
+    const handleDownload = (url_plantilla: string, e:React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const url = `${API_URL}/storage/${url_plantilla}`;
+        const link = document.createElement('a');
+        link.href = url;
+
+        link.download = "plantilla.xlsx";
+        link.click();
+    };
     if (!isMounted) {
         return null;
     }
@@ -169,18 +179,7 @@ export function OlimpiadasCarousel() {
                                             <Button
                                                 variant={"link"}
                                                 className="text text-green-600 dark:text-green-500"
-                                                onClick={() => {
-                                                    const link =
-                                                        document.createElement(
-                                                            "a"
-                                                        );
-                                                    link.href =
-                                                        olimpiada.url_plantilla ||
-                                                        "";
-                                                    link.download =
-                                                        "plantilla.xlsx";
-                                                    link.click();
-                                                }}
+                                                onClick={(e) => handleDownload(olimpiada?.url_plantilla || "", e)}
                                             >
                                                 <Download />
                                                 Descargar Plantilla de Excel
