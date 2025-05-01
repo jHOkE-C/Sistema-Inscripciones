@@ -3,12 +3,34 @@
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Categoria } from "@/api/areas";
-import { CategoriaExtendida, grados, ExcelPostulante, Postulante, UploadResponse, AreaConCategorias } from "@/interfaces/postulante.interface";
-import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
-import { ValidationError, ErroresDeFormato } from "@/interfaces/error.interface";
+import {
+  CategoriaExtendida,
+  grados,
+  ExcelPostulante,
+  Postulante,
+  UploadResponse,
+  AreaConCategorias,
+} from "@/interfaces/postulante.interface";
+import {
+  Departamento,
+  Provincia,
+  Colegio,
+} from "@/interfaces/ubicacion.interface";
+import {
+  ValidationError,
+  ErroresDeFormato,
+} from "@/interfaces/error.interface";
 import { ErrorCheckboxRow } from "@/components/ErrorCheckboxRow";
 import { validarFila } from "./validations";
 import FileUpload from "../../../../../components/fileUpload";
@@ -32,7 +54,6 @@ interface FileUploadModalProps {
   olimpiadaP: Olimpiada[];
 }
 
-
 export default function FileUploadModal({
   maxFiles = 1,
   maxSize = 10,
@@ -46,10 +67,12 @@ export default function FileUploadModal({
   const [files, setFiles] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
 
-  const {ci} = useParams()
+  const { ci } = useParams();
   const [loading, setLoading] = useState(true);
   const [errores, setErrores] = useState<ValidationError[]>([]);
-  const [erroresDeFormatoExcel, setErroresDeFormatoExcel] = useState<ErroresDeFormato[]>([]);
+  const [erroresDeFormatoExcel, setErroresDeFormatoExcel] = useState<
+    ErroresDeFormato[]
+  >([]);
   const [showDialog, setShowDialog] = useState(false);
   const [postulantes, setPostulantes] = useState<Postulante[]>([]);
   const [cargandoCategorias, setCargandoCategorias] = useState(false);
@@ -93,36 +116,37 @@ export default function FileUploadModal({
         try {
           const areasConCategoriasResponse = await axios.get(
             `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
-        );
-        const gradosCategoriasResponse = await axios.get(
+          );
+          const gradosCategoriasResponse = await axios.get(
             `${API_URL}/api/categorias/olimpiada/${olimpiada[0].id}`
-        );
-        console.log(areasConCategoriasResponse.data);
-        console.log(gradosCategoriasResponse.data);
+          );
+          console.log(areasConCategoriasResponse.data);
+          console.log(gradosCategoriasResponse.data);
 
+          const areasConCategoriasData =
+            areasConCategoriasResponse.data as AreaConCategorias[];
+          const gradosCategoriasData =
+            gradosCategoriasResponse.data as Categoria[][];
+          const areasMap = new Map<string, CategoriaExtendida[]>();
 
-        const areasConCategoriasData = areasConCategoriasResponse.data as AreaConCategorias[];
-        const gradosCategoriasData = gradosCategoriasResponse.data as Categoria[][];
-        const areasMap = new Map<string, CategoriaExtendida[]>();
-
-        grados.forEach((grado, index) => {
+          grados.forEach((grado, index) => {
             const categorias = gradosCategoriasData[index] || [];
             const categoriasConArea: CategoriaExtendida[] = categorias.map(
-                (cat) => {
-                    const area = areasConCategoriasData.find((a) =>
-                        a.categorias.some((c) => c.id === cat.id)
-                    );
+              (cat) => {
+                const area = areasConCategoriasData.find((a) =>
+                  a.categorias.some((c) => c.id === cat.id)
+                );
 
-                    return {
-                        ...cat,
-                        areaId: area?.id ?? 0,
-                        areaNombre: area?.nombre ?? "Desconocida",
-                    };
-                }
+                return {
+                  ...cat,
+                  areaId: area?.id ?? 0,
+                  areaNombre: area?.nombre ?? "Desconocida",
+                };
+              }
             );
             areasMap.set(grado.id, categoriasConArea);
-        });
-        setAreasCategorias(areasMap);
+          });
+          setAreasCategorias(areasMap);
         } catch (error) {
           console.error("Error al cargar datos de validación:", error);
         } finally {
@@ -140,7 +164,8 @@ export default function FileUploadModal({
       onFilesChange(newFiles);
     }
   };
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
   const handleProcesar = async () => {
     if (files.length === 0) return;
 
@@ -154,7 +179,9 @@ export default function FileUploadModal({
     setShowDialog(true);
     await sleep(1);
     try {
-      const { jsonData, erroresDeFormato: formatoErrors } = await ExcelParser(selectedFile);
+      const { jsonData, erroresDeFormato: formatoErrors } = await ExcelParser(
+        selectedFile
+      );
       setErroresDeFormatoExcel(formatoErrors);
       if (formatoErrors.length > 0) {
         setLoading(false);
@@ -162,6 +189,7 @@ export default function FileUploadModal({
       }
 
       let encontroFilaVacia = false;
+      console.log(jsonData[0]);
       const postulantesData: ExcelPostulante[] = jsonData[0]
         .slice(1)
         .filter((fila) => {
@@ -199,7 +227,7 @@ export default function FileUploadModal({
         }));
 
       if (postulantesData.length === 0) {
-        throw new Error("No se encontraron datos válidos en el archivo");
+        throw new Error("No hay postulantes en el archivo");
       }
 
       const todosErrores: ValidationError[] = [];
@@ -225,20 +253,17 @@ export default function FileUploadModal({
       setShowDialog(false);
       console.error("Error al procesar el archivo:", error);
       toast.error(
-        "Error al procesar el archivo. Por favor, verifique el formato."
+        "Error al procesar el archivo, "+error
       );
     } finally {
       setLoading(false);
     }
   };
   function generarSufijo() {
-    return Math.random()
-      .toString(36)       
-      .substring(2, 10);   
+    return Math.random().toString(36).substring(2, 10);
   }
   const handleConfirm = async () => {
     if (errores.length > 0) return;
-
 
     try {
       setLoading(true);
@@ -246,13 +271,16 @@ export default function FileUploadModal({
       const payload = {
         ci: ci,
         nombre_lista: nombreLista,
-        olimpiada_id:'1',              // como número
+        olimpiada_id: "1", // como número
         listaPostulantes: postulantes,
-      }
-      console.log(payload)
-      const response = await axios.post<UploadResponse>(`${API_URL}/api/inscripciones/bulk`, payload);
+      };
+      console.log(payload);
+      const response = await axios.post<UploadResponse>(
+        `${API_URL}/api/inscripciones/bulk`,
+        payload
+      );
       console.log("Respuesta del servidor:", response.data);
-      
+
       toast.success("Postulantes registrados exitosamente");
       console.log(postulantes);
       setOpen(false);
@@ -260,7 +288,7 @@ export default function FileUploadModal({
       setPostulantes([]);
       setShowDialog(false);
     } catch (err: any) {
-      console.error('🛑 Errores de validación:', err.response?.data)
+      console.error("🛑 Errores de validación:", err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -333,25 +361,25 @@ export default function FileUploadModal({
 
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogContent className="h-auto gap-2">
-              {loading ?
+              {loading ? (
                 <>
                   <DialogTitle>Procesando archivo</DialogTitle>
-                  <LoadingAlert message="Espere por favor, estamos procesando para verificar que no existan errores..."/>
+                  <LoadingAlert message="Espere por favor, estamos procesando para verificar que no existan errores..." />
                 </>
-                : (
-                  <>
-                    <DialogTitle>
-                      {errores.length > 0 || erroresDeFormatoExcel.length > 0
-                        ? "Errores de formato"
-                        : "El archivo es válido"}
-                    </DialogTitle>
-                    {(errores.length > 0 || erroresDeFormatoExcel.length > 0) ? (
-                      <div className="">
-                        <p className="text-sm pb-4 text-zinc-500">
-                          Se encontraron errores en el archivo. 
-                          puede usar los checkbox para marcar los errores que vas corrigiendo.
-                        </p>
-                        <div className="max-h-96 overflow-y-auto space-y-2">
+              ) : (
+                <>
+                  <DialogTitle>
+                    {errores.length > 0 || erroresDeFormatoExcel.length > 0
+                      ? "Errores de formato"
+                      : "El archivo es válido"}
+                  </DialogTitle>
+                  {errores.length > 0 || erroresDeFormatoExcel.length > 0 ? (
+                    <div className="">
+                      <p className="text-sm pb-4 text-zinc-500">
+                        Se encontraron errores en el archivo. puede usar los
+                        checkbox para marcar los errores que vas corrigiendo.
+                      </p>
+                      <div className="max-h-96 overflow-y-auto space-y-2">
                         {erroresDeFormatoExcel.map((error, index) => (
                           <ErrorCheckboxRow
                             key={index}
@@ -364,31 +392,34 @@ export default function FileUploadModal({
                             message={`El campo [${error.campo}] en la fila [${error.fila}] del CI [${error.ci}] tiene el siguiente error: ${error.mensaje}`}
                           />
                         ))}
-                        </div>
-                        <DialogFooter className="mt-4">
-                          <Button onClick={() => setShowDialog(false)}>
-                            Cerrar
-                          </Button>
-                        </DialogFooter>
                       </div>
-                    ) : (
-                      <>
-                        <p className="text-sm pb-4 text-zinc-500">
-                          En el archivo no se encontraron errores.
-                          Presione aceptar para subir los postulantes.
-                        </p>
-                        <DialogFooter>
-                          <Button
-                            disabled={errores.length > 0 || erroresDeFormatoExcel.length > 0}
-                            onClick={handleConfirm}
-                          >
-                            Aceptar
-                          </Button>
-                        </DialogFooter>
-                      </>
-                    )}
-                  </>
-                )}
+                      <DialogFooter className="mt-4">
+                        <Button onClick={() => setShowDialog(false)}>
+                          Cerrar
+                        </Button>
+                      </DialogFooter>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm pb-4 text-zinc-500">
+                        En el archivo no se encontraron errores. Presione
+                        aceptar para subir los postulantes.
+                      </p>
+                      <DialogFooter>
+                        <Button
+                          disabled={
+                            errores.length > 0 ||
+                            erroresDeFormatoExcel.length > 0
+                          }
+                          onClick={handleConfirm}
+                        >
+                          Aceptar
+                        </Button>
+                      </DialogFooter>
+                    </>
+                  )}
+                </>
+              )}
             </DialogContent>
           </Dialog>
         </DialogContent>

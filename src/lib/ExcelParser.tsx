@@ -73,6 +73,6 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
     return { jsonData: [jsonData, secondRawData, treeRawData], erroresDeFormato };
   } catch (error) {
     console.error('Error al procesar el archivo:', error);
-    throw new Error('Error al procesar el archivo');
+    throw new Error('Archivo corrupto, Verifique que el archivo no esté corrupto');
   }
 }
