@@ -13,19 +13,20 @@ import {
 import { Loader2 } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
-import Loading from '@/components/Loading';
-import ReturnComponent from '@/components/ReturnComponent';
+import { getDepartamentosWithProvinces, getColegios } from "@/api/ubicacion";
+import { getAreasConCategorias, getCategoriasOlimpiada } from "@/api/categorias";
+import { uploadExcelOlimpiada } from "@/api/excel";
 import { useParams } from 'react-router-dom';
 import { Olimpiada } from '@/types/versiones.type';
-import { Departamento, Colegio, Provincia, excelCol } from '@/interfaces/ubicacion.interface';
-import { AreaConCategorias, Categoria, CategoriaExtendida, grados, CONTACTOS_PERMITIDOS } from '@/interfaces/postulante.interface';
+import { Departamento, Colegio, excelCol, Provincia } from '@/interfaces/ubicacion.interface';
+import { CategoriaExtendida, grados, CONTACTOS_PERMITIDOS } from '@/interfaces/postulante.interface';
 import { ExcelParser } from '@/lib/ExcelParser';
 import LoadingAlert from '@/components/loading-alert';
 import { ErroresDeFormato } from '@/interfaces/error.interface';
 import { ErrorCheckboxRow } from '@/components/ErrorCheckboxRow';
-type UploadResponse = {
-    message: string;
-};
+import ReturnComponent from '@/components/ReturnComponent';
+import Loading from '@/components/Loading';
+
 const FileUploadFormato: React.FC = () => {
     const { olimpiada_id } = useParams();
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -57,48 +58,38 @@ const FileUploadFormato: React.FC = () => {
     }, [loadingOlimpiada]);
 
     const getDatos = async () => {
+        try {
+            const colegiosData = await getColegios();
+            setColegios(colegiosData);
+            const departamentosProvinciasData = await getDepartamentosWithProvinces();
+            setDepartamentosProvincias(departamentosProvinciasData)
+            const areasConCategoriasData = await getAreasConCategorias(Number(olimpiada_id));
+            const gradosCategoriasData = await getCategoriasOlimpiada(Number(olimpiada_id));
+            const areasMap = new Map<string, CategoriaExtendida[]>();
 
-        const colResponse = await axios.get(`${API_URL}/api/colegios`);
-        setColegios(colResponse.data);
-        console.log(colResponse.data);
-        const departamentosProvincias = await axios.get(`${API_URL}/api/departamentos/with-provinces`);
-        setDepartamentosProvincias(departamentosProvincias.data);
-        console.log(departamentosProvincias.data);
-        const areasConCategoriasResponse = await axios.get(
-            `${API_URL}/api/areas/categorias/olimpiada/${olimpiada_id}`
-        );
-        const gradosCategoriasResponse = await axios.get(
-            `${API_URL}/api/categorias/olimpiada/${olimpiada_id}`
-        );
-        console.log(areasConCategoriasResponse.data);
-        console.log(gradosCategoriasResponse.data);
+            grados.forEach((grado, index) => {
+                const categorias = gradosCategoriasData[index] || [];
+                const categoriasConArea: CategoriaExtendida[] = categorias.map(
+                    (cat) => {
+                        const area = areasConCategoriasData.find((a) =>
+                            a.categorias.some((c) => c.id === cat.id)
+                        );
 
+                        return {
+                            ...cat,
+                            areaId: area?.id ?? 0,
+                            areaNombre: area?.nombre ?? "Desconocida",
+                        };
+                    }
+                );
 
-        const areasConCategoriasData = areasConCategoriasResponse.data as AreaConCategorias[];
-        const gradosCategoriasData = gradosCategoriasResponse.data as Categoria[][];
-        const areasMap = new Map<string, CategoriaExtendida[]>();
-
-        grados.forEach((grado, index) => {
-            const categorias = gradosCategoriasData[index] || [];
-            const categoriasConArea: CategoriaExtendida[] = categorias.map(
-                (cat) => {
-                    const area = areasConCategoriasData.find((a) =>
-                        a.categorias.some((c) => c.id === cat.id)
-                    );
-
-                    return {
-                        ...cat,
-                        areaId: area?.id ?? 0,
-                        areaNombre: area?.nombre ?? "Desconocida",
-                    };
-                }
-            );
-
-            const uniqueCategoriasConArea = categoriasConArea.filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i);
-            areasMap.set(grado.id, uniqueCategoriasConArea);
-        });
-        setCategoriasConAreaPorGrado(areasMap);
-        console.log(areasMap);
+                const uniqueCategoriasConArea = categoriasConArea.filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i);
+                areasMap.set(grado.id, uniqueCategoriasConArea);
+            });
+            setCategoriasConAreaPorGrado(areasMap);
+        } catch (error) {
+            console.error("Error al cargar datos:", error);
+        }
     }
 
     const handleFilesChange = (files: File[]) => {
@@ -114,16 +105,15 @@ const FileUploadFormato: React.FC = () => {
 
     const getOlimpiada = async () => {
         try {
+            //recordatorio 
             const response = await axios.get<Olimpiada>(`${API_URL}/api/olimpiadas/${olimpiada_id}`);
             const olimpiadaDetail = response.data;
             if (olimpiadaDetail.url_plantilla) {
-                console.log("url_plantilla", olimpiadaDetail.url_plantilla);
                 const fileName = olimpiadaDetail.url_plantilla.split('/').pop() || `plantilla-${olimpiada_id}`;
                 const templateFile = new File([], fileName);
                 const templateFileWithUrl = templateFile as File & { url_plantilla: string };
                 templateFileWithUrl.url_plantilla = olimpiadaDetail.url_plantilla;
                 setOldFiles([templateFile]);
-                console.log("oldFiles", oldFiles);
             }
         } catch (err) {
             console.error("Error al obtener la plantilla de la olimpiada:", err);
@@ -157,29 +147,26 @@ const FileUploadFormato: React.FC = () => {
 
         try {
             const base64String = await readFileAsBase64(fileToConfirm);
-            const payload = {
-                olimpiadaId: Number(olimpiada_id),
-                fileName: fileToConfirm.name,
-                fileContentBase64: base64String,
-            };
-            console.log("payload", payload);
-            const response = await axios.post<UploadResponse>(`${API_URL}/api/olimpiadas/upload-excel`, payload);
+            const response = await uploadExcelOlimpiada(
+                Number(olimpiada_id),
+                fileToConfirm.name,
+                base64String
+            );
 
-            console.log("Respuesta del servidor:", response.data);
             setAlertInfo({
                 title: "Éxito",
-                description: response.data.message || "Archivo subido y procesado correctamente.",
+                description: response.message || "Archivo subido y procesado correctamente.",
                 variant: "default",
             });
             setShowConfirmDialog(false);
             setFileToConfirm(null);
-        } catch (err) {
-            console.error("Error al procesar o subir el archivo:", err);
-            let errorMessage = "Ocurrió un error al procesar o subir el archivo.";
-            if (axios.isAxiosError(err) && err.response?.data?.message) {
-                errorMessage = err.response.data.message;
-            } else if (err instanceof Error) {
+        } catch (err: unknown) {
+            let errorMessage = "Error al procesar o subir el archivo.";
+            if (err instanceof Error) {
                 errorMessage = err.message;
+            }
+            else {
+                errorMessage = "Error Desconocido al procesar el archivo";
             }
             setAlertInfo({
                 title: "Error",
@@ -220,7 +207,6 @@ const FileUploadFormato: React.FC = () => {
             const errores = [...result.erroresDeFormato];
 
             const hoja2Data = result.jsonData[1];
-            console.log(hoja2Data);
             if (hoja2Data && hoja2Data.length > 1) {
                 const departamentosNombres = new Set(departamentosProvincias.map(d => d.nombre.toLocaleLowerCase()));
                 const colegiosNombres = new Set(colegios.map(c => c.nombre.toLocaleLowerCase()));
@@ -232,7 +218,7 @@ const FileUploadFormato: React.FC = () => {
                 const foundPertenenciasSet = new Set<string>();
                 const foundCategoriasSet: Map<string, string[]> = new Map<string, string[]>();
                 grados.forEach(g => foundCategoriasSet.set(g.id, []));
-            
+
                 //recordatorio, posible mejora para hacer una busqueda de A hasta Z  y guardar la posicion encontrada de cada header
                 //para luego hacer la validacion y no tener que hacerlo fijo, que aqui es algo medio que si serviria no como en postulante y su header 
                 const headers = [
@@ -340,8 +326,7 @@ const FileUploadFormato: React.FC = () => {
                                         hoja: 2,
                                         campo: ''
                                     });
-                                    console.log("dcategoria");
-                                }else{
+                                } else {
                                     foundCategoriasSet.get(string)?.push(categoria2.toLowerCase());
                                 }
                             }
@@ -392,7 +377,7 @@ const FileUploadFormato: React.FC = () => {
                         const gradoKey = grados[i].id
                         const categoriasFound: string[] = foundCategoriasSet.get(gradoKey) || []
                         const categorias: CategoriaExtendida[] = categoriasConAreaPorGrado.get(gradoKey) || []
-                        
+
                         const faltantes: string[] = []
                         for (let j = 0; j < categorias.length; j++) {
                             const categoria = categorias[j]
@@ -405,7 +390,7 @@ const FileUploadFormato: React.FC = () => {
                         if (faltantes.length > 0) {
                             errores.push({
                                 fila: 0,
-                                columna: excelCol[i+6].columna,
+                                columna: excelCol[i + 6].columna,
                                 mensaje: `En la columna ${grados[i].nombre}, Faltan las categorías: ${faltantes.join(', ')}`,
                                 hoja: 2,
                                 campo: ''
@@ -419,7 +404,6 @@ const FileUploadFormato: React.FC = () => {
                 const map = new Map<string, Provincia[]>(
                     departamentosProvincias.map(item => [item.nombre.toLocaleLowerCase(), item.provincias])
                 );
-                console.log(map)
                 const headers = hoja3Data[0];
                 const departamentos = [
                     { columna: 'A', header: 'Beni' },
@@ -450,7 +434,6 @@ const FileUploadFormato: React.FC = () => {
                 if (!noHayUnDepartamento) {
                     const foundProvincias: Map<string, string[]> = new Map<string, string[]>();
                     departamentos.forEach(d => foundProvincias.set(d.header.toLowerCase(), []));
-                    console.log(hoja3Data)
                     for (let fila = 1; fila < hoja3Data.length; fila++) {
                         const numeroFilaExcel = fila + 1;
                         for (let columna = 0; columna < hoja3Data[fila].length; columna++) {
@@ -458,11 +441,10 @@ const FileUploadFormato: React.FC = () => {
                             const valor = hoja3Data[fila][columna]?.toLowerCase() || null;
                             const provincia = map.get(key);
                             if (valor !== null) {
-                                const existeProvincia = provincia?.some(prov =>{
+                                const existeProvincia = provincia?.some(prov => {
                                     return prov.nombre.toLowerCase() === valor
-                                });       
+                                });
                                 if (!existeProvincia) {
-                                    console.log(valor)
                                     errores.push({
                                         fila: numeroFilaExcel,
                                         columna: departamentos[columna].columna,
@@ -470,7 +452,7 @@ const FileUploadFormato: React.FC = () => {
                                         hoja: 3,
                                         campo: departamentos[columna].header
                                     });
-                                }else{
+                                } else {
                                     const provincias = foundProvincias.get(key) || [];
                                     provincias.push(valor || '');
                                 }
@@ -479,10 +461,10 @@ const FileUploadFormato: React.FC = () => {
                     }
                     for (let i = 0; i < departamentos.length; i++) {
                         const departamentoKey = departamentos[i].header
-                        
+
 
                         const provinciasFound: string[] = foundProvincias.get(departamentoKey.toLowerCase()) || []
-                        const provincias: Provincia[] =map.get(departamentoKey.toLowerCase()) || []
+                        const provincias: Provincia[] = map.get(departamentoKey.toLowerCase()) || []
 
                         const faltantes: string[] = []
                         for (let j = 0; j < provincias.length; j++) {
@@ -490,7 +472,6 @@ const FileUploadFormato: React.FC = () => {
                             const provinciaNombre = provincia.nombre;
                             const found = provinciasFound.includes(provinciaNombre.toLowerCase());
                             if (!found) {
-                                console.log(provinciaNombre)
                                 faltantes.push(provinciaNombre)
                             }
                         }
@@ -507,9 +488,9 @@ const FileUploadFormato: React.FC = () => {
                 }
             }
             setErroresDeFormato(errores);
-        } catch (error: any) {
+        } catch (error) {
+            setShowConfirmDialog(false);
             console.error('Error al procesar el archivo:', error);
-            setErroresDeFormato([{ fila: 0, columna: 'General', mensaje: error.message || 'Error desconocido al procesar', hoja: 1, campo: 'General' }]);
         } finally {
             setIsProcessing(false);
         }
@@ -520,6 +501,7 @@ const FileUploadFormato: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center min-h-screen p-4">
+
             <div className="w-full">
                 <ReturnComponent to="/admin/subirExcel" />
             </div>
@@ -571,7 +553,7 @@ const FileUploadFormato: React.FC = () => {
                         {isProcessing ? (
                             <>
                                 <DialogTitle>Procesando archivo</DialogTitle>
-                                <LoadingAlert message="Espere por favor, estamos procesando para verificar que no existan errores..."/>
+                                <LoadingAlert message="Espere por favor, estamos procesando para verificar que no existan errores..." />
                             </>
                         ) : (
                             <>
@@ -606,9 +588,9 @@ const FileUploadFormato: React.FC = () => {
                                         <DialogDescription>
                                             ¿Estás seguro de que deseas subir "{fileToConfirm?.name}" para la olimpiada seleccionada?
                                             {oldFiles.length > 0 && (
-                                                <p className="text-indigo-500">
+                                                <span className="block text-indigo-500">
                                                     Se encontró una plantilla previa para esta olimpiada, si subes un nuevo archivo, se sobreescribirá.
-                                                </p>
+                                                </span>
                                             )}
                                         </DialogDescription>
                                         <DialogFooter>
@@ -627,7 +609,8 @@ const FileUploadFormato: React.FC = () => {
                     </DialogContent>
                 </Dialog>
             </div>
-        </div >
+        </div>
+
     );
 };
 

@@ -13,14 +13,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { API_URL } from "@/hooks/useApiRequest";
-import { Categoria } from "@/api/areas";
 import {
   CategoriaExtendida,
   grados,
   ExcelPostulante,
   Postulante,
   UploadResponse,
-  AreaConCategorias,
 } from "@/interfaces/postulante.interface";
 import {
   Departamento,
@@ -34,7 +32,7 @@ import {
 import { ErrorCheckboxRow } from "@/components/ErrorCheckboxRow";
 import { validarFila } from "./validations";
 import FileUpload from "../../../../../components/fileUpload";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { HoverCardContent } from "@/components/ui/hover-card";
@@ -42,6 +40,7 @@ import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
 import { Olimpiada } from "@/types/versiones.type";
 import { ExcelParser } from "@/lib/ExcelParser";
+import { getAreasConCategorias, getCategoriasOlimpiada } from "@/api/categorias";
 
 interface FileUploadModalProps {
   maxFiles?: number;
@@ -92,10 +91,8 @@ export default function FileUploadModal({
 
         const deptResponse = await axios.get(`${API_URL}/api/departamentos`);
         setDepartamentos(deptResponse.data);
-        console.log(deptResponse.data);
         const provResponse = await axios.get(`${API_URL}/api/provincias`);
         setProvincias(provResponse.data);
-        console.log(provResponse.data);
         const colResponse = await axios.get(`${API_URL}/api/colegios`);
         setColegios(colResponse.data);
 
@@ -114,19 +111,8 @@ export default function FileUploadModal({
     if (!loading && open && cargandoCategorias) {
       const fetchData = async () => {
         try {
-          const areasConCategoriasResponse = await axios.get(
-            `${API_URL}/api/areas/categorias/olimpiada/${olimpiada[0].id}`
-          );
-          const gradosCategoriasResponse = await axios.get(
-            `${API_URL}/api/categorias/olimpiada/${olimpiada[0].id}`
-          );
-          console.log(areasConCategoriasResponse.data);
-          console.log(gradosCategoriasResponse.data);
-
-          const areasConCategoriasData =
-            areasConCategoriasResponse.data as AreaConCategorias[];
-          const gradosCategoriasData =
-            gradosCategoriasResponse.data as Categoria[][];
+          const areasConCategoriasData = await getAreasConCategorias(Number(olimpiada[0].id));
+          const gradosCategoriasData = await getCategoriasOlimpiada(Number(olimpiada[0].id));
           const areasMap = new Map<string, CategoriaExtendida[]>();
 
           grados.forEach((grado, index) => {
@@ -170,11 +156,6 @@ export default function FileUploadModal({
     if (files.length === 0) return;
 
     const selectedFile = files[0];
-    console.log(
-      "Archivo seleccionado:",
-      selectedFile?.name,
-      selectedFile?.type
-    );
     setLoading(true);
     setShowDialog(true);
     await sleep(1);
@@ -189,7 +170,6 @@ export default function FileUploadModal({
       }
 
       let encontroFilaVacia = false;
-      console.log(jsonData[0]);
       const postulantesData: ExcelPostulante[] = jsonData[0]
         .slice(1)
         .filter((fila) => {
@@ -249,12 +229,13 @@ export default function FileUploadModal({
       setLoading(false);
       setErrores(todosErrores);
       console.log(postulantesConvertidos);
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error("Error al procesar el archivo, "+error.message);
+      } else {
+        toast.error("Error al procesar el archivo, "+error);
+      }
       setShowDialog(false);
-      console.error("Error al procesar el archivo:", error);
-      toast.error(
-        "Error al procesar el archivo, "+error
-      );
     } finally {
       setLoading(false);
     }
@@ -271,7 +252,7 @@ export default function FileUploadModal({
       const payload = {
         ci: ci,
         nombre_lista: nombreLista,
-        olimpiada_id: "1", // como número
+        olimpiada_id: olimpiada[0].id,
         listaPostulantes: postulantes,
       };
       console.log(payload);
@@ -279,16 +260,26 @@ export default function FileUploadModal({
         `${API_URL}/api/inscripciones/bulk`,
         payload
       );
+      //recordatorio
       console.log("Respuesta del servidor:", response.data);
 
       toast.success("Postulantes registrados exitosamente");
-      console.log(postulantes);
       setOpen(false);
       setFiles([]);
       setPostulantes([]);
       setShowDialog(false);
-    } catch (err: any) {
-      console.error("🛑 Errores de validación:", err.response?.data);
+    } catch (err: unknown) {
+      let errorMessage = "Error al procesar el archivo.";
+      if (err instanceof AxiosError) {
+        
+        errorMessage = err.response?.data.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      } 
+      else {
+        errorMessage = "Error Desconocido al procesar el archivo";
+      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

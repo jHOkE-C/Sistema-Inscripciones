@@ -125,7 +125,6 @@ export const validarFila = (
         }
     });
 
-    console.log(fila.fecha_nacimiento);
     const fechaRegex = /^\d{2}-\d{2}-\d{4}$/;
     const fechaValida = fechaRegex.test(fila.fecha_nacimiento);
 
@@ -173,15 +172,12 @@ export const validarFila = (
     };
 
     ["telefono_pertenece_a", "correo_pertenece_a"].forEach((campo) => {
-        console.log(fila[campo as keyof ExcelPostulante]);
-
         const valorCampo = String(fila[campo as keyof ExcelPostulante] ?? "")
             .trim()
             .toLowerCase();
         const contacto = CONTACTOS_PERMITIDOS.find(
             (c) => c.contacto.toLowerCase() === valorCampo
         );
-        console.log(contacto);
         if (!contacto) {
             errores.push({
                 campo:
@@ -218,7 +214,6 @@ export const validarFila = (
         });
     } else {
         postulante.idDepartamento = departamentoEncontrado.id;
-        console.log(departamentoEncontrado);
     }
 
     const provinciaEncontrada = provincias.find(
@@ -251,11 +246,8 @@ export const validarFila = (
     }
 
     const gradoEncontrado = grados.find((g) => {
-        console.log(g.nombre);
-        console.log(fila.grado);
         return g.nombre.toLowerCase() == fila.grado.toLowerCase()
     });
-    console.log(gradoEncontrado);
     
     if (!gradoEncontrado) {
         errores.push({

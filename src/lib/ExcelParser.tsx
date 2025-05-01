@@ -31,19 +31,19 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
       header: 1,
       defval: null,
       raw: true,
-    }) as any[][];
-    const jsonData = rawData.map((row, rowIdx) =>
+    }) as (string | null | number | Date)[][];
+    console.log(rawData);
+    const jsonData = rawData.map((row, rowIdx) => (
       row.map((cell, colIdx) => {
-        if (rowIdx > 0 && colIdx === 3 && (cell as any) instanceof Date) {
-          const date = cell as Date;
-          const dd = date.getDate().toString().padStart(2, '0');
-          const mm = (date.getMonth() + 1).toString().padStart(2, '0');
-          const yyyy = date.getFullYear().toString();
+        if (rowIdx > 0 && colIdx === 3 && cell instanceof Date) {
+          const dd = cell.getDate().toString().padStart(2, '0');
+          const mm = (cell.getMonth() + 1).toString().padStart(2, '0');
+          const yyyy = cell.getFullYear().toString();
           return `${dd}-${mm}-${yyyy}`;
         }
         return cell != null ? String(cell) : null;
       })
-    ) as (string | null)[][];
+    )) as (string | null)[][];
     console.log(jsonData);
     const headers = jsonData[0].map(h => h?.toString() || '') as string[];
     const camposFaltantes = validarCamposRequeridos(headers);
