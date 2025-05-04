@@ -285,7 +285,7 @@ export default function GestionRegistration({
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Crear</Button>
+                            <Button type="submit" className="text-white">Crear</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>

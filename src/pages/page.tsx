@@ -2,35 +2,13 @@ import { FeatureCard } from "@/components/FeatureCard";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Calendar, Medal, Trophy, Users } from "lucide-react";
-import { Link } from "react-router-dom";
 import { OlimpiadasCarousel } from "./carousel";
-import { ModeToggle } from "@/components/mode-toggle";
+import Header from "@/components/Header";
 
 const PageHome = () => {
   return (
     <div className="flex min-h-screen flex-col ">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between w-full px-4 md:px-10">
-          <Link to={"/"} className="flex items-center gap-1">
-            <img alt="Olimpiadas ohSansi" className="h-16 " src="/logo.png" />
-            <span className="text-xl text-blue-700 font-bold"> Olimpiadas</span>
-          </Link>
-          <nav className="hidden md:flex gap-6 items-center">
-            <Link to="/" className="text-sm font-medium hover:underline">
-              Inicio
-            </Link>
-
-            <Link
-              to="/contacto"
-              className="text-sm font-medium hover:underline"
-            >
-              Contacto
-            </Link>
-            <ModeToggle/>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Main */}
       <main className="flex-1">
