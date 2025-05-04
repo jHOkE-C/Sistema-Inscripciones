@@ -47,7 +47,7 @@ export function AreasModal() {
             </Link>
             <Link to="/admin/area/dar-de-baja">
               <Button
-                className="flex items-center justify-center gap-2 h-14 w-full text-white bg-red-600 hover:bg-red-700"
+                className="flex items-center justify-center gap-2 h-14 w-full text-white bg-rose-500 hover:bg-rose-600"
               >
                 <Trash2 className="h-5 w-5" />
                 <span className="font-medium">Dar de baja un área</span>

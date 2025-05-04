@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {  Users, Link as Asociar, Layers2, Trophy } from "lucide-react";
+import {  Users, Link as Asociar, Layers2, Trophy, Clock, FileUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 import { AreasModal } from "./areas-modal";
@@ -41,7 +41,7 @@ export default function Botones() {
                     asChild
                 >
                     <Link to="/admin/subirExcel">
-                        <Asociar className="size-8 mb-1" />
+                        <FileUp className="size-8 mb-1" />
                         <span className="text-lg font-semibold">Subir Excel</span>
                     </Link>
                 </Button>
@@ -51,7 +51,7 @@ export default function Botones() {
                     asChild
                 >
                     <Link to="fases">
-                        <Asociar className="size-8 mb-1" />
+                        <Clock className="size-8 mb-1" />
                         <span className="text-lg font-semibold">
                             Definir fases
                         </span>
@@ -69,7 +69,7 @@ export default function Botones() {
                     </Link>
                 </Button>
                 <Button
-                    className="h-auto py-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    className="h-auto py-10 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
                     asChild
                 >
                     <Link to="/admin/asociarCategorias">
@@ -80,7 +80,7 @@ export default function Botones() {
                     </Link>
                 </Button>
                 <Button
-                    className="h-auto py-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    className="h-auto py-10 bg-lime-600 hover:bg-lime-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
                     asChild
                 >
                     <Link to="version">

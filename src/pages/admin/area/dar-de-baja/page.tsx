@@ -102,7 +102,7 @@ export default function Page() {
     };
 
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
                 <Header rutas={rutasAdmin}/>
             <div className="container mx-auto max-w-4xl py-5 space-y-8">
                 <Card>
@@ -192,6 +192,7 @@ export default function Page() {
                                                             "activate"
                                                         )
                                                     }
+                                                    className="text-white"
                                                 >
                                                     Habilitar
                                                 </Button>
@@ -249,6 +250,6 @@ export default function Page() {
                 </Dialog>
             </div>
             <Footer/>
-        </>
+        </div>
     );
 }
