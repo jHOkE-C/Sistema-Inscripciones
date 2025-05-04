@@ -22,7 +22,9 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2, RefreshCw } from "lucide-react";
-import ReturnComponent from "@/components/ReturnComponent";
+import Header from "@/components/Header";
+import { rutasAdmin } from "../../rutas-admin";
+import Footer from "@/components/Footer";
 
 export interface Area {
     id: number;
@@ -101,7 +103,7 @@ export default function Page() {
 
     return (
         <>
-                <ReturnComponent to="/admin/area" />
+                <Header rutas={rutasAdmin}/>
             <div className="container mx-auto max-w-4xl py-5 space-y-8">
                 <Card>
                     <CardHeader>
@@ -246,6 +248,7 @@ export default function Page() {
                     </DialogContent>
                 </Dialog>
             </div>
+            <Footer/>
         </>
     );
 }

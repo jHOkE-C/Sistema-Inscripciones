@@ -8,13 +8,13 @@ import {
 import { useApiRequest } from "@/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
 import { crearArea, darDeBajaArea } from "@/api/areas";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
 import type { Area } from "../ListArea";
 import FormAddArea from "../FormAddArea";
 import ListArea from "../ListArea";
 import { toast } from "sonner";
+import Header from "@/components/Header";
+import { rutasAdmin } from "../../rutas-admin";
+import Footer from "@/components/Footer";
 
 export const Page = () => {
     const {
@@ -77,19 +77,9 @@ export const Page = () => {
     };
 
     return (
-        <>
-            <div className="pt-4 px-4">
-                <Link to="/admin/area">
-                    <Button
-                        variant="ghost"
-                        className="flex items-center gap-1 mb-4"
-                    >
-                        <ChevronLeft className="h" />
-                        Volver
-                    </Button>
-                </Link>
-            </div>
-            <div className="w-4/5 mx-auto mt-10">
+        <div className="flex flex-col min-h-screen">
+        <Header rutas={rutasAdmin}/>
+            <div className="w-4/5 mx-auto my-6">
                 <Card>
                     <CardTitle>
                         <h1 className="text-4xl font-bold text-center py-5">
@@ -97,7 +87,7 @@ export const Page = () => {
                         </h1>
                     </CardTitle>
                     <CardDescription className="mx-auto">
-                        Agrega un nuevo area para las olimpiadas
+                        Agrega una nueva area para las olimpiadas Oh!SanSi
                     </CardDescription>
                     <CardContent>
                         <FormAddArea onAdd={handleAddArea} />
@@ -113,7 +103,8 @@ export const Page = () => {
                     <AlertComponent {...alert} onClose={() => setAlert(null)} />
                 )}
             </div>
-        </>
+            <Footer />
+        </div>
     );
 };
 

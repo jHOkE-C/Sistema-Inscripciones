@@ -1,14 +1,12 @@
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
+import { ruta } from "@/types/ruta";
 
 interface navigation {
   rutas?: ruta[];
 }
 
-interface ruta {
-  nombre: string;
-  url: string;
-}
+
 const Header = ({ rutas = [] }: navigation) => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

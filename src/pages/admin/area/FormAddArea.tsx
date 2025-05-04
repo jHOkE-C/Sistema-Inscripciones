@@ -51,8 +51,8 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
     <>
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogTrigger asChild>
-          <div className="flex justify-end items-center w-full p-4">
-            <Button>
+          <div className="flex justify-end items-center w-full p-4 text-white">
+            <Button className="text-white">
               <Plus /> Agregar Area
             </Button>
           </div>

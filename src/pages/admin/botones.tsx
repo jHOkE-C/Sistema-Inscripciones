@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Layers, Users, Link as Asociar, Layers2, Trophy } from "lucide-react";
+import {  Users, Link as Asociar, Layers2, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
+import { AreasModal } from "./areas-modal";
 
 export default function Botones() {
     return (
@@ -9,17 +10,7 @@ export default function Botones() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 grid-">
                 <GestionRegistration refresh={() => {}} />
 
-                <Button
-                    className="h-auto p-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg"
-                    asChild
-                >
-                    <Link to="/admin/area">
-                        <Layers className="size-8 mb-1" />
-                        <span className="text-lg font-semibold">
-                            Gestionar áreas
-                        </span>
-                    </Link>
-                </Button>
+                <AreasModal />
 
                 <Button
                     className="h-auto py-10 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"

@@ -5,9 +5,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/hooks/useApiRequest";
 import Footer from "@/components/Footer";
-import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
 import { Version } from "@/types/versiones.type";
+import Header from "@/components/Header";
+import { rutasAdmin } from "../rutas-admin";
+
 
 const Admin = () => {
     const [versiones, setData] = useState<Version[]>([]);
@@ -37,7 +39,7 @@ const Admin = () => {
     }
     return (
         <>
-            <ReturnComponent to="/admin" />
+            <Header rutas={rutasAdmin}/>
             <div className="flex flex-col min-h-screen">
                 <div className="w-full p-4 md:w-4/5 mx-auto">
                     <h1 className="text-4xl font-bold text-center py-4">
