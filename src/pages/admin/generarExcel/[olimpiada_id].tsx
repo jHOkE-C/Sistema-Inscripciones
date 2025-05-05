@@ -21,12 +21,6 @@ const provinciasPorDep: Record<string, string[]> = {
     // …añade las demás
 };
 
-// Helpers para nombre de rango y letra de columna
-const cleanName = (s: string) =>
-    s
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // quita tildes
-        .replace(/\s+/g, "_"); // espacios → underscore
 
 function colLetter(n: number): string {
     let s = "";
