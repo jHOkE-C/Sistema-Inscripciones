@@ -1,52 +1,57 @@
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { CreateList } from "../../CreateList";
-import { DataTable } from "../../TableList";
-import { columns, ListaPostulantes } from "../../columns";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import ShareUrl from "../../ShareUrl";
+import { useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/api/postulantes";
 import FormResponsable from "../../FormResponsable";
 import NotFoundPage from "../../../404";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import type { ColumnDef } from "@tanstack/react-table";
-import OrdenPago from "./orden-pago";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { NotebookPen , FileIcon, List } from "lucide-react";
-
+import { NotebookPen, FileIcon, Plus, Receipt } from "lucide-react";
+import { apiClient } from "@/api/request";
+import { Olimpiada } from "@/types/versiones.type";
 
 const Page = () => {
-    const [data, setData] = useState<ListaPostulantes[]>([]);
-    
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { ci, olimpiada_id } = useParams();
     const buttons: ButtonConfig[] = [
+        {
+            label: "Crear Lista",
+            to: `crearLista`,
+            Icon: Plus,
+            color: "sky",
+        },
         {
             label: "Inscribir por Excel",
             to: `/inscribir/${olimpiada_id}/${ci}/viaExcel`,
             Icon: FileIcon,
-            color: "indigo"
+            color: "green",
         },
         {
-            label: "Inscribir",
-            to: `/viaExcel`,
-            Icon: NotebookPen ,
-            color: "purple"
+            label: "Inscribir Postulantes",
+            to: `agregar`,
+            Icon: NotebookPen,
+            color: "purple",
         },
         {
-            label: "Listas de postulantes",
-            to: `/viaExcel`,
-            Icon: List,
-            color: "amber"
+            label: "Generar Orden de Pago",
+            to: `generarOrden`,
+            Icon: Receipt,
+            color: "amber",
         },
-    ]
+    ];
+    const getOlimpiada = async () => {
+        const olimpiada = await apiClient.get<Olimpiada>(
+            "/api/olimpiadas/" + olimpiada_id
+        );
+        setOlimpiada(olimpiada);
+    };
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
+        getOlimpiada();
     }, []);
 
     if (!ci || ci.length < 7 || ci.length > 10) {
@@ -57,8 +62,7 @@ const Page = () => {
     const refresh = async () => {
         setLoading(true);
         try {
-            const { data } = await getListasPostulantes(ci);
-            setData(data.filter(({ olimpiada_id: id }) => id == olimpiada_id));
+            await getListasPostulantes(ci);
         } catch {
             setOpenFormResponsable(true);
         } finally {
@@ -73,26 +77,6 @@ const Page = () => {
             console.error("Error al obtener las listas de postulantes");
         }
     };
-    
-    const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
-        ...columns,
-        {
-            id: "acciones",
-            header: "Acciones",
-            cell: ({ row }) =>
-                row.original.estado === "Pago Pendiente" ? (
-                    <OrdenPago codigo={row.getValue("codigo_lista")}/>
-                ) : (
-                    <Link
-                        to={`/inscribir/${olimpiada_id}/${ci}/${row.getValue(
-                            "codigo_lista"
-                        )}`}
-                    >
-                        <Button variant={"link"}>Abrir lista</Button>
-                    </Link>
-                ),
-        },
-    ];
 
     if (loading) return <Loading />;
     if (openFormResponsable)
@@ -106,40 +90,20 @@ const Page = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
-                <ReturnComponent to={`/`} />
+                <ReturnComponent />
             </div>
-            
-            <div className="w-full p-4 md:w-3/5 mx-auto">
+
+                <h1 className="text-3xl font-bold text-center">
+                    Bienvenido a la Olimpiada {olimpiada?.nombre}
+                </h1>
+                <p className="text-center">
+                    Selecciona alguna de las opciones que realizara en la
+                    olimpiada
+                </p>
+            <div className="w-full p-4 md:w-3/5 mx-auto my-auto gap-3 flex flex-col">
                 <ButtonsGrid buttons={buttons} />
             </div>
-            <div className="m py-5">
-                <div className="container mx-auto ">
-                    <Card className="border-0 shadow-white">
-                        <CardTitle>
-                            <h1 className="text-3xl font-bold text-center">
-                                Listas de Postulantes
-                            </h1>
-                        </CardTitle>
-                        <CardContent className="space-y-5 justify-between">
-                            <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
-                                
-                                <div className="flex gap-2 items-center">
-                                    <CreateList
-                                        refresh={fetchData}
-                                        number={data.length + 1}
-                                    />
-                                </div>
-                            </div>
-                            <DataTable
-                                columns={columnsWithActions}
-                                data={data}
-                            />
-                        </CardContent>
-                    </Card>
-                </div>
-                <ShareUrl />
-            </div>
-            
+
             <Footer />
         </div>
     );

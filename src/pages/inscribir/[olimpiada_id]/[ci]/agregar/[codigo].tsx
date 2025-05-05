@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import FormPostulante from "../../FormPostulante";
-import { type Postulante } from "./columns";
+
 import {
     Table,
     TableBody,
@@ -31,6 +30,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/api/listas";
+import type { Postulante } from "../columns";
+import FormPostulante from "@/pages/inscribir/FormPostulante";
 
 export default function Page() {
     const navigate = useNavigate();

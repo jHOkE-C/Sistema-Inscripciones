@@ -15,17 +15,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    goToCode?:boolean;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    goToCode
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -39,8 +41,8 @@ export function DataTable<TData, TValue>({
             sorting,
         },
     });
+    const navigate = useNavigate()
     
-    const { ci } = useParams();
     return (
         <div className="rounded-md border">
             <Table>
@@ -70,8 +72,10 @@ export function DataTable<TData, TValue>({
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                                 onClick={() => {
-                                    const codigo = row.getValue("codigo_lista");
-                                    console.log("abriendo", ci, codigo);
+                                    if (goToCode) {
+                                        const codigo = row.getValue("codigo_lista");
+                                        navigate(`${codigo}`);
+                                    }
                                 }}
                                 className="hover:text-primary hover:cursor-pointer hover:bg-primary/10"
                             >

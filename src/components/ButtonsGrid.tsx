@@ -10,6 +10,7 @@ const colorClasses: Record<string, { bg: string; hover: string }> = {
   pink: { bg: 'bg-pink-600', hover: 'hover:bg-pink-700' },
   slate: { bg: 'bg-slate-600', hover: 'hover:bg-slate-700' },
   indigo: { bg: 'bg-indigo-600', hover: 'hover:bg-indigo-700' },
+  green: {bg: 'bg-green-600', hover: 'hover:bg-green-700' }
 };
 
 
