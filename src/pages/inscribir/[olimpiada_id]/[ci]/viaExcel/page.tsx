@@ -3,7 +3,6 @@ import { DataTable } from "../../../TableList";
 import { columns, ListaPostulantes } from "../../../columns";
 import React, { Suspense, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
 import ShareUrl from "../../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
 import FormResponsable from "../../../FormResponsable";
@@ -14,37 +13,30 @@ const FileUploadModal = React.lazy(
     () => import("../viaExcel/file-upload-modal")
 );
 import Footer from "@/components/Footer";
-import { API_URL } from "@/hooks/useApiRequest";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../orden-pago";
-
-type Olimpiada = {
-    id: number;
-    nombre: string;
-    gestion: string;
-    fecha_inicio: string;
-    fecha_fin: string;
-    vigente: boolean;
-    url_plantilla: string;
-};
+import { getOlimpiada } from "@/api/olimpiada";
+import { Olimpiada } from "@/pages/carousel";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const { ci, olimpiada_id } = useParams();
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [olimpiada, setOlipiada] = useState<Olimpiada>();
+    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     
     const getData = async () => {
-        //if (!olimpiada_id || !ci) return;
+        
         try {
-            const response = await axios.get<Olimpiada>(
-                `${API_URL}/api/olimpiadas/${1}`
-            );
-            setOlipiada(response.data);
-            console.log(response.data);
+            if (!olimpiada_id){
+                throw new Error("No se proporciono un id de olimpiada");
+            } 
+            const olimpiada = await getOlimpiada(olimpiada_id);
+            setOlimpiada(olimpiada);
+            console.log(olimpiada);
         } catch (e) {
+            //recordatoro falta mejorar esta wea
             console.log(e);
         }
     };
