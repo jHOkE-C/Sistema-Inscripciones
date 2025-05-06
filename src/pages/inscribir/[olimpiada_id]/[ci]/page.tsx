@@ -41,6 +41,11 @@ const Page = () => {
             to: `generarOrden`,
             Icon: Receipt,
             color: "amber",
+        },{
+            label: "Subir Comprobante de Pago",
+            to: `subirComprobanteDePago`,
+            Icon: Receipt,
+            color: "slate",
         },
     ];
     const getOlimpiada = async () => {
