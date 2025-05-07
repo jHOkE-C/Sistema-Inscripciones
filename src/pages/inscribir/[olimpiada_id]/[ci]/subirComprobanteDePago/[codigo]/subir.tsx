@@ -5,7 +5,7 @@ import { createWorker, Worker } from 'tesseract.js';
 import cv from '@techstark/opencv-js';
 import FileUpload from '@/components/fileUpload';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import LoadingAlert from '@/components/loading-alert';
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -64,6 +64,10 @@ const SubirComprobantePage = () => {
   const outputCanvasRef2 = useRef<HTMLCanvasElement>(null);
   const outputCanvasRef3 = useRef<HTMLCanvasElement>(null);
   const outputCanvasRefs = [outputCanvasRef1, outputCanvasRef2, outputCanvasRef3];
+  
+  
+  const step2Ref = useRef<HTMLDivElement>(null);
+  const step3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof cv !== 'undefined' && cv.onRuntimeInitialized) {
@@ -468,6 +472,24 @@ const SubirComprobantePage = () => {
     return hasValidData;
   };
 
+  useEffect(() => {
+    if (ocrResults.length > 0 && step3Ref.current) {
+      step3Ref.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [ocrResults]);
+
+  useEffect(() => {
+    if (processedImages.length > 0 && step2Ref.current) {
+      step2Ref.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [processedImages]);
+  
+  useEffect(() => {
+    if (selectedResultId && step3Ref.current) {
+      step3Ref.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedResultId]);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h1>
@@ -493,8 +515,14 @@ const SubirComprobantePage = () => {
             oldFiles={[]}
             filesRefresh={originalFile ? [originalFile] : []}
           />
-          {originalFile && <p className="text-sm mt-2">Archivo seleccionado: {originalFile.name}</p>}
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+          
+          { processedImages.length>0 && (
+            <div className="flex flex-col items-center justify-center">
+              <p className="text-sm text-muted-foreground mb-2">Baje para ver las imágenes procesadas</p>
+                <ChevronDown className="h-8 w-8 text-primary animate-bounce" />
+            </div>
+          )}
         </div>
       )}
 
@@ -512,31 +540,43 @@ const SubirComprobantePage = () => {
       )}
 
       {processedImages.length > 0 && (
-        <div className="mb-4 p-4 border rounded-md shadow-sm bg-card">
+        <div ref={step2Ref} className="mb-4 p-4 border rounded-md shadow-sm bg-card">
           <h2 className="text-lg font-semibold mb-2">2. Imágenes Procesadas</h2>
-          {processedImages.map((imgData) => (
-            <div key={imgData.id} className="border p-2 rounded">
-              <h3 className="text-center font-medium mb-1">{imgData.name}</h3>
-              {imgData.dataUrl ? (
-                <img
-                  src={imgData.dataUrl}
-                  alt={`Procesado ${imgData.name}`}
-                  className="w-full h-auto object-contain max-h-80"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-40 bg-gray-100 text-gray-500">
-                  No disponible
-                </div>
-              )}
+          <div className="flex flex-wrap gap-4">
+            {processedImages.map((imgData) => (
+              <div key={imgData.id} className="border p-2 rounded flex-1 min-w-[280px]">
+                <h3 className="text-center font-medium mb-1">{imgData.name}</h3>
+                {imgData.dataUrl ? (
+                  <img
+                    src={imgData.dataUrl}
+                    alt={`Procesado ${imgData.name}`}
+                    className="w-full h-auto object-contain max-h-80"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-40 bg-gray-100 text-gray-500">
+                    No disponible
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          {ocrResults.length > 0 && (
+            <div className="flex flex-col items-center justify-center">
+              <p className="text-sm text-muted-foreground mb-2">Baje para ver los resultados</p>
+                <ChevronDown className="h-8 w-8 text-primary animate-bounce" />
             </div>
-          ))}
+          )}
         </div>
       )}
 
       {ocrResults.length > 0 && (
-        <div className="p-4 border rounded-md shadow-sm bg-card">
+        <div ref={step3Ref} className="p-4 border rounded-md shadow-sm bg-card">
           <h2 className="text-lg font-semibold mb-2">3. Resultados del OCR</h2>
-          <p className="text-sm mb-4 text-indigo-500">Seleccione el resultado que muestre la información más clara:</p>
+          <div className="flex">
+          <ChevronRight className='h-8 w-8 text-primary animate-bounce' />
+          <h2 className="text-lg mb-4 text-indigo-500">Seleccione el resultado que muestre la información más clara prioridad fecha y nro</h2>
+          <ChevronLeft className='h-8 w-8 text-primary animate-bounce' />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {ocrResults.map((result) => (
               <div 
@@ -585,13 +625,12 @@ const SubirComprobantePage = () => {
               </div>
             ))}
           </div>
-
+          {selectedResultId && checkOcrDataValidity() && (
           <div className="mt-8">
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button 
                   className="w-full" 
-                  disabled={!selectedResultId || !checkOcrDataValidity()}
                 >
                   Finalizar y Enviar Comprobante
                 </Button>
@@ -614,8 +653,9 @@ const SubirComprobantePage = () => {
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
-            </AlertDialog>
-          </div>
+              </AlertDialog>
+            </div>
+          )}
         </div>
       )}
     </div>
