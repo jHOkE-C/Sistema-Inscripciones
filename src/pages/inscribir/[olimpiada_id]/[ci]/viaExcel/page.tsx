@@ -56,7 +56,7 @@ const Page = () => {
             const { data } = await getListasPostulantes(ci);
             const filtrados = data.filter(({ olimpiada_id: id }) => id == olimpiada_id)
             console.log(filtrados)
-            const excel = filtrados.filter(({ nombre_lista }) => nombre_lista.includes("excel"))
+            const excel = filtrados.filter(({ nombre_lista, estado }) => nombre_lista.includes("excel") && estado == "Preinscrito")
             setData(excel);
         } catch {
             setOpenFormResponsable(true);
