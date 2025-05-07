@@ -492,8 +492,10 @@ const SubirComprobantePage = () => {
   }, [selectedResultId]);
 
   return (
-    <div className="container mx-auto p-4">
+    <>
       <ReturnComponent />
+    <div className="container mx-auto p-4">
+    
       <h1 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h1>
 
       <canvas ref={inputCanvasRef} style={{ display: 'none' }} />
@@ -509,6 +511,12 @@ const SubirComprobantePage = () => {
       ) : (
         <div className="mb-4 p-4 border rounded-md shadow-sm bg-card">
           <h2 className="text-lg font-semibold mb-2">1. Cargar Imagen del Recibo</h2>
+          <h3 className="font-semibold mb-2 ">Recomendaciones:</h3>
+          <ul className="list-disc list-inside">
+            <li>El recibo debe estar recto</li>
+            <li>El recibo no debe tener rayaduras o manchas</li>
+            <li>La foto del recibo debe tener una iluminación uniforme</li>
+          </ul>
           <FileUpload
             onFilesChange={(files) => handleFileChange(files[0] ?? null)}
             accept="image/png, image/jpeg, image/jpg"
@@ -661,6 +669,7 @@ const SubirComprobantePage = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

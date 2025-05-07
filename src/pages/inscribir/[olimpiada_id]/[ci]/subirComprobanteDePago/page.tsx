@@ -36,8 +36,7 @@ const Page = () => {
         setLoading(true);
         try {
             const { data } = await getListasPostulantes(ci);
-            //por ahora puse pago pendiente y preinscrito
-            setData(data.filter(({ olimpiada_id: id,estado}) => id == olimpiada_id && (estado== "Pago Pendiente" || estado== "Preinscrito")));
+            setData(data.filter(({ olimpiada_id: id,estado}) => id == olimpiada_id && (estado== "Pago Pendiente")));
         } catch {
             setOpenFormResponsable(true);
         } finally {
