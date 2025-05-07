@@ -22,7 +22,7 @@ import type { Postulante } from "../../columns";
 export default function Page() {
     const navigate = useNavigate();
     const [data, setData] = useState<Postulante[]>([]);
-    const { ci, codigo, olimpiada_id } = useParams();
+    const { codigo } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -53,7 +53,7 @@ export default function Page() {
 
     return (
         <>
-            <ReturnComponent to={`/inscribir/${olimpiada_id}/${ci}`} />
+            <ReturnComponent />
             <div className="min-h-screen py-5">
                 <div className="container mx-auto ">
                     <Card>

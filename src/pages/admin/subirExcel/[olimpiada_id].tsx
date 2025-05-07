@@ -503,7 +503,7 @@ const FileUploadFormato: React.FC = () => {
         <div className="flex flex-col items-center min-h-screen p-4">
 
             <div className="w-full">
-                <ReturnComponent to="/admin/subirExcel" />
+                <ReturnComponent />
             </div>
             <div className="w-full max-w-lg p-6 border rounded-lg shadow-md bg-card text-card-foreground space-y-5">
                 <h2 className="text-xl font-semibold text-center">Cargar Archivo de Formato</h2>
