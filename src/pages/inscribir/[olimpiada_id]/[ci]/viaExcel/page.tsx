@@ -141,6 +141,7 @@ const Page = () => {
                                 </div>
                             </div>
                             <DataTable
+                                goToCode
                                 columns={columnsWithActions}
                                 data={data}
                             />
