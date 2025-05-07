@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createWorker, Worker } from 'tesseract.js';
 import cv from '@techstark/opencv-js';
+import ReturnComponent from '@/components/ReturnComponent';
 import FileUpload from '@/components/fileUpload';
 import { Button } from '@/components/ui/button';
 import { Loader2, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -492,6 +493,7 @@ const SubirComprobantePage = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <ReturnComponent />
       <h1 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h1>
 
       <canvas ref={inputCanvasRef} style={{ display: 'none' }} />
