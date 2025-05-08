@@ -25,3 +25,5 @@ dist-ssr
 
 .env
 task.md
+/public/atom.svg
+/public/vite.svg

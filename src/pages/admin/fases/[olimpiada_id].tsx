@@ -111,7 +111,7 @@ export default function Page() {
     ) {
         setCronos((prev) =>
             prev.map((c) => {
-                if (c.tipo_plazo === tipo) {
+                if (c.fase.nombre_fase === tipo) {
                     return {
                         ...c,
                         [field]: date.toISOString().split("T")[0], // Guardar en formato YYYY-MM-DD
@@ -138,7 +138,7 @@ export default function Page() {
                 ? parseLocalDate(c.fecha_inicio)
                 : null;
             const end = c.fecha_fin ? parseLocalDate(c.fecha_fin) : null;
-            const phaseName = c.tipo_plazo;
+            const phaseName = c.fase.nombre_fase;
             const errorFlags = { start: false, end: false };
 
             if (!start || !end) {
@@ -179,7 +179,7 @@ export default function Page() {
                     valid = false;
                 }
                 if (i > 0) {
-                    const prevPhase = cronos[i - 1].tipo_plazo;
+                    const prevPhase = cronos[i - 1].fase.nombre_fase;
                     const prevEnd = parseLocalDate(cronos[i - 1].fecha_fin);
                     if (start < prevEnd) {
                         errorFlags.start = true;
@@ -259,7 +259,7 @@ export default function Page() {
             setLoading(false);
         }
         // const toAdd = selectedTipos.filter(
-        //     (tp) => !cronos.some((c) => c.tipo_plazo === tp)
+        //     (tp) => !cronos.some((c) => c.fase.nombre_fase === tp)
         // );
         // const toRemove = cronos.filter(
         //     (c) => !selectedTipos.includes(c.tipo_plazo)
@@ -309,6 +309,7 @@ export default function Page() {
     }
 
     const getTipoPlazoLabel = (text: string) => {
+        console.log(text);
         return text
             .split(" ")
             .map((t) => t.at(0)?.toUpperCase() + t.slice(1) + " ");
@@ -430,11 +431,11 @@ export default function Page() {
                                 {cronos.map((c, index) => {
                                     const hasError = errors[index];
                                     return (
-                                        <TableRow key={c.tipo_plazo}>
+                                        <TableRow key={c.fase.nombre_fase}>
                                             <TableCell>
                                                 <Badge variant="outline">
                                                     {getTipoPlazoLabel(
-                                                        c.tipo_plazo
+                                                        c.fase.nombre_fase
                                                     )}
                                                 </Badge>
                                             </TableCell>
@@ -450,7 +451,7 @@ export default function Page() {
                                                         if (d) {
                                                             onSelectDate(
                                                                 d,
-                                                                c.tipo_plazo,
+                                                                c.fase.nombre_fase,
                                                                 "fecha_inicio"
                                                             );
                                                             setErrors(
@@ -516,7 +517,7 @@ export default function Page() {
                                                         if (d) {
                                                             onSelectDate(
                                                                 d,
-                                                                c.tipo_plazo,
+                                                                c.fase.nombre_fase,
                                                                 "fecha_fin"
                                                             );
                                                             setErrors(

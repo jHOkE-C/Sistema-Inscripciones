@@ -1,13 +1,19 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
+export interface Fase {
+  id: string;
+  nombre_fase : string;
+  orden: number;
+}
+
 export interface Cronograma {
   id: string;
   fecha_inicio: string;
   fecha_fin: string;
   olimpiada_id?: number;
-  id_fase: string;
-  tipo_plazo: string;
+  id_fase: string;  
+  fase: Fase
 }
 
 export interface Olimpiada {
