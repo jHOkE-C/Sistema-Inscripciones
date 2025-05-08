@@ -1,13 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
-import { ruta } from "@/types/ruta";
+import type { ruta } from "@/types/ruta";
+import { Menu, X } from "lucide-react";
 
 interface navigation {
   rutas?: ruta[];
 }
 
-
 const Header = ({ rutas = [] }: navigation) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center justify-between w-full px-4 md:px-10">
@@ -16,16 +25,18 @@ const Header = ({ rutas = [] }: navigation) => {
             <img
               src="/logo-sansimon.png"
               alt="Logo"
-              className="h-10 w-10  object-contain"
+              className="h-10 w-10 object-contain"
             />
           </Link>
           <Link to={"/"} className="flex items-center gap-1">
             <div className="flex flex-col justify-center text-center">
-              <span className="text-xl font-medium"> UNIVERSIDAD</span>
-              <span className="text-xs"> MAYOR DE SAN SIMON</span>
+              <span className="text-xl font-medium">UNIVERSIDAD</span>
+              <span className="text-xs">MAYOR DE SAN SIMON</span>
             </div>
           </Link>
         </div>
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-6 items-center">
           <Link to="/" className="text-sm font-medium hover:underline">
             Inicio
@@ -41,6 +52,51 @@ const Header = ({ rutas = [] }: navigation) => {
           ))}
           <ModeToggle />
         </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden focus:outline-none"
+          onClick={toggleMenu}
+          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+        >
+          {isMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Navigation */}
+      <div
+        className={`absolute top-16 left-0 right-0 z-50 md:hidden transform ${
+          isMenuOpen
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0 pointer-events-none"
+        } transition-all duration-300 ease-in-out`}
+      >
+        <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg">
+          <Link
+            to="/"
+            className="block py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Inicio
+          </Link>
+          {rutas.map((ruta, index) => (
+            <Link
+              key={index}
+              to={ruta.url}
+              className="block py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {ruta.nombre}
+            </Link>
+          ))}
+          <div className="pt-2 pb-1 flex justify-end">
+            <ModeToggle />
+          </div>
+        </div>
       </div>
     </header>
   );
