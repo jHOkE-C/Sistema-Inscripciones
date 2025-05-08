@@ -38,6 +38,7 @@ const PageLogin = () => {
     });
     const [error, setError] = useState<string | null>(null);
     const {logIn}= useAuth()
+    
     const navigate = useNavigate();
 
 

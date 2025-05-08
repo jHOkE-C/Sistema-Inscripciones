@@ -2,19 +2,24 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 export interface Cronograma {
-  id?: number;
-  tipo_plazo: string;
+  id: string;
   fecha_inicio: string;
   fecha_fin: string;
   olimpiada_id?: number;
+  id_fase: string;
+  tipo_plazo: string;
 }
 
 export interface Olimpiada {
-  id: number;
+  id: string;
   nombre: string;
   gestion: string;
   fecha_inicio: string;
   fecha_fin: string;
+  vigente: boolean;
+  precio_inscripcion:boolean;
+  url_plantilla:null;
+  descripcion_convocatoria: string;
   cronogramas: Cronograma[];
 }
 

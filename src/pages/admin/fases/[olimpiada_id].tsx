@@ -44,14 +44,12 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-const TiposPlazo = [
-    "Preparacion",
-    "Lanzamiento",
-    "Inscripcion",
-    "Pre Clasificacion",
-    "Final",
-    "Premiacion",
-];
+import { apiClient } from "@/api/request";
+
+interface Fase {
+    id: string;
+    nombre_fase: string;
+}
 
 export default function Page() {
     const nav = useNavigate();
@@ -60,19 +58,21 @@ export default function Page() {
     const [data, setData] = useState<OlimpiadaData | null>(null);
     const [loading, setLoading] = useState(true);
     const [openAdd, setOpenAdd] = useState(false);
-    const [selectedTipos, setSelectedTipos] = useState<string[]>([]);
+    const [selectedIdFases, setSelectedTipos] = useState<string[]>([]);
 
     const [cronos, setCronos] = useState<Cronograma[]>([]);
     const [errors, setErrors] = useState<{ start: boolean; end: boolean }[]>(
         []
     );
-    const [removedTipos, setRemovedTipos] = useState<string[]>([]);
+    //const [fases_borrar,setFasesBorrar] = useState([])
+    //    const [removedTipos, setRemovedTipos] = useState<string[]>([]);
+    const [fases, setFases] = useState<Fase[]>([]);
 
     useEffect(() => {
-        fetchData();
+        refresh();
     }, []);
 
-    async function fetchData() {
+    async function refresh() {
         try {
             const res = await axios.get<OlimpiadaData>(
                 `${API_URL}/api/olimpiadas/${olimpiada_id}/cronogramas`
@@ -83,10 +83,11 @@ export default function Page() {
                 setCronos(cronogramas);
             }
 
-            let selected: string[] = [];
-            cronogramas.forEach(({ tipo_plazo }) => {
-                selected = [...selected, tipo_plazo];
-            });
+            const fases = await axios.get<Fase[]>(`${API_URL}/api/fases`);
+            setFases(fases.data);
+
+            const selected = cronogramas.map(({ id_fase }) => id_fase);
+            console.log(selected);
             setSelectedTipos(selected);
             setLoading(false);
         } catch (err) {
@@ -208,13 +209,13 @@ export default function Page() {
         const payload = {
             id_olimpiada: olimpiada.id,
             cronogramas: cronos,
-            removed: removedTipos,
+            //            removed: removedTipos,
         };
         // console.log(data);
         if (!validateAll()) return;
         try {
             console.log(payload);
-            await axios.post(`${API_URL}/api/cronogramas/fases`, payload);
+            await axios.put(`${API_URL}/api/cronogramas/fases/fechas`, payload);
             toast.success("Se registró el rango de fechas exitosamente.");
             nav(`/admin/`);
         } catch (e) {
@@ -231,55 +232,80 @@ export default function Page() {
                 : [...prev, tp];
         });
     }
-    function addPhase() {
-        const toAdd = selectedTipos.filter(
-            (tp) => !cronos.some((c) => c.tipo_plazo === tp)
-        );
-        const toRemove = cronos.filter(
-            (c) => !selectedTipos.includes(c.tipo_plazo)
-        );
-
-        if (toAdd.length === 0 && toRemove.length === 0) {
-            toast.error("No hay cambios en las fases seleccionadas.");
-            return;
-        }
-
-        if (toAdd.length > 0) {
-            const newPhases = toAdd.map((tp) => ({
-                tipo_plazo: tp,
-                fecha_inicio: "",
-                fecha_fin: "",
-            }));
-            setCronos((prev) =>
-                [...newPhases, ...prev].sort(
-                    (a, b) =>
-                        TiposPlazo.indexOf(a.tipo_plazo) -
-                        TiposPlazo.indexOf(b.tipo_plazo)
-                )
+    async function addPhase() {
+        setLoading(true);
+        try {
+            //selected tipos - cronogramas
+            //cronogramas - selected tipos
+            const idFasesCronogramas = cronos.map(({ id_fase }) => id_fase);
+            const agregar = selectedIdFases.filter(
+                (id) => !idFasesCronogramas.includes(id)
             );
-            setErrors((prev) => [
-                ...newPhases.map(() => ({ start: false, end: false })),
-                ...prev,
-            ]);
-            setRemovedTipos((prev) => prev.filter((rt) => !toAdd.includes(rt)));
-        }
-
-        if (toRemove.length > 0) {
-            setCronos((prev) =>
-                prev.filter((c) => selectedTipos.includes(c.tipo_plazo))
+            const eliminar = idFasesCronogramas.filter(
+                (id) => !selectedIdFases.includes(id)
             );
-            setErrors((prev) =>
-                prev.filter((_, index) =>
-                    selectedTipos.includes(cronos[index].tipo_plazo)
-                )
-            );
-            setRemovedTipos((prev) => [
-                ...prev,
-                ...toRemove.map((c) => c.tipo_plazo),
-            ]);
-        }
+            const data = {
+                id_olimpiada: olimpiada_id,
+                fases_agregar: agregar,
+                fases_borrar: eliminar,
+            };
 
-        setOpenAdd(false);
+            await apiClient.put("/api/cronogramas/fases/olimpiada", data);
+            refresh();
+            setOpenAdd(false);
+        } catch {
+            toast.error("Ocurrio un error al agregar fases");
+        } finally {
+            setLoading(false);
+        }
+        // const toAdd = selectedTipos.filter(
+        //     (tp) => !cronos.some((c) => c.tipo_plazo === tp)
+        // );
+        // const toRemove = cronos.filter(
+        //     (c) => !selectedTipos.includes(c.tipo_plazo)
+        // );
+
+        // if (toAdd.length === 0 && toRemove.length === 0) {
+        //     toast.error("No hay cambios en las fases seleccionadas.");
+        //     return;
+        // }
+
+        // if (toAdd.length > 0) {
+        //     const newPhases = toAdd.map((tp) => ({
+        //         tipo_plazo: tp,
+        //         fecha_inicio: "",
+        //         fecha_fin: "",
+        //     }));
+        //     setCronos((prev) =>
+        //         [...newPhases, ...prev].sort(
+        //             (a, b) =>
+        //                 fases.indexOf(a.tipo_plazo) -
+        //                 fases.indexOf(b.tipo_plazo)
+        //         )
+        //     );
+        //     setErrors((prev) => [
+        //         ...newPhases.map(() => ({ start: false, end: false })),
+        //         ...prev,
+        //     ]);
+        //     setRemovedTipos((prev) => prev.filter((rt) => !toAdd.includes(rt)));
+        // }
+
+        // if (toRemove.length > 0) {
+        //     setCronos((prev) =>
+        //         prev.filter((c) => selectedTipos.includes(c.tipo_plazo))
+        //     );
+        //     setErrors((prev) =>
+        //         prev.filter((_, index) =>
+        //             selectedTipos.includes(cronos[index].tipo_plazo)
+        //         )
+        //     );
+        //     setRemovedTipos((prev) => [
+        //         ...prev,
+        //         ...toRemove.map((c) => c.tipo_plazo),
+        //     ]);
+        // }
+
+        // setOpenAdd(false);
     }
 
     const getTipoPlazoLabel = (text: string) => {
@@ -347,25 +373,26 @@ export default function Page() {
                                     </DialogHeader>
 
                                     <div className="p-2 space-y-2">
-                                        {TiposPlazo.map((tp) => (
+                                        {fases.map((tp) => (
                                             <div
-                                                key={tp}
+                                                key={tp.id}
                                                 className="flex items-center"
                                             >
-                                                <Checkbox className=""
-                                                    id={tp}
-                                                    checked={selectedTipos.includes(
-                                                        tp
+                                                <Checkbox
+                                                    className=""
+                                                    id={tp.id}
+                                                    checked={selectedIdFases.includes(
+                                                        tp.id
                                                     )}
                                                     onCheckedChange={() =>
-                                                        toggleTipo(tp)
+                                                        toggleTipo(tp.id)
                                                     }
                                                 />
                                                 <Label
-                                                    htmlFor={tp}
+                                                    htmlFor={tp.id}
                                                     className="ml-3"
                                                 >
-                                                    {tp}
+                                                    {tp.nombre_fase}
                                                 </Label>
                                             </div>
                                         ))}
