@@ -23,26 +23,9 @@ import { Calendar, Clock, Download, Trophy } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
+import type { Olimpiada } from "@/types/versiones.type";
 
 // Tipos para los datos de olimpiadas
-export interface Fase {
-    id: number;
-    fecha_inicio: string;
-    fecha_fin: string;
-    olimpiada_id: number;
-    fase: { id: number; nombre_fase: string; orden: number };
-}
-
-export interface Olimpiada {
-    id: number;
-    nombre: string;
-    fecha_inicio: string;
-    fecha_fin: string;
-    gestion: string;
-    fase_actual?: Fase;
-    url_plantilla?: string;
-}
-
 const formatDate = (dateString: string) => {
     const date = new Date(`${dateString}T12:00:00`);
     return format(date, "d 'de' MMMM, yyyy", { locale: es });
