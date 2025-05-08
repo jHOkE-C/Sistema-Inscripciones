@@ -84,7 +84,7 @@ const Header = ({ rutas = [] }: navigation) => {
         <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg">
           <Link
             to="/"
-            className="block py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
+            className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
             onClick={() => setIsMenuOpen(false)}
           >
             Inicio
@@ -93,13 +93,13 @@ const Header = ({ rutas = [] }: navigation) => {
             <Link
               key={index}
               to={ruta.url}
-              className="block py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
+              className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               {ruta.nombre}
             </Link>
           ))}
-          <div className="pt-2 pb-1 flex justify-end">
+          <div className="pb-1 flex justify-end">
             <ModeToggle />
           </div>
         </div>
