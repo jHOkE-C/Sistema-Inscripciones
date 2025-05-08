@@ -81,7 +81,7 @@ const Header = ({ rutas = [] }: navigation) => {
             : "-translate-y-full opacity-0 pointer-events-none"
         } transition-all duration-300 ease-in-out`}
       >
-        <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg">
+        <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg rounded-xl border-1 m-3">
           <Link
             to="/"
             className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
