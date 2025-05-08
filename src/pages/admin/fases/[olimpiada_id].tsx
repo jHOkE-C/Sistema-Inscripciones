@@ -58,12 +58,13 @@ export default function Page() {
     const [data, setData] = useState<OlimpiadaData | null>(null);
     const [loading, setLoading] = useState(true);
     const [openAdd, setOpenAdd] = useState(false);
-    const [selectedTipos, setSelectedTipos] = useState<string[]>([]);
+    const [selectedIdFases, setSelectedTipos] = useState<string[]>([]);
 
     const [cronos, setCronos] = useState<Cronograma[]>([]);
     const [errors, setErrors] = useState<{ start: boolean; end: boolean }[]>(
         []
     );
+    //const [fases_borrar,setFasesBorrar] = useState([])
     //    const [removedTipos, setRemovedTipos] = useState<string[]>([]);
     const [fases, setFases] = useState<Fase[]>([]);
 
@@ -82,14 +83,11 @@ export default function Page() {
                 setCronos(cronogramas);
             }
 
-            let selected: string[] = [];
-            cronogramas.forEach(({ tipo_plazo }) => {
-                selected = [...selected, tipo_plazo];
-            });
-
             const fases = await axios.get<Fase[]>(`${API_URL}/api/fases`);
             setFases(fases.data);
 
+            const selected = cronogramas.map(({ id_fase }) => id_fase);
+            console.log(selected);
             setSelectedTipos(selected);
             setLoading(false);
         } catch (err) {
@@ -217,7 +215,7 @@ export default function Page() {
         if (!validateAll()) return;
         try {
             console.log(payload);
-            await axios.post(`${API_URL}/api/cronogramas/fases`, payload);
+            await axios.put(`${API_URL}/api/cronogramas/fases/fechas`, payload);
             toast.success("Se registró el rango de fechas exitosamente.");
             nav(`/admin/`);
         } catch (e) {
@@ -237,12 +235,22 @@ export default function Page() {
     async function addPhase() {
         setLoading(true);
         try {
+            //selected tipos - cronogramas
+            //cronogramas - selected tipos
+            const idFasesCronogramas = cronos.map(({ id_fase }) => id_fase);
+            const agregar = selectedIdFases.filter(
+                (id) => !idFasesCronogramas.includes(id)
+            );
+            const eliminar = idFasesCronogramas.filter(
+                (id) => !selectedIdFases.includes(id)
+            );
             const data = {
                 id_olimpiada: olimpiada_id,
-                id_fases: selectedTipos,
+                fases_agregar: agregar,
+                fases_borrar: eliminar,
             };
-            console.log(data);
-            await apiClient.post("/api/cronogramas/fases/olimpiada", data);
+
+            await apiClient.put("/api/cronogramas/fases/olimpiada", data);
             refresh();
             setOpenAdd(false);
         } catch {
@@ -373,7 +381,7 @@ export default function Page() {
                                                 <Checkbox
                                                     className=""
                                                     id={tp.id}
-                                                    checked={selectedTipos.includes(
+                                                    checked={selectedIdFases.includes(
                                                         tp.id
                                                     )}
                                                     onCheckedChange={() =>
