@@ -59,11 +59,17 @@ const Header = ({ rutas = [] }: navigation) => {
           onClick={toggleMenu}
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
         >
-          {isMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+          <div
+            className={`transition-transform duration-300 transform ${
+              isMenuOpen ? "rotate-90" : "rotate-0"
+            }`}
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </div>
         </button>
       </div>
 
