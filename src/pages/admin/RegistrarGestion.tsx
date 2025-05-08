@@ -32,10 +32,10 @@ import { CalendarIcon, PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { es } from "date-fns/locale";
-import { AlertComponent } from "@/components/AlertComponent";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function GestionRegistration({
     refresh,
@@ -49,9 +49,10 @@ export default function GestionRegistration({
         new Date(new Date().setHours(0, 0, 0, 0))
     );
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const currentYear = new Date().getFullYear();
+    const [precio, setPrecio] = useState<string | number>(15);
+    const [limite, setLimite] = useState<string>("1");
+    const [descripcion, setDescripcion] = useState<string>();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,6 +65,9 @@ export default function GestionRegistration({
                 gestion: managementPeriod,
                 fecha_inicio: start,
                 fecha_fin: end,
+                precio_inscripcion: precio,
+                limite_inscripciones: limite,
+                descripcion_convocatoria: descripcion,
             };
             console.log(data);
             const response = await axios.post(
@@ -103,7 +107,7 @@ export default function GestionRegistration({
                         </div>
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="">
                     <form onSubmit={handleSubmit}>
                         <DialogHeader>
                             <DialogTitle>Crear Version</DialogTitle>
@@ -158,7 +162,7 @@ export default function GestionRegistration({
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label
                                     htmlFor="startDate"
-                                    className="text-right"
+                                    className="ml-auto text-right"
                                 >
                                     Fecha inicio
                                 </Label>
@@ -212,7 +216,10 @@ export default function GestionRegistration({
                                 </div>
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="endDate" className="text-right">
+                                <Label
+                                    htmlFor="endDate"
+                                    className="ml-auto text-right"
+                                >
                                     Fecha fin
                                 </Label>
 
@@ -283,36 +290,63 @@ export default function GestionRegistration({
                                     </Popover>
                                 </div>
                             </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="precio" className="text-right">
+                                    Precio por inscripción (Bs)
+                                </Label>
+                                <Input
+                                    id="precio"
+                                    placeholder="15,00"
+                                    value={precio}
+                                    onChange={(e) => setPrecio(e.target.value)}
+                                    className="col-span-3"
+                                    type="number"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="limite" className="text-right">
+                                    Límite de inscripciones
+                                </Label>
+                                <Input
+                                    id="limite"
+                                    value={limite}
+                                    maxLength={50}
+                                    onChange={(e) => setLimite(e.target.value)}
+                                    className="col-span-3"
+                                    type="number"
+                                    min={1}
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label
+                                    htmlFor="descripcion"
+                                    className="ml-auto text-right"
+                                >
+                                    Descripción
+                                </Label>
+                                <Textarea
+                                    id="descripcion"
+                                    value={descripcion}
+                                    maxLength={255}
+                                    placeholder="Ingrese una descripción detallada de la olimpiada"
+                                    onChange={(e) =>
+                                        setDescripcion(e.target.value)
+                                    }
+                                    className="col-span-3"
+                                    required
+                                />
+                            </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" className="text-white">Crear</Button>
+                            <Button type="submit" className="text-white">
+                                Crear
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
-            {error && (
-                <AlertComponent
-                    title="Error"
-                    description={
-                        error
-                            ? error
-                            : "No se pudo registrar la gestion, Intente nuevamente"
-                    }
-                    onClose={() => {
-                        setError(null);
-                    }}
-                    variant="destructive"
-                />
-            )}
-            {success && (
-                <AlertComponent
-                    title="Éxito"
-                    description="La gestión se créo correctamente"
-                    onClose={() => {
-                        setSuccess(null);
-                    }}
-                />
-            )}
         </>
     );
 }
