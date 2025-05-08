@@ -216,7 +216,9 @@ export default function Page() {
         try {
             console.log(payload);
             await axios.put(`${API_URL}/api/cronogramas/fases/fechas`, payload);
-            toast.success("Se registró el rango de fechas exitosamente.");
+            toast.success(
+                "Se registraron las fases y sus respectivas fechas exitosamente."
+            );
             nav(`/admin/`);
         } catch (e) {
             const errorMessage =
@@ -225,11 +227,15 @@ export default function Page() {
             toast.error(errorMessage);
         }
     }
-    function toggleTipo(tp: string) {
+    function toggleTipo(id_fase: string) {
+        if (id_fase == "1" && selectedIdFases.includes(id_fase)) {
+            toast.info("no se puede quitar la fase de Preparación");
+            return;
+        }
         setSelectedTipos((prev) => {
-            return prev.includes(tp)
-                ? prev.filter((t) => t !== tp)
-                : [...prev, tp];
+            return prev.includes(id_fase)
+                ? prev.filter((t) => t !== id_fase)
+                : [...prev, id_fase];
         });
     }
     async function addPhase() {
@@ -323,7 +329,7 @@ export default function Page() {
                     <CardHeader>
                         <CardTitle>
                             <h1 className="text-2xl font-bold ">
-                                Definicion de Fases de Version de Olimpiada
+                                Definición de Fases de Version de Olimpiada
                             </h1>
                         </CardTitle>
                         <CardDescription>
@@ -380,6 +386,7 @@ export default function Page() {
                                                 className="flex items-center"
                                             >
                                                 <Checkbox
+                                                    disabled={tp.id == "1" && selectedIdFases.includes(tp.id)}
                                                     className=""
                                                     id={tp.id}
                                                     checked={selectedIdFases.includes(
@@ -451,7 +458,8 @@ export default function Page() {
                                                         if (d) {
                                                             onSelectDate(
                                                                 d,
-                                                                c.fase.nombre_fase,
+                                                                c.fase
+                                                                    .nombre_fase,
                                                                 "fecha_inicio"
                                                             );
                                                             setErrors(
@@ -517,7 +525,8 @@ export default function Page() {
                                                         if (d) {
                                                             onSelectDate(
                                                                 d,
-                                                                c.fase.nombre_fase,
+                                                                c.fase
+                                                                    .nombre_fase,
                                                                 "fecha_fin"
                                                             );
                                                             setErrors(
