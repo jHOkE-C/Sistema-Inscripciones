@@ -64,7 +64,9 @@ export default function Page() {
 
     const openDialog = (area: Area) => {
         setSelectedArea(area);
-        const ids = area.categorias?.map((c) => Number(c.id)) || [];
+        console.log(area);
+        const ids =
+            area.categorias?.filter((v) => v).map((c) => Number(c.id)) || [];
         setInitialChecked(ids);
         setChecked(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
         setSearchCategory("");
