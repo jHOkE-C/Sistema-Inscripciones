@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../orden-pago";
 import { getOlimpiada } from "@/api/olimpiada";
-import { Olimpiada } from "@/pages/carousel";
+import type { Olimpiada } from "@/types/versiones.type";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);

@@ -1,4 +1,5 @@
-import type { Olimpiada } from "@/pages/carousel"
+
+import type { Olimpiada } from "@/types/versiones.type"
 import { request } from "./request"
 
 export const getOlimpiada= async (id:string)=>{
