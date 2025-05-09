@@ -97,7 +97,7 @@ export default function Page() {
                     quitar: toRemove,
                 }),
             });
-            toast.success("Categorías sincronizadas");
+            toast.success("Se asociaron las categorías exitosamente");
             setDialogOpen(false);
             loadData();
         } catch (e) {
@@ -131,9 +131,9 @@ export default function Page() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Área</TableHead>
+                                    <TableHead>Nombre de Área</TableHead>
                                     <TableHead className="text-right">
-                                        Acción
+                                        
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>

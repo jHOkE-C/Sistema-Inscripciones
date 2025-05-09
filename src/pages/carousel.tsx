@@ -24,6 +24,7 @@ import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
 import type { Olimpiada } from "@/types/versiones.type";
+import { generarExcel } from "@/utils/excel";
 
 // Tipos para los datos de olimpiadas
 const formatDate = (dateString: string) => {
@@ -47,19 +48,19 @@ export function OlimpiadasCarousel() {
         setIsMounted(true);
     }, []);
 
-    const handleDownload = (
-        url_plantilla: string,
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const url = `${API_URL}/storage/${url_plantilla}`;
-        const link = document.createElement("a");
-        link.href = url;
+    // const handleDownload = (
+    //     url_plantilla: string,
+    //     e: React.MouseEvent<HTMLButtonElement>
+    // ) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
+    //     const url = `${API_URL}/storage/${url_plantilla}`;
+    //     const link = document.createElement("a");
+    //     link.href = url;
 
-        link.download = "plantilla.xlsx";
-        link.click();
-    };
+    //     link.download = "plantilla.xlsx";
+    //     link.click();
+    // };
     if (!isMounted) {
         return null;
     }
@@ -162,36 +163,29 @@ export function OlimpiadasCarousel() {
                                         )}
                                     </CardContent>
                                     <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
-                                        {olimpiada.url_plantilla && (
-                                            <Button
-                                                variant={"link"}
-                                                className="text text-green-600 dark:text-green-500"
-                                                onClick={(e) =>
-                                                    handleDownload(
-                                                        olimpiada?.url_plantilla ||
-                                                            "",
-                                                        e
-                                                    )
-                                                }
-                                            >
-                                                <Download />
-                                                Descargar Plantilla de Excel
-                                            </Button>
+                                        {!olimpiada.fase_actual?.fase.nombre_fase.includes(
+                                            "inscripción"
+                                        ) && (
+                                            <>
+                                                <Button
+                                                    variant={"link"}
+                                                    className="text text-green-600 dark:text-green-500"
+                                                    onClick={() =>
+                                                        generarExcel(olimpiada.id,olimpiada.nombre)
+                                                    }
+                                                >
+                                                    <Download />
+                                                    Descargar Plantilla de Excel
+                                                </Button>
+                                                <Button variant={"link"}>
+                                                    <Link
+                                                        to={`/inscribir/${olimpiada.id}`}
+                                                    >
+                                                        Inscribite Ahora
+                                                    </Link>
+                                                </Button>
+                                            </>
                                         )}
-                                        <Button
-                                            disabled={
-                                                !olimpiada.fase_actual?.fase.nombre_fase.includes(
-                                                    "inscripción"
-                                                )
-                                            }
-                                            variant={"link"}
-                                        >
-                                            <Link
-                                                to={`/inscribir/${olimpiada.id}`}
-                                            >
-                                                Inscribite Ahora
-                                            </Link>
-                                        </Button>
                                     </CardFooter>
                                 </Card>
                             </div>

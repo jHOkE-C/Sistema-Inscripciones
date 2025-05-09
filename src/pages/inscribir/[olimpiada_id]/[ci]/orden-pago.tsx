@@ -18,6 +18,7 @@ import { AlertCircle, FileText, Download, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
+import { generarOrden } from "@/utils/pdf";
 
 interface Props {
     codigo: string;
@@ -131,25 +132,26 @@ export default function OrdenPago({ codigo }: Props) {
     };
 
     const handleDownload = async () => {
-        try {
-            const response = await axios.get(
-                `${API_URL}/api/ordenes-pago/${datosPago.codigo_lista}/export`,
-                {
-                    responseType: "blob", // 👈 importante para manejar el PDF
-                }
-            );
+        generarOrden()
+        // try {
+        //     const response = await axios.get(
+        //         `${API_URL}/api/ordenes-pago/${datosPago.codigo_lista}/export`,
+        //         {
+        //             responseType: "blob", // 👈 importante para manejar el PDF
+        //         }
+        //     );
 
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "orden-pago.pdf"); // puedes cambiar el nombre del archivo
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Error al descargar el PDF:", error);
-        }
+        //     const url = window.URL.createObjectURL(new Blob([response.data]));
+        //     const link = document.createElement("a");
+        //     link.href = url;
+        //     link.setAttribute("download", "orden-pago.pdf"); // puedes cambiar el nombre del archivo
+        //     document.body.appendChild(link);
+        //     link.click();
+        //     link.remove();
+        //     window.URL.revokeObjectURL(url);
+        // } catch (error) {
+        //     console.error("Error al descargar el PDF:", error);
+        // }
 
         setPdfOpen(false);
         setNombre("");
