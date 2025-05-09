@@ -163,7 +163,7 @@ export function OlimpiadasCarousel() {
                                         )}
                                     </CardContent>
                                     <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
-                                        {!olimpiada.fase_actual?.fase.nombre_fase.includes(
+                                        {olimpiada.fase_actual?.fase.nombre_fase.includes(
                                             "inscripción"
                                         ) ? (
                                             <>
