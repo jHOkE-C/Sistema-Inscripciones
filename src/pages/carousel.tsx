@@ -165,13 +165,16 @@ export function OlimpiadasCarousel() {
                                     <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
                                         {!olimpiada.fase_actual?.fase.nombre_fase.includes(
                                             "inscripción"
-                                        ) && (
+                                        ) ? (
                                             <>
                                                 <Button
                                                     variant={"link"}
                                                     className="text text-green-600 dark:text-green-500"
                                                     onClick={() =>
-                                                        generarExcel(olimpiada.id,olimpiada.nombre)
+                                                        generarExcel(
+                                                            olimpiada.id,
+                                                            olimpiada.nombre
+                                                        )
                                                     }
                                                 >
                                                     <Download />
@@ -185,6 +188,13 @@ export function OlimpiadasCarousel() {
                                                     </Link>
                                                 </Button>
                                             </>
+                                        ) : (
+                                            <div className="text-center text-sm text-muted-foreground">
+                                                <p>
+                                                    Esta olimpiada no está en
+                                                    proceso de inscripción
+                                                </p>
+                                            </div>
                                         )}
                                     </CardFooter>
                                 </Card>
