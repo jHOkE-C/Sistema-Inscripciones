@@ -95,7 +95,7 @@ const Page = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
-                <ReturnComponent />
+                <ReturnComponent to="/"/>
             </div>
 
                 <h1 className="text-3xl font-bold text-center">
