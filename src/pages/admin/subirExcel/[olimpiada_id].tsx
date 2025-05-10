@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
-import { AlertComponent } from "@/components/AlertComponent";
+import { toast } from "sonner";
 import { getDepartamentosWithProvinces, getColegios } from "@/api/ubicacion";
 import { getAreasConCategorias, getCategoriasOlimpiada } from "@/api/categorias";
 import { uploadExcelOlimpiada } from "@/api/excel";
@@ -34,9 +34,8 @@ const FileUploadFormato: React.FC = () => {
     const [oldFiles, setOldFiles] = useState<File[]>([]);
     const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
-    const [alertInfo, setAlertInfo] = useState<{ title: string, description: string, variant: "default" | "destructive" } | null>(null);
+    // const [alertInfo, setAlertInfo] = useState<{ title: string, description: string, variant: "default" | "destructive" } | null>(null); // Eliminado
     const [loadingOlimpiada, setLoadingOlimpiada] = useState<boolean>(true);
-    const [errorOlimpiada, setErrorOlimpiada] = useState<string | null>(null);
     const [showUploadAnimation, setShowUploadAnimation] = useState<boolean>(false);
     const [erroresDeFormato, setErroresDeFormato] = useState<ErroresDeFormato[]>([]);
     const [colegios, setColegios] = useState<Colegio[]>([]);
@@ -89,6 +88,7 @@ const FileUploadFormato: React.FC = () => {
             setCategoriasConAreaPorGrado(areasMap);
         } catch (error) {
             console.error("Error al cargar datos:", error);
+            toast.error("Error al cargar datos."+error);
         }
     }
 
@@ -96,7 +96,7 @@ const FileUploadFormato: React.FC = () => {
         if (files.length > 0) {
             setFileToConfirm(files[0]);
             setUploadedFiles(files);
-            setAlertInfo(null);
+            
         } else {
             setFileToConfirm(null);
             setUploadedFiles([]);
@@ -117,8 +117,7 @@ const FileUploadFormato: React.FC = () => {
             }
         } catch (err) {
             console.error("Error al obtener la plantilla de la olimpiada:", err);
-            setErrorOlimpiada("Ocurrió un error al obtener la plantilla de la olimpiada.");
-            console.log(errorOlimpiada)
+            toast.error("Error al obtener la plantilla de la olimpiada.");
         } finally {
             setLoadingOlimpiada(false);
         }
@@ -136,15 +135,11 @@ const FileUploadFormato: React.FC = () => {
         setUploadedFiles([...vacio]);
         setFileToConfirm(null);
         setShowConfirmDialog(false);
-        setAlertInfo(null);
     };
 
     const handleConfirmUpload = async () => {
         if (!fileToConfirm) return;
-
         setIsProcessing(true);
-        setAlertInfo(null);
-
         try {
             const base64String = await readFileAsBase64(fileToConfirm);
             const response = await uploadExcelOlimpiada(
@@ -152,12 +147,7 @@ const FileUploadFormato: React.FC = () => {
                 fileToConfirm.name,
                 base64String
             );
-
-            setAlertInfo({
-                title: "Éxito",
-                description: response.message || "Archivo subido y procesado correctamente.",
-                variant: "default",
-            });
+            toast.success(response.message || "Archivo subido y procesado correctamente."); 
             setShowConfirmDialog(false);
             setFileToConfirm(null);
         } catch (err: unknown) {
@@ -168,11 +158,7 @@ const FileUploadFormato: React.FC = () => {
             else {
                 errorMessage = "Error Desconocido al procesar el archivo";
             }
-            setAlertInfo({
-                title: "Error",
-                description: errorMessage,
-                variant: "destructive",
-            });
+            toast.error(errorMessage); 
         } finally {
             setIsProcessing(false);
         }
@@ -491,6 +477,7 @@ const FileUploadFormato: React.FC = () => {
         } catch (error) {
             setShowConfirmDialog(false);
             console.error('Error al procesar el archivo:', error);
+            toast.error("Error al procesar el archivo."); 
         } finally {
             setIsProcessing(false);
         }
@@ -505,17 +492,8 @@ const FileUploadFormato: React.FC = () => {
             <div className="w-full">
                 <ReturnComponent />
             </div>
+            <h1 className="text-3xl font-bold text-center mb-8">Subir Plantilla de Excel para la Olimpiada</h1>
             <div className="w-full max-w-lg p-6 border rounded-lg shadow-md bg-card text-card-foreground space-y-5">
-                <h2 className="text-xl font-semibold text-center">Cargar Archivo de Formato</h2>
-
-                {alertInfo && (
-                    <AlertComponent
-                        title={alertInfo.title}
-                        description={alertInfo.description}
-                        variant={alertInfo.variant}
-                        onClose={() => setAlertInfo(null)}
-                    />
-                )}
                 <div
                     className="overflow-hidden transition-all duration-1000 ease-in-out"
                     style={{
