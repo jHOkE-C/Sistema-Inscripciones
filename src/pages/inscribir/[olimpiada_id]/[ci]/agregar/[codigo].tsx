@@ -39,7 +39,7 @@ export default function Page() {
     const { ci, codigo, olimpiada_id } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [editar, setEditar] = useState(true);
+    const [editar, setEditar] = useState(false);
     useEffect(() => {
         fetchData();
     }, []);
@@ -54,7 +54,7 @@ export default function Page() {
         try {
             const data = await getInscritosPorLista(codigo);
             setData(data.data);
-            console.log(data.estado,data.estado !== "Preinscrito")
+            console.log(data.estado, data.estado !== "Preinscrito");
             setEditar(data.estado === "Preinscrito");
             setNotFound(false);
         } catch {
@@ -97,7 +97,7 @@ export default function Page() {
 
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        {editar && (
+                                        {editar && data.length > 0 && (
                                             <Button>Finalizar registro</Button>
                                         )}
                                     </AlertDialogTrigger>
