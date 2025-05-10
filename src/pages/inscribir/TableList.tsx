@@ -21,13 +21,13 @@ import { useState } from "react";
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    goToCode?:boolean;
+    goToCode?: boolean;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    goToCode
+    goToCode,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -41,17 +41,17 @@ export function DataTable<TData, TValue>({
             sorting,
         },
     });
-    const navigate = useNavigate()
-    
+    const navigate = useNavigate();
+
     return (
         <div className="rounded-md border">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id} >
+                        <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableHead key={header.id} >
+                                    <TableHead key={header.id}>
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -73,11 +73,16 @@ export function DataTable<TData, TValue>({
                                 data-state={row.getIsSelected() && "selected"}
                                 onClick={() => {
                                     if (goToCode) {
-                                        const codigo = row.getValue("codigo_lista");
+                                        const codigo =
+                                            row.getValue("codigo_lista");
                                         navigate(`${codigo}`);
                                     }
                                 }}
-                                className="hover:text-primary hover:cursor-pointer hover:bg-primary/10"
+                                className={
+                                    goToCode
+                                        ? "hover:text-primary hover:cursor-pointer hover:bg-primary/10"
+                                        : ""
+                                }
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell

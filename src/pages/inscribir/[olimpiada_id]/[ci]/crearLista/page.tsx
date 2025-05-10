@@ -6,9 +6,7 @@ import { CreateList } from "@/pages/inscribir/CreateList";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
 import { DataTable } from "@/pages/inscribir/TableList";
 import type { ColumnDef } from "@tanstack/react-table";
-import OrdenPago from "../orden-pago";
-import { Link, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import {  useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NotFoundPage from "@/pages/404";
 import { getListasPostulantes } from "@/api/postulantes";
@@ -52,22 +50,7 @@ const Page = () => {
 
     const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
         ...columns,
-        {
-            id: "acciones",
-            header: "Acciones",
-            cell: ({ row }) =>
-                row.original.estado === "Pago Pendiente" ? (
-                    <OrdenPago codigo={row.getValue("codigo_lista")} />
-                ) : (
-                    <Link
-                        to={`/inscribir/${olimpiada_id}/${ci}/${row.getValue(
-                            "codigo_lista"
-                        )}`}
-                    >
-                        <Button variant={"link"}>Abrir lista</Button>
-                    </Link>
-                ),
-        },
+
     ];
 
     if (loading) return <Loading />;
@@ -93,13 +76,11 @@ const Page = () => {
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
-                            <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
-                                <div className="flex gap-2 items-center">
+                            <div className="flex gap-2 items-center justify-end">
                                     <CreateList
                                         refresh={fetchData}
                                         number={data.length + 1}
                                     />
-                                </div>
                             </div>
                             <DataTable
                                 columns={columnsWithActions}
