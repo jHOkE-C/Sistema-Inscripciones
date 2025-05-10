@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import { ChevronLeft } from "lucide-react";
 
@@ -8,12 +8,20 @@ interface ReturnComponentProps {
 
 export default function ReturnComponent({ to }: ReturnComponentProps) {
     const navigate = useNavigate();
-
+    const location = useLocation();
     const handleClick = () => {
         if (to) {
             navigate(to);
         } else {
-            navigate(-1);
+            const currentPath = location.pathname;
+            const segments = currentPath.split('/').filter(segment => segment !== '');
+            if (segments.length > 1) {
+                segments.pop();
+                const parentPath = `/${segments.join('/')}`;
+                navigate(parentPath);
+            } else {
+                navigate('/'); 
+            }
         }
     };
 
