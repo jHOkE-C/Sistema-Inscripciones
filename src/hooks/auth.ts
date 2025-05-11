@@ -2,6 +2,8 @@ import { createContext, useContext } from "react";
 export type UserType = {
     token: string;
     usuario: string;
+    roles: string[];
+    accesos: string[];
 };
 
 type AuthContextType = {

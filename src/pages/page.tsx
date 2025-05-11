@@ -1,13 +1,12 @@
 import { FeatureCard } from "@/components/FeatureCard";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { Calendar, Medal, Trophy, Users } from "lucide-react";
 import { OlimpiadasCarousel } from "./carousel";
 import Header from "@/components/Header";
 
 const PageHome = () => {
   return (
-    <div className="flex min-h-screen flex-col ">
+    <div className="flex min-h-screen flex-col transition-colors duration-300">
       <Header />
 
       {/* Main */}
@@ -27,9 +26,7 @@ const PageHome = () => {
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
  
 
-                  <Button size="lg" variant="outline">
-                    Conoce Más
-                  </Button>
+                  
                 </div>
               </div>
               

@@ -7,6 +7,8 @@ interface LoginValues {
 interface LoginResponse {
     usuario: string;
     token: string;
+    roles: string[];
+    accesos: string[];
 }
 
 export const login = async (values: LoginValues): Promise<LoginResponse> => {
