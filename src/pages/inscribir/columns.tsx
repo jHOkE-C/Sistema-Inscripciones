@@ -7,7 +7,6 @@ export type ListaPostulantes = {
     codigo_lista: string;
     estado: EstadoLista;
     created_at: Date;
-    nombre_lista: string;
     postulantes_count: number;
     olimpiada_id: string;
 };
@@ -17,22 +16,7 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
         accessorKey: "codigo_lista",
         header: "Código de lista",
     },
-    {
-        accessorKey: "nombre_lista",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                >
-                    Nombre de Lista
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-    },
+
     {
         accessorKey: "postulantes_count",
         header: ({ column }) => {
@@ -81,5 +65,4 @@ export const columns: ColumnDef<ListaPostulantes>[] = [
             );
         },
     },
-    
 ];

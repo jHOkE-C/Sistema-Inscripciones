@@ -34,6 +34,7 @@ const formatDate = (dateString: string) => {
 
 export function OlimpiadasCarousel() {
     const [isMounted, setIsMounted] = useState(false);
+    const [loadingExcel, setLoadingExcel] = useState(false);
     const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
 
     useEffect(() => {
@@ -80,7 +81,7 @@ export function OlimpiadasCarousel() {
                             key={olimpiada.id}
                             className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3  "
                         >
-                            <div className="p-6 md:p-1 h-[390px]">
+                            <div className="p-6 md:p-1 h-full">
                                 <Card className="overflow-hidden transition-all duration-300 shadow-foreground/20 hover:-translate-y-1 h-full -py-1 gap-0 ">
                                     <CardHeader className="p-4 pb-2 bg-primary text-white">
                                         <div className="flex items-center justify-between mb-2">
@@ -169,16 +170,29 @@ export function OlimpiadasCarousel() {
                                             <>
                                                 <Button
                                                     variant={"link"}
-                                                    className="text text-green-600 dark:text-green-500"
-                                                    onClick={() =>
-                                                        generarExcel(
+                                                    disabled={loadingExcel}
+                                                    className="w-full mb-2  text-green-600 border-green-200 hover:text-green-500 transition-colors"
+                                                    onClick={async () => {
+                                                        setLoadingExcel(true);
+                                                        await generarExcel(
                                                             olimpiada.id,
                                                             olimpiada.nombre
-                                                        )
-                                                    }
+                                                        );
+                                                        setLoadingExcel(false);
+                                                    }}
                                                 >
-                                                    <Download />
-                                                    Descargar Plantilla de Excel
+                                                    {loadingExcel ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full" />
+                                                            Descargando...
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2">
+                                                            <Download className="h-4 w-4" />
+                                                            Descargar Plantilla
+                                                            Excel
+                                                        </div>
+                                                    )}
                                                 </Button>
                                                 <Button variant={"link"}>
                                                     <Link

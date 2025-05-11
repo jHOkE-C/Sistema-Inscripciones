@@ -25,13 +25,12 @@ const Page = () => {
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
-    
+
     const getData = async () => {
-        
         try {
-            if (!olimpiada_id){
+            if (!olimpiada_id) {
                 throw new Error("No se proporciono un id de olimpiada");
-            } 
+            }
             const olimpiada = await getOlimpiada(olimpiada_id);
             setOlimpiada(olimpiada);
             console.log(olimpiada);
@@ -54,9 +53,13 @@ const Page = () => {
         setLoading(true);
         try {
             const { data } = await getListasPostulantes(ci);
-            const filtrados = data.filter(({ olimpiada_id: id }) => id == olimpiada_id)
-            console.log(filtrados)
-            const excel = filtrados.filter(({ nombre_lista, estado }) => nombre_lista.includes("excel") && estado == "Preinscrito")
+            const filtrados = data.filter(
+                ({ olimpiada_id: id }) => id == olimpiada_id
+            );
+            console.log(filtrados);
+            const excel = filtrados.filter(
+                ({ estado }) => estado == "Preinscrito"
+            );
             setData(excel);
         } catch {
             setOpenFormResponsable(true);
@@ -72,7 +75,7 @@ const Page = () => {
             console.error("Error al obtener las listas de postulantes");
         }
     };
-    
+
     const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
         ...columns,
         {
@@ -80,7 +83,7 @@ const Page = () => {
             header: "Acciones",
             cell: ({ row }) =>
                 row.original.estado === "Pago Pendiente" ? (
-                    <OrdenPago codigo={row.getValue("codigo_lista")}/>
+                    <OrdenPago codigo={row.getValue("codigo_lista")} />
                 ) : (
                     <Link
                         to={`/inscribir/${olimpiada_id}/${ci}/${row.getValue(
@@ -117,7 +120,6 @@ const Page = () => {
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
                             <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
-                                
                                 <div className="flex gap-2 items-center">
                                     <Suspense fallback={<Loading />}>
                                         <FileUploadModal

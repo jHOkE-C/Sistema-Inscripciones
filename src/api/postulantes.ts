@@ -28,7 +28,7 @@ export const getListasPostulantes = async (ci: string) => {
 export const crearListaPostulante = async (data: {
     ci: string;
     olimpiada_id: string;
-    nombre_lista: string;
+    nombre_lista?: string;
 }) => {
     console.log(data);
     return request<{ message: string; codigo_lista: string }>("/api/listas", {

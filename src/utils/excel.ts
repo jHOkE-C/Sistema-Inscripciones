@@ -1,23 +1,23 @@
 import { Colegio, type Categoria } from "@/api/areas";
 import { apiClient } from "@/api/request";
-import ExcelJS, {
-    type Workbook,
-    type Worksheet,
-} from "exceljs";
+import { grados } from "@/interfaces/postulante.interface";
+import type { Olimpiada } from "@/pages/admin/version/[id]/types";
+import ExcelJS, { type Workbook, type Worksheet } from "exceljs";
 import { saveAs } from "file-saver";
 
 export const generarExcel = async (
     id_olimpiada: string | number,
     nombre?: string
 ) => {
-    const res = apiClient.get("/api/olimpiadas/" + id_olimpiada);
-    console.log(res);
+    const olimpiada = await apiClient.get<Olimpiada>(
+        "/api/olimpiadas/" + id_olimpiada
+    );
     const wb = new ExcelJS.Workbook();
     const numFilas = 50;
 
     const SheetPlantilla = () => {
         const ws = wb.addWorksheet("Inscripciones");
-        const columns = [
+        let columns = [
             { name: "Nombre" },
             { name: "Apellidos" },
             { name: "CI" },
@@ -33,12 +33,16 @@ export const generarExcel = async (
             { name: "Teléfono pertenece a" },
             { name: "Correo de referencia" },
             { name: "Correo pertenece a" },
-            { name: "Área categoría 1" },
-            { name: "Área categoría 2" },
         ];
-        ws.getColumn(4).numFmt = "dd/mm/yyyy";
+        for (let index = 1; index <= olimpiada.limite_inscripciones; index++) {
+            columns = [...columns, { name: "Área categoría " + index }];
+        }
 
-        const emptyRows = Array(numFilas).fill([""]);
+
+        ws.getColumn(4).numFmt = "dd/mm/yyyy";
+        ws.getColumn("J").numFmt = "0";
+
+        const emptyRows = Array(numFilas).fill([null]);
         ws.addTable({
             name: "PlantillaInscripcion",
             ref: "A1",
@@ -48,13 +52,23 @@ export const generarExcel = async (
             rows: emptyRows,
         });
         for (let i = 2; i <= numFilas + 1; i++) {
+            // Correo
+            ws.getCell(`E${i}`).dataValidation = {
+                type: "custom",
+                allowBlank: true,
+                showErrorMessage: true,
+                errorTitle: "Correo Inválido",
+                error: "Ingrese una dirección de correo válida",
+                formulae: [
+                    `AND(ISNUMBER(FIND("@",E${i})), ISNUMBER(FIND(".",E${i})), FIND("@",E${i}) < FIND(".",E${i}), LEN(E${i}) > 5)`,
+                ],
+            };
             // Departamento
             ws.getCell(`F${i}`).dataValidation = {
                 type: "list",
                 allowBlank: true,
                 formulae: [`=Lists!$A$1:$${colLetter(departamentos.length)}$1`],
                 showErrorMessage: true,
-                errorStyle: "warning",
                 errorTitle: "Valor inválido",
                 error: "Selecciona un departamento",
                 showInputMessage: true,
@@ -68,9 +82,41 @@ export const generarExcel = async (
                 allowBlank: true,
                 formulae: [`=INDIRECT(F${i})`],
                 showErrorMessage: true,
-                errorStyle: "warning",
                 errorTitle: "Valor inválido",
                 error: "Selecciona una provincia válida",
+            };
+            ws.getCell(`H${i}`).dataValidation = {
+                type: "list",
+                allowBlank: true,
+                formulae: [`=INDIRECT("Colegios")`],
+                showErrorMessage: true,
+                errorTitle: "Valor inválido",
+                error: "Selecciona un grado",
+                showInputMessage: true,
+                promptTitle: "Colegio",
+                prompt: "Seleccione un colegio",
+            };
+            ws.getCell(`I${i}`).dataValidation = {
+                type: "list",
+                allowBlank: true,
+                formulae: [`=INDIRECT("grados")`],
+                showErrorMessage: true,
+                errorTitle: "Valor inválido",
+                error: "Selecciona un grado",
+                showInputMessage: true,
+                promptTitle: "Grado",
+                prompt: "Seleccione un grado",
+            };
+            //telefono
+            ws.getCell(`J${i}`).dataValidation = {
+                type: "custom",
+                allowBlank: true,
+                showErrorMessage: true,
+                errorTitle: "Teléfono Inválido",
+                error: "Ingrese un número de teléfono válido (7-8 dígitos)",
+                formulae: [
+                    `AND(ISNUMBER(J${i}), OR(LEN(TEXT(J${i},"0"))=7, LEN(TEXT(J${i},"0"))=8))`,
+                ],
             };
             //referencia
             ws.getCell(`K${i}`).dataValidation = {
@@ -78,50 +124,53 @@ export const generarExcel = async (
                 allowBlank: true,
                 formulae: [`=INDIRECT("pertenencias")`],
                 showErrorMessage: true,
-                errorStyle: "warning",
+
                 errorTitle: "Valor inválido",
                 error: "Selecciona un telefono de referencia",
                 showInputMessage: true,
                 promptTitle: "Referencias",
                 prompt: "Seleccione un tipo de telefono de referencia",
             };
+            // Correo
+            ws.getCell(`L${i}`).dataValidation = {
+                type: "custom",
+                allowBlank: true,
+                showErrorMessage: true,
+                errorTitle: "Correo Inválido",
+                error: "Ingrese una dirección de correo válida",
+                formulae: [
+                    `AND(ISNUMBER(FIND("@",L${i})), ISNUMBER(FIND(".",L${i})), FIND("@",L${i}) < FIND(".",L${i}), LEN(L${i}) > 5)`,
+                ],
+            };
             ws.getCell(`M${i}`).dataValidation = {
                 type: "list",
                 allowBlank: true,
                 formulae: [`=INDIRECT("pertenencias")`],
                 showErrorMessage: true,
-                errorStyle: "warning",
                 errorTitle: "Valor inválido",
                 error: "Selecciona un correo de referencia",
                 showInputMessage: true,
                 promptTitle: "Referencias",
                 prompt: "Seleccione un tipo de correo de referencia",
             };
-            ws.getCell(`I${i}`).dataValidation = {
-                type: "list",
-                allowBlank: true,
-                formulae: [`=INDIRECT("grados")`],
-                showErrorMessage: true,
-                errorStyle: "warning",
-                errorTitle: "Valor inválido",
-                error: "Selecciona un grado",
-                showInputMessage: true,
-                promptTitle: "Grado",
-                prompt: "Seleccione un grado",
-            };
-            for (let index = 0; index < 2; index++) {
-                const col = 14 + index
+
+            for (
+                let index = 0;
+                index < olimpiada.limite_inscripciones;
+                index++
+            ) {
+                const col = 14 + index;
                 ws.getCell(`${colLetter(col)}${i}`).dataValidation = {
                     type: "list",
                     allowBlank: true,
-                    formulae: [`=INDIRECT("Grado_" & I${i})`],
+                    formulae: [`=INDIRECT("Grado_" & $I${i})`],
                     showErrorMessage: true,
-                    errorStyle: "warning",
+                    errorStyle: "danger",
                     errorTitle: "Valor inválido",
                     error: "Selecciona area",
                     showInputMessage: true,
                     promptTitle: "Area-Categoria",
-                    prompt: "Seleccione un Area-Categoria si no aparece una lista entonces no hay areas a las que se pueda inscribir",
+                    prompt: "Seleccione un Area-Categoria si no aparece una lista entonces no hay areas a las que se pueda inscribir o cambie de grado",
                 };
             }
         }
@@ -138,11 +187,12 @@ export const generarExcel = async (
         `${nombre ? nombre : "plantilla_inscripcion"}.xlsx`
     );
 };
+
 const SheetList = async (wb: Workbook, id_olimpiada: string | number) => {
     const listSheet = wb.addWorksheet("Lists", { state: "hidden" });
-    agregarDepartamentos(wb, listSheet);
+    await agregarDepartamentos(wb, listSheet);
     await agregarGrados(wb, listSheet);
-    agregarPertenencias(wb, listSheet);
+    await agregarPertenencias(wb, listSheet);
     await agregarColegios(wb, listSheet);
     await agregarAreasCategorias(id_olimpiada, wb, listSheet);
 };
@@ -173,14 +223,14 @@ const agregarColegios = async (wb: Workbook, listSheet: Worksheet) => {
     try {
         const colegios = await apiClient.get<Colegio[]>("/api/colegios");
         listSheet.getColumn("K").values = colegios.map(({ nombre }) => nombre);
-        wb.definedNames.add(`Lists!$K$1:$K:${colegios.length}`, "colegios");
+        wb.definedNames.add(`Lists!$K$1:$K$${colegios.length}`, "Colegios");
     } catch {
         console.log("hubo un error al obtener los colegios");
     }
 };
 const agregarGrados = (wb: Workbook, listSheet: Worksheet) => {
-    grados.forEach((grado, idx) => {
-        listSheet.getColumn(idx + 12).values = [grado];
+    grados.forEach(({ nombre }, idx) => {
+        listSheet.getColumn(idx + 12).values = [nombre];
     });
     wb.definedNames.add(`Lists!$L$1:$W$1`, "grados");
 };
@@ -221,12 +271,14 @@ const agregarAreasCategorias = async (
         organizado.forEach((areaCategoria, index) => {
             const grado = listSheet.getCell(1, 12 + index).value;
             listSheet.getColumn(12 + index).values = [grado, ...areaCategoria];
-            wb.definedNames.add(
-                `Lists!$${colLetter(12 + index)}$2:$${colLetter(12 + index)}$${
-                    areaCategoria.length
-                }`,
-                "Grado_" + grados[index]
-            );
+            if (areaCategoria.length > 0) {
+                wb.definedNames.add(
+                    `Lists!$${colLetter(12 + index)}$2:$${colLetter(
+                        12 + index
+                    )}$${areaCategoria.length + 1}`,
+                    "Grado_" + grados.map(({ nombre }) => nombre)[index]
+                );
+            }
         });
     } catch {
         console.error("hubo un erro al obtener las areas");
@@ -339,7 +391,7 @@ const provinciasPorDep: Record<string, string[]> = {
         "Bernardino Bilbao",
     ],
     Chuquisaca: [
-        "Azurduy",
+        "Juana Azurduy de Padilla",
         "Zudáñez",
         "Tomina",
         "Yamparáez",
@@ -378,20 +430,7 @@ const provinciasPorDep: Record<string, string[]> = {
 };
 
 const pertenencias = ["Madre/Padre", "Responsable", "Estudiante"];
-const grados = [
-    "1ro_Primaria",
-    "2do_Primaria",
-    "3ro_Primaria",
-    "4to_Primaria",
-    "5to_Primaria",
-    "6to_Primaria",
-    "1ro_Secundaria",
-    "2do_Secundaria",
-    "3ro_Secundaria",
-    "4to_Secundaria",
-    "5to_Secundaria",
-    "6to_Secundaria",
-];
+
 function colLetter(n: number): string {
     let s = "";
     while (n > 0) {

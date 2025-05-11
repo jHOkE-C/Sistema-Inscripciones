@@ -1,11 +1,10 @@
-interface ErrorCheckboxRowProps {
-  message: string;
-}
+import type { ReactNode } from "react";
 
-export function ErrorCheckboxRow({ message }: ErrorCheckboxRowProps) {
+
+export function ErrorCheckboxRow({children}: {children:ReactNode}) {
   return (
-    <div className="flex items-center justify-between text-sm mb-2 text-red-500 transition-all duration-200">
-      <div className="error-text border-1 p-2 rounded-md">{message}</div>
+    <div className="flex items-center justify-between text-sm mb-2 transition-all duration-200">
+      <div className="error-text border-1 p-2 rounded-md">{children}</div>
       <input
         type="checkbox"
         className="h-4 w-4 cursor-pointer ml-2"

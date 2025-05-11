@@ -23,9 +23,10 @@ export interface Olimpiada {
   fecha_inicio: string;
   fecha_fin: string;
   vigente: boolean;
-  precio_inscripcion:boolean;
-  url_plantilla:null;
+  precio_inscripcion:string;
+  url_plantilla?:string;
   descripcion_convocatoria: string;
+  limite_inscripciones: number;
   cronogramas: Cronograma[];
 }
 

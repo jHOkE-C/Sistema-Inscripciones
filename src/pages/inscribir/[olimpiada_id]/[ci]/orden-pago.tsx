@@ -18,7 +18,7 @@ import { AlertCircle, FileText, Download, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
-
+import { descargarPDF, generarOrden, vizualizarPDF } from "@/utils/pdf";
 
 interface Props {
     codigo: string;
@@ -38,6 +38,8 @@ export default function OrdenPago({ codigo }: Props) {
     const [nitCi, setNitCi] = useState("");
     const [error, setError] = useState<{ nombre?: string; nitCi?: string }>({});
     const [loading, setLoading] = useState(false);
+    const [pdf, setPdf] = useState<Uint8Array>();
+
     const datos = {
         codigo_lista: "",
         monto: 0,
@@ -87,6 +89,7 @@ export default function OrdenPago({ codigo }: Props) {
     };
 
     const handleSubmit = () => {
+        setLoading(true);
         const newErrors: { nombre?: string; nitCi?: string } = {};
 
         if (nombre.trim() === "") {
@@ -103,7 +106,6 @@ export default function OrdenPago({ codigo }: Props) {
         }
 
         // Simular petición al backend
-        setLoading(true);
         const data = {
             codigo_lista: datosPago.codigo_lista,
             estado: datosPago.estado,
@@ -115,19 +117,20 @@ export default function OrdenPago({ codigo }: Props) {
 
         const crearOrden = async () => {
             //generarOrden()
-            setLoading(false);
             try {
                 const response = await axios.post(
                     `${API_URL}/api/ordenes-pago`,
                     data
                 );
-                setLoading(false);
                 setFormOpen(false);
                 setPdfOpen(true);
                 console.log("Orden creada:", response.data);
             } catch (error) {
                 console.error("Error al crear la orden:", error);
             }
+            const pdf = await generarOrden();
+            setPdf(pdf);
+            setLoading(false);
         };
 
         crearOrden();
@@ -135,23 +138,23 @@ export default function OrdenPago({ codigo }: Props) {
 
     const handleDownload = async () => {
         try {
-            //generarOrden()
+            if (pdf) descargarPDF(pdf);
 
-            const response = await axios.get(
-                `${API_URL}/api/ordenes-pago/${datosPago.codigo_lista}/export`,
-                {
-                    responseType: "blob", // 👈 importante para manejar el PDF
-                }
-            );
+            // const response = await axios.get(
+            //     `${API_URL}/api/ordenes-pago/${datosPago.codigo_lista}/export`,
+            //     {
+            //         responseType: "blob", // 👈 importante para manejar el PDF
+            //     }
+            // );
 
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "orden-pago.pdf"); // puedes cambiar el nombre del archivo
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // const url = window.URL.createObjectURL(new Blob([response.data]));
+            // const link = document.createElement("a");
+            // link.href = url;
+            // link.setAttribute("download", "orden-pago.pdf"); // puedes cambiar el nombre del archivo
+            // document.body.appendChild(link);
+            // link.click();
+            // link.remove();
+            // window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Error al descargar el PDF:", error);
         }
@@ -206,8 +209,7 @@ export default function OrdenPago({ codigo }: Props) {
                                     {datosPago.cantidad_inscripciones}
                                 </div>
                             </div>
-
-                            <div className="space-y-2">
+                            <form onSubmit={handleSubmit} className="space-y-2">
                                 <Label htmlFor="nombre">Sr./Sra.</Label>
                                 <Input
                                     id="nombre"
@@ -221,9 +223,7 @@ export default function OrdenPago({ codigo }: Props) {
                                         {error.nombre}
                                     </div>
                                 )}
-                            </div>
 
-                            <div className="space-y-2">
                                 <Label htmlFor="nitCi">NIT/CI</Label>
                                 <Input
                                     id="nitCi"
@@ -238,19 +238,22 @@ export default function OrdenPago({ codigo }: Props) {
                                         {error.nitCi}
                                     </div>
                                 )}
-                            </div>
+                            </form>
                         </div>
                     </DialogDescription>
 
                     <DialogFooter className="gap-3 sm:gap-0 space-x-2">
                         <Button
+                            onClick={handleSubmit}
+                            disabled={loading}
+                        >
+                            {loading ? "Procesando..." : "Continuar"}
+                        </Button>
+                        <Button
                             variant="outline"
                             onClick={() => setFormOpen(false)}
                         >
                             Cancelar
-                        </Button>
-                        <Button onClick={handleSubmit} disabled={loading}>
-                            {loading ? "Procesando..." : "Continuar"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -266,10 +269,13 @@ export default function OrdenPago({ codigo }: Props) {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <DialogDescription>
+                    <DialogDescription asChild>
                         <div className="flex flex-col items-center py-6">
                             {/* Miniatura del PDF */}
-                            <div className="border rounded-md p-4 w-full max-w-xs bg-white shadow-md mb-4">
+                            <div
+                                className="border rounded-md p-4 w-full max-w-xs bg-white shadow-md mb-4 hover:cursor-pointer"
+                                onClick={() => pdf && vizualizarPDF(pdf)}
+                            >
                                 <div className="flex justify-center mb-3">
                                     <FileText className="h-12 w-12 text-gray-500" />
                                 </div>

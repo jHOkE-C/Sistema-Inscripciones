@@ -454,8 +454,7 @@ export const generarOrden = async (
     // if (pdfElement) {
     //     (pdfElement as HTMLIFrameElement).src = pdfDataUri;
     // }
-    const pdfBytes = await pdfDoc.save();
-    descargarPDF(pdfBytes);
+    return await pdfDoc.save();
 };
 
 export const descargarPDF = (pdfBytes: Uint8Array) => {
@@ -464,6 +463,15 @@ export const descargarPDF = (pdfBytes: Uint8Array) => {
     const link = document.createElement("a");
     link.href = url;
     link.download = "orden.pdf";
+    link.click();
+    URL.revokeObjectURL(url);
+};
+export const vizualizarPDF = (pdfBytes: Uint8Array) => {
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.target="_blank"
+    link.href = url;
     link.click();
     URL.revokeObjectURL(url);
 };

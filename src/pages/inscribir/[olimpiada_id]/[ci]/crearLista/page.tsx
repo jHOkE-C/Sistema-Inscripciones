@@ -2,16 +2,17 @@ import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { columns, type ListaPostulantes } from "@/pages/inscribir/columns";
-import { CreateList } from "@/pages/inscribir/CreateList";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
 import { DataTable } from "@/pages/inscribir/TableList";
 import type { ColumnDef } from "@tanstack/react-table";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NotFoundPage from "@/pages/404";
-import { getListasPostulantes } from "@/api/postulantes";
+import { crearListaPostulante, getListasPostulantes } from "@/api/postulantes";
 import Loading from "@/components/Loading";
 import FormResponsable from "@/pages/inscribir/FormResponsable";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -50,7 +51,6 @@ const Page = () => {
 
     const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
         ...columns,
-
     ];
 
     if (loading) return <Loading />;
@@ -62,10 +62,25 @@ const Page = () => {
                 }}
             />
         );
+    const crearLista = async () => {
+        setLoading(true);
+        try {
+            await crearListaPostulante({
+                ci,
+                olimpiada_id,
+            });
+            refresh();
+            toast.success("La lista se creó correctamente.");
+        } catch {
+            toast.error("No se pudo registrar la lista. Intente nuevamente.");
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
-                <ReturnComponent/>
+                <ReturnComponent />
             </div>
             <div className="m py-5">
                 <div className="container mx-auto ">
@@ -77,10 +92,9 @@ const Page = () => {
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
                             <div className="flex gap-2 items-center justify-end">
-                                    <CreateList
-                                        refresh={fetchData}
-                                        number={data.length + 1}
-                                    />
+                                <Button onClick={crearLista}>
+                                    Crear Lista
+                                </Button>
                             </div>
                             <DataTable
                                 columns={columnsWithActions}
