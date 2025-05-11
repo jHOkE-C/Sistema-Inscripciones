@@ -55,7 +55,14 @@ const Header = ({ rutas = [] }: navigation) => {
               {ruta.nombre}
             </Link>
           ))}
-          {user && <button onClick={logOut} className="text-sm font-medium hover:underline">Cerrar Sesión</button>}
+          {user && (
+            <button
+              onClick={logOut}
+              className="text-sm font-medium hover:underline"
+            >
+              Cerrar Sesión
+            </button>
+          )}
           <ModeToggle />
         </nav>
 
@@ -105,6 +112,14 @@ const Header = ({ rutas = [] }: navigation) => {
               {ruta.nombre}
             </Link>
           ))}
+          {user && (
+            <button
+              onClick={logOut}
+              className="text-sm font-medium hover:underline"
+            >
+              Cerrar Sesión
+            </button>
+          )}
           <div className="pb-1 flex justify-end">
             <ModeToggle />
           </div>
