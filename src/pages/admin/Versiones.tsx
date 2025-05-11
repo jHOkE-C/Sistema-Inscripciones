@@ -11,7 +11,12 @@ import { Version } from "@/types/versiones.type";
 import { Link } from "react-router-dom";
 import { formatDate } from "./version/[id]/types";
 
-export function Versiones({ versiones }: { versiones: Version[] }) {
+interface VersionesProps {
+    versiones: Version[];
+    onVersionCardClick?: (id: string) => void;
+}
+
+export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
     const calculateDuration = (startDate: string, endDate: string) => {
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -23,9 +28,17 @@ export function Versiones({ versiones }: { versiones: Version[] }) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
             {versiones.map((event) => (
-                <Link to={`${event.id}`} key={event.id}>
+                <Link
+                    to={`${event.id}`}
+                    key={event.id}
+                    onClick={(e) => {
+                        if (onVersionCardClick) {
+                            e.preventDefault();
+                            onVersionCardClick(event.id.toString());
+                        }
+                    }}
+                >
                     <Card
-                        key={event.id}
                         className="flex flex-col h-full hover:text-primary hover:border-primary border-2"
                     >
                         <CardHeader className="pb-2">
@@ -66,7 +79,7 @@ export function Versiones({ versiones }: { versiones: Version[] }) {
                         </CardContent>
                         <CardFooter className="border-t pt-4">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Clock className="h-4 w-4" />
+               tTi              <Clock className="h-4 w-4" />
                                 <span>
                                     Duración:{" "}
                                     {calculateDuration(

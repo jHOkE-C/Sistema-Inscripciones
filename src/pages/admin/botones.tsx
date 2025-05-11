@@ -111,6 +111,18 @@ export default function Botones() {
                         </span>
                     </Link>
                 </Button>
+                <Button
+                    className="h-auto py-10 bg-emerald-400 hover:bg-emerald-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+                    asChild
+                >
+                    <Link to="./reportes">
+                        <Check className="size-8 mb-1" />
+                        <span className="text-lg font-semibold">
+                            Reporte
+                        </span>
+                    </Link>
+                </Button>
+
             </div>
         </div>
     );
