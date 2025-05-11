@@ -11,8 +11,6 @@ interface navigation {
   rutas?: ruta[];
 }
 
-
-
 const Header = ({ rutas = [] }: navigation) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -56,6 +54,11 @@ const Header = ({ rutas = [] }: navigation) => {
             </Link>
           ))}
           {user && (
+            <Link to="/admin" className="text-sm font-medium hover:underline">
+              Adimistración
+            </Link>
+          )}
+          {user && (
             <button
               onClick={logOut}
               className="text-sm font-medium hover:underline"
@@ -92,12 +95,12 @@ const Header = ({ rutas = [] }: navigation) => {
           isMenuOpen
             ? "translate-y-0 opacity-100"
             : "-translate-y-full opacity-0 pointer-events-none"
-        } transition-all duration-300 ease-in-out`}
+        } ease-in-out`}
       >
         <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg rounded-xl border-1 m-3">
           <Link
             to="/"
-            className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
+            className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3"
             onClick={() => setIsMenuOpen(false)}
           >
             Inicio
@@ -106,16 +109,24 @@ const Header = ({ rutas = [] }: navigation) => {
             <Link
               key={index}
               to={ruta.url}
-              className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 transition-colors"
+              className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 "
               onClick={() => setIsMenuOpen(false)}
             >
               {ruta.nombre}
             </Link>
           ))}
           {user && (
+            <Link
+              to="/admin"
+              className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3"
+            >
+              Administración
+            </Link>
+          )}
+          {user && (
             <button
               onClick={logOut}
-              className="text-sm font-medium hover:underline"
+              className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 "
             >
               Cerrar Sesión
             </button>
