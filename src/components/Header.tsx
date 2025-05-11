@@ -6,6 +6,7 @@ import { ModeToggle } from "./mode-toggle";
 import type { ruta } from "@/types/ruta";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/auth";
+import { toast } from "sonner";
 
 interface navigation {
   rutas?: ruta[];
@@ -60,7 +61,10 @@ const Header = ({ rutas = [] }: navigation) => {
           )}
           {user && (
             <button
-              onClick={logOut}
+              onClick={() => {
+                logOut();
+                toast.success("Sesión cerrada exitosamente");
+              }}
               className="text-sm font-medium hover:underline"
             >
               Cerrar Sesión
@@ -125,7 +129,10 @@ const Header = ({ rutas = [] }: navigation) => {
           )}
           {user && (
             <button
-              onClick={logOut}
+              onClick={() => {
+                logOut();
+                toast.success("Sesión cerrada");
+              }}
               className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 "
             >
               Cerrar Sesión
