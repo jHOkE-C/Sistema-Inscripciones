@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 
 const PageHome = () => {
   return (
-    <div className="flex min-h-screen flex-col transition-colors duration-300">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
       {/* Main */}
