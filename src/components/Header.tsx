@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
 import type { ruta } from "@/types/ruta";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/auth";
 
 interface navigation {
   rutas?: ruta[];
 }
+
+
 
 const Header = ({ rutas = [] }: navigation) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,6 +19,8 @@ const Header = ({ rutas = [] }: navigation) => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const { user, logOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,6 +55,7 @@ const Header = ({ rutas = [] }: navigation) => {
               {ruta.nombre}
             </Link>
           ))}
+          {user && <button onClick={logOut} className="text-sm font-medium hover:underline">Cerrar Sesión</button>}
           <ModeToggle />
         </nav>
 
