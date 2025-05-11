@@ -550,8 +550,7 @@ const FileUploadFormato: React.FC = () => {
                                             {erroresDeFormato.map((error, index) => (
                                                 <ErrorCheckboxRow
                                                     key={index}
-                                                    message={`En la [${error.columna}] de la fila [${error.fila}] de la hoja [${error.hoja}] tiene el siguiente error: ${error.mensaje}`}
-                                                />
+                                                >{`En la [${error.columna}] de la fila [${error.fila}] de la hoja [${error.hoja}] tiene el siguiente error: ${error.mensaje}`}</ErrorCheckboxRow>
                                             ))}
                                         </div>
 

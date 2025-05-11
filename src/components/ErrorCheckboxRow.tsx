@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export function ErrorCheckboxRow({children}: {children:ReactNode}) {
   return (
-    <div className="flex items-center justify-between text-sm mb-2 transition-all duration-200">
+    <div className="flex items-center justify-between text-sm mb-2 transition-all duration-200 text-red-500">
       <div className="error-text border-1 p-2 rounded-md">{children}</div>
       <input
         type="checkbox"
