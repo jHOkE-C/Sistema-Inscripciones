@@ -62,7 +62,6 @@ export default function OrdenPago({ codigo_lista }: Props) {
     const [pdf, setPdf] = useState<Uint8Array>();
     const [pdfBlob, setPdfBlob] = useState<Blob>();
 
-    const [datosPago, setDatosPago] = useState<Orden>();
     const [datosPrevios, setDatosPrevios] = useState<DatosPrevios>();
 
     const fetchOrden = async () => {
@@ -70,7 +69,6 @@ export default function OrdenPago({ codigo_lista }: Props) {
             const { data } = await axios.get<Orden>(
                 `${API_URL}/api/ordenes-pago/lista/${codigo_lista}`
             );
-            setDatosPago(data);
             const pdf = await generarOrden({
                 cantidad: data.cantidad_inscripciones,
                 ci: data.nitci,
