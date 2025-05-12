@@ -148,7 +148,7 @@ function UserCard({
                 onClick={handleOpenDialog}
               >
                 <PlusCircle className="h-4 w-4" />
-                <span>Asignar rol</span>
+                <span>Asignar roles</span>
               </Button>
             </div>
           </div>
