@@ -1,9 +1,14 @@
 import { Colegio, type Categoria } from "@/api/areas";
 import { apiClient } from "@/api/request";
-import { grados } from "@/interfaces/postulante.interface";
+import { getDepartamentosWithProvinces } from "@/api/ubicacion";
+import {
+    CONTACTOS_PERMITIDOS,
+    grados,
+} from "@/interfaces/postulante.interface";
 import type { Olimpiada } from "@/pages/admin/version/[id]/types";
 import ExcelJS, { type Workbook, type Worksheet } from "exceljs";
 import { saveAs } from "file-saver";
+let departamentos: string[] = [];
 
 export const generarExcel = async (
     id_olimpiada: string | number,
@@ -15,7 +20,19 @@ export const generarExcel = async (
     const wb = new ExcelJS.Workbook();
     const numFilas = 50;
 
-    const SheetPlantilla = () => {
+    const SheetPlantilla = async () => {
+        const provinciasConDepartamentos =
+            await getDepartamentosWithProvinces();
+        departamentos = provinciasConDepartamentos.map(({ nombre }) =>
+            nombre.replace(" ", "_")
+        );
+
+        provinciasConDepartamentos.forEach((dep) => {
+            provinciasPorDep[dep.nombre] = dep.provincias.map(
+                ({ nombre }) => nombre
+            );
+        });
+
         const ws = wb.addWorksheet("Inscripciones");
         let columns = [
             { name: "Nombre" },
@@ -37,7 +54,6 @@ export const generarExcel = async (
         for (let index = 1; index <= olimpiada.limite_inscripciones; index++) {
             columns = [...columns, { name: "Área categoría " + index }];
         }
-
 
         ws.getColumn(4).numFmt = "dd/mm/yyyy";
         ws.getColumn("J").numFmt = "0";
@@ -63,6 +79,7 @@ export const generarExcel = async (
                     `AND(ISNUMBER(FIND("@",E${i})), ISNUMBER(FIND(".",E${i})), FIND("@",E${i}) < FIND(".",E${i}), LEN(E${i}) > 5)`,
                 ],
             };
+
             // Departamento
             ws.getCell(`F${i}`).dataValidation = {
                 type: "list",
@@ -179,7 +196,7 @@ export const generarExcel = async (
         }
     };
 
-    SheetPlantilla();
+    await SheetPlantilla();
     await SheetList(wb, id_olimpiada);
     const buf = await wb.xlsx.writeBuffer();
     saveAs(
@@ -215,6 +232,7 @@ const agregarDepartamentos = (wb: Workbook, listSheet: Worksheet) => {
     });
 };
 const agregarPertenencias = (wb: Workbook, listSheet: Worksheet) => {
+    const pertenencias = CONTACTOS_PERMITIDOS.map(({ contacto }) => contacto);
     listSheet.getColumn(10).values = pertenencias;
 
     wb.definedNames.add(`Lists!$J$1:$J$${pertenencias.length}`, "pertenencias");
@@ -284,152 +302,18 @@ const agregarAreasCategorias = async (
         console.error("hubo un erro al obtener las areas");
     }
 };
-const departamentos = [
-    "La_Paz",
-    "Cochabamba",
-    "Santa_Cruz",
-    "Oruro",
-    "Potosí",
-    "Chuquisaca",
-    "Tarija",
-    "Beni",
-    "Pando",
-];
 
 const provinciasPorDep: Record<string, string[]> = {
-    La_Paz: [
-        "El Alto",
-        "Murillo",
-        "Los Andes",
-        "Omasuyos",
-        "Nor Yungas",
-        "Sud Yungas",
-        "Camacho",
-        "Inquisivi",
-        "Franz Tamayo",
-        "Bautista Saavedra",
-        "Manco Kapac",
-        "Gualberto Villarroel",
-        "José Manuel Pando",
-        "Aroma",
-        "Pacajes",
-        "Abel Iturralde",
-        "Ingavi",
-        "Larecaja",
-        "Loayza",
-        "Caranavi",
-    ],
-    Cochabamba: [
-        "Cercado",
-        "Quillacollo",
-        "Sacaba",
-        "Tapacarí",
-        "Arani",
-        "Capinota",
-        "Ayopaya",
-        "Campero",
-        "Carrasco",
-        "Chapare",
-        "Esteban Arce",
-        "Germán Jordán",
-        "Mizque",
-        "Punata",
-        "Tiraque",
-        "Bolívar",
-    ],
-    Santa_Cruz: [
-        "Andrés Ibáñez",
-        "Vallegrande",
-        "Cordillera",
-        "Florida",
-        "Ñuflo de Chávez",
-        "Sara",
-        "Ichilo",
-        "Chiquitos",
-        "Warnes",
-        "Velasco",
-        "Caballero",
-        "Germán Busch",
-        "Obispo Santistevan",
-        "Angel Sandoval",
-        "Manuel María Caballero",
-    ],
-    Oruro: [
-        "Cercado",
-        "Carangas",
-        "Poopó",
-        "Sajama",
-        "Litoral",
-        "Pantaleón Dalence",
-        "Ladislao Cabrera",
-        "Eduardo Avaroa",
-        "Saucarí",
-        "Tomas Barrón",
-        "Sur Carangas",
-        "San Pedro de Totora",
-        "Sebastián Pagador",
-        "Nor Carangas",
-        "Challapata",
-        "Mejillones",
-    ],
-    Potosí: [
-        "Antonio Quijarro",
-        "Rafael Bustillo",
-        "Cornelio Saavedra",
-        "Charcas",
-        "Chayanta",
-        "Daniel Campos",
-        "Enrique Baldivieso",
-        "José María Linares",
-        "Modesto Omiste",
-        "Nor Chichas",
-        "Nor Lípez",
-        "Sud Chichas",
-        "Sud Lípez",
-        "Tomás Frías",
-        "Alonso de Ibáñez",
-        "Bernardino Bilbao",
-    ],
-    Chuquisaca: [
-        "Juana Azurduy de Padilla",
-        "Zudáñez",
-        "Tomina",
-        "Yamparáez",
-        "Nor Cinti",
-        "Sud Cinti",
-        "Belisario Boeto",
-        "Hernando Siles",
-        "Luis Calvo",
-        "Oropeza",
-    ],
-    Tarija: [
-        "Cercado",
-        "Arce",
-        "Gran Chaco",
-        "Méndez",
-        "Burdet O'Connor",
-        "Avilez",
-    ],
-    Beni: [
-        "Cercado",
-        "Ballivián",
-        "Mamoré",
-        "Marbán",
-        "Moxos",
-        "Iténez",
-        "José Ballivián",
-        "Vaca Díez",
-    ],
-    Pando: [
-        "Nicolás Suárez",
-        "Manuripi",
-        "Madre de Dios",
-        "Abuná",
-        "Federico Román",
-    ],
+    La_Paz: [],
+    Cochabamba: [],
+    Santa_Cruz: [],
+    Oruro: [],
+    Potosí: [],
+    Chuquisaca: [],
+    Tarija: [],
+    Beni: [],
+    Pando: [],
 };
-
-const pertenencias = ["Madre/Padre", "Responsable", "Estudiante"];
 
 function colLetter(n: number): string {
     let s = "";

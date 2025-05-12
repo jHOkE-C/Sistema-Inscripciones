@@ -71,9 +71,9 @@ export interface newPostulante {
 }
 
 export const CONTACTOS_PERMITIDOS = [
-    { id: 3, contacto: "Estudiante" },
-    { id: 1, contacto: "Madre/Padre" },
-    { id: 2, contacto: "Responsable" },
+    { id: 1, contacto: "padre/madre" },
+    { id: 2, contacto: "profesor" },
+    { id: 3, contacto: "estudiante" },
 ];
 
 export const grados = [

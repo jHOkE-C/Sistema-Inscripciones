@@ -76,145 +76,156 @@ export function OlimpiadasCarousel() {
                 className="w-full"
             >
                 <CarouselContent className="-ml-2 md:-ml-4">
-                    {olimpiadas.map((olimpiada) => (
-                        <CarouselItem
-                            key={olimpiada.id}
-                            className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3  "
-                        >
-                            <div className="p-6 md:p-1 h-full">
-                                <Card className="overflow-hidden transition-all duration-300 shadow-foreground/20 hover:-translate-y-1 h-full -py-1 gap-0 ">
-                                    <CardHeader className="p-4 pb-2 bg-primary text-white">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-white/20 text-white border-white/30 hover:bg-white/30"
-                                            >
-                                                {olimpiada.gestion}
-                                            </Badge>
-                                            <Trophy className="h-5 w-5" />
-                                        </div>
-                                        <CardTitle className="text-xl line-clamp-2">
-                                            {olimpiada.nombre}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-4 space-y-4">
-                                        <div className="flex items-start gap-2">
-                                            <Calendar className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                                <p className="text-sm font-medium text-background-700">
-                                                    Fecha de finalización:
-                                                </p>
-                                                <p className="text-sm text-background-600">
-                                                    {formatDate(
-                                                        olimpiada.fecha_fin
-                                                    )}
-                                                </p>
+                    {olimpiadas
+                        .sort((a, b) => {
+                            const aHasInscripcion = a.fase_actual?.fase.nombre_fase.toLowerCase().includes('inscripción') ? 1 : 0;
+                            const bHasInscripcion = b.fase_actual?.fase.nombre_fase.toLowerCase().includes('inscripción') ? 1 : 0;
+                            return bHasInscripcion - aHasInscripcion; 
+                        })
+                        .map((olimpiada) => (
+                            <CarouselItem
+                                key={olimpiada.id}
+                                className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3  "
+                            >
+                                <div className="p-6 md:p-1 h-full">
+                                    <Card className="overflow-hidden transition-all duration-300 shadow-foreground/20 hover:-translate-y-1 h-full -py-1 gap-0 ">
+                                        <CardHeader className="p-4 pb-2 bg-primary text-white">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="bg-white/20 text-white border-white/30 hover:bg-white/30"
+                                                >
+                                                    {olimpiada.gestion}
+                                                </Badge>
+                                                <Trophy className="h-5 w-5" />
                                             </div>
-                                        </div>
+                                            <CardTitle className="text-xl line-clamp-2">
+                                                {olimpiada.nombre}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-4 space-y-4">
+                                            <div className="flex items-start gap-2">
+                                                <Calendar className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-sm font-medium text-background-700">
+                                                        Fecha de finalización:
+                                                    </p>
+                                                    <p className="text-sm text-background-600">
+                                                        {formatDate(
+                                                            olimpiada.fecha_fin
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            </div>
 
-                                        {olimpiada.fase_actual ? (
-                                            <div className=" p-3 rounded-lg border">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <Clock className="h-5 w-5 text-gray-500" />
-                                                    <h3 className="font-medium ">
-                                                        Fase actual:{" "}
-                                                        <span className="font-semibold">
-                                                            {
+                                            {olimpiada.fase_actual ? (
+                                                <div className=" p-3 rounded-lg border">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Clock className="h-5 w-5 text-gray-500" />
+                                                        <h3 className="font-medium ">
+                                                            Fase actual:{" "}
+                                                            <span className="font-semibold">
+                                                                {
+                                                                    olimpiada
+                                                                        .fase_actual
+                                                                        .fase
+                                                                        .nombre_fase
+                                                                }
+                                                            </span>
+                                                        </h3>
+                                                    </div>
+                                                    <div className="space-y-1 pl-7">
+                                                        <p className="text-sm ">
+                                                            <span className="font-medium">
+                                                                Inicio:
+                                                            </span>{" "}
+                                                            {formatDate(
                                                                 olimpiada
                                                                     .fase_actual
-                                                                    .fase
-                                                                    .nombre_fase
-                                                            }
-                                                        </span>
-                                                    </h3>
+                                                                    .fecha_inicio
+                                                            )}
+                                                        </p>
+                                                        <p className="text-sm ">
+                                                            <span className="font-medium">
+                                                                Fin:
+                                                            </span>{" "}
+                                                            {formatDate(
+                                                                olimpiada
+                                                                    .fase_actual
+                                                                    .fecha_fin
+                                                            )}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div className="space-y-1 pl-7">
-                                                    <p className="text-sm ">
-                                                        <span className="font-medium">
-                                                            Inicio:
-                                                        </span>{" "}
-                                                        {formatDate(
-                                                            olimpiada
-                                                                .fase_actual
-                                                                .fecha_inicio
-                                                        )}
-                                                    </p>
-                                                    <p className="text-sm ">
-                                                        <span className="font-medium">
-                                                            Fin:
-                                                        </span>{" "}
-                                                        {formatDate(
-                                                            olimpiada
-                                                                .fase_actual
-                                                                .fecha_fin
-                                                        )}
-                                                    </p>
+                                            ) : (
+                                                <div className=" p-3 rounded-lg border ">
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="h-5 w-5 text-gray-500" />
+                                                        <p className="text-sm">
+                                                            No hay ninguna fase
+                                                            activa actualmente
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            <div className=" p-3 rounded-lg border ">
-                                                <div className="flex items-center gap-2">
-                                                    <Clock className="h-5 w-5 text-gray-500" />
-                                                    <p className="text-sm">
-                                                        No hay ninguna fase
-                                                        activa actualmente
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                    <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
-                                        {olimpiada.fase_actual?.fase.nombre_fase.includes(
-                                            "inscripción"
-                                        ) ? (
-                                            <>
-                                                <Button
-                                                    variant={"link"}
-                                                    disabled={loadingExcel}
-                                                    className="w-full mb-2  text-green-600 border-green-200 hover:text-green-500 transition-colors"
-                                                    onClick={async () => {
-                                                        setLoadingExcel(true);
-                                                        await generarExcel(
-                                                            olimpiada.id,
-                                                            olimpiada.nombre
-                                                        );
-                                                        setLoadingExcel(false);
-                                                    }}
-                                                >
-                                                    {loadingExcel ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full" />
-                                                            Descargando...
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center gap-2">
-                                                            <Download className="h-4 w-4" />
-                                                            Descargar Plantilla
-                                                            Excel
-                                                        </div>
-                                                    )}
-                                                </Button>
-                                                <Button variant={"link"}>
-                                                    <Link
-                                                        to={`/inscribir/${olimpiada.id}`}
+                                            )}
+                                        </CardContent>
+                                        <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
+                                            {olimpiada.fase_actual?.fase.nombre_fase.includes(
+                                                "inscripción"
+                                            ) ? (
+                                                <>
+                                                    <Button
+                                                        variant={"link"}
+                                                        disabled={loadingExcel}
+                                                        className="w-full mb-2  text-green-600 border-green-200 hover:text-green-500 transition-colors"
+                                                        onClick={async () => {
+                                                            setLoadingExcel(
+                                                                true
+                                                            );
+                                                            await generarExcel(
+                                                                olimpiada.id,
+                                                                olimpiada.nombre
+                                                            );
+                                                            setLoadingExcel(
+                                                                false
+                                                            );
+                                                        }}
                                                     >
-                                                        Inscribite Ahora
-                                                    </Link>
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <div className="text-center text-sm text-muted-foreground">
-                                                <p>
-                                                    Esta olimpiada no está en
-                                                    proceso de inscripción
-                                                </p>
-                                            </div>
-                                        )}
-                                    </CardFooter>
-                                </Card>
-                            </div>
-                        </CarouselItem>
-                    ))}
+                                                        {loadingExcel ? (
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full" />
+                                                                Descargando...
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-center gap-2">
+                                                                <Download className="h-4 w-4" />
+                                                                Descargar
+                                                                Plantilla Excel
+                                                            </div>
+                                                        )}
+                                                    </Button>
+                                                    <Button variant={"link"}>
+                                                        <Link
+                                                            to={`/inscribir/${olimpiada.id}`}
+                                                        >
+                                                            Inscribite Ahora
+                                                        </Link>
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <div className="text-center text-sm text-muted-foreground">
+                                                    <p>
+                                                        Esta olimpiada no está
+                                                        en proceso de
+                                                        inscripción
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </CardFooter>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        ))}
                 </CarouselContent>
                 <div className="flex items-center justify-center gap-2 -mt-4 md:mt-0">
                     <CarouselPrevious className="static transform-none mx-2 mt-8" />
