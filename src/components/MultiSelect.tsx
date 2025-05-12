@@ -67,7 +67,7 @@ export function MultiSelect({
                     disabled={isDisabled}
                     id={id}
                     variant="outline"
-                    className="w-full justify-between font-normal"
+                    className="w-full justify-between font-normal text-wrap"
                 >
                     {values.length === 0
                         ? messageWithoutValues || "No hay opciones disponibles"

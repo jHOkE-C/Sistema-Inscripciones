@@ -50,7 +50,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
         telefono: values.telefono, 
         nombre_completo: `${values.nombres} ${values.apellidos}` 
       });
-      toast.success("Responsable registrado correctamente");
+      toast.success("Registro de responsable exitoso");
       onClose();
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Error desconocido");
@@ -193,7 +193,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
 
             <div className="flex gap-2 pt-2">
               <Button type="submit" className="w-full">
-                Enviar
+                Registrar
               </Button>
             </div>
           </form>

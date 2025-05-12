@@ -34,27 +34,28 @@ import type { Postulante } from "../columns";
 import DialogPostulante from "@/components/DialogPostulante";
 import type { postulanteSchema } from "@/components/FormPostulante";
 import type { z } from "zod";
+import ShareUrl from "@/pages/inscribir/ShareUrl";
 
 export default function Page() {
-    const navigate = useNavigate();
     const [data, setData] = useState<Postulante[]>([]);
-    const { ci, codigo, olimpiada_id } = useParams();
+    const { ci, codigo_lista, olimpiada_id } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     const [editar, setEditar] = useState(false);
     useEffect(() => {
         fetchData();
     }, []);
-    if (!codigo) return;
+    if (!codigo_lista) return;
     const refresh = async () => {
-        const data = await getInscritosPorLista(codigo);
+        const data = await getInscritosPorLista(codigo_lista);
         setData(data.data);
     };
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const data = await getInscritosPorLista(codigo);
+            const data = await getInscritosPorLista(codigo_lista);
+
             setData(data.data);
             console.log(data.estado, data.estado !== "Preinscrito");
             setEditar(data.estado === "Preinscrito");
@@ -66,25 +67,11 @@ export default function Page() {
         }
     };
 
-    const terminarRegistro = async () => {
-        console.log("terminando registro");
-        try {
-            await cambiarEstadoLista(codigo, "Pago Pendiente");
-            navigate(`/inscribir/${olimpiada_id}/${ci}`);
-        } catch (error) {
-            if (error instanceof Error) {
-                toast.error(error.message);
-            } else {
-                toast.error("An unexpected error occurred");
-            }
-        }
-    };
-
     const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
         if (loading) return;
         setLoading(true);
         try {
-            await postDataPostulante({ ...data, codigo_lista: codigo });
+            await postDataPostulante({ ...data, codigo_lista: codigo_lista });
             toast.success("El postulante fue registrado exitosamente");
             //setShowForm(false);
             refresh();
@@ -114,41 +101,12 @@ export default function Page() {
                         <CardContent className="overflow-x-auto space-y-5">
                             <div className="flex justify-between">
                                 {editar && (
-                                    <DialogPostulante
-                                        onSubmit={onSubmit}
-                                        getParams
-                                    />
+                                    <DialogPostulante onSubmit={onSubmit} />
                                 )}
-
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        {editar && data.length > 0 && (
-                                            <Button>Finalizar registro</Button>
-                                        )}
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>
-                                                Esta seguro que deseas finalizar
-                                                el registro?
-                                            </AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                Esta accion impedira el registro
-                                                de nuevos postulantes a la lista
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>
-                                                Cancel
-                                            </AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={terminarRegistro}
-                                            >
-                                                Continuar
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                                <ButtonFinalizarRegistro
+                                    show={editar && data.length > 0}
+                                    codigo_lista={codigo_lista}
+                                />
                             </div>
                             <Table>
                                 {data.length === 0 && (
@@ -192,7 +150,62 @@ export default function Page() {
                         </CardContent>
                     </Card>
                 </div>
+                <ShareUrl />
             </div>
         </>
     );
 }
+
+export const ButtonFinalizarRegistro = ({
+    show,
+    codigo_lista,
+    onFinish,
+}: {
+    show: boolean;
+    codigo_lista: string;
+    onFinish?: () => void;
+}) => {
+    const { olimpiada_id, ci } = useParams();
+    const navigate = useNavigate();
+    const terminarRegistro = async () => {
+        try {
+            await cambiarEstadoLista(codigo_lista, "Pago Pendiente");
+            if (onFinish) {
+                onFinish();
+            } else {
+                navigate(`/inscribir/${olimpiada_id}/${ci}`);
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error("Ocurrio un error inesperado");
+            }
+        }
+    };
+
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                {show && <Button>Finalizar registro</Button>}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        ¿Esta seguro que deseas finalizar el registro?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Esta acción bloqueará la adición de postulantes futura
+                        en la lista
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={terminarRegistro}>
+                        Continuar
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+};

@@ -27,7 +27,7 @@ export default function ButtonsGrid({ buttons, children }: ButtonsGridProps) {
           >
             <Link to={to}>
               <Icon className="size-8 mb-1" />
-              <span className="text-lg font-semibold">{label}</span>
+              <span className="text-lg font-semibold text-wrap text-center">{label}</span>
             </Link>
           </Button>
         );

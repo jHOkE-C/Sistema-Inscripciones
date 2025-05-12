@@ -29,7 +29,7 @@ export function MyCombobox({ values, value, onChange }: MyComboBoxProps) {
     const [open, setOpen] = React.useState(false);
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen} >
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
@@ -43,7 +43,7 @@ export function MyCombobox({ values, value, onChange }: MyComboBoxProps) {
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-full p-0">
                 <Command>
                     <CommandInput
                         placeholder="Busca la opcion..."

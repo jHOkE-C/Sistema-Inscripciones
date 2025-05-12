@@ -30,12 +30,10 @@ import {
 } from "@/components/ui/select";
 
 import PostulanteDetalle from "./postulante-detalle";
-import FormPostulante from "./FormPostulante";
+import DialogPostulante from "../../components/DialogPostulante";
 import ShareUrl from "./ShareUrl";
 import { useParams } from "react-router-dom";
 import { getInscripcion } from "@/api/uuid";
-
-
 
 // Datos de ejemplo para los postulantes
 const postulantes = [
@@ -114,17 +112,19 @@ const postulantes = [
 ];
 
 export default function ListInscripcion() {
-    const [selectedPostulante, setSelectedPostulante] = useState<Postulante | null>(null);
+    const [selectedPostulante, setSelectedPostulante] =
+        useState<Postulante | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [selectedPostulantes, setSelectedPostulantes] = useState<number[]>([]);
+    const [selectedPostulantes, setSelectedPostulantes] = useState<number[]>(
+        []
+    );
     const [activeTab, setActiveTab] = useState("todos");
     const { uuid } = useParams();
 
-    useEffect(()=>{
-        console.log("UUID:",uuid)
+    useEffect(() => {
+        console.log("UUID:", uuid);
         getInscripcion();
-    },[])
-
+    }, []);
 
     interface TabChangeHandler {
         (value: string): void;
@@ -138,7 +138,9 @@ export default function ListInscripcion() {
         estado: string;
     }
 
-    const getStatusBadge = (estado: StatusBadgeProps["estado"]): JSX.Element => {
+    const getStatusBadge = (
+        estado: StatusBadgeProps["estado"]
+    ): JSX.Element => {
         switch (estado) {
             case "Aprobado":
                 return <Badge className="bg-green-500">Aprobado</Badge>;
@@ -172,7 +174,6 @@ export default function ListInscripcion() {
         setSelectedPostulante(postulante);
         setIsDetailOpen(true);
     };
-
 
     const handlePagoInscripcion = (postulante: Postulante): void => {
         // Aquí iría la lógica para procesar el pago
@@ -275,7 +276,7 @@ export default function ListInscripcion() {
                                         />
                                     </div>
 
-                                    <FormPostulante />
+                                    <DialogPostulante />
                                 </div>
                             </div>
 

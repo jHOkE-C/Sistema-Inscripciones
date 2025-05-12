@@ -8,7 +8,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { NotebookPen, FileIcon, Plus, Receipt } from "lucide-react";
+import { NotebookPen, FileIcon, Plus, Receipt, PenBox } from "lucide-react";
 import { apiClient } from "@/api/request";
 import { Olimpiada } from "@/types/versiones.type";
 
@@ -18,6 +18,12 @@ const Page = () => {
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { ci, olimpiada_id } = useParams();
     const buttons: ButtonConfig[] = [
+        {
+            label: "Inscribir Postulante/s",
+            to: `registrar`,
+            Icon: PenBox,
+            color: "sky",
+        },
         {
             label: "Crear Lista",
             to: `crearLista`,

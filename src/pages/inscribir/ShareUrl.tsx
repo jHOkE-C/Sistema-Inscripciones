@@ -15,7 +15,6 @@ export default function ShareUrl() {
   const handleCopy = () => {
     navigator.clipboard.writeText(currentUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(currentUrl)}`;
