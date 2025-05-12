@@ -85,7 +85,7 @@ const Page = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
-                <ReturnComponent to={`/inscribir/${olimpiada_id}/${ci}`} />
+                <ReturnComponent  />
             </div>
             <div className="m py-5">
                 <div className="container mx-auto ">

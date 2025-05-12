@@ -10,7 +10,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 export default function Page() {
   return (
     <>
-    <ReturnComponent to="/admin" />
+    <ReturnComponent  />
     <div className="min-h-screen bg-background">
       <div className=" px-4 max-w-6xl mx-auto">
 
