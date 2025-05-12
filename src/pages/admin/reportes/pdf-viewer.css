@@ -132,10 +132,10 @@
   border-top-color: #3b82f6;
   animation: spin 1s linear infinite;
   margin: 0 auto 0.5rem;
-  -webkit-border-radius:;
-  -moz-border-radius:;
-  -ms-border-radius:;
-  -o-border-radius:;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
   -webkit-animation: spin 1s linear infinite;
 }
 
