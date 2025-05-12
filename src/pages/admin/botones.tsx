@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {  Users, Link as Asociar, Layers2, Trophy, Clock, FileUp, FileSpreadsheet, Check, UserPlus, ShieldUser, ShieldCheck } from "lucide-react";
+import {  Users, Link as Asociar, Layers2, Trophy, Clock, FileUp, FileSpreadsheet, Check, UserPlus, ShieldUser, ShieldCheck, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
-import { AreasModal } from "./areas-modal";
 import CrearRol from "./crear-rol/page";
 
 export default function Botones() {
@@ -11,16 +10,56 @@ export default function Botones() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 grid-">
           <GestionRegistration refresh={() => {}} />
 
-          <AreasModal />
+          <Button
+            className="h-auto py-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
+            asChild
+          >
+            <Link to="/admin/area/agregar">
+              <Layers className="size-8 mb-1" />
+              <span className="text-lg font-semibold">Agregar Áreas</span>
+            </Link>
+          </Button>
+          <Button
+            className="h-auto py-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
+            asChild
+          >
+            <Link to="/admin/area/dar-de-baja">
+              <Layers className="size-8 mb-1" />
+              <span className="text-lg font-semibold">Dar de baja Áreas</span>
+            </Link>
+          </Button>
+
 
           <Button
             className="h-auto py-10 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
             asChild
           >
-            <Link to="/admin/categorias">
+            <Link to="/admin/categorias/crear">
               <Layers2 className="size-8 mb-1" />
               <span className="text-lg font-semibold">
-                Gestionar categorías
+                Agregar Categorías
+              </span>
+            </Link>
+          </Button>
+          <Button
+            className="h-auto py-10 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
+            asChild
+          >
+            <Link to="/admin/categorias/editar">
+              <Layers2 className="size-8 mb-1" />
+              <span className="text-lg font-semibold">
+                Editar Categorías
+              </span>
+            </Link>
+          </Button>
+          <Button
+            className="h-auto py-10 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1"
+            asChild
+          >
+            <Link to="/admin/categorias/dar-de-baja">
+              <Layers2 className="size-8 mb-1" />
+              <span className="text-lg font-semibold">
+                Dar de baja Categorías
               </span>
             </Link>
           </Button>
