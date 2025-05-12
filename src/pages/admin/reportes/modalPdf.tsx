@@ -268,7 +268,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
                 <Document
                   file={pdfBlob}
                   onLoadSuccess={onDocumentLoadSuccess}
-                  className="pdf-document h-full"
+                  className="pdf-document h-full bg"
                   loading={
                     <div className="loading-indicator flex flex-col items-center justify-center p-6">
                       <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
