@@ -123,11 +123,12 @@ function RoleCard({
 
     const privilegesAssigned = {
       rol_id: role.id,
-      servicios: selectedPrivilegeIds,
+      servicios_add: selectedPrivilegeIds,
+      servicios_remove: [],
     }
 
     try {
-      await axios.post(`${API_URL}/api/roles/servicios`, privilegesAssigned);
+      await axios.put(`${API_URL}/api/roles/servicios`, privilegesAssigned);
       toast.success(
         `Se han asignado ${selectedPrivilegeIds.length} privilegios al rol ${role.nombre}`
       );
@@ -151,11 +152,6 @@ function RoleCard({
               <CardTitle className="text-xl">{role.nombre}</CardTitle>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant={hasPrivileges ? "default" : "destructive"}>
-                {hasPrivileges
-                  ? `${role.servicios.length} privilegios`
-                  : "Sin privilegios"}
-              </Badge>
               <Button
                 variant="outline"
                 size="sm"

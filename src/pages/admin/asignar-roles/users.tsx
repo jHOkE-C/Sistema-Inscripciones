@@ -112,11 +112,12 @@ function UserCard({
   const handleSaveRoles = async () => {
     const rolesAssinados = {
       usuario_id: user.id,
-      roles: selectedRoleIds,
+      roles_add: selectedRoleIds,
+      roles_remove: []
     };
     console.log(rolesAssinados);
     try {
-      await axios.post(`${API_URL}/api/roles/usuario`, rolesAssinados);
+      await axios.put(`${API_URL}/api/roles/usuario`, rolesAssinados);
       toast.success(
         `Se han asignado ${selectedRoleIds.length} roles a ${user.nombre_usuario}`
       );
