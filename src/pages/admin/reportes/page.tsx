@@ -15,6 +15,7 @@ const Admin = () => {
     const [olimpiada, setOlimpiada] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedGestion, setSelectedGestion] = useState<string | null>(null);
+    const [nombreOlimpiada, setNombreOlimpiada] = useState<string>("");
 
     const getData = async () => {
         setOlimpiada(true);
@@ -35,9 +36,11 @@ const Admin = () => {
         getData();
     }, []);
 
-    const handleAbrirModalConGestion = (gestionId: string) => {
+    const handleAbrirModalConGestion = (gestionId: string, nombre: string) => {
         setSelectedGestion(gestionId);
+        setNombreOlimpiada(nombre);
         setIsModalOpen(true);
+        
     };
 
     if (olimpiada) {
@@ -55,7 +58,7 @@ const Admin = () => {
                     {versiones.length > 0 ? (
                         <Versiones
                             versiones={versiones}
-                            onVersionCardClick={(gestionId: string) => handleAbrirModalConGestion(gestionId)}
+                            onVersionCardClick={(gestionId: string, nombre:string) => handleAbrirModalConGestion(gestionId, nombre)}
                         />
                     ) : (
                         <p className="text-center text-gray-500">
@@ -70,6 +73,7 @@ const Admin = () => {
                     gestion={selectedGestion}
                     isOpen={isModalOpen}
                     onOpenChange={setIsModalOpen}
+                    nombreOlimpiada={nombreOlimpiada}
                 />
             )}
         </>

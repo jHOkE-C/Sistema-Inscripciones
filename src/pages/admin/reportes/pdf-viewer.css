@@ -1,0 +1,146 @@
+
+.pdf-document {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+
+.react-pdf__Page {
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+
+.react-pdf__Page__canvas {
+  border-radius: 4px;
+  display: block;
+  width: 100%;
+}
+
+
+.pdf-controls {
+  background-color: rgba(243, 244, 246, 0.3);
+  padding: 0.15rem 0.25rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: 30%;
+  max-width: 400px;
+  flex-wrap: nowrap;
+  gap: 0.15rem;
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  -webkit-border-radius: 0.375rem;
+  -moz-border-radius: 0.375rem;
+  -ms-border-radius: 0.375rem;
+  -o-border-radius: 0.375rem;
+}
+
+
+@media (max-width: 640px) {
+  .pdf-controls {
+    width: 90%;
+    padding: 0.15rem 0.25rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    bottom: 0.25rem;
+    max-width: 95%;
+  }
+
+  .pdf-controls > * {
+    margin: 0 0.05rem;
+  }
+
+
+  .pdf-controls input[type="number"] {
+    width: 30px;
+    font-size: 12px;
+    height: 24px;
+  }
+  
+
+  .pdf-controls button {
+    padding: 0.1rem;
+    height: 26px;
+    width: 26px;
+  }
+
+  .pdf-controls span {
+    font-size: 10px;
+  }
+}
+
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .pdf-controls {
+    width: 80%;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+
+.pdf-download-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 2.5rem;
+  z-index: 60;
+  background-color: rgba(243, 244, 246, 0.3);
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+
+.react-pdf__message--loading {
+  padding: 1rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+
+.react-pdf__message--error {
+  padding: 1rem;
+  color: #dc2626;
+  text-align: center;
+}
+
+/* Animación de carga */
+.react-pdf__message--loading::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 0.5rem;
+  -webkit-border-radius:;
+  -moz-border-radius:;
+  -ms-border-radius:;
+  -o-border-radius:;
+  -webkit-animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+} 

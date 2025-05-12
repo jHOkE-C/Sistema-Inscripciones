@@ -13,7 +13,7 @@ import { formatDate } from "./version/[id]/types";
 
 interface VersionesProps {
     versiones: Version[];
-    onVersionCardClick?: (id: string) => void;
+    onVersionCardClick?: (id: string, nombre: string) => void;
 }
 
 export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
@@ -34,7 +34,7 @@ export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
                     onClick={(e) => {
                         if (onVersionCardClick) {
                             e.preventDefault();
-                            onVersionCardClick(event.id.toString());
+                            onVersionCardClick(event.id.toString(), event.nombre);
                         }
                     }}
                 >
