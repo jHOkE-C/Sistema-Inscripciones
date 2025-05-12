@@ -15,10 +15,11 @@ import {
   DialogClose,
   DialogHeader,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { API_URL } from '@/hooks/useApiRequest';
 import { Loader2, Download, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+import LoadingAlert from '@/components/loading-alert';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
 
@@ -47,13 +48,20 @@ interface ModalPdfProps {
 
 const ordenarPostulantes = (data: Postulante[]): Postulante[] => {
   return [...data].sort((a, b) => {
+
     if (a.estado === "Pagado" && b.estado === "Pendiente") return -1;
     if (a.estado === "Pendiente" && b.estado === "Pagado") return 1;
 
-    const responsableComp = a.responsable.localeCompare(b.responsable);
+
+    const responsableA = a.responsable || '';
+    const responsableB = b.responsable || '';
+    const responsableComp = responsableA.localeCompare(responsableB);
     if (responsableComp !== 0) return responsableComp;
 
-    return a.apellidos.localeCompare(b.apellidos);
+
+    const apellidosA = a.apellidos || '';
+    const apellidosB = b.apellidos || '';
+    return apellidosA.localeCompare(apellidosB);
   });
 };
 
@@ -146,7 +154,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
     setPageNumber(1);
 
     try {
-      const apiUrl = `${API_URL}/api/olimpiadas/${gestion}/inscripciones-detalladas`
+      const apiUrl = `${API_URL}/api/olimpiadas/${gestion}/reporteDeInscripciones`
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -228,28 +236,46 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
     });
   };
 
+  const escogerHeader = () => {
+    if (pdfDataUrl && postulantes && postulantes.length > 0) {
+      return <Button onClick={handleExportarPdf} variant="outline" size="icon" className="absolute m-2 z-1 bg-background/40" title="Descargar PDF">
+                <Download className="h-4 w-4" />
+            </Button>
+    }
+    if (postulantes !== null && postulantes.length === 0) {
+      return <DialogTitle className="text-lg font-semibold">Sin Registros</DialogTitle>
+    }
+    return <DialogTitle className="text-lg font-semibold">Espere por favor</DialogTitle>
+    
+  }
+
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="bg-transparent sm:max-w-screen md:max-w-screen lg:max-w-screen xl:max-w-screen w-full h-full flex flex-col p-0 border-none rounded-lg text-black"
+      <DialogContent  
+        className={
+          `${pdfDataUrl && postulantes && postulantes.length > 0?
+            'bg-transparent p-0 border-none xl:max-w-screen w-full h-full sm:max-w-screen md:max-w-screen lg:max-w-screen ' 
+            : 
+            'bg-background '
+          } 
+           flex flex-col  rounded-l`}
       >
+        
+        <DialogHeader className="w-full max-w-md text-center">
+          {escogerHeader()}
+        </DialogHeader>
         {pdfDataUrl && postulantes && postulantes.length > 0 ? (
-          <>
-            <DialogHeader>
-              <Button onClick={handleExportarPdf} variant="outline" size="icon" className="pdf-download-button text-black" title="Descargar PDF">
-                <Download className="h-4 w-4" />
-              </Button>
-            </DialogHeader>
-
-            <div className="flex flex-col flex-grow overflow-hidden p-0 h-full text-black w-full">
-              <div className="pdf-controls flex items-center justify-between gap-2">
+          
+            <div className="flex flex-col flex-grow overflow-hidden p-0 h-full w-full">
+              <div className="pdf-controls flex items-center justify-between gap-2 bg-background/40">
                 <Button onClick={goToPrevPage} disabled={pageNumber <= 1} variant="outline" size="icon" title="Página anterior">
                   <ChevronLeft className="h-3 w-3" />
                 </Button>
                 
-                <span className="text-xl text-indigo-500 whitespace-nowrap">{pageNumber || '-'}</span>
-                <span className="text-xl text-indigo-500 whitespace-nowrap">/ {numPages || '-'}</span>
+                <span className="text-xl whitespace-nowrap">{pageNumber || '-'}</span>
+                <span className="text-xl whitespace-nowrap">/ {numPages || '-'}</span>
                 
                 <Button onClick={goToNextPage} disabled={pageNumber >= (numPages || 1)} variant="outline" size="icon" title="Página siguiente">
                   <ChevronRight className="h-3 w-3" />
@@ -258,7 +284,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
                 <Button onClick={zoomOut} variant="outline" size="icon" title="Reducir">
                   <ZoomOut className="h-3 w-3" />
                 </Button>
-                <span className="text-xl text-indigo-500 w-10 text-center whitespace-nowrap">{Math.round(scale * 100)}%</span>
+                <span className="text-xl w-10 text-center whitespace-nowrap">{Math.round(scale * 100)}%</span>
                 <Button onClick={zoomIn} variant="outline" size="icon" title="Ampliar" className="ml-2">
                   <ZoomIn className="h-3 w-3" />
                 </Button>
@@ -270,10 +296,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
                   onLoadSuccess={onDocumentLoadSuccess}
                   className="pdf-document h-full bg"
                   loading={
-                    <div className="loading-indicator flex flex-col items-center justify-center p-6">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                      <span>Cargando documento PDF...</span>
-                    </div>
+                    <LoadingAlert />
                   }
                   error={
                     <div className="error-message p-4 text-center bg-red-50 rounded-md border border-red-200">
@@ -305,28 +328,20 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
                 </Document>
               </div>
             </div>
-          </>
+          
         ) : postulantes !== null && postulantes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <Alert className="w-full max-w-md text-center">
-              <AlertTitle className="text-lg font-semibold">Sin Registros</AlertTitle>
-              <AlertDescription className="mt-2">
+          <>
+            <DialogDescription className="mt-2">
                 No existen registros de postulantes para la gestión seleccionada.
-              </AlertDescription>
-            </Alert>
+            </DialogDescription>
             <DialogFooter className="mt-6">
               <DialogClose asChild>
                 <Button variant="outline">Cerrar</Button>
               </DialogClose>
             </DialogFooter>
-          </div>
+          </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="mb-6 text-center text-muted-foreground max-w-sm">
-              {nombreOlimpiada ? `Cargando reporte de postulantes para la gestión ${nombreOlimpiada}...` : "Seleccione una gestión para continuar."}
-            </p>
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <LoadingAlert />
         )}
       </DialogContent>
     </Dialog>
