@@ -39,7 +39,7 @@ import type { Postulante } from "./columns";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
-    const { ci, codigo_lista, olimpiada_id } = useParams();
+    const { codigo_lista } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     const [editar, setEditar] = useState(false);
