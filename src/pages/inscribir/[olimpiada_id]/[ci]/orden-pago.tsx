@@ -1,5 +1,7 @@
 "use client";
-
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import "react-pdf/dist/esm/Page/TextLayer.css";
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 import type React from "react";
 
 import { useState } from "react";
@@ -14,49 +16,87 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, FileText, Download, CheckCircle2 } from "lucide-react";
+import { AlertCircle, Download, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
-import { descargarPDF, generarOrden, vizualizarPDF } from "@/utils/pdf";
-
+import { descargarPDF, generarOrden } from "@/utils/pdf";
+import type { Olimpiada } from "@/pages/admin/version/[id]/types";
+import { Document, Page, pdfjs } from "react-pdf";
 interface Props {
-    codigo: string;
+    codigo_lista: string;
+    olimpiada?: Olimpiada;
 }
+import { isMobile } from "react-device-detect";
+import { apiClient } from "@/api/request";
 
-interface Orden {
+export interface Orden {
+    id: string;
+    n_orden: string;
+    codigo_lista: string;
+    fecha_emision: string;
+    precio_unitario: string;
+    monto: string;
+    estado: string;
+    cantidad_inscripciones: number;
+    nombre_responsable?: string;
+    emitido_por: string;
+    nitci: string;
+    unidad: string;
+    concepto: string;
+    niveles_competencia: string[];
+}
+export interface DatosPrevios {
     codigo_lista: string;
     monto: number;
     estado: string;
     cantidad_inscripciones: number;
 }
-
-export default function OrdenPago({ codigo }: Props) {
+export default function OrdenPago({ codigo_lista }: Props) {
     const [formOpen, setFormOpen] = useState(false);
     const [pdfOpen, setPdfOpen] = useState(false);
     const [nombre, setNombre] = useState("");
-    const [nitCi, setNitCi] = useState("");
+    const [nitci, setNitCi] = useState("");
     const [error, setError] = useState<{ nombre?: string; nitCi?: string }>({});
     const [loading, setLoading] = useState(false);
     const [pdf, setPdf] = useState<Uint8Array>();
+    const [pdfBlob, setPdfBlob] = useState<Blob>();
 
-    const datos = {
-        codigo_lista: "",
-        monto: 0,
-        estado: "",
-        cantidad_inscripciones: 0,
-    };
-    const [datosPago, setDatosPago] = useState<Orden>(datos);
+    const [datosPago, setDatosPago] = useState<Orden>();
+    const [datosPrevios, setDatosPrevios] = useState<DatosPrevios>();
 
     const fetchOrden = async () => {
         try {
             const { data } = await axios.get<Orden>(
-                `${API_URL}/api/ordenes-pago/generate/${codigo}`
+                `${API_URL}/api/ordenes-pago/lista/${codigo_lista}`
             );
             setDatosPago(data);
-        } catch (err) {
-            toast.error("Hubo un error al cargar la orden.");
-            console.error(err);
+            const pdf = await generarOrden({
+                cantidad: data.cantidad_inscripciones,
+                ci: data.nitci,
+                concepto: data.concepto,
+                emitido_por: data.emitido_por,
+                importe: data.monto,
+                n_orden: data.n_orden,
+                nombre_responsable: data.nombre_responsable,
+                precio_unitario: data.precio_unitario,
+                unidad: data.unidad,
+                fecha_emision: data.fecha_emision,
+            });
+            setPdfOpen(true);
+            setPdfBlob(new Blob([pdf], { type: "application/pdf" }));
+            setPdf(pdf);
+        } catch {
+            //toast.error("Hubo un error al cargar la orden.");
+            try {
+                const response = await apiClient.get<DatosPrevios>(
+                    "/api/ordenes-pago/datos-previos/" + codigo_lista
+                );
+                setDatosPrevios(response);
+                setFormOpen(true);
+            } catch {
+                toast.error("Ocurrio un error");
+            }
         }
     };
 
@@ -96,7 +136,7 @@ export default function OrdenPago({ codigo }: Props) {
             newErrors.nombre = "Por favor ingrese el nombre";
         }
 
-        if (nitCi.trim() === "") {
+        if (nitci.trim() === "") {
             newErrors.nitCi = "Por favor ingrese un NIT/CI";
         }
 
@@ -104,16 +144,12 @@ export default function OrdenPago({ codigo }: Props) {
             setError(newErrors);
             return;
         }
-
-        // Simular petición al backend
         const data = {
-            codigo_lista: datosPago.codigo_lista,
-            estado: datosPago.estado,
-            senior: nombre,
-            emitido_por: "Sistema",
-            nitci: nitCi,
+            codigo_lista,
+            nombre_responsable: nombre,
+            emitido_por: "Sistema OhSansi",
+            nitci: nitci,
         };
-        console.log(data);
 
         const crearOrden = async () => {
             //generarOrden()
@@ -128,8 +164,7 @@ export default function OrdenPago({ codigo }: Props) {
             } catch (error) {
                 console.error("Error al crear la orden:", error);
             }
-            const pdf = await generarOrden();
-            setPdf(pdf);
+            await fetchOrden()
             setLoading(false);
         };
 
@@ -139,22 +174,6 @@ export default function OrdenPago({ codigo }: Props) {
     const handleDownload = async () => {
         try {
             if (pdf) descargarPDF(pdf);
-
-            // const response = await axios.get(
-            //     `${API_URL}/api/ordenes-pago/${datosPago.codigo_lista}/export`,
-            //     {
-            //         responseType: "blob", // 👈 importante para manejar el PDF
-            //     }
-            // );
-
-            // const url = window.URL.createObjectURL(new Blob([response.data]));
-            // const link = document.createElement("a");
-            // link.href = url;
-            // link.setAttribute("download", "orden-pago.pdf"); // puedes cambiar el nombre del archivo
-            // document.body.appendChild(link);
-            // link.click();
-            // link.remove();
-            // window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Error al descargar el PDF:", error);
         }
@@ -167,8 +186,9 @@ export default function OrdenPago({ codigo }: Props) {
 
     const onClick = async () => {
         await fetchOrden();
-        setFormOpen(true);
+        //setFormOpen(true);
     };
+
     return (
         <div>
             <Button onClick={onClick} variant="link">
@@ -189,24 +209,30 @@ export default function OrdenPago({ codigo }: Props) {
                             <div className="grid grid-cols-2 gap-3 p-4 rounded-lg border">
                                 <div className="font-medium">Código lista:</div>
                                 <div className="font-semibold">
-                                    {datosPago.codigo_lista}
+                                    {codigo_lista}
                                 </div>
 
                                 <div className="font-medium">Monto:</div>
                                 <div className="font-semibold">
-                                    {datosPago.monto} Bs.
+                                    {datosPrevios?.monto || "0"} Bs.
                                 </div>
 
                                 <div className="font-medium">Estado:</div>
                                 <div className="font-semibold capitalize">
-                                    {datosPago.estado}
+                                    {datosPrevios?.estado}
                                 </div>
 
                                 <div className="font-medium">
                                     Inscripciones:
                                 </div>
                                 <div className="font-semibold">
-                                    {datosPago.cantidad_inscripciones}
+                                    {datosPrevios?.cantidad_inscripciones}
+                                </div>
+
+                                <div className="font-medium">Importe:</div>
+                                <div className="font-semibold">
+                                    {(datosPrevios?.cantidad_inscripciones ?? 0) *
+                                        (datosPrevios?.monto ?? 0)}
                                 </div>
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-2">
@@ -227,7 +253,7 @@ export default function OrdenPago({ codigo }: Props) {
                                 <Label htmlFor="nitCi">NIT/CI</Label>
                                 <Input
                                     id="nitCi"
-                                    value={nitCi}
+                                    value={nitci}
                                     onChange={handleNitCiChange}
                                     placeholder="Ingrese NIT/CI"
                                     maxLength={10}
@@ -243,10 +269,7 @@ export default function OrdenPago({ codigo }: Props) {
                     </DialogDescription>
 
                     <DialogFooter className="gap-3 sm:gap-0 space-x-2">
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={loading}
-                        >
+                        <Button onClick={handleSubmit} disabled={loading}>
                             {loading ? "Procesando..." : "Continuar"}
                         </Button>
                         <Button
@@ -261,7 +284,7 @@ export default function OrdenPago({ codigo }: Props) {
 
             {/* Modal de la orden de pago (PDF) */}
             <Dialog open={pdfOpen} onOpenChange={setPdfOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:min-w-[650px]">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-semibold text-center flex items-center justify-center gap-2">
                             <CheckCircle2 className="h-5 w-5" />
@@ -269,44 +292,22 @@ export default function OrdenPago({ codigo }: Props) {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <DialogDescription asChild>
-                        <div className="flex flex-col items-center py-6">
-                            {/* Miniatura del PDF */}
-                            <div
-                                className="border rounded-md p-4 w-full max-w-xs bg-white shadow-md mb-4 hover:cursor-pointer"
-                                onClick={() => pdf && vizualizarPDF(pdf)}
-                            >
-                                <div className="flex justify-center mb-3">
-                                    <FileText className="h-12 w-12 text-gray-500" />
-                                </div>
+                    {pdfBlob && (
+                        <Document file={pdfBlob}>
+                            <Page
+                                pageNumber={1}
+                                className="shadow-lg mx-auto"
+                                renderTextLayer={false}
+                                renderAnnotationLayer={false}
+                                scale={isMobile ? 0.5 : 1}
+                            />
+                        </Document>
+                    )}
 
-                                {/* Simulación visual del contenido del PDF */}
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                                    <div className="flex justify-between mt-4">
-                                        <div className="h-6 bg-gray-300 rounded w-1/3"></div>
-                                        <div className="h-6 bg-gray-300 rounded w-1/4"></div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 text-center text-sm text-gray-500">
-                                    <p className="font-semibold">
-                                        Orden de Pago
-                                    </p>
-                                    <p>Sr./Sra.: {nombre}</p>
-                                    <p>NIT/CI: {nitCi}</p>
-                                </div>
-                            </div>
-
-                            <Button onClick={handleDownload} className="w-full">
-                                <Download className="mr-2 h-4 w-4" />
-                                Descargar PDF
-                            </Button>
-                        </div>
-                    </DialogDescription>
+                    <Button onClick={handleDownload} className="w-full">
+                        <Download className="mr-2 h-4 w-4" />
+                        Descargar PDF
+                    </Button>
                 </DialogContent>
             </Dialog>
         </div>

@@ -16,15 +16,16 @@ const fonts: {
 } = {};
 
 export interface DataOrden {
-    precio_unitario?: number;
-    importe?: number;
+    precio_unitario?: string | number;
+    importe?: string | number;
     ci?: string;
     n_orden?: string;
     emitido_por?: string;
-    cantidad?: number;
+    cantidad?: number | number;
     unidad?: string;
     nombre_responsable?: string;
     concepto?: string;
+    fecha_emision: string;
 }
 
 export const loadFonts = async (pdfDoc: PDFDocument) => {
@@ -43,35 +44,35 @@ export const header = (page: PDFPage, data: DataOrden) => {
         {
             text: "UNIVERSIDAD MAYOR DE SAN SIMÓN",
             x: 20,
-            y: 820,
+            y: 325,
             size: 10,
             font: fonts.HelveticaBold,
         },
         {
             text: "FACULTAD DE CIENCIAS Y TECNOLOGIA",
             x: 10,
-            y: 800,
+            y: 310,
             size: 10,
             font: fonts.TimesRomanBold,
         },
         {
             text: "SECRETARÍA ADMINISTRATIVA",
             x: 40,
-            y: 780,
+            y: 280 +15,
             size: 10,
             font: fonts.HelveticaBold,
         },
         {
             text: "ORDEN DE PAGO",
             x: 250,
-            y: 795,
+            y: 295 +15,
             size: 20,
             font: fonts.HelveticaBold,
         },
         {
             text: `N° ${data.n_orden}`,
             x: 450,
-            y: 795,
+            y: 295 +15,
             size: 20,
             color: rgb(1, 0, 0),
             font: fonts.TimesRomanBold,
@@ -107,36 +108,36 @@ export const drawCenteredText = (
 const datosResponsable = (page: PDFPage, data: DataOrden) => {
     page.drawText("Emitido por la Unidad:", {
         x: 10,
-        y: 755,
+        y: 255 +15,
         size: 10,
     });
     page.drawText(data.emitido_por || "", {
         x: 120,
-        y: 755,
+        y: 255 +15,
         size: 10,
 
         font: fonts.HelveticaBold,
     });
     page.drawText("Señor(es):", {
         x: 10,
-        y: 740,
+        y: 240 +15,
         size: 10,
     });
     page.drawText(data.nombre_responsable || "", {
         x: 80,
-        y: 740,
+        y: 240 +15,
         size: 10,
         font: fonts.HelveticaBold,
     });
 
     page.drawText("NIT/CI:", {
         x: 450,
-        y: 740,
+        y: 240 +15,
         size: 10,
     });
     page.drawText(data.ci || "", {
         x: 485,
-        y: 740,
+        y: 240 +15,
         size: 10,
         opacity: 0.75,
         font: fonts.HelveticaBold,
@@ -144,18 +145,18 @@ const datosResponsable = (page: PDFPage, data: DataOrden) => {
 
     page.drawText("Por lo siguiente:", {
         x: 10,
-        y: 725,
+        y: 225 +15,
         size: 10,
     });
     page.drawText("DEBE", {
         x: 500,
-        y: 725,
+        y: 225 +15,
         size: 10,
     });
 };
 
 const datosInscripcion = (page: PDFPage, data: DataOrden) => {
-    const yInit = 694;
+    const yInit = 210;
     const h = 20;
     let xInitTable = 10;
     const wCantidad = 60;
@@ -271,7 +272,7 @@ const datosInscripcion = (page: PDFPage, data: DataOrden) => {
 
     page.drawText(data.concepto + "", {
         x: xInitTable + 10,
-        y: 700 - h,
+        y: 200 +15 - h,
         size: 10,
         color: rgb(0, 0, 0),
         font: fonts.HelveticaOblique,
@@ -392,13 +393,14 @@ const datosInscripcion = (page: PDFPage, data: DataOrden) => {
         y,
         size: 12,
     });
-    page.drawText(`${numeroALetras(data.importe || 0)} 00/100 Bolivianos`, {
+    page.drawText(`${numeroALetras(Number(data.importe))} 00/100 Bolivianos`, {
         x: 40,
         y,
         size: 12,
         font: fonts.HelveticaBold,
     });
-    const date = new Date();
+    const date = new Date(data.fecha_emision + "Z");
+
     const formattedDate = date.toLocaleDateString("es-ES", {
         year: "numeric",
         month: "long",
@@ -440,11 +442,13 @@ export const generarOrden = async (
         concepto:
             "Inscripcion Olimpiada San Simón \n \tFisica - 3ro Sec\n \tQuimica - 3ro Sec \n\t Informatica - Cat Puma",
         n_orden: "001001",
+        fecha_emision: "",
     }
 ) => {
     const pdfDoc = await PDFDocument.create();
     await loadFonts(pdfDoc);
     const page = pdfDoc.addPage();
+    page.setSize(page.getWidth(),350)
     header(page, dataOrden);
     datosResponsable(page, dataOrden);
     datosInscripcion(page, dataOrden);
@@ -470,7 +474,7 @@ export const vizualizarPDF = (pdfBytes: Uint8Array) => {
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.target="_blank"
+    link.target = "_blank";
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
