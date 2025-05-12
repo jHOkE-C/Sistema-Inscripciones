@@ -50,16 +50,20 @@ export default function UsersPage() {
     try {
       const res = await axios.get(`${API_URL}/api/usuarios/`);
       setUserData(res.data);
+      fetchUserData();
     } catch (error) {
       console.error("Error fetching user data:", error);
       toast.error("Error al cargar los datos de los usuarios");
     }
   };
 
+
   useEffect(() => {
-    fetchUserData();
     fetchAvailableRoles();
-  }, []);
+    fetchUserData();
+  });
+
+
 
   return (
     <div className="grid gap-6">
@@ -108,31 +112,20 @@ function UserCard({
   const handleSaveRoles = async () => {
     const rolesAssinados = {
       usuario_id: user.id,
-      roles: selectedRoleIds
-    }
-    console.log(rolesAssinados)
-    return
+      roles: selectedRoleIds,
+    };
+    console.log(rolesAssinados);
     try {
-      await axios.post(`${API_URL}/api/roles/usuario`, {
-      });
+      await axios.post(`${API_URL}/api/roles/usuario`, rolesAssinados);
+      toast.success(
+        `Se han asignado ${selectedRoleIds.length} roles a ${user.nombre_usuario}`
+      );
+      setIsDialogOpen(false);
     } catch (error) {
       console.error("Error saving roles:", error);
       toast.error("Error al guardar los roles");
     }
 
-
-    // In a real app, you would make an API call here to save the role assignments
-    console.log(
-      `Assigning roles with IDs ${selectedRoleIds} to user ${user.nombre_usuario}`
-    );
-
-    console.log(selectedRoleIds)
-
-    toast.success(
-      `Se han asignado ${selectedRoleIds.length} roles a ${user.nombre_usuario}`
-    );
-
-    setIsDialogOpen(false);
   };
 
   return (
