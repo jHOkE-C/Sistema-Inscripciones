@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {  Users, Link as Asociar, Layers2, Trophy, Clock, FileUp, FileSpreadsheet, Check, UserPlus, ShieldUser } from "lucide-react";
+import {  Users, Link as Asociar, Layers2, Trophy, Clock, FileUp, FileSpreadsheet, Check, UserPlus, ShieldUser, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 import { AreasModal } from "./areas-modal";
@@ -133,6 +133,16 @@ export default function Botones() {
             <Link to="./asignar-roles">
               <ShieldUser className="size-8 mb-1" />
               <span className="text-lg font-semibold">Asignar Roles</span>
+            </Link>
+          </Button>
+
+          <Button
+            className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1"
+            asChild
+          >
+            <Link to="./asignar-privilegios">
+              <ShieldCheck className="size-8 mb-1" />
+              <span className="text-lg font-semibold">Asignar Privilegios</span>
             </Link>
           </Button>
         </div>
