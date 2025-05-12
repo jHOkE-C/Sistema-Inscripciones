@@ -17,6 +17,7 @@ const colorClasses: Record<string, { bg: string; hover: string }> = {
 export default function ButtonsGrid({ buttons, children }: ButtonsGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {children}
       {buttons.map(({ label, to, Icon, color }) => {
         const classes = colorClasses[color] || { bg: '', hover: '' };
         return (
@@ -32,7 +33,6 @@ export default function ButtonsGrid({ buttons, children }: ButtonsGridProps) {
           </Button>
         );
       })}
-      {children}
     </div>
   );
 }

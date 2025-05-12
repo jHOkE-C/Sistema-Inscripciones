@@ -8,22 +8,18 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { NotebookPen, FileIcon, Plus, Receipt, PenBox } from "lucide-react";
+import { NotebookPen, FileIcon, Plus, Receipt } from "lucide-react";
 import { apiClient } from "@/api/request";
 import { Olimpiada } from "@/types/versiones.type";
+import InscribirPostulante from "../../../../components/InscribirPostulante";
+import ShareUrl from "../../ShareUrl";
 
 const Page = () => {
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { ci, olimpiada_id } = useParams();
     const buttons: ButtonConfig[] = [
-        {
-            label: "Inscribir Postulante/s",
-            to: `registrar`,
-            Icon: PenBox,
-            color: "sky",
-        },
         {
             label: "Crear Lista",
             to: `crearLista`,
@@ -47,7 +43,8 @@ const Page = () => {
             to: `generarOrden`,
             Icon: Receipt,
             color: "amber",
-        },{
+        },
+        {
             label: "Subir Comprobante de Pago",
             to: `subirComprobanteDePago`,
             Icon: Receipt,
@@ -61,7 +58,8 @@ const Page = () => {
         setOlimpiada(olimpiada);
     };
     useEffect(() => {
-        if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
+        if (!ci || ci.length < 7 || ci.length > 10) return;
+        fetchData();
         getOlimpiada();
     }, []);
 
@@ -74,6 +72,7 @@ const Page = () => {
         setLoading(true);
         try {
             await getListasPostulantes(ci);
+            setOpenFormResponsable(false);
         } catch {
             setOpenFormResponsable(true);
         } finally {
@@ -101,20 +100,21 @@ const Page = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
-                <ReturnComponent to="/"/>
+                <ReturnComponent to="/" />
             </div>
 
-                <h1 className="text-3xl font-bold text-center">
-                    Bienvenido a la Olimpiada {olimpiada?.nombre}
-                </h1>
-                <p className="text-center">
-                    Selecciona alguna de las opciones que realizara en la
-                    olimpiada
-                </p>
+            <h1 className="text-3xl font-bold text-center">
+                Bienvenido a la Olimpiada {olimpiada?.nombre}
+            </h1>
+            <p className="text-center">
+                Selecciona alguna de las opciones que realizara en la olimpiada
+            </p>
             <div className="w-full p-4 md:w-3/5 mx-auto my-auto gap-3 flex flex-col">
-                <ButtonsGrid buttons={buttons} />
+                <ButtonsGrid buttons={buttons}>
+                    <InscribirPostulante />
+                </ButtonsGrid>
             </div>
-
+            <ShareUrl />
             <Footer />
         </div>
     );

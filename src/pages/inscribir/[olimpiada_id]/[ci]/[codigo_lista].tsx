@@ -30,11 +30,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/api/listas";
-import type { Postulante } from "../columns";
+
 import DialogPostulante from "@/components/DialogPostulante";
 import type { postulanteSchema } from "@/components/FormPostulante";
 import type { z } from "zod";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
+import type { Postulante } from "./columns";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
