@@ -61,7 +61,7 @@ export default function UsersPage() {
   useEffect(() => {
     fetchAvailableRoles();
     fetchUserData();
-  });
+  },[]);
 
 
 
