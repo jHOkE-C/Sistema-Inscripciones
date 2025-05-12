@@ -3,6 +3,7 @@ import {  Users, Link as Asociar, Layers2, Trophy, Clock, FileUp, FileSpreadshee
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 import { AreasModal } from "./areas-modal";
+import CrearRol from "./crear-rol/page";
 
 export default function Botones() {
     return (
@@ -122,6 +123,8 @@ export default function Botones() {
               <span className="text-lg font-semibold">Crear Usuario</span>
             </Link>
           </Button>
+
+          <CrearRol />
         </div>
       </div>
     );
