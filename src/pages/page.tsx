@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import { Calendar, Medal, Trophy, Users } from "lucide-react";
 import { OlimpiadasCarousel } from "./carousel";
 import Header from "@/components/Header";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const PageHome = () => {
   return (
@@ -12,36 +14,35 @@ const PageHome = () => {
       {/* Main */}
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-5 bg-gradient-to-b from-background-50 to-background">
-           
           <div className="px-6 md:px-10">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="space-y-4">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Sistema de Inscripciones para las Olimpiadas ohSansi
+                  Sistema de Inscripciones para las Olimpiadas Oh!SanSi
                 </h1>
                 <p className="max-w-[600px] text-foreground/70 md:text-xl">
                   Regístrate, sigue los eventos y participa en las competencias
                   más emocionantes del año.
                 </p>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
- 
-
-                  
-                </div>
+                <Button>
+                  <Link to="/consultar-estado">Consultar estado de Inscripción</Link>
+                </Button>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row"></div>
               </div>
-              
-              <div className="mx-auto lg:mr-0 w-full max-w-[500px] h-[350px] aspect-video rounded-xl overflow-hidden">
-                <img
 
+              <div className="mx-auto lg:mr-0 w-full max-w-[500px] h-[350px] aspect-video rounded-xl overflow-hidden hidden sm:block">
+                <img
                   alt="Olimpiadas ohSansi"
-                  className="object-cover w-full h-full drop-shadow-white drop-shadow-xs"
+                  className="object-cover w-full h-full drop-shadow-white drop-shadow-xs "
                   src="/ohsansi.png"
                 />
               </div>
             </div>
           </div>
         </section>
-        <h2 className="text-3xl md:text-5xl text-center md:p-10 text-foreground tracking-wide">OLIMPIADAS NACIONALES <br/> SAN SIMÓN {new Date().getFullYear()}</h2>
+        <h2 className="text-3xl md:text-5xl text-center md:p-10 text-foreground tracking-wide">
+          OLIMPIADAS NACIONALES <br /> SAN SIMÓN {new Date().getFullYear()}
+        </h2>
         <OlimpiadasCarousel />
 
         {/* Características */}

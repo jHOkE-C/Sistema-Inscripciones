@@ -199,8 +199,7 @@ export function OlimpiadasCarousel() {
                                                         ) : (
                                                             <div className="flex items-center gap-2">
                                                                 <Download className="h-4 w-4" />
-                                                                Descargar
-                                                                Plantilla Excel
+                                                                Plantilla de Inscripción
                                                             </div>
                                                         )}
                                                     </Button>
