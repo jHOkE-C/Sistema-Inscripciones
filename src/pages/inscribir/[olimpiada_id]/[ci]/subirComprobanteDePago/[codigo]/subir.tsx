@@ -709,9 +709,6 @@ const SubirComprobantePage = () => {
                       <strong className="font-semibold">Documento:</strong>{' '}
                       {result.extractedData.documento || 'No encontrado'}
                     </p>
-                    <p>
-                      {result.extractedData.fullText || 'No encontrado'}
-                    </p>
                   </>
                 ) : (
                   <p className="text-sm text-red-500">Error en OCR.</p>
