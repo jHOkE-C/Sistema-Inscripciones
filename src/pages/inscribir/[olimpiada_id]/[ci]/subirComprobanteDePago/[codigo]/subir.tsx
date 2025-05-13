@@ -5,7 +5,7 @@ import cv from '@techstark/opencv-js';
 import ReturnComponent from '@/components/ReturnComponent';
 import FileUpload from '@/components/fileUpload';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Loader2, ChevronDown } from 'lucide-react';
 import LoadingAlert from '@/components/loading-alert';
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -136,7 +136,7 @@ const SubirComprobantePage = () => {
         tessedit_pageseg_mode:     PSM.SINGLE_BLOCK,
         preserve_interword_spaces: '1',
         tessedit_char_whitelist:
-          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:/.-, '
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:- '
       });
     
       setTesseractWorker(worker);
@@ -298,10 +298,10 @@ const SubirComprobantePage = () => {
   };
 
   const scaleGraysPipelineV2 = (src: CvMat): CvMat => {
-    // ───── parámetros de ajuste “anti-grano” ──────────────────────────────
+    // ───── parámetros de ajuste "anti-grano" ──────────────────────────────
     const CLAHE_CLIP = 1.5;   // contraste local más moderado (antes 2.5)
     const BLOCK      = 31;    // tamaño del bloque del umbral adaptativo
-    const C_TH       = 11;    // C más alto ⇒ menos “sal y pimienta”
+    const C_TH       = 11;    // C más alto ⇒ menos "sal y pimienta"
     const KSIZE      = 3;     // kernel elíptico 3×3
     const MIN_AREA   = 20;    // elimina manchas < 20 px²
     // ──────────────────────────────────────────────────────────────────────
@@ -407,15 +407,76 @@ const SubirComprobantePage = () => {
          .trim();
     
     const textClean = clean(text);    
-    const nroMatch = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*\d+(?:[\s.]+\d+)*)/i);
-    const fechaMatch = textClean.match(/([Ff][Ee]?[Cc]?[Hh]?[Aa]?\s*:?\s*\d{2}[-/]\d{2}[-/]\d{2,4}(?:\s+\d{2}[-:]\d{2})?)/i);
+    
+    
+    const nroMatch = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*\d[\d\s.]+)/i);
+    const fechaMatch = textClean.match(/([Ff][Ee]?[Cc]?[Hh]?[Aa]?\s*:?\s*\d{1,2}[-/]\d{1,2}[-/]\d{2,4}(?:\s+\d{1,2}[-:]\d{1,2})?)/i);
     const nroControl = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*(?:[Dd][Ee]\s*)?[Cc][Oo][Nn][Tt][Rr][Oo][Ll]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
     const documento = textClean.match(/([Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Oo]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
+    
+    
+    let cleanNro = null;
+    if (nroMatch) {
+    
+      const soloDigitos = nroMatch[1].replace(/\D/g, '');
+    
+      if (soloDigitos.length >= 7) {
+        cleanNro = soloDigitos;
+      }
+    }
+    
+    
+    let cleanFecha = null;
+    if (fechaMatch) {
+      
+      const fechaCompleta = fechaMatch[1];
+      
+      
+      const fechaRegex = /(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})(?:\s+(\d{1,2})[-:](\d{1,2}))?/;
+      const fechaParts = fechaCompleta.match(fechaRegex);
+      
+      if (fechaParts) {
+    
+        const [, dia, mes, anio, hora, minutos] = fechaParts;
+        const diaNum = parseInt(dia, 10);
+        const mesNum = parseInt(mes, 10);
+        const anioNum = parseInt(anio, 10);
+        
+        
+        if (diaNum >= 1 && diaNum <= 31 && 
+            mesNum >= 1 && mesNum <= 12 && 
+            anioNum >= 0) {
+          
+          
+          cleanFecha = `${diaNum.toString().padStart(2, '0')}-${mesNum.toString().padStart(2, '0')}-${anioNum < 100 ? anioNum.toString().padStart(2, '0') : anioNum}`;
+          
+          
+          if (hora && minutos) {
+            const horaNum = parseInt(hora, 10);
+            const minutosNum = parseInt(minutos, 10);
+            
+            
+            if (horaNum >= 0 && horaNum <= 23 && minutosNum >= 0 && minutosNum <= 59) {
+              cleanFecha += ` ${horaNum.toString().padStart(2, '0')}:${minutosNum.toString().padStart(2, '0')}`;
+            }
+          }
+        }
+      }
+    }
+    
+    
+    const cleanNroControl = nroControl ? 
+      nroControl[1].replace(/^[Nn][Rr][Oo]\.?\s*(?:[Dd][Ee]\s*)?[Cc][Oo][Nn][Tt][Rr][Oo][Ll]\s*:?\s*/i, '').replace(/\s+/g, '') : 
+      null;
+      
+    const cleanDocumento = documento ? 
+      documento[1].replace(/^[Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Oo]\s*:?\s*/i, '').replace(/\s+/g, '') : 
+      null;
     return {
-      nro: nroMatch ? nroMatch[1] : null,
-      fecha: fechaMatch ? fechaMatch[1] : null,
-      nroControl: nroControl ? nroControl[1] : null,
-      documento: documento ? documento[1] : null,
+      nro: cleanNro,
+      fecha: cleanFecha,
+      nroControl: cleanNroControl,
+      documento: cleanDocumento,
       fullText: textClean || null
     };
   };
@@ -616,25 +677,20 @@ const SubirComprobantePage = () => {
         <div ref={step3Ref} className="p-4 border rounded-md shadow-sm bg-card">
           <h2 className="text-lg font-semibold mb-2">3. Resultados del OCR</h2>
           <div className="flex">
-          <ChevronRight className='h-8 w-8 text-primary animate-bounce' />
+          
           <h2 className="text-lg mb-4 text-indigo-500">Seleccione el resultado que muestre la información más clara prioridad fecha y nro</h2>
-          <ChevronLeft className='h-8 w-8 text-primary animate-bounce' />
+          
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {ocrResults.map((result) => (
               <div 
                 key={result.id} 
-                className={`border p-3 rounded bg-background break-words cursor-pointer hover:border-primary transition-colors ${
-                  selectedResultId === result.id ? "ring-8 ring-primary border-primary" : ""
+                className={`border p-3 rounded bg-background break-words cursor-pointer hover:border-primary hover:border-4 transition-colors ${
+                  selectedResultId === result.id ? "border-4 ring-primary border-primary" : ""
                 }`}
                 onClick={() => setSelectedResultId(result.id)}
               >
                 <h3 className="font-medium mb-1">{result.name}</h3>
-                {result.processingTime && (
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Tiempo: {(result.processingTime / 1000).toFixed(2)}s
-                  </p>
-                )}
                 {result.extractedData ? (
                   <>
                     <p className="text-sm">
@@ -653,14 +709,9 @@ const SubirComprobantePage = () => {
                       <strong className="font-semibold">Documento:</strong>{' '}
                       {result.extractedData.documento || 'No encontrado'}
                     </p>
-                    <details className="mt-2">
-                      <summary className="text-sm cursor-pointer text-muted-foreground hover:text-foreground">
-                        Texto completo
-                      </summary>
-                      <p className="text-xs mt-1 p-2 bg-muted rounded max-h-60 overflow-y-auto whitespace-pre-wrap">
-                        {result.extractedData.fullText || 'No disponible'}
-                      </p>
-                    </details>
+                    <p>
+                      {result.extractedData.fullText || 'No encontrado'}
+                    </p>
                   </>
                 ) : (
                   <p className="text-sm text-red-500">Error en OCR.</p>
