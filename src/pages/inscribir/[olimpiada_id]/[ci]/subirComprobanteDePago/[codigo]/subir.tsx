@@ -376,7 +376,7 @@ const SubirComprobantePage = () => {
       const {
         data: { text }
       } = await worker.recognize(imageDataUrl);
-      const extracted = extractData(text);
+      const extracted:ExtractedData = extractData(text);
       return {
         id,
         name,
