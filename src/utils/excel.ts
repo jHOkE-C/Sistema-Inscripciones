@@ -52,7 +52,7 @@ export const generarExcel = async (
             { name: "Correo pertenece a" },
         ];
         for (let index = 1; index <= olimpiada.limite_inscripciones; index++) {
-            columns = [...columns, { name: "Área categoría " + index+ (index>1? "(opcional)" :"") }];
+            columns = [...columns, { name: "Área categoría " + index+ (index>1? " (opcional)" :" ") }];
         }
 
         ws.getColumn(4).numFmt = "dd/mm/yyyy";
