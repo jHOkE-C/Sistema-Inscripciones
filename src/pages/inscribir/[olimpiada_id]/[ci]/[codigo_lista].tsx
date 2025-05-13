@@ -36,6 +36,7 @@ import type { postulanteSchema } from "@/components/FormPostulante";
 import type { z } from "zod";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
 import type { Postulante } from "./columns";
+import { Check } from "lucide-react";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);
@@ -188,7 +189,12 @@ export const ButtonFinalizarRegistro = ({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                {show && <Button>Finalizar registro</Button>}
+                {show && (
+                    <Button>
+                        <Check />
+                        Finalizar registro
+                    </Button>
+                )}
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

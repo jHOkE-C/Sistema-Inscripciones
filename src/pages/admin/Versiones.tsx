@@ -24,9 +24,10 @@ import { Button } from "@/components/ui/button";
 interface VersionesProps {
     versiones: Version[];
     onVersionCardClick?: (id: string, nombre: string) => void;
+    container?: React.ReactNode;
 }
 
-export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
+export function Versiones({ versiones, onVersionCardClick, container=null }: VersionesProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedYear, setSelectedYear] = useState<string>("");
     const [sortConfig, setSortConfig] = useState<{ key: keyof Version | 'duracion'; direction: 'asc' | 'desc' }>({
@@ -193,7 +194,7 @@ export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
                 {processedVersiones.map((event) => (
                     <Link
-                        to={`${event.id}`}
+                        to={`${container ? "#" : event.id}`}
                         key={event.id}
                         onClick={(e) => {
                             if (onVersionCardClick) {
@@ -203,7 +204,9 @@ export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
                         }}
                     >
                         <Card
-                            className="flex flex-col h-full hover:text-primary hover:border-primary border-2 transition-all duration-200 ease-in-out transform hover:scale-105"
+                            className={`flex flex-col h-full  border-2 transition-all duration-200 ease-in-out 
+                                transform  ${container ? "cursor-default" : "hover:scale-105 hover:text-primary hover:border-primary"}`}
+                            
                         >
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
@@ -216,6 +219,7 @@ export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
                                 </div>
                             </CardHeader>
                             <CardContent className="flex-grow">
+                                {container? container : (
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2">
                                         <CalendarDays className="h-4 w-4 text-muted-foreground" />
@@ -227,8 +231,6 @@ export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
                                                 {formatDate(event.fecha_inicio)}
                                             </p>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
                                         <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                         <div>
                                             <p className="text-sm font-medium">
@@ -240,6 +242,7 @@ export function Versiones({ versiones, onVersionCardClick }: VersionesProps) {
                                         </div>
                                     </div>
                                 </div>
+                                )}
                             </CardContent>
                             <CardFooter className="border-t pt-4">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">

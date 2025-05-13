@@ -9,6 +9,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
 import { Version } from "@/types/versiones.type";
 import ModalPdf from "./modalPdf";
+import { Button } from "@/components/ui/button";
 
 const Admin = () => {
     const [versiones, setData] = useState<Version[]>([]);
@@ -52,13 +53,23 @@ const Admin = () => {
             <div className="flex flex-col min-h-screen">
                 <div className="w-full p-4 md:w-4/5 mx-auto">
                     <h1 className="text-4xl font-bold text-center py-4">
-                        Seleccione una olimpiada para Generar la plantilla de
-                        Excel
+                        Seleccione una olimpiada para Generar el Reporte deseado
                     </h1>
                     {versiones.length > 0 ? (
                         <Versiones
                             versiones={versiones}
-                            onVersionCardClick={(gestionId: string, nombre:string) => handleAbrirModalConGestion(gestionId, nombre)}
+                            container = {
+                                <div className="flex justify-center">
+                                    <Button onClick={() => {
+                                        if (versiones.length > 0) {
+                                            const version = versiones[0];
+                                            handleAbrirModalConGestion(version.id.toString(), version.nombre);
+                                        }
+                                    }}>
+                                        Generar Reporte General
+                                    </Button>
+                                </div>
+                            }
                         />
                     ) : (
                         <p className="text-center text-gray-500">
