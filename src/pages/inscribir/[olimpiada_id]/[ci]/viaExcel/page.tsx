@@ -1,7 +1,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { DataTable } from "../../../TableList";
 import { columns, ListaPostulantes } from "../../../columns";
-import React, { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ShareUrl from "../../../ShareUrl";
 import { getListasPostulantes } from "@/api/postulantes";
@@ -9,38 +9,19 @@ import FormResponsable from "../../../FormResponsable";
 import NotFoundPage from "../../../../404";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
-const FileUploadModal = React.lazy(
-    () => import("../viaExcel/file-upload-modal")
-);
+import InscribirExcel from "./InscribirExcel"
+
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../orden-pago";
-import { getOlimpiada } from "@/api/olimpiada";
-import type { Olimpiada } from "@/types/versiones.type";
-
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
-    const { ci, olimpiada_id } = useParams();
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
+    const { ci, olimpiada_id } = useParams();
 
-    const getData = async () => {
-        try {
-            if (!olimpiada_id) {
-                throw new Error("No se proporciono un id de olimpiada");
-            }
-            const olimpiada = await getOlimpiada(olimpiada_id);
-            setOlimpiada(olimpiada);
-            console.log(olimpiada);
-        } catch (e) {
-            //recordatoro falta mejorar esta wea
-            console.log(e);
-        }
-    };
     useEffect(() => {
-        getData();
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
     }, []);
 
@@ -119,29 +100,7 @@ const Page = () => {
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
-                            <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
-                                <div className="flex gap-2 items-center">
-                                    <Suspense fallback={<Loading />}>
-                                        <FileUploadModal
-                                            maxFiles={1}
-                                            maxSize={10}
-                                            accept=".xlsx,.xls"
-                                            onFilesChange={(files) =>
-                                                console.log(
-                                                    "Files changed:",
-                                                    files
-                                                )
-                                            }
-                                            triggerText="Añadir archivo Excel"
-                                            title="Añadir archivo Excel"
-                                            description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
-                                            olimpiadaP={
-                                                olimpiada ? [olimpiada] : []
-                                            }
-                                        />
-                                    </Suspense>
-                                </div>
-                            </div>
+                            <InscribirExcel/>
                             <DataTable
                                 goToCode
                                 columns={columnsWithActions}
