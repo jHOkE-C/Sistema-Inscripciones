@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Download, CheckCircle2 } from "lucide-react";
+import { AlertCircle, Download, CheckCircle2, PenBox } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
@@ -64,6 +64,18 @@ export default function OrdenPago({ codigo_lista }: Props) {
 
     const [datosPrevios, setDatosPrevios] = useState<DatosPrevios>();
 
+    const fetchDatosPrevios = async () => {
+        try {
+            const response = await apiClient.get<DatosPrevios>(
+                "/api/ordenes-pago/datos-previos/" + codigo_lista
+            );
+            setDatosPrevios(response);
+            setFormOpen(true);
+        } catch {
+            toast.error("Ocurrio un error");
+        }
+    };
+
     const fetchOrden = async () => {
         try {
             const { data } = await axios.get<Orden>(
@@ -86,15 +98,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
             setPdf(pdf);
         } catch {
             //toast.error("Hubo un error al cargar la orden.");
-            try {
-                const response = await apiClient.get<DatosPrevios>(
-                    "/api/ordenes-pago/datos-previos/" + codigo_lista
-                );
-                setDatosPrevios(response);
-                setFormOpen(true);
-            } catch {
-                toast.error("Ocurrio un error");
-            }
+            await fetchDatosPrevios();
         }
     };
 
@@ -162,7 +166,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
             } catch (error) {
                 console.error("Error al crear la orden:", error);
             }
-            await fetchOrden()
+            await fetchOrden();
             setLoading(false);
         };
 
@@ -227,11 +231,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                     {datosPrevios?.cantidad_inscripciones}
                                 </div>
 
-                                <div className="font-medium">Importe:</div>
-                                <div className="font-semibold">
-                                    {(datosPrevios?.cantidad_inscripciones ?? 0) *
-                                        (datosPrevios?.monto ?? 0)}
-                                </div>
+                                
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-2">
                                 <Label htmlFor="nombre">Sr./Sra.</Label>
@@ -301,11 +301,24 @@ export default function OrdenPago({ codigo_lista }: Props) {
                             />
                         </Document>
                     )}
-
-                    <Button onClick={handleDownload} className="w-full">
-                        <Download className="mr-2 h-4 w-4" />
-                        Descargar PDF
-                    </Button>
+                    <div className="flex justify-between w-full">
+                        <Button onClick={handleDownload} className="">
+                            <Download className="mr-2 h-4 w-4" />
+                            Descargar PDF
+                        </Button>
+                        <Button
+                            variant={"secondary"}
+                            onClick={() => {
+                                setPdfOpen(false);
+                                fetchDatosPrevios()
+                       
+                            }}
+                            className=""
+                        >
+                            <PenBox className="mr-2 h-4 w-4" />
+                            Modificar Orden
+                        </Button>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

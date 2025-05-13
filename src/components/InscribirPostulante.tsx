@@ -124,12 +124,15 @@ const InscribirPostulante = () => {
                                     <TableCell className=" w-[200px]">
                                         Cantidad Postulantes
                                     </TableCell>
+                                    <TableCell className=" w-[200px]">
+                                        Fecha de Creacion
+                                    </TableCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="">
                                 {listas.map(
                                     (
-                                        { codigo_lista, postulantes_count },
+                                        { codigo_lista, postulantes_count,created_at },
                                         i
                                     ) => (
                                         <TableRow
@@ -144,6 +147,9 @@ const InscribirPostulante = () => {
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 {postulantes_count}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                {created_at.toString()}
                                             </TableCell>
                                         </TableRow>
                                     )

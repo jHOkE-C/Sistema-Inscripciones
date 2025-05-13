@@ -29,7 +29,7 @@ export default function Page() {
         fetchData();
     }, []);
     if (!codigo) return;
-    
+
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -64,7 +64,9 @@ export default function Page() {
                         </CardHeader>
                         <CardContent className="overflow-x-auto space-y-5">
                             <div className="flex justify-between">
-                                <Button onClick={navegarASubirComprobante}>Subir Comprobante de Pago</Button>
+                                <Button onClick={navegarASubirComprobante}>
+                                    Subir Comprobante de Pago
+                                </Button>
                             </div>
                             <Table>
                                 {data.length === 0 && (
