@@ -94,6 +94,7 @@ export const grados = [
 // Moved types from viaExcel/types.ts
 export type UploadResponse = {
     message: string;
+    codigo_lista?: string;
 };
 
 //utilizado para el response de una peticion de all areas con categorias

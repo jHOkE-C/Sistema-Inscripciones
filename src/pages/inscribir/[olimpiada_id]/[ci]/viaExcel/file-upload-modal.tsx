@@ -44,6 +44,7 @@ import {
     getAreasConCategorias,
     getCategoriasOlimpiada,
 } from "@/api/categorias";
+import { useNavigate } from "react-router-dom";
 
 interface FileUploadModalProps {
     maxFiles?: number;
@@ -70,6 +71,7 @@ export default function FileUploadModal({
 }: FileUploadModalProps) {
     const [files, setFiles] = useState<File[]>([]);
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
     const { ci, codigo, codigo_lista } = useParams();
     const [loading, setLoading] = useState(false);
@@ -140,6 +142,7 @@ export default function FileUploadModal({
                             });
                         areasMap.set(grado.id, categoriasConArea);
                     });
+                    console.log(areasMap);
                     setAreasCategorias(areasMap);
                 } catch (error) {
                     console.error(
@@ -285,13 +288,11 @@ export default function FileUploadModal({
                 `${API_URL}/api/inscripciones/bulk`,
                 payload
             );
-            //recordatorio
-            console.log("Respuesta del servidor:", response.data);
-
             toast.success("Postulantes registrados exitosamente");
             onSubmit();
             setOpen(false);
             setFiles([]);
+            navigate(`./${response.data.codigo_lista}`)
         } catch (err: unknown) {
             console.log("Aqui", err);
             let errorMessage = "Error al procesar el archivo.";
