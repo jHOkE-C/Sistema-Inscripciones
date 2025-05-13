@@ -49,11 +49,11 @@ export async function ExcelParser(file: File): Promise<FileParseResult> {
     const camposFaltantes = validarCamposRequeridos(headers);
     if (camposFaltantes.length > 0) {
       erroresDeFormato.push(
-        ...camposFaltantes.map(col => ({
-          fila: 0,
-          columna: col,
-          mensaje: `Falta la columna ${col}`,
-          hoja: 0,
+        ...camposFaltantes.map(faltante => ({
+          fila: 1,
+          columna: "cabezera" + faltante.columna,
+          mensaje: `Falta el nombre de la cabezera:"${faltante.campo}"`,
+          hoja: 0,  
           campo: '',
         }))
       );

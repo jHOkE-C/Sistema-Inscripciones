@@ -1,34 +1,73 @@
 "use client";
-//utilizen si quieren esto por que hay mucho codigo repetido tal cual a este tsx
+
 import { Versiones } from "@/pages/admin/Versiones";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "@/hooks/useApiRequest";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
-import { Version } from "@/types/versiones.type";
+import { Version, VersionFilter } from "@/types/versiones.type";
 
-interface VersionesPageProps {
+
+
+export interface VersionesPageProps {
   title: string;
   returnTo?: string;
+  queVersiones?: VersionFilter[];
 }
 
-export default function VersionesPage({ title, returnTo = "/admin" }: VersionesPageProps) {
+
+export default function VersionesPage({ title, returnTo = "/admin", queVersiones = [] }: VersionesPageProps) {
   const [versiones, setVersiones] = useState<Version[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<Version[]>(`${API_URL}/api/olimpiadas`);
-      setVersiones(response.data);
+      if (queVersiones.length === 0) {
+        const { data } = await axios.get<Version[]>(`${API_URL}/api/olimpiadas`);
+        setVersiones(data);
+      } else {
+        const hayPasadas = queVersiones.includes("pasadas");
+        const hayFuturas = queVersiones.includes("futuras");
+        const fasesSolicitadas = queVersiones.filter(
+          f => f !== "pasadas" && f !== "futuras"
+        );
+        const hayFases = fasesSolicitadas.length > 0;
+
+        const peticiones: Promise<AxiosResponse<Version[]>>[] = [];
+        if (hayPasadas) {
+          peticiones.push(
+            axios.get<Version[]>(`${API_URL}/api/olimpiadas/pasadas`)
+          );
+        }
+        if (hayFuturas) {
+          peticiones.push(
+            axios.get<Version[]>(`${API_URL}/api/olimpiadas/futuras`)
+          );
+        }
+        if (hayFases) {
+          peticiones.push(
+            axios.post<Version[]>(
+              `${API_URL}/api/olimpiadas/fases`,
+              { fases: fasesSolicitadas }
+            )
+          );
+        }
+
+        const respuestas = await Promise.all(peticiones);
+        const todasLasVersiones = respuestas.flatMap(r => r.data);
+        setVersiones(todasLasVersiones);
+      }
     } catch (error) {
       console.error("Error fetching versiones:", error);
     } finally {
       setLoading(false);
     }
-  };
+
+  }
+
 
   useEffect(() => {
     fetchData();

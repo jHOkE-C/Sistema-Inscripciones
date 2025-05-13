@@ -14,7 +14,7 @@ import {
     Colegio,
 } from "@/interfaces/ubicacion.interface";
 
-export const validarCamposRequeridos = (headers: string[]): string[] => {
+export const validarCamposRequeridos = (headers: string[]): {campo: string, columna: string}[] => {
     const camposRequeridos = [
         { columna: "A", nombre: "Nombre" },
         { columna: "B", nombre: "Apellidos" },
@@ -33,12 +33,14 @@ export const validarCamposRequeridos = (headers: string[]): string[] => {
     ];
 
     const camposFaltantes = camposRequeridos.filter((campo) => {
-        const indice = headers.findIndex((h) => h === campo.nombre);
+        const indice = headers.findIndex((h) => h.normalize().toLocaleLowerCase().trim() === campo.nombre.normalize().toLocaleLowerCase().trim());
         return indice === -1;
     });
 
     return camposFaltantes.map(
-        (campo) => `${campo.nombre} (Columna ${campo.columna})`
+        (campo) => {
+            return {campo:`${campo.nombre}`, columna: `(Columna ${campo.columna})`}
+        }
     );
 };
 
