@@ -17,6 +17,8 @@ import { AlertCircle } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 import axios from "axios";
+import { API_URL } from "@/hooks/useApiRequest";
+import { toast } from "sonner";
 
 interface ConsultaInscripcionProps {
   titulo?: string;
@@ -39,6 +41,17 @@ export interface Responsable {
   }
 }
 
+interface Postulante {
+  postulante: {
+    nombre: string;
+    apellidos: string;
+    ci: string;
+    departamento: string;
+    olimpiada: string;
+    niveles_competencia: string[]
+    estado: string;
+  }
+}
 
 export function ConsultaInscripcion({
   titulo = "Consulta de Estado de Inscripción",
@@ -47,9 +60,8 @@ export function ConsultaInscripcion({
 }: ConsultaInscripcionProps) {
   const [carnet, setCarnet] = useState("");
   const [error, setError] = useState("");
-  //const [isPostulante, setIsPostulante] = useState(false);
-  //const [isResponsable, setIsResponsable] = useState(false);
-  //const [responsable, setResponsable] = useState<Responsable | null>(null);
+  const [responsable, setResponsable] = useState<Responsable | null>(null);
+  const [postulante, setPostulante] = useState<Postulante | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -68,26 +80,31 @@ export function ConsultaInscripcion({
       return;
     }
 
-    const req1 = axios.get("/api/endpoint1");
-    const req2 = axios.get("/api/endpoint2");
+    const req1 = axios.get(`${API_URL}/api/inscripciones/postulantes/${carnet}`);
+    const req2 = axios.get(`${API_URL}/api/inscripciones/responsables/${carnet}`);
 
     const [res1, res2] = await Promise.allSettled([req1, req2]);
 
     if (res1.status === "fulfilled") {
-      
+      toast.success("Carnet de postulante encontrado");
+      setPostulante(res1.value.data);
+      setResponsable(null);
       return;
     }
 
     if (res2.status === "fulfilled") {
-     return;
+      toast.success("Carnet de responsable encontrado");
+      setResponsable(res2.value.data);
+      setPostulante(null);
+      return;
     }
 
     // Si ambas fallan, mostrar error
     if (res1.status === "rejected" && res2.status === "rejected") {
-      return;
+      toast.error("Error al consultar el estado de inscripción");
     }
   };
-
+  if (!responsable && !postulante) {
   return (
     <Card className="w-xl">
       <CardHeader className="text-center">
@@ -123,4 +140,15 @@ export function ConsultaInscripcion({
       </form>
     </Card>
   );
-}
+  }
+  
+  if (postulante) {
+    return <div>Usted es postulante</div>
+  }
+  return (
+    <Card className="w-xl">
+    <div>Usted es responsable</div>
+    </Card>
+  );
+} 
+
