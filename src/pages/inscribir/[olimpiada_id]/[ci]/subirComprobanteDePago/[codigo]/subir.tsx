@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { createWorker, Worker } from 'tesseract.js';
 import cv from '@techstark/opencv-js';
 import ReturnComponent from '@/components/ReturnComponent';
 import FileUpload from '@/components/fileUpload';
@@ -22,8 +21,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-//opencv no tiene soporte en ts brous
+import {
+  createWorker,
+  PSM,
+  Worker
+} from 'tesseract.js';//opencv no tiene soporte en ts brous
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CvMat = any;
 
@@ -55,7 +57,8 @@ const SubirComprobantePage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCvReady, setIsCvReady] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [tesseractWorker, setTesseractWorker] = useState<Worker | null>(null);
+  const [tesseractWorker, setTesseractWorker] =
+  useState<Worker | null>(null);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { ci, codigo, olimpiada_id } = useParams();
@@ -124,9 +127,19 @@ const SubirComprobantePage = () => {
 
   useEffect(() => {
     const initializeWorker = async () => {
-      const worker = await createWorker('spa', 1);
+      const worker: Worker = await createWorker('spa',1);   // 👈 tipo explícito
+    
+      await worker.load();
+    
+      await worker.setParameters({
+        user_defined_dpi:          '300',
+        tessedit_pageseg_mode:     PSM.SINGLE_BLOCK,
+        preserve_interword_spaces: '1',
+        tessedit_char_whitelist:
+          'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:/.-, '
+      });
+    
       setTesseractWorker(worker);
-      console.log('Worker de Tesseract inicializado');
     };
     initializeWorker();
     return () => {
@@ -270,7 +283,7 @@ const SubirComprobantePage = () => {
       clahe.delete();
 
       cv.threshold(claheMat, binary, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
-
+      
       return binary.clone();
     } catch (e) {
       console.error('Error pipeline gris:', e);
@@ -284,59 +297,73 @@ const SubirComprobantePage = () => {
     }
   };
 
-  const applyColorPipeline = (src: CvMat): CvMat => {
-    console.log('Pipeline color → denoise → CLAHE(L) → γ');
-    const rgb = new cv.Mat();
-    const denoised = new cv.Mat();
-    const lab = new cv.Mat();
-    const channels = new cv.MatVector();
-    const enhancedL = new cv.Mat();
-    const mergedLab = new cv.Mat();
-    let result: CvMat;
-
+  const scaleGraysPipelineV2 = (src: CvMat): CvMat => {
+    // ───── parámetros de ajuste “anti-grano” ──────────────────────────────
+    const CLAHE_CLIP = 1.5;   // contraste local más moderado (antes 2.5)
+    const BLOCK      = 31;    // tamaño del bloque del umbral adaptativo
+    const C_TH       = 11;    // C más alto ⇒ menos “sal y pimienta”
+    const KSIZE      = 3;     // kernel elíptico 3×3
+    const MIN_AREA   = 20;    // elimina manchas < 20 px²
+    // ──────────────────────────────────────────────────────────────────────
+  
+    // mats de trabajo
+    const gray   = new cv.Mat(), blur = new cv.Mat(), claheMat = new cv.Mat();
+    const den    = new cv.Mat(), bin  = new cv.Mat(), mask    = new cv.Mat();
+    const res    = new cv.Mat(), lbls = new cv.Mat(), stats   = new cv.Mat(), cents = new cv.Mat();
+  
     try {
-      if (src.channels() === 1) {
-        cv.cvtColor(src, rgb, cv.COLOR_GRAY2RGB);
-      } else {
-        cv.cvtColor(src, rgb, cv.COLOR_RGBA2RGB);
-      }
-
-      cv.bilateralFilter(rgb, denoised, 9, 75, 75, cv.BORDER_DEFAULT);
-
-      cv.cvtColor(denoised, lab, cv.COLOR_RGB2Lab);
-      cv.split(lab, channels);
-      const clahe = new cv.CLAHE(4.0, new cv.Size(8, 8));
-      clahe.apply(channels.get(0), enhancedL);
-      channels.set(0, enhancedL);
-      cv.merge(channels, mergedLab);
+      /* 1) gris + blur ligero ............................................... */
+      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+      cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0);
+  
+      /* 2) CLAHE con clip=1.5 y tile 16×16 .................................. */
+      const clahe = new cv.CLAHE(CLAHE_CLIP, new cv.Size(16, 16));
+      clahe.apply(blur, claheMat);
       clahe.delete();
+  
+      /* 3) Denoise suave: medianBlur 3×3  ................................... */
+      cv.medianBlur(claheMat, den, 3);
+      //  Si tu OpenCV trae fastNlMeans y quieres usarlo:
+      //  (cv as any).fastNlMeansDenoising?.(claheMat, den, NLM_H, 7, 21);
+  
+      /* 4) Umbral adaptativo (block 31, C 11) ............................... */
+      cv.adaptiveThreshold(
+        den, bin, 255,
+        cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY,
+        BLOCK, C_TH
+      );
+  
+      /* 5) Una sola apertura (kernel 3×3) ................................... */
+      const k = cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(KSIZE, KSIZE));
+      cv.morphologyEx(bin, res, cv.MORPH_OPEN, k, new cv.Point(-1, -1), 1);
+      k.delete();
 
-      const colorEnhanced = new cv.Mat();
-      cv.cvtColor(mergedLab, colorEnhanced, cv.COLOR_Lab2RGB);
-
-      const { estado, gammaRecomendado } = analizarExposicion(colorEnhanced);
-      if (estado !== 'bien expuesta') {
-        result = adjustGamma(colorEnhanced, gammaRecomendado);
-        colorEnhanced.delete();
-      } else {
-        result = colorEnhanced;
+      /* 5½) Engrosar 1 px los trazos */
+      const dilK = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(2, 2));
+      cv.dilate(res, res, dilK, new cv.Point(-1, -1), 1);
+      dilK.delete();
+  
+      /* 6) Filtrado por área: borra manchas < 20 px² ........................ */
+      const nComp = cv.connectedComponentsWithStats(res, lbls, stats, cents);
+      for (let i = 1; i < nComp; i++) {                 // 0 = fondo
+        if (stats.intAt(i, cv.CC_STAT_AREA) < MIN_AREA) {
+          const constant = new cv.Mat(lbls.rows, lbls.cols, lbls.type(), new cv.Scalar(i));
+          cv.compare(lbls, constant, mask, cv.CMP_EQ);
+          constant.delete();
+          res.setTo(new cv.Scalar(0), mask);
+        }
       }
-
-      return result.clone();
-    } catch (e) {
-      console.error('Error pipeline color:', e);
-      return src.clone();
-    } finally {
-      rgb.delete();
-      denoised.delete();
-      lab.delete();
-      enhancedL.delete();
-      mergedLab.delete();
-      for (let i = 0; i < channels.size(); i++) channels.get(i).delete();
-      channels.delete();
+  
+      /* 7) Invertir para OCR ............................................... */
+      cv.bitwise_not(res, res);
+      return res.clone();
+  
+    } finally {           // liberación de memoria
+      gray.delete(); blur.delete(); claheMat.delete(); den.delete();
+      bin.delete(); mask.delete(); lbls.delete(); stats.delete(); cents.delete();
     }
   };
-
+        
   const runOCR = async (
     worker: Worker,
     imageDataUrl: string,
@@ -374,16 +401,22 @@ const SubirComprobantePage = () => {
 
   const extractData = (text: string): ExtractedData => {
     //datos importantes
-    const nroMatch = text.match(/([Nn][Rr]?[Oo]?\.?\s*\d+(?:[\s.]+\d+)*)/i);
-    const fechaMatch = text.match(/([Ff][Ee]?[Cc]?[Hh]?[Aa]?\s*:?\s*\d{2}[-/]\d{2}[-/]\d{2,4}(?:\s+\d{2}[-:]\d{2})?)/i);
-    const nroControl = text.match(/([Nn][Rr]?[Oo]?\.?\s*(?:[Dd][Ee]\s*)?[Cc][Oo][Nn][Tt][Rr][Oo][Ll]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
-    const documento = text.match(/([Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Oo]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
+    const clean = (raw: string) =>
+      raw.replace(/[|()[\]<>]/g, '')      // símbolos sueltos
+         .replace(/\s{2,}/g, ' ')          // dobles espacios
+         .trim();
+    
+    const textClean = clean(text);    
+    const nroMatch = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*\d+(?:[\s.]+\d+)*)/i);
+    const fechaMatch = textClean.match(/([Ff][Ee]?[Cc]?[Hh]?[Aa]?\s*:?\s*\d{2}[-/]\d{2}[-/]\d{2,4}(?:\s+\d{2}[-:]\d{2})?)/i);
+    const nroControl = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*(?:[Dd][Ee]\s*)?[Cc][Oo][Nn][Tt][Rr][Oo][Ll]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
+    const documento = textClean.match(/([Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Oo]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
     return {
       nro: nroMatch ? nroMatch[1] : null,
       fecha: fechaMatch ? fechaMatch[1] : null,
       nroControl: nroControl ? nroControl[1] : null,
       documento: documento ? documento[1] : null,
-      fullText: text || null
+      fullText: textClean || null
     };
   };
 
@@ -412,7 +445,7 @@ const SubirComprobantePage = () => {
 
         const pipelines = [
           { id: 'grayscale', name: 'Escala de Grises Optimizada', processFunc: applyGrayscalePipeline },
-          { id: 'color', name: 'Color Optimizado', processFunc: applyColorPipeline }
+          { id: 'color', name: 'Escala de Grises Optimizada V2', processFunc: scaleGraysPipelineV2 }
         ];
 
         const processedDataUrls: ProcessedImageData[] = [];
@@ -456,7 +489,7 @@ const SubirComprobantePage = () => {
     };
 
     imgElement.src = imageURL;
-  }, [originalFile, isCvReady, tesseractWorker, isLoading, applyGrayscalePipeline, applyColorPipeline, outputCanvasRefs, runOCR]);
+  }, [originalFile, isCvReady, tesseractWorker, isLoading, applyGrayscalePipeline, scaleGraysPipelineV2, outputCanvasRefs, runOCR]);
 
   const checkOcrDataValidity = () => {
     if (ocrResults.length === 0) return false;
