@@ -25,3 +25,25 @@ export interface Olimpiada {
     url_plantilla?: string;
 }
 
+
+
+export type FaseNombre =
+  | "Preparación"
+  | "Lanzamiento"
+  | "Primera inscripción"
+  | "Segunda inscripción"
+  | "Tercera inscripción"
+  | "Cuarta inscripción"
+  | "Primera clasificación"
+  | "Segunda clasificación"
+  | "Tercera clasificación"
+  | "Final"
+  | "Segunda Final"
+  | "Premiación"
+  | "Segunda premiación";
+
+
+export type FiltroGlobal = "pasadas" | "futuras";
+
+
+export type VersionFilter = FiltroGlobal | FaseNombre;
