@@ -88,7 +88,7 @@ export default function FileUploadModal({
         Map<string, CategoriaExtendida[]>
     >(new Map());
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchOlimpiadas = async () => {
             try {
@@ -305,12 +305,14 @@ export default function FileUploadModal({
                 setLoading(false);
                 setErrores(
                     err.response?.data.errores.map((error: string) => {
-                        //"error en inscripciones de la fila 1 del estudiante con CI 66666666: Máximo 2 inscripciones permitidas"
+                        //error en inscripciones de la fila 1 del estudiante con CI 13530843: Área o categoría duplicada (área: GEOGRAFIA, categoría: Quinto Nivel)
                         const errorDividido = error.split(" ");
                         const campo = "Error";
                         const ci = errorDividido[11];
                         const fila = errorDividido[6];
-                        const mensaje = error.split(":")[1];
+                        const mensaje = error
+                            .substring(error.indexOf(":") + 1)
+                            .trim();
                         return { campo, ci, fila, mensaje };
                     })
                 );
