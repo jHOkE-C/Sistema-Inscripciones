@@ -2,7 +2,7 @@ export interface ButtonConfig {
     label: string;
     to: string;
     Icon: React.ElementType;
-    color:
+    color?:
         | "indigo"
         | "sky"
         | "amber"

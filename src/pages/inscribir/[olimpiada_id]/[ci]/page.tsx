@@ -8,7 +8,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { NotebookPen, FileIcon, Plus, Receipt } from "lucide-react";
+import { FileIcon, Plus, Receipt, List, CheckCircle } from "lucide-react";
 import { apiClient } from "@/api/request";
 import { Olimpiada } from "@/types/versiones.type";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
@@ -33,10 +33,9 @@ const Page = () => {
             color: "green",
         },
         {
-            label: "Inscribir Postulantes",
-            to: `agregar`,
-            Icon: NotebookPen,
-            color: "purple",
+            label: "Ver Listas",
+            to: `listas`,
+            Icon: List,
         },
         {
             label: "Generar Orden de Pago",
@@ -47,7 +46,7 @@ const Page = () => {
         {
             label: "Subir Comprobante de Pago",
             to: `subirComprobanteDePago`,
-            Icon: Receipt,
+            Icon: CheckCircle,
             color: "slate",
         },
     ];

@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
                                 }}
                                 className={
                                     goToCode
-                                        ? "hover:text-primary hover:cursor-pointer hover:bg-primary/10"
+                                        ? "hover:text-primary-foreground hover:cursor-pointer hover:bg-primary"
                                         : ""
                                 }
                             >
