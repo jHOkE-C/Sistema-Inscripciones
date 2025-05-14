@@ -38,6 +38,8 @@ const Admin = () => {
     }, []);
 
     const handleAbrirModalConGestion = (gestionId: string, nombre: string) => {
+        console.log("gestionId", gestionId);
+        console.log("nombre", nombre);
         setSelectedGestion(gestionId);
         setNombreOlimpiada(nombre);
         setIsModalOpen(true);
@@ -58,18 +60,13 @@ const Admin = () => {
                     {versiones.length > 0 ? (
                         <Versiones
                             versiones={versiones}
-                            container = {
+                            container={(version: Version) => (
                                 <div className="flex justify-center">
-                                    <Button onClick={() => {
-                                        if (versiones.length > 0) {
-                                            const version = versiones[0];
-                                            handleAbrirModalConGestion(version.id.toString(), version.nombre);
-                                        }
-                                    }}>
-                                        Generar Reporte General
+                                    <Button onClick={() => handleAbrirModalConGestion(version.id.toString(), version.nombre)}>
+                                        Generar Reporte
                                     </Button>
                                 </div>
-                            }
+                            )}
                         />
                     ) : (
                         <p className="text-center text-gray-500">

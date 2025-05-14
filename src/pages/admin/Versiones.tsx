@@ -1,12 +1,12 @@
-import { CalendarDays, Clock, Search, ListFilter, ArrowDownUp } from "lucide-react";
+import { 
+    CalendarDays, 
+    Clock, 
+    Search, 
+    ListFilter, 
+    ArrowDownUp
+} from "lucide-react";
 import { useState, useMemo } from "react";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card,CardFooter,CardHeader,CardTitle,CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Version } from "@/types/versiones.type";
 import { Link } from "react-router-dom";
@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 interface VersionesProps {
     versiones: Version[];
     onVersionCardClick?: (id: string, nombre: string) => void;
-    container?: React.ReactNode;
+    container?: ((version: Version) => React.ReactNode) | React.ReactNode;
 }
 
 export function Versiones({ versiones, onVersionCardClick, container=null }: VersionesProps) {
@@ -191,10 +191,10 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                 </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
+            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 py-2">
                 {processedVersiones.map((event) => (
                     <Link
-                        to={`${container ? "#" : event.id}`}
+                        to={`${typeof container === 'function' ? "#" : event.id}`}
                         key={event.id}
                         onClick={(e) => {
                             if (onVersionCardClick) {
@@ -204,23 +204,25 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                         }}
                     >
                         <Card
-                            className={`flex flex-col h-full  border-2 transition-all duration-200 ease-in-out 
-                                transform  ${container ? "cursor-default" : "hover:scale-105 hover:text-primary hover:border-primary"}`}
+                            className={` h-full  border-2 transition-all duration-200 ease-in-out
+                                transform  ${typeof container === 'function' ? "cursor-default" : "hover:scale-105 hover:text-primary hover:border-primary"}`}
                             
                         >
-                            <CardHeader className="pb-2">
-                                <div className="flex justify-between items-start">
+                            
+                            <CardHeader>
+                                <div className="flex items-center ml-5">
                                     <CardTitle className="text-xl">
                                         {event.nombre}
                                     </CardTitle>
                                     <Badge variant="outline" className="ml-2 whitespace-nowrap">
                                         {event.gestion}
                                     </Badge>
-                                </div>
+                                </div>  
+                                
                             </CardHeader>
                             <CardContent className="flex-grow">
-                                {container? container : (
-                                <div className="space-y-3">
+                                {typeof container === 'function' ? container(event) : container || (
+                                <>
                                     <div className="flex items-center gap-2">
                                         <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                         <div>
@@ -241,11 +243,11 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                                             </p>
                                         </div>
                                     </div>
-                                </div>
+                                </>
                                 )}
-                            </CardContent>
-                            <CardFooter className="border-t pt-4">
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                </CardContent>
+                                <CardFooter className="border-t pt-4">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground ml-5">
                                     <Clock className="h-4 w-4" />
                                     <span>
                                         Duración:{" "}
@@ -256,8 +258,8 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                                         días
                                     </span>
                                 </div>
-                            </CardFooter>
-                        </Card>
+                                </CardFooter>
+                            </Card>
                     </Link>
                 ))}
             </div>
