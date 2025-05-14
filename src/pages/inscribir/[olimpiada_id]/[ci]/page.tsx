@@ -13,6 +13,7 @@ import { apiClient } from "@/api/request";
 import { Olimpiada } from "@/types/versiones.type";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
 import ShareUrl from "../../ShareUrl";
+import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 
 const Page = () => {
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
@@ -90,6 +91,12 @@ const Page = () => {
                 }}
             />
         );
+    if (!olimpiada) return <NotFoundPage />;
+    if (
+        !olimpiada.fase_actual?.fase.nombre_fase.includes("inscripción")
+    ) {
+        return <OlimpiadaNoEnCurso olimpiada={olimpiada} />;
+    }
     return (
         <div className="flex flex-col min-h-screen">
             <div className="p-2">
