@@ -430,16 +430,16 @@ const SubirComprobantePage = () => {
       rxs.reduce<RegExpExecArray | null>((m, rx) => m || rx.exec(norm), null);
     
     const NRO_PATTERNS: RegExp[] = [
-      /\bN(?:R?O)?[.:­-]?\s*([A-Z]?(?:\d\s*){7,})\b/,
+      /\bN(?:R?[O0])?[.:­-]?\s*([A-Z0-9](?:\s*[0-9O]){6,})\b/,
+    
 
-      
-      /\bNRO8?\s*([0-9](?:\s*\d){7,})\b/,
+      /\bNR[O0]8?\s*([0-9O](?:\s*[0-9O]){6,})\b/,
+    
 
-      
-      /\bN°\s*([0-9](?:\s*\d){7,})\b/,
+      /\bN[º°]\s*([0-9O](?:\s*[0-9O]){6,})\b/,
+    
 
-      
-      /\bNUM(?:ERO)?[.:]?\s*([0-9](?:\s*\d){7,})\b/,
+      /\bNUM(?:ERO)?[.:­-]?\s*([0-9O](?:\s*[0-9O]){6,})\b/,
     ];
 
   
