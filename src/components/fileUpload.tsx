@@ -176,7 +176,7 @@ export default function FileUpload({
                 <div className="flex flex-col items-center justify-center gap-2 text-center pointer-events-none">
                     <Upload className={cn("h-10 w-10", error ? "text-destructive" : "text-muted-foreground")} />
                     <h3 className="text-lg font-medium">
-                        {isDragging ? "Suelta archivo(s) aquí" : "Arrastra y suelta o haz clic"}
+                        {isDragging ? "Suelta archivo(s) aquí" : "Arrastra y suelta o haz click"}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                          {maxFiles === 1 ? "para seleccionar tu archivo" : `para seleccionar hasta ${maxFiles} archivo(s)`}
