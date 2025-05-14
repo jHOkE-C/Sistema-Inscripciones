@@ -166,12 +166,12 @@ export default function FileUpload({
                     "border-2 border-dashed rounded-lg p-6 transition-all duration-300 mt-4",
                     isDragging ? "border-primary bg-primary/5 ring-2 ring-primary ring-offset-2" : "border-muted-foreground/25 hover:border-primary/50",
                     error ? "border-destructive bg-destructive/5" : "",
-                    (files.length >= maxFiles) ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted/50"
+                     "cursor-pointer hover:bg-muted/50"
                 )}
-                onDragOver={(e) => { if (files.length < maxFiles) handleDragOver(e); else e.preventDefault(); }}
-                onDragLeave={(e) => { if (files.length < maxFiles) handleDragLeave(e); else e.preventDefault(); }}
-                onDrop={(e) => { if (files.length < maxFiles) handleDrop(e); else e.preventDefault(); }}
-                onClick={() => { if (files.length < maxFiles) openFileDialog(); }}
+                onDragOver={(e) => { handleDragOver(e);  }}
+                onDragLeave={(e) => { handleDragLeave(e)}}
+                onDrop={(e) => { handleDrop(e) }}
+                onClick={() => openFileDialog()}
             >
                 <div className="flex flex-col items-center justify-center gap-2 text-center pointer-events-none">
                     <Upload className={cn("h-10 w-10", error ? "text-destructive" : "text-muted-foreground")} />

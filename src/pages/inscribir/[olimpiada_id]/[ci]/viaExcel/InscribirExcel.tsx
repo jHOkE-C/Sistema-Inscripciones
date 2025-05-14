@@ -27,25 +27,19 @@ const IncribirExcel = ({ onSubmit }: { onSubmit?: () => void }) => {
     };
     if (!olimpiada) return;
     return (
-        <div className="flex flex-col md:flex-row gap-2 items-center justify-end">
-            <div className="flex gap-2 items-center">
-                <Suspense fallback={<Loading />}>
-                    <FileUploadModal
-                        maxFiles={1}
-                        maxSize={10}
-                        accept=".xlsx,.xls"
-                        onFilesChange={(files) =>
-                            console.log("Files changed:", files)
-                        }
-                        triggerText="Inscribir por Excel"
-                        title="Añadir archivo Excel"
-                        description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
-                        olimpiada={olimpiada}
-                        onSubmit={onSubmit}
-                    />
-                </Suspense>
-            </div>
-        </div>
+        <Suspense fallback={<Loading />}>
+            <FileUploadModal
+                maxFiles={1}
+                maxSize={10}
+                accept=".xlsx,.xls"
+                onFilesChange={(files) => console.log("Files changed:", files)}
+                triggerText="Inscribir por Excel"
+                title="Añadir archivo Excel"
+                description="Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí."
+                olimpiada={olimpiada}
+                onSubmit={onSubmit}
+            />
+        </Suspense>
     );
 };
 

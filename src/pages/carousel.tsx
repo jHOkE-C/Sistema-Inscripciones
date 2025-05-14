@@ -19,12 +19,13 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Calendar, Clock, Download, Trophy } from "lucide-react";
+import { Calendar, Clock,  Trophy } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
 import type { Olimpiada } from "@/types/versiones.type";
-import { generarExcel } from "@/utils/excel";
+
+import DescargarPlantilla from "@/components/DescargarPlantilla";
 
 // Tipos para los datos de olimpiadas
 const formatDate = (dateString: string) => {
@@ -34,7 +35,6 @@ const formatDate = (dateString: string) => {
 
 export function OlimpiadasCarousel() {
     const [isMounted, setIsMounted] = useState(false);
-    const [loadingExcel, setLoadingExcel] = useState(false);
     const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
 
     useEffect(() => {
@@ -174,35 +174,7 @@ export function OlimpiadasCarousel() {
                                                 "inscripción"
                                             ) ? (
                                                 <>
-                                                    <Button
-                                                        variant={"link"}
-                                                        disabled={loadingExcel}
-                                                        className="w-full mb-2  text-green-600 border-green-200 hover:text-green-500 transition-colors"
-                                                        onClick={async () => {
-                                                            setLoadingExcel(
-                                                                true
-                                                            );
-                                                            await generarExcel(
-                                                                olimpiada.id,
-                                                                olimpiada.nombre
-                                                            );
-                                                            setLoadingExcel(
-                                                                false
-                                                            );
-                                                        }}
-                                                    >
-                                                        {loadingExcel ? (
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full" />
-                                                                Descargando...
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-2">
-                                                                <Download className="h-4 w-4" />
-                                                                Plantilla de Inscripción
-                                                            </div>
-                                                        )}
-                                                    </Button>
+                                                    <DescargarPlantilla olimpiada={olimpiada}/>
                                                     <Button variant={"link"}>
                                                         <Link
                                                             to={`/inscribir/${olimpiada.id}`}

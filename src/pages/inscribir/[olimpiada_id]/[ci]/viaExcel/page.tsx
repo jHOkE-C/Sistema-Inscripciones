@@ -9,17 +9,21 @@ import FormResponsable from "../../../FormResponsable";
 import NotFoundPage from "../../../../404";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
-import InscribirExcel from "./InscribirExcel"
+import InscribirExcel from "./InscribirExcel";
 
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../orden-pago";
+import DescargarPlantilla from "@/components/DescargarPlantilla";
+import { Olimpiada } from "@/types/versiones.type";
+import { apiClient } from "@/api/request";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
     const { ci, olimpiada_id } = useParams();
+    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
 
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
@@ -52,6 +56,10 @@ const Page = () => {
     const fetchData = async () => {
         try {
             refresh();
+            const olimpiada = await apiClient.get<Olimpiada>(
+                "/api/olimpiadas/" + olimpiada_id
+            );
+            setOlimpiada(olimpiada);
         } catch {
             console.error("Error al obtener las inscripciones de postulantes");
         }
@@ -100,7 +108,12 @@ const Page = () => {
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
-                            <InscribirExcel/>
+                            <div className="flex justify-between">
+                                {olimpiada && (
+                                    <DescargarPlantilla olimpiada={olimpiada} />
+                                )}
+                                <InscribirExcel />
+                            </div>
                             <DataTable
                                 goToCode
                                 columns={columnsWithActions}
