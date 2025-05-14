@@ -80,7 +80,7 @@ export function ConsultaInscripcion({
       toast.success("Carnet encontrado");
     } catch (error) {
       console.error("Error al consultar el estado de inscripción:", error);
-      toast.error("Error al consultar el estado de inscripción");
+      toast.error("El carnet ingresado no tiene registros o inscripciones");
     }
   };
 

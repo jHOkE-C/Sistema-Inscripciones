@@ -14,12 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User, Mail, Phone, Award } from "lucide-react";
+import { User, Phone, Award } from "lucide-react";
 
 type Lista = {
   codigo_lista: string;
   cantidad: number;
   estado: string;
+  fecha_creacion: string;
 };
 
 type Participacion = {
@@ -29,6 +30,7 @@ type Participacion = {
 
 export type Responsable = {
   ci: string;
+  nombre: string;
   correo: string;
   telefono: string;
   participaciones: Participacion[];
@@ -62,17 +64,11 @@ export default function ResponsableCard({ data }: Data) {
             <div className="flex items-center space-x-2">
               <User className="h-5 w-5 text-gray-500" />
               <div>
-                <p className="text-sm font-medium text-gray-500">CI</p>
-                <p>{responsable.ci}</p>
+                <p className="text-sm font-medium text-gray-500">Nombre</p>
+                <p>{responsable.nombre}</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="h-5 w-5 text-gray-500" />
-              <div>
-                <p className="text-sm font-medium text-gray-500">Correo</p>
-                <p>{responsable.correo}</p>
-              </div>
-            </div>
+
             <div className="flex items-center space-x-2">
               <Phone className="h-5 w-5 text-gray-500" />
               <div>
@@ -86,7 +82,7 @@ export default function ResponsableCard({ data }: Data) {
           <div className="mt-8">
             <h3 className="text-lg font-medium mb-4 flex items-center">
               <Award className="h-5 w-5 mr-2 text-gray-500" />
-              Participaciones
+              Inscripciones
             </h3>
 
             {responsable.participaciones.map((participacion, index) => (
@@ -101,6 +97,7 @@ export default function ResponsableCard({ data }: Data) {
                       <TableHead>Código de Lista</TableHead>
                       <TableHead>Cantidad</TableHead>
                       <TableHead>Estado</TableHead>
+                      <TableHead>Fecha de Creación</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -118,6 +115,7 @@ export default function ResponsableCard({ data }: Data) {
                             {lista.estado}
                           </Badge>
                         </TableCell>
+                        <TableCell>{lista.fecha_creacion}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
