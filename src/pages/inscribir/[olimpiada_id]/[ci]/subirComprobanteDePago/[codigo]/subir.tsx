@@ -118,7 +118,7 @@ const SubirComprobantePage = () => {
         );
         await pagarLista( codigo, selectedResult.extractedData.nro , selectedResult.extractedData.fecha);
         navigate(`..\\..\\`);
-        toast.success("Lista cambiada a Pago Pendiente");
+        toast.success("La orden pago fue valida exitosamente");
       } else {
         toast.error("Información de navegación incompleta");
       }
@@ -740,10 +740,9 @@ const SubirComprobantePage = () => {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    ¿Está seguro que desea finalizar el registro?
+                    ¿Está seguro de enviar los datos del comprobante?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta acción impedirá el registro de nuevos postulantes a la lista
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
