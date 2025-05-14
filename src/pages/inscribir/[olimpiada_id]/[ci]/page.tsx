@@ -8,7 +8,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { FileIcon, Plus, Receipt, List, CheckCircle } from "lucide-react";
+import { FileIcon, Receipt, List, CheckCircle } from "lucide-react";
 import { apiClient } from "@/api/request";
 import { Olimpiada } from "@/types/versiones.type";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
@@ -20,12 +20,6 @@ const Page = () => {
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { ci, olimpiada_id } = useParams();
     const buttons: ButtonConfig[] = [
-        {
-            label: "Crear Lista",
-            to: `crearLista`,
-            Icon: Plus,
-            color: "sky",
-        },
         {
             label: "Inscribir por Excel",
             to: `/inscribir/${olimpiada_id}/${ci}/viaExcel`,

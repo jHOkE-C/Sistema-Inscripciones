@@ -71,7 +71,6 @@ export default function FileUploadModal({
 }: FileUploadModalProps) {
     const [files, setFiles] = useState<File[]>([]);
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
 
     const { ci, codigo, codigo_lista } = useParams();
     const [loading, setLoading] = useState(false);
@@ -89,6 +88,7 @@ export default function FileUploadModal({
         Map<string, CategoriaExtendida[]>
     >(new Map());
 
+    const navigate = useNavigate()
     useEffect(() => {
         const fetchOlimpiadas = async () => {
             try {
@@ -251,10 +251,12 @@ export default function FileUploadModal({
                 todosErrores.push(...erroresFila);
             });
             console.log("postulantes convertidos", postulantesConvertidos);
+            console.log("errores", todosErrores);
 
-            inscribirPostulantes(postulantesConvertidos);
-            setLoading(false);
             setErrores(todosErrores);
+            setLoading(false);
+            if (todosErrores.length > 0) return;
+            inscribirPostulantes(postulantesConvertidos);
         } catch (error: unknown) {
             if (error instanceof Error) {
                 toast.error("Error al procesar el archivo, " + error.message);
@@ -284,7 +286,7 @@ export default function FileUploadModal({
                 listaPostulantes: postulantes,
             };
             console.log("payload", payload);
-            const response = await axios.post<UploadResponse>(
+            await axios.post<UploadResponse>(
                 `${API_URL}/api/inscripciones/bulk`,
                 payload
             );
@@ -292,7 +294,9 @@ export default function FileUploadModal({
             onSubmit();
             setOpen(false);
             setFiles([]);
-            navigate(`./${response.data.codigo_lista}`)
+            if (codigo || codigo_lista) {
+                navigate(`./${codigo || codigo_lista}`);
+            }
         } catch (err: unknown) {
             console.log("Aqui", err);
             let errorMessage = "Error al procesar el archivo.";
