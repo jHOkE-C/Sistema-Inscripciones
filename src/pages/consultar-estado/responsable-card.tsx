@@ -15,6 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { User, Phone, Award } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 type Lista = {
   codigo_lista: string;
@@ -98,6 +100,7 @@ export default function ResponsableCard({ data }: Data) {
                       <TableHead>Cantidad</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Fecha de Creación</TableHead>
+                      <TableHead>Ver</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -116,6 +119,13 @@ export default function ResponsableCard({ data }: Data) {
                           </Badge>
                         </TableCell>
                         <TableCell>{lista.fecha_creacion}</TableCell>
+                        <TableCell>
+                          <Link to={`/consultar-estado/${lista.codigo_lista}`}>
+                          <Button>
+                            Ver Lista
+                          </Button>
+                          </Link>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
