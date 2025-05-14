@@ -155,6 +155,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
 
         const crearOrden = async () => {
             //generarOrden()
+            console.log("payload",data)
             try {
                 const response = await axios.post(
                     `${API_URL}/api/ordenes-pago`,

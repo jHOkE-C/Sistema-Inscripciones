@@ -56,7 +56,7 @@ const Header = ({ rutas = [] }: navigation) => {
           ))}
           {user && (
             <Link to="/admin" className="text-sm font-medium hover:underline">
-              Adimistración
+              Administración
             </Link>
           )}
           {user && (
