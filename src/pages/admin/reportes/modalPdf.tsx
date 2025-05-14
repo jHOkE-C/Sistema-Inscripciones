@@ -16,7 +16,6 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { API_URL } from '@/hooks/useApiRequest';
 import { Loader2, Download, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import LoadingAlert from '@/components/loading-alert';
@@ -24,6 +23,7 @@ import LoadingAlert from '@/components/loading-alert';
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
 
 interface Postulante {
+  id?: string;
   nombre: string;
   apellidos: string;
   ci: string;
@@ -36,7 +36,7 @@ interface Postulante {
   grado: string;
   responsable: string;
   responsableCi: string;
-  estado: "Pagado" | "Pendiente";
+  estado: "Preinscrito" | "Pago Pendiente" | "Inscripcion Completa";
 }
 
 interface ModalPdfProps {
@@ -44,26 +44,8 @@ interface ModalPdfProps {
   nombreOlimpiada: string;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  postulantesFiltrados?: Postulante[];
 }
-
-const ordenarPostulantes = (data: Postulante[]): Postulante[] => {
-  return [...data].sort((a, b) => {
-
-    if (a.estado === "Pagado" && b.estado === "Pendiente") return -1;
-    if (a.estado === "Pendiente" && b.estado === "Pagado") return 1;
-
-
-    const responsableA = a.responsable || '';
-    const responsableB = b.responsable || '';
-    const responsableComp = responsableA.localeCompare(responsableB);
-    if (responsableComp !== 0) return responsableComp;
-
-
-    const apellidosA = a.apellidos || '';
-    const apellidosB = b.apellidos || '';
-    return apellidosA.localeCompare(apellidosB);
-  });
-};
 
 const crearPdfDocumento = (
   postulantesData: Postulante[],
@@ -117,7 +99,7 @@ const crearPdfDocumento = (
   return { doc, dataUrl, blob };
 };
 
-const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, onOpenChange }) => {
+const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, onOpenChange, postulantesFiltrados = [] }) => {
   const [postulantes, setPostulantes] = useState<Postulante[] | null>(null);
   const [pdfDataUrl, setPdfDataUrl] = useState<string>('');
   const [pdfDoc, setPdfDoc] = useState<jsPDF | null>(null);
@@ -126,6 +108,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isGeneratingFromApi, setIsGeneratingFromApi] = useState<boolean>(false);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -141,65 +124,74 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
     };
   }, []);
 
+  
+  useEffect(() => {
+    if (isOpen && postulantesFiltrados.length > 0) {
+      const postulantesOrdenados = postulantesFiltrados;
+      setPostulantes(postulantesOrdenados);
+      
+      const pdfOutput = crearPdfDocumento(postulantesOrdenados, nombreOlimpiada);
+      if (pdfOutput) {
+        setPdfDoc(pdfOutput.doc);
+        setPdfDataUrl(pdfOutput.dataUrl);
+        setPdfBlob(new Blob([pdfOutput.blob], { type: 'application/pdf' }));
+      } else {
+        setPostulantes([]);
+        toast.error("No se pudo generar el documento PDF.");
+      }
+    } else if (isOpen && postulantesFiltrados.length === 0 && !isGeneratingFromApi) {
+      setPostulantes([]);
+    }
+  }, [isOpen, postulantesFiltrados, nombreOlimpiada]);
+
   const generarReporte = useCallback(async () => {
     if (!gestion) {
       toast.error("Por favor, seleccione una gestión válida antes de generar el reporte.");
       return;
     }
-    setPdfDataUrl('');
-    setPostulantes(null);
-    setPdfDoc(null);
-    setPdfBlob(null);
-    setNumPages(null);
-    setPageNumber(1);
+    
+    // Solo generamos desde la API si no tenemos datos filtrados
+    if (postulantesFiltrados.length === 0) {
+      setIsGeneratingFromApi(true);
+      setPdfDataUrl('');
+      setPostulantes(null);
+      setPdfDoc(null);
+      setPdfBlob(null);
+      setNumPages(null);
+      setPageNumber(1);
 
-    try {
-      const apiUrl = `${API_URL}/api/olimpiadas/${gestion}/reporteDeInscripciones`
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-        let errorMsg = `Error HTTP: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData.message || errorMsg;
-        } catch (e: unknown) {
-          if (e instanceof Error) {
-            errorMsg = e.message;
+      try {
+        if (postulantesFiltrados.length === 0) {
+        
+          setPostulantes([]);
+        } else {
+          const postulantesOrdenados = postulantesFiltrados;
+          setPostulantes(postulantesOrdenados);
+          const pdfOutput = crearPdfDocumento(postulantesOrdenados, nombreOlimpiada);
+          if (pdfOutput) {
+            setPdfDoc(pdfOutput.doc);
+            setPdfDataUrl(pdfOutput.dataUrl);
+            setPdfBlob(new Blob([pdfOutput.blob], { type: 'application/pdf' }));
           } else {
-            errorMsg = "Ocurrió un error inesperado";
+            setPostulantes([]);
+            toast.error("No se pudo generar el documento PDF.");
           }
         }
-        throw new Error(errorMsg);
+      } catch (error) {
+        console.error("Error al generar reporte:", error);
+        toast.error((error as Error).message || "Ocurrió un error al obtener los datos para el reporte.");
+        setPostulantes(null);
+      } finally {
+        setIsGeneratingFromApi(false);
       }
-      const data: Postulante[] = await response.json();
-      console.log(data);
-      if (data.length === 0) {
-        setPostulantes([]);
-      } else {
-        const postulantesOrdenados = ordenarPostulantes(data);
-        setPostulantes(postulantesOrdenados);
-        const pdfOutput = crearPdfDocumento(postulantesOrdenados,  nombreOlimpiada);
-        if (pdfOutput) {
-          setPdfDoc(pdfOutput.doc);
-          setPdfDataUrl(pdfOutput.dataUrl);
-          setPdfBlob(new Blob([pdfOutput.blob], { type: 'application/pdf' }));
-        } else {
-          setPostulantes([]);
-          toast.error("No se pudo generar el documento PDF.");
-        }
-      }
-    } catch (error) {
-      console.error("Error al generar reporte:", error);
-      toast.error((error as Error).message || "Ocurrió un error al obtener los datos para el reporte.");
-      setPostulantes(null);
     }
-  }, [gestion, nombreOlimpiada]);
+  }, [gestion, nombreOlimpiada, postulantesFiltrados]);
 
   useEffect(() => {
-    if (isOpen && gestion) {
+    if (isOpen && gestion && postulantesFiltrados.length === 0) {
       generarReporte();
     }
-  }, [isOpen, gestion, generarReporte]);
+  }, [isOpen, gestion, generarReporte, postulantesFiltrados.length]);
 
   const handleExportarPdf = () => {
     if (pdfDoc && gestion) {

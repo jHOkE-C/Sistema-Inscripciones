@@ -8,15 +8,12 @@ import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
 import { Version } from "@/types/versiones.type";
-import ModalPdf from "./modalPdf";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Admin = () => {
     const [versiones, setData] = useState<Version[]>([]);
     const [olimpiada, setOlimpiada] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [selectedGestion, setSelectedGestion] = useState<string | null>(null);
-    const [nombreOlimpiada, setNombreOlimpiada] = useState<string>("");
 
     const getData = async () => {
         setOlimpiada(true);
@@ -37,15 +34,6 @@ const Admin = () => {
         getData();
     }, []);
 
-    const handleAbrirModalConGestion = (gestionId: string, nombre: string) => {
-        console.log("gestionId", gestionId);
-        console.log("nombre", nombre);
-        setSelectedGestion(gestionId);
-        setNombreOlimpiada(nombre);
-        setIsModalOpen(true);
-        
-    };
-
     if (olimpiada) {
         return <Loading />;
     }
@@ -62,9 +50,11 @@ const Admin = () => {
                             versiones={versiones}
                             container={(version: Version) => (
                                 <div className="flex justify-center">
-                                    <Button onClick={() => handleAbrirModalConGestion(version.id.toString(), version.nombre)}>
-                                        Generar Reporte
-                                    </Button>
+                                    <Link to={`/admin/reportes/${version.id}`}>
+                                        <Button>
+                                            Ver información
+                                        </Button>
+                                    </Link>
                                 </div>
                             )}
                         />
@@ -76,14 +66,6 @@ const Admin = () => {
                 </div>
                 <Footer />
             </div>
-            {selectedGestion && (
-                <ModalPdf
-                    gestion={selectedGestion}
-                    isOpen={isModalOpen}
-                    onOpenChange={setIsModalOpen}
-                    nombreOlimpiada={nombreOlimpiada}
-                />
-            )}
         </>
     );
 };

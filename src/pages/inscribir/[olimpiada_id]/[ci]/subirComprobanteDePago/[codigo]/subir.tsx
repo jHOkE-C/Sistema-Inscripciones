@@ -9,7 +9,7 @@ import { Loader2, ChevronDown } from 'lucide-react';
 import LoadingAlert from '@/components/loading-alert';
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { cambiarEstadoLista } from "@/api/listas";
+import { pagarLista } from "@/api/listas";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -94,7 +94,7 @@ const SubirComprobantePage = () => {
   const terminarRegistro = async () => {
     console.log("terminando registro");
     if (!codigo) {
-      toast.error("No se encontró el código de la inscripcion");
+      toast.error("No se encontró el código de la lista");
       return;
     }
     if (!selectedResultId) {
@@ -107,12 +107,18 @@ const SubirComprobantePage = () => {
       toast.error("El resultado seleccionado no contiene número o fecha. Por favor, suba una imagen con mejor calidad.");
       return;
     }
-
     try {
       //recordatorio por ahora esta asi ya que falta el endpoint
-      console.log("cambiando estado a Pago Pendiente", cambiarEstadoLista);
+
       if (olimpiada_id && ci) {
-        navigate(`/inscribir/${olimpiada_id}/${ci}/subirComprobanteDePago/${codigo}/subir`);
+        console.log(
+          codigo,
+          selectedResult.extractedData.nro , 
+          selectedResult.extractedData.fecha,
+        );
+        await pagarLista( codigo, selectedResult.extractedData.nro , selectedResult.extractedData.fecha);
+        navigate(`..\\..\\`);
+        toast.success("Lista cambiada a Pago Pendiente");
       } else {
         toast.error("Información de navegación incompleta");
       }
@@ -127,7 +133,7 @@ const SubirComprobantePage = () => {
 
   useEffect(() => {
     const initializeWorker = async () => {
-      const worker: Worker = await createWorker('spa',1);   // 👈 tipo explícito
+      const worker: Worker = await createWorker('spa',1);
     
       await worker.load();
     
@@ -323,8 +329,6 @@ const SubirComprobantePage = () => {
   
       /* 3) Denoise suave: medianBlur 3×3  ................................... */
       cv.medianBlur(claheMat, den, 3);
-      //  Si tu OpenCV trae fastNlMeans y quieres usarlo:
-      //  (cv as any).fastNlMeansDenoising?.(claheMat, den, NLM_H, 7, 21);
   
       /* 4) Umbral adaptativo (block 31, C 11) ............................... */
       cv.adaptiveThreshold(
@@ -563,7 +567,12 @@ const SubirComprobantePage = () => {
       toast.error("No se pudieron detectar el número y la fecha en la imagen. Por favor, suba una nueva imagen con mejor calidad.");
       return false;
     }
-    
+    const selectedResult = ocrResults.find(result => result.id === selectedResultId);
+    if (!selectedResult?.extractedData?.nro || !selectedResult?.extractedData?.fecha) {
+      toast.error("El resultado seleccionado no contiene número o fecha. Por favor, suba una imagen con mejor calidad.");
+      return;
+    }
+        
     return hasValidData;
   };
 
@@ -732,7 +741,7 @@ const SubirComprobantePage = () => {
                     ¿Está seguro que desea finalizar el registro?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta acción impedirá el registro de nuevos postulantes a la inscripcion
+                    Esta acción impedirá el registro de nuevos postulantes a la lista
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
