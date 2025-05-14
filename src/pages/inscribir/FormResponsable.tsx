@@ -89,7 +89,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Ej. Juan"
+                      placeholder="Ingrese Nombres"
                       autoComplete="given-name"
                       onChange={(e) => {
                         const value = e.target.value.replace(
@@ -120,7 +120,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Ej. Pérez"
+                      placeholder="Ingrese Apellidos"
                       autoComplete="family-name"
                       onChange={(e) => {
                         const value = e.target.value.replace(
@@ -151,7 +151,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="ejemplo@dominio.com"
+                      placeholder="Ingrese Correo"
                       type="email"
                       autoComplete="email"
                     />
@@ -182,7 +182,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                       }}
                       value={field.value || ""}
                       type="tel"
-                      placeholder="Ej. 76543210"
+                      placeholder="Ingrese Numero de Teléfono"
                       autoComplete="tel"
                     />
                   </FormControl>

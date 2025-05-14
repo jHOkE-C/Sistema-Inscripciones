@@ -91,7 +91,7 @@ const PageLogin = () => {
 
                                                 <FormControl>
                                                     <Input
-                                                        placeholder="usuario"
+                                                        placeholder="Ingrese Usuario"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -111,7 +111,7 @@ const PageLogin = () => {
                                                 <FormControl>
                                                     <Input
                                                         type="password"
-                                                        placeholder="contraseña"
+                                                        placeholder="Ingrese Contraseña"
                                                         {...field}
                                                     />
                                                 </FormControl>
