@@ -143,7 +143,7 @@ export default function GestionRegistration({
                                         className="col-span-3"
                                         id="gestion"
                                     >
-                                        <SelectValue placeholder="Seleccionar período" />
+                                        <SelectValue placeholder="Selecciona Período" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem
@@ -296,7 +296,7 @@ export default function GestionRegistration({
                                 </Label>
                                 <Input
                                     id="precio"
-                                    placeholder="15,00"
+                                    placeholder="Ingrese Precio"
                                     value={precio}
                                     onChange={(e) => setPrecio(e.target.value)}
                                     className="col-span-3"

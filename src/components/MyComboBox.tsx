@@ -46,7 +46,7 @@ export function MyCombobox({ values, value, onChange }: MyComboBoxProps) {
             <PopoverContent className="w-full p-0">
                 <Command>
                     <CommandInput
-                        placeholder="Busca la opcion..."
+                        placeholder="Ingresa una opcion..."
                         className="h-9"
                     />
                     <CommandList>

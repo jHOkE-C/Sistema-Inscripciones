@@ -75,7 +75,7 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
                     <FormControl>
                       <Input
                         maxLength={40}
-                        placeholder="Astronomia"
+                        placeholder="Ingrese Nombre de Area"
                         onChange={(e) => {
                           field.onChange(e.target.value.toUpperCase());
                         }}

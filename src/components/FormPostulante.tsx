@@ -285,7 +285,7 @@ const FormPostulante = ({
                                                         </FormLabel>
                                                         <FormControl className="col-span-2">
                                                             <Input
-                                                                placeholder="Juan"
+                                                                placeholder="Ingrese Nombres"
                                                                 {...field}
                                                             />
                                                         </FormControl>
@@ -303,7 +303,7 @@ const FormPostulante = ({
                                                         </FormLabel>
                                                         <FormControl className="col-span-2">
                                                             <Input
-                                                                placeholder="Gonzales"
+                                                                placeholder="Ingrese Apellidos"
                                                                 {...field}
                                                             />
                                                         </FormControl>
@@ -323,7 +323,7 @@ const FormPostulante = ({
                                                             <Input
                                                                 maxLength={10}
                                                                 minLength={7}
-                                                                placeholder="12345678"
+                                                                placeholder="Ingrese CI"
                                                                 {...field}
                                                             />
                                                         </FormControl>
@@ -364,7 +364,7 @@ const FormPostulante = ({
                                                         </FormLabel>
                                                         <FormControl className="col-span-2">
                                                             <Input
-                                                                placeholder="correo@ejemplo.com"
+                                                                placeholder="Ingrese Correo"
                                                                 {...field}
                                                             />
                                                         </FormControl>
@@ -512,7 +512,7 @@ const FormPostulante = ({
                                                         <FormControl>
                                                             <Input
                                                                 maxLength={8}
-                                                                placeholder="12345678"
+                                                                placeholder="Ingrese Telefono de Referencia"
                                                                 type="tel"
                                                                 {...field}
                                                             />
@@ -562,7 +562,7 @@ const FormPostulante = ({
                                                         </FormLabel>
                                                         <FormControl>
                                                             <Input
-                                                                placeholder="contacto@ejemplo.com"
+                                                                placeholder="Ingrese Correo de Referencia"
                                                                 type="email"
                                                                 {...field}
                                                             />
