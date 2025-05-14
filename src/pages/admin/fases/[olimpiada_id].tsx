@@ -170,7 +170,8 @@ export default function Page() {
                     );
                     valid = false;
                 }
-                if (differenceInCalendarDays(end, start) <= 0) {
+                console.log("diferencias", differenceInCalendarDays(end, start));
+                if (differenceInCalendarDays(end, start) < 0) {
                     errorFlags.start = true;
                     errorFlags.end = true;
                     toast.error(
@@ -386,7 +387,12 @@ export default function Page() {
                                                 className="flex items-center"
                                             >
                                                 <Checkbox
-                                                    disabled={tp.id == "1" && selectedIdFases.includes(tp.id)}
+                                                    disabled={
+                                                        tp.id == "1" &&
+                                                        selectedIdFases.includes(
+                                                            tp.id
+                                                        )
+                                                    }
                                                     className=""
                                                     id={tp.id}
                                                     checked={selectedIdFases.includes(
