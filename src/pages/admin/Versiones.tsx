@@ -6,7 +6,7 @@ import {
     ArrowDownUp
 } from "lucide-react";
 import { useState, useMemo } from "react";
-import { Card,CardTitle,} from "@/components/ui/card";
+import { Card,CardFooter,CardHeader,CardTitle,CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Version } from "@/types/versiones.type";
 import { Link } from "react-router-dom";
@@ -191,7 +191,7 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                 </div>
             )}
 
-            <div className="g\rid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-4 py-2">
+            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 py-2">
                 {processedVersiones.map((event) => (
                     <Link
                         to={`${typeof container === 'function' ? "#" : event.id}`}
@@ -204,12 +204,12 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                         }}
                     >
                         <Card
-                            className={` h-full  border-2 transition-all duration-200 ease-in-out grid grid-cols-1  sm:grid-cols-3 lgx:grid-cols-3 gap-6
+                            className={` h-full  border-2 transition-all duration-200 ease-in-out
                                 transform  ${typeof container === 'function' ? "cursor-default" : "hover:scale-105 hover:text-primary hover:border-primary"}`}
                             
                         >
                             
-                            
+                            <CardHeader>
                                 <div className="flex items-center ml-5">
                                     <CardTitle className="text-xl">
                                         {event.nombre}
@@ -219,7 +219,8 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                                     </Badge>
                                 </div>  
                                 
-                                <div className="ml-5">
+                            </CardHeader>
+                            <CardContent className="flex-grow">
                                 {typeof container === 'function' ? container(event) : container || (
                                 <>
                                     <div className="flex items-center gap-2">
@@ -244,7 +245,8 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                                     </div>
                                 </>
                                 )}
-                                </div>
+                                </CardContent>
+                                <CardFooter className="border-t pt-4">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground ml-5">
                                     <Clock className="h-4 w-4" />
                                     <span>
@@ -256,8 +258,8 @@ export function Versiones({ versiones, onVersionCardClick, container=null }: Ver
                                         días
                                     </span>
                                 </div>
-                            
-                        </Card>
+                                </CardFooter>
+                            </Card>
                     </Link>
                 ))}
             </div>
