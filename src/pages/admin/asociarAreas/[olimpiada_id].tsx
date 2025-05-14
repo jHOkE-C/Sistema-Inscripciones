@@ -27,6 +27,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import type { Olimpiada } from "@/types/versiones.type";
+import { getOlimpiada } from "@/api/olimpiada";
+import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 
 export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
@@ -37,12 +40,15 @@ export default function Page() {
     const [associatedAreas, setAssociatedAreas] = useState<Area[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchAssociatedTerm, setSearchAssociatedTerm] = useState("");
+    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
 
     useEffect(() => {
         fetchAreas();
         fetchAssociated();
+        fetchOlimpiada();
     }, []);
 
+    if (!olimpiada_id) return;
     const fetchAreas = async () => {
         try {
             const data = await request<Area[]>("/api/areas", { method: "GET" });
@@ -52,6 +58,10 @@ export default function Page() {
                 e instanceof Error ? e.message : "Error al cargar áreas"
             );
         }
+    };
+    const fetchOlimpiada = async () => {
+        const olimpiada = await getOlimpiada(olimpiada_id);
+        setOlimpiada(olimpiada);
     };
 
     const fetchAssociated = async () => {
@@ -120,6 +130,14 @@ export default function Page() {
     const filteredAssociatedAreas = associatedAreas.filter((a) =>
         a.nombre.toLowerCase().includes(searchAssociatedTerm.toLowerCase())
     );
+
+    if (olimpiada &&( olimpiada?.fase_actual?.fase.nombre_fase !== "Preparación" || !olimpiada.fase_actual))
+        return (
+            <OlimpiadaNoEnCurso
+                olimpiada={olimpiada}
+                text={"La olimpiada no esta en Fase de Preparación"}
+            />
+        );
 
     return (
         <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">

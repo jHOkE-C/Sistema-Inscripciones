@@ -2,7 +2,13 @@ import type { Olimpiada } from "@/types/versiones.type";
 import { Clock } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
-const OlimpiadaNoEnCurso = ({ olimpiada }: { olimpiada: Olimpiada }) => {
+const OlimpiadaNoEnCurso = ({
+    olimpiada,
+    text,
+}: {
+    olimpiada: Olimpiada;
+    text?: string;
+}) => {
     return (
         <div className="flex items-center justify-center min-h-screen  w-screen">
             <Card className="w-xl">
@@ -14,7 +20,9 @@ const OlimpiadaNoEnCurso = ({ olimpiada }: { olimpiada: Olimpiada }) => {
                     </CardTitle>
                     <CardDescription>
                         <p className="text-xl text-foreground/60">
-                            No se están aceptando inscripciones en este momento
+                            {text
+                                ? text
+                                : "No se están aceptando inscripciones en este momento"}
                         </p>
                         <div className="mt-6 flex justify-center">
                             <Clock className="w-24 h-24 text-foreground/80" />

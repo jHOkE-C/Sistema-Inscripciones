@@ -26,6 +26,9 @@ import { toast } from "sonner";
 import { request } from "@/api/request";
 import type { Area, Categoria } from "@/api/areas";
 import { useParams } from "react-router-dom";
+import type { Olimpiada } from "@/types/versiones.type";
+import { getOlimpiada } from "@/api/olimpiada";
+import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 
 export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
@@ -40,11 +43,19 @@ export default function Page() {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const { olimpiada_id } = useParams();
+        const [olimpiada, setOlimpiada] = useState<Olimpiada>();
+    
 
     useEffect(() => {
         loadData();
+        fetchOlimpiada();
     }, []);
+    if(!olimpiada_id) return
 
+    const fetchOlimpiada = async () => {
+            const olimpiada = await getOlimpiada(olimpiada_id);
+            setOlimpiada(olimpiada);
+        };
     const loadData = async () => {
         try {
             const [areasData, catsData] = await Promise.all([
@@ -110,7 +121,13 @@ export default function Page() {
     );
 
     const selectedCount = Object.values(checked).filter(Boolean).length;
-
+if (olimpiada &&( olimpiada?.fase_actual?.fase.nombre_fase !== "Preparación" || !olimpiada.fase_actual))
+        return (
+            <OlimpiadaNoEnCurso
+                olimpiada={olimpiada}
+                text={"La olimpiada no esta en Fase de Preparación"}
+            />
+        );
     return (
         <div className="p-6 space-y-6">
             <Card>
