@@ -94,7 +94,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
                 fecha_emision: data.fecha_emision,
             });
             setPdfOpen(true);
-            setPdfBlob(new Blob([pdf], { type: "application/pdf" }));
+            setPdfBlob(new Blob([pdf as BlobPart], { type: "application/pdf" }));
             setPdf(pdf);
         } catch {
             //toast.error("Hubo un error al cargar la orden.");
@@ -209,7 +209,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
                     <DialogDescription asChild>
                         <div className="grid gap-5 py-4">
                             <div className="grid grid-cols-2 gap-3 p-4 rounded-lg border">
-                                <div className="font-medium">Código lista:</div>
+                                <div className="font-medium">Código de inscripción:</div>
                                 <div className="font-semibold">
                                     {codigo_lista}
                                 </div>
