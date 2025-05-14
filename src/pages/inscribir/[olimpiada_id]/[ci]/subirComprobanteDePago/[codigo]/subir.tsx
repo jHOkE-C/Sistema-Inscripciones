@@ -403,87 +403,89 @@ const SubirComprobantePage = () => {
     }
   };
 
-  const extractData = (text: string): ExtractedData => {
-    //datos importantes
-    const clean = (raw: string) =>
-      raw.replace(/[|()[\]<>]/g, '')      // símbolos sueltos
-         .replace(/\s{2,}/g, ' ')          // dobles espacios
-         .trim();
-    
-    const textClean = clean(text);    
-    
-    
-    const nroMatch = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*\d[\d\s.]+)/i);
-    const fechaMatch = textClean.match(/([Ff][Ee]?[Cc]?[Hh]?[Aa]?\s*:?\s*\d{1,2}[-/]\d{1,2}[-/]\d{2,4}(?:\s+\d{1,2}[-:]\d{1,2})?)/i);
-    const nroControl = textClean.match(/([Nn][Rr]?[Oo]?\.?\s*(?:[Dd][Ee]\s*)?[Cc][Oo][Nn][Tt][Rr][Oo][Ll]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
-    const documento = textClean.match(/([Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Oo]\s*:?\s*\d+(?:[\s.-]+\d+)*)/i);
-    
-    
-    let cleanNro = null;
-    if (nroMatch) {
-    
-      const soloDigitos = nroMatch[1].replace(/\D/g, '');
-    
-      if (soloDigitos.length >= 7) {
-        cleanNro = soloDigitos;
-      }
-    }
-    
-    
-    let cleanFecha = null;
-    if (fechaMatch) {
-      
-      const fechaCompleta = fechaMatch[1];
-      
-      
-      const fechaRegex = /(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})(?:\s+(\d{1,2})[-:](\d{1,2}))?/;
-      const fechaParts = fechaCompleta.match(fechaRegex);
-      
-      if (fechaParts) {
-    
-        const [, dia, mes, anio, hora, minutos] = fechaParts;
-        const diaNum = parseInt(dia, 10);
-        const mesNum = parseInt(mes, 10);
-        const anioNum = parseInt(anio, 10);
-        
-        
-        if (diaNum >= 1 && diaNum <= 31 && 
-            mesNum >= 1 && mesNum <= 12 && 
-            anioNum >= 0) {
-          
-          
-          cleanFecha = `${diaNum.toString().padStart(2, '0')}-${mesNum.toString().padStart(2, '0')}-${anioNum < 100 ? anioNum.toString().padStart(2, '0') : anioNum}`;
-          
-          
-          if (hora && minutos) {
-            const horaNum = parseInt(hora, 10);
-            const minutosNum = parseInt(minutos, 10);
-            
-            
-            if (horaNum >= 0 && horaNum <= 23 && minutosNum >= 0 && minutosNum <= 59) {
-              cleanFecha += ` ${horaNum.toString().padStart(2, '0')}:${minutosNum.toString().padStart(2, '0')}`;
-            }
-          }
-        }
-      }
-    }
-    
-    
-    const cleanNroControl = nroControl ? 
-      nroControl[1].replace(/^[Nn][Rr][Oo]\.?\s*(?:[Dd][Ee]\s*)?[Cc][Oo][Nn][Tt][Rr][Oo][Ll]\s*:?\s*/i, '').replace(/\s+/g, '') : 
-      null;
-      
-    const cleanDocumento = documento ? 
-      documento[1].replace(/^[Dd][Oo][Cc][Uu][Mm][Ee][Nn][Tt][Oo]\s*:?\s*/i, '').replace(/\s+/g, '') : 
-      null;
-    return {
-      nro: cleanNro,
-      fecha: cleanFecha,
-      nroControl: cleanNroControl,
-      documento: cleanDocumento,
-      fullText: textClean || null
-    };
+  
+  type ExtractedData = {
+    nro: string | null;
+    fecha: string | null;
+    nroControl: string | null;
+    documento: string | null;
+    fullText: string | null;
   };
+  
+  const extractData = (raw: string): ExtractedData => {
+    
+    console.log(raw);
+    const norm = raw
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .replace(/[|()[\]<>]/g, " ")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  
+    console.log(norm);
+    
+    const first = (rxs: RegExp[]) => rxs.find(rx => rx.test(norm))?.exec(norm) ?? null;
+    const digits = (s: string) => s.replace(/\D/g, "");
+    const firstMatch = (rxs: RegExp[]) =>
+      rxs.reduce<RegExpExecArray | null>((m, rx) => m || rx.exec(norm), null);
+    
+    const NRO_PATTERNS: RegExp[] = [
+      /\bN(?:R?O)?[.:­-]?\s*([A-Z]?(?:\d\s*){7,})\b/,
+
+      
+      /\bNRO8?\s*([0-9](?:\s*\d){7,})\b/,
+
+      
+      /\bN°\s*([0-9](?:\s*\d){7,})\b/,
+
+      
+      /\bNUM(?:ERO)?[.:]?\s*([0-9](?:\s*\d){7,})\b/,
+    ];
+
+  
+    const nroMatch = first(NRO_PATTERNS);
+  
+  
+    const nro = nroMatch ? digits(nroMatch[1]) : null;
+    
+    const ctrlMatch = firstMatch([
+      /\bN\w{0,3}\s*(?:CONTR[O0]L|CONTROL|CANCROL)\s*[:\-]?\s*([A-Z]?\d+)\b/,
+    ]);
+    const nroControl = ctrlMatch ? digits(ctrlMatch[1]) : null;
+
+    
+    const docMatch = firstMatch([
+      /\b[DP]?OCU\w*\s*[:\-]?\s*([A-Z]?\d[\dA-Z.-]*)\b/, // DOCUMENTO / POCUMENTA
+    ]);
+    const documento = docMatch ? digits(docMatch[1]) : null;
+  
+  
+  const fechaLabel = /\bF\w?E?\w?C?\w?H?\w?A?\b\s*[:\-]?\s*([0-9\/\- ]{6,}(?:\s+[0-9:]{4,5})?)/;
+  
+  const fechaPlain = /(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})(?:\s+(\d{1,2})[:\-](\d{2}))?/;
+  
+  const fechaCompact = /\b(\d{2})(\d{2})(\d{2,4})\b/;
+
+  let fecha: string | null = null;
+
+  const labeled = fechaLabel.exec(norm);
+  const dated = labeled ? fechaPlain.exec(labeled[1]) : fechaPlain.exec(norm);
+
+  if (dated) {
+    const [, d, m, y, hh, mm] = dated;
+    fecha = `${d.padStart(2, "0")}-${m.padStart(2, "0")}-${(+y < 100 ? "20" : "") + y}`;
+    if (hh && mm) fecha += ` ${hh.padStart(2, "0")}:${mm}`;
+  } else {
+    const compact = fechaCompact.exec(norm);
+    if (compact) {
+      const [, d, m, y] = compact;
+      fecha = `${d}-${m}-${(+y < 100 ? "20" : "") + y}`;
+    }
+  }
+    return { nro, fecha, nroControl, documento, fullText: norm || null };
+  };
+  
+  
 
   const processImage = useCallback(async () => {
     if (!originalFile || !isCvReady || !tesseractWorker || isLoading) return;
