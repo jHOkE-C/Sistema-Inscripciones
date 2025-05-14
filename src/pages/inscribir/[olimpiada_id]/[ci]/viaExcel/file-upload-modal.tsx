@@ -406,7 +406,12 @@ export default function FileUploadModal({
             </Dialog>
             <Dialog
                 open={errores.length > 0 || erroresDeFormatoExcel.length > 0}
-                onOpenChange={(open) => !open && setErrores([])}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setErrores([]);
+                        setErroresDeFormatoExcel([]);
+                    }
+                }}
             >
                 <DialogContent>
                     <DialogHeader>
@@ -464,7 +469,14 @@ export default function FileUploadModal({
                         </div>
                     </DialogHeader>
                     <DialogFooter className="mt-4">
-                        <Button onClick={() => setErrores([])}>Cerrar</Button>
+                        <Button
+                            onClick={() => {
+                                setErrores([]);
+                                setErroresDeFormatoExcel([]);
+                            }}
+                        >
+                            Cerrar
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
