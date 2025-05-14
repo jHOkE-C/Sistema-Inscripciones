@@ -58,7 +58,7 @@ export default function Page() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold text-center">
-                                Listado de Postulantes
+                                Inscripciones de Postulantes
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="overflow-x-auto space-y-5">
@@ -80,7 +80,7 @@ export default function Page() {
                                 {data.length === 0 && (
                                     <TableCaption>
                                         No existen postulantes registrados a
-                                        esta lista
+                                        esta inscripcion
                                     </TableCaption>
                                 )}
 

@@ -97,7 +97,7 @@ export default function Page() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold text-center">
-                                Listado de Postulantes
+                                Inscripciones de Postulantes
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="overflow-x-auto space-y-5">
@@ -114,7 +114,7 @@ export default function Page() {
                                 {data.length === 0 && (
                                     <TableCaption>
                                         No existen postulantes registrados a
-                                        esta lista
+                                        esta inscripción
                                     </TableCaption>
                                 )}
 
@@ -203,7 +203,7 @@ export const ButtonFinalizarRegistro = ({
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         Esta acción bloqueará la adición de postulantes futura
-                        en la lista
+                        en esta inscripcion
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

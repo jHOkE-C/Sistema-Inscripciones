@@ -51,7 +51,7 @@ const Page = () => {
         try {
             refresh();
         } catch {
-            console.error("Error al obtener las listas de postulantes");
+            console.error("Error al obtener las inscripciones de postulantes");
         }
     };
 
@@ -69,7 +69,7 @@ const Page = () => {
                             "codigo_lista"
                         )}`}
                     >
-                        <Button variant={"link"}>Abrir lista</Button>
+                        <Button variant={"link"}>Abrir Incripción</Button>
                     </Link>
                 ),
         },
@@ -94,7 +94,7 @@ const Page = () => {
                     <Card className="border-0 shadow-white">
                         <CardTitle>
                             <h1 className="text-3xl font-bold text-center">
-                                Listas de Postulantes
+                                Inscripciones de Postulantes
                             </h1>
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">

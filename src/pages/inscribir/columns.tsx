@@ -14,7 +14,7 @@ export type ListaPostulantes = {
 export const columns: ColumnDef<ListaPostulantes>[] = [
     {
         accessorKey: "codigo_lista",
-        header: "Código de lista",
+        header: "Código de Inscripción",
     },
 
     {

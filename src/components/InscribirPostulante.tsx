@@ -113,7 +113,7 @@ const InscribirPostulante = () => {
                             Crear Una Nueva Inscripcion
                         </Button>
                         <DialogDescription>
-                            Puede continuar inscribiendo en una de estas listas:
+                            Puede continuar inscribiendo en una de estas inscripciones:
                         </DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[300px] overflow-y-scroll">
@@ -185,7 +185,7 @@ const InscribirPostulante = () => {
                         </DialogTitle>
                         <DialogDescription>
                             Presione continuar para registrar mas postulantes en
-                            una listas Presione finalizar para terminar el
+                            una inscripcion Presione finalizar para terminar el
                             registro
                         </DialogDescription>
                     </DialogHeader>

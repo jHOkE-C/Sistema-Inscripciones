@@ -96,7 +96,7 @@ export default function ResponsableCard({ data }: Data) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Código de Lista</TableHead>
+                      <TableHead>Código de Inscripción</TableHead>
                       <TableHead>Cantidad</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Fecha de Creación</TableHead>
@@ -122,7 +122,7 @@ export default function ResponsableCard({ data }: Data) {
                         <TableCell>
                           <Link to={`/consultar-estado/${lista.codigo_lista}`}>
                           <Button>
-                            Ver Lista
+                            Ver Inscripción
                           </Button>
                           </Link>
                         </TableCell>

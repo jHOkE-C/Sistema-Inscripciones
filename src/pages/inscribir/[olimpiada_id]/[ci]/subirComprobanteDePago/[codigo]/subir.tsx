@@ -94,7 +94,7 @@ const SubirComprobantePage = () => {
   const terminarRegistro = async () => {
     console.log("terminando registro");
     if (!codigo) {
-      toast.error("No se encontró el código de la lista");
+      toast.error("No se encontró el código de la inscripcion");
       return;
     }
     if (!selectedResultId) {
@@ -732,7 +732,7 @@ const SubirComprobantePage = () => {
                     ¿Está seguro que desea finalizar el registro?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta acción impedirá el registro de nuevos postulantes a la lista
+                    Esta acción impedirá el registro de nuevos postulantes a la inscripcion
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -107,7 +107,7 @@ export function DataTable<TData, TValue>({
                                 colSpan={columns.length}
                                 className="h-24 text-center"
                             >
-                                No hay listas de postulantes registradas
+                                No hay inscripciones de postulantes registradas
                             </TableCell>
                         </TableRow>
                     )}

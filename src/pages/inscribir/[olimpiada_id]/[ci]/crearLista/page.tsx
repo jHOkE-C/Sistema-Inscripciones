@@ -45,7 +45,7 @@ const Page = () => {
         try {
             refresh();
         } catch {
-            console.error("Error al obtener las listas de postulantes");
+            console.error("Error al obtener las inscripciones de postulantes");
         }
     };
 
@@ -70,9 +70,9 @@ const Page = () => {
                 olimpiada_id,
             });
             refresh();
-            toast.success("La lista se creó correctamente.");
+            toast.success("La inscripcion se creó correctamente.");
         } catch {
-            toast.error("No se pudo registrar la lista. Intente nuevamente.");
+            toast.error("No se pudo registrar la inscripcion. Intente nuevamente.");
         } finally {
             setLoading(false);
         }

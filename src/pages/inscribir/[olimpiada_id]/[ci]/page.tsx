@@ -28,7 +28,7 @@ const Page = () => {
             color: "green",
         },
         {
-            label: "Ver Listas",
+            label: "Ver Inscripciones",
             to: `listas`,
             Icon: List,
         },
@@ -78,7 +78,7 @@ const Page = () => {
         try {
             refresh();
         } catch {
-            console.error("Error al obtener las listas de postulantes");
+            console.error("Error al obtener las inscripciones de postulantes");
         }
     };
 
