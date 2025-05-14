@@ -62,7 +62,7 @@ const FormCI = () => {
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            placeholder="Ej. 12345678"
+                                            placeholder="Ingrese  CI"
                                             type="text"
                                             maxLength={10}
                                             onChange={(e) => {
