@@ -73,13 +73,6 @@ export default function PostulanteCard({ data }: Data) {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-gray-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-500">CI</p>
-                  <p>{postulante.ci}</p>
-                </div>
-              </div>
             </div>
 
             <div className="space-y-4">
