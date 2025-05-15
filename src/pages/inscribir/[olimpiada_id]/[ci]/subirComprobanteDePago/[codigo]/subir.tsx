@@ -128,6 +128,7 @@ const SubirComprobantePage = () => {
       } else {
         toast.error("Ha ocurrido un error inesperado");
       }
+      navigate(`..\\..\\`);
     }
   };
 
@@ -449,20 +450,20 @@ const SubirComprobantePage = () => {
     const nro = nroMatch ? digits(nroMatch[1]) : null;
     
     const ctrlMatch = firstMatch([
-      /\bN\w{0,3}\s*(?:CONTR[O0]L|CONTROL|CANCROL)\s*[:\-]?\s*([A-Z]?\d+)\b/,
+      /\bN\w{0,3}\s*(?:CONTR[O0]L|CONTROL|CANCROL)\s*[:-]?\s*([A-Z]?\d+)\b/,
     ]);
     const nroControl = ctrlMatch ? digits(ctrlMatch[1]) : null;
 
     
     const docMatch = firstMatch([
-      /\b[DP]?OCU\w*\s*[:\-]?\s*([A-Z]?\d[\dA-Z.-]*)\b/, // DOCUMENTO / POCUMENTA
+      /\b[DP]?OCU\w*\s*[:-]?\s*([A-Z]?\d[\dA-Z.-]*)\b/, // DOCUMENTO / POCUMENTA
     ]);
     const documento = docMatch ? digits(docMatch[1]) : null;
   
   
-  const fechaLabel = /\bF\w?E?\w?C?\w?H?\w?A?\b\s*[:\-]?\s*([0-9\/\- ]{6,}(?:\s+[0-9:]{4,5})?)/;
+  const fechaLabel = /\bF\w?E?\w?C?\w?H?\w?A?\b\s*[:-]?\s*([0-9/\- ]{6,}(?:\s+[0-9:]{4,5})?)/;
   
-  const fechaPlain = /(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})(?:\s+(\d{1,2})[:\-](\d{2}))?/;
+  const fechaPlain = /(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})(?:\s+(\d{1,2})[:-](\d{2}))?/;
   
   const fechaCompact = /\b(\d{2})(\d{2})(\d{2,4})\b/;
 
