@@ -40,6 +40,7 @@ interface ExtractedData {
   fecha: string | null;
   nroControl: string | null;
   documento: string | null;
+  ordenPago: string | null;
   fullText: string | null;
 }
 
@@ -47,7 +48,6 @@ interface OcrResult {
   id: string;
   name: string;
   extractedData: ExtractedData | null;
-  processingTime?: number;
 }
 
 const SubirComprobantePage = () => {
@@ -61,7 +61,7 @@ const SubirComprobantePage = () => {
   useState<Worker | null>(null);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { ci, codigo, olimpiada_id } = useParams();
+  const { codigo } = useParams();
 
   const inputCanvasRef = useRef<HTMLCanvasElement>(null);
   const outputCanvasRef1 = useRef<HTMLCanvasElement>(null);
@@ -92,36 +92,24 @@ const SubirComprobantePage = () => {
   }, []);
 
   const terminarRegistro = async () => {
-    console.log("terminando registro");
     if (!codigo) {
       toast.error("No se encontró el código de la lista");
       return;
     }
-    if (!selectedResultId) {
-      toast.error("Debe seleccionar uno de los resultados de OCR");
+    const selectedResult:OcrResult | undefined = ocrResults.find(result => result.id === selectedResultId);
+    if (!selectedResult?.extractedData?.ordenPago || !selectedResult?.extractedData?.fecha) {
+      toast.error("El resultado seleccionado no contiene Orden de Pago o fecha. Por favor, suba una imagen con mejor calidad o revise los datos extraídos.");
       return;
-    }
-
-    const selectedResult = ocrResults.find(result => result.id === selectedResultId);
-    if (!selectedResult?.extractedData?.nro || !selectedResult?.extractedData?.fecha) {
-      toast.error("El resultado seleccionado no contiene número o fecha. Por favor, suba una imagen con mejor calidad.");
-      return;
-    }
+  }
     try {
-      //recordatorio por ahora esta asi ya que falta el endpoint
-
-      if (olimpiada_id && ci) {
-        console.log(
-          codigo,
-          selectedResult.extractedData.nro , 
-          selectedResult.extractedData.fecha,
-        );
-        await pagarLista( codigo, selectedResult.extractedData.nro , selectedResult.extractedData.fecha);
-        navigate(`..\\..\\`);
-        toast.success("La orden pago fue valida exitosamente");
-      } else {
-        toast.error("Información de navegación incompleta");
-      }
+      console.log(
+        codigo,
+        selectedResult.extractedData.ordenPago, 
+        selectedResult.extractedData.fecha,
+      );
+      await pagarLista( codigo, selectedResult.extractedData.ordenPago , selectedResult.extractedData.fecha );
+      navigate(`..\\..\\`);
+      toast.success("La orden pago fue valida exitosamente");    
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -376,7 +364,6 @@ const SubirComprobantePage = () => {
     name: string
   ): Promise<OcrResult> => {
     console.log(`Ejecutando OCR para: ${name}`);
-    const start = performance.now();
     try {
       const {
         data: { text }
@@ -386,7 +373,6 @@ const SubirComprobantePage = () => {
         id,
         name,
         extractedData: extracted,
-        processingTime: performance.now() - start
       };
     } catch (err) {
       console.error(`Error OCR (${name}):`, err);
@@ -398,20 +384,13 @@ const SubirComprobantePage = () => {
           fecha: null,
           nroControl: null,
           documento: null,
+          ordenPago: null,
           fullText: `Error en OCR: ${err instanceof Error ? err.message : String(err)}`
         }
       };
     }
   };
 
-  
-  type ExtractedData = {
-    nro: string | null;
-    fecha: string | null;
-    nroControl: string | null;
-    documento: string | null;
-    fullText: string | null;
-  };
   
   const extractData = (raw: string): ExtractedData => {
     
@@ -459,6 +438,14 @@ const SubirComprobantePage = () => {
       /\b[DP]?OCU\w*\s*[:-]?\s*([A-Z]?\d[\dA-Z.-]*)\b/, // DOCUMENTO / POCUMENTA
     ]);
     const documento = docMatch ? digits(docMatch[1]) : null;
+
+    const ORDENPAGO_PATTERNS: RegExp[] = [
+      /\bACLARACION:\s*OF\s*(\d+)/i,
+      /\bOF\s+(\d+)\b/i,
+      /\bOP\s+(\d+)\b/i,
+    ];
+    const ordenPagoMatch = firstMatch(ORDENPAGO_PATTERNS);
+    const ordenPago = ordenPagoMatch ? ordenPagoMatch[1] : null;
   
   
   const fechaLabel = /\bF\w?E?\w?C?\w?H?\w?A?\b\s*[:-]?\s*([0-9/\- ]{6,}(?:\s+[0-9:]{4,5})?)/;
@@ -483,7 +470,7 @@ const SubirComprobantePage = () => {
       fecha = `${d}-${m}-${(+y < 100 ? "20" : "") + y}`;
     }
   }
-    return { nro, fecha, nroControl, documento, fullText: norm || null };
+    return { nro, fecha, nroControl, documento, ordenPago, fullText: norm || null };
   };
   
   
@@ -563,17 +550,17 @@ const SubirComprobantePage = () => {
     if (ocrResults.length === 0) return false;
     
     const hasValidData = ocrResults.some(
-      result => result.extractedData?.nro && result.extractedData?.fecha
+      result => result.extractedData?.ordenPago && result.extractedData?.fecha
     );
     
     if (!hasValidData && processedImages.length > 0) {
-      toast.error("No se pudieron detectar el número y la fecha en la imagen. Por favor, suba una nueva imagen con mejor calidad.");
+      toast.error("No se pudieron detectar la Orden de Pago y la fecha en la imagen. Por favor, suba una nueva imagen con mejor calidad.");
       return false;
     }
     const selectedResult = ocrResults.find(result => result.id === selectedResultId);
-    if (!selectedResult?.extractedData?.nro || !selectedResult?.extractedData?.fecha) {
-      toast.error("El resultado seleccionado no contiene número o fecha. Por favor, suba una imagen con mejor calidad.");
-      return;
+    if (!selectedResult?.extractedData?.ordenPago || !selectedResult?.extractedData?.fecha) {
+      toast.error("El resultado seleccionado no contiene Orden de Pago o fecha. Por favor, suba una imagen con mejor calidad o revise los datos extraídos.");
+      return false;
     }
         
     return hasValidData;
@@ -690,7 +677,7 @@ const SubirComprobantePage = () => {
           <h2 className="text-lg font-semibold mb-2">3. Resultados del OCR</h2>
           <div className="flex">
           
-          <h2 className="text-lg mb-4 text-indigo-500">Seleccione el resultado que muestre la información más clara prioridad fecha y nro</h2>
+          <h2 className="text-lg mb-4 text-indigo-500">Seleccione el resultado que muestre la información prioritaria para validar su comprobante fecha y orden de pago</h2>
           
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -709,17 +696,13 @@ const SubirComprobantePage = () => {
                       <strong className="font-semibold">Nro.:</strong>{' '}
                       {result.extractedData.nro || 'No encontrado'}
                     </p>
+                    <p className="text-sm mb-2">
+                      <strong className="font-semibold">Orden de Pago:</strong>{' '}
+                      {result.extractedData.ordenPago || 'No encontrado'}
+                    </p>
                     <p className="text-sm">
                       <strong className="font-semibold">Fecha:</strong>{' '}
                       {result.extractedData.fecha || 'No encontrado'}
-                    </p>
-                    <p className="text-sm">
-                      <strong className="font-semibold">Nro. Control:</strong>{' '}
-                      {result.extractedData.nroControl || 'No encontrado'}
-                    </p>
-                    <p className="text-sm">
-                      <strong className="font-semibold">Documento:</strong>{' '}
-                      {result.extractedData.documento || 'No encontrado'}
                     </p>
                   </>
                 ) : (
