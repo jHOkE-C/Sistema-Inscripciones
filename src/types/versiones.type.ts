@@ -4,8 +4,9 @@ export type Version = {
     gestion: string;
     fecha_inicio: string;
     fecha_fin: string;
-    created_at: string;
-    updated_at: string;
+    limite_inscripciones: number;
+    precio_inscripcion: string;
+    fase?: Fase;
 };
 
 export interface Olimpiada {

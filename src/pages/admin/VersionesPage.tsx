@@ -9,86 +9,103 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
 import { Version, VersionFilter } from "@/types/versiones.type";
 
-
-
 export interface VersionesPageProps {
-  title: string;
-  returnTo?: string;
-  queVersiones?: VersionFilter[];
+    title: string;
+    returnTo?: string;
+    queVersiones?: VersionFilter[];
+    filter?: (value: Version, index: number, array: Version[]) => unknown;
 }
 
+export default function VersionesPage({
+    title,
+    returnTo = "/admin",
+    queVersiones = [],
+    filter,
+}: VersionesPageProps) {
+    const [versiones, setVersiones] = useState<Version[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
-export default function VersionesPage({ title, returnTo = "/admin", queVersiones = [] }: VersionesPageProps) {
-  const [versiones, setVersiones] = useState<Version[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      if (queVersiones.length === 0) {
-        const { data } = await axios.get<Version[]>(`${API_URL}/api/olimpiadas`);
-        setVersiones(data);
-      } else {
-        const hayPasadas = queVersiones.includes("pasadas");
-        const hayFuturas = queVersiones.includes("futuras");
-        const fasesSolicitadas = queVersiones.filter(
-          f => f !== "pasadas" && f !== "futuras"
-        );
-        const hayFases = fasesSolicitadas.length > 0;
+    const fetchData = async () => {
+        console.log(filter);
+        setLoading(true);
+        try {
+            if (queVersiones.length === 0) {
+                const { data } = await axios.get<Version[]>(
+                    `${API_URL}/api/olimpiadas`
+                );
+                if (filter) {
+                    setVersiones(data.filter(filter));
+                } else {
+                    setVersiones(data);
+                }
+            } else {
+                const hayPasadas = queVersiones.includes("pasadas");
+                const hayFuturas = queVersiones.includes("futuras");
+                const fasesSolicitadas = queVersiones.filter(
+                    (f) => f !== "pasadas" && f !== "futuras"
+                );
+                const hayFases = fasesSolicitadas.length > 0;
 
-        const peticiones: Promise<AxiosResponse<Version[]>>[] = [];
-        if (hayPasadas) {
-          peticiones.push(
-            axios.get<Version[]>(`${API_URL}/api/olimpiadas/pasadas`)
-          );
+                const peticiones: Promise<AxiosResponse<Version[]>>[] = [];
+                if (hayPasadas) {
+                    peticiones.push(
+                        axios.get<Version[]>(
+                            `${API_URL}/api/olimpiadas/pasadas`
+                        )
+                    );
+                }
+                if (hayFuturas) {
+                    peticiones.push(
+                        axios.get<Version[]>(
+                            `${API_URL}/api/olimpiadas/futuras`
+                        )
+                    );
+                }
+                if (hayFases) {
+                    peticiones.push(
+                        axios.post<Version[]>(
+                            `${API_URL}/api/olimpiadas/fases`,
+                            { fases: fasesSolicitadas }
+                        )
+                    );
+                }
+
+                const respuestas = await Promise.all(peticiones);
+                const todasLasVersiones = respuestas.flatMap((r) => r.data);
+                setVersiones(todasLasVersiones);
+            }
+        } catch (error) {
+            console.error("Error fetching versiones:", error);
+        } finally {
+            setLoading(false);
         }
-        if (hayFuturas) {
-          peticiones.push(
-            axios.get<Version[]>(`${API_URL}/api/olimpiadas/futuras`)
-          );
-        }
-        if (hayFases) {
-          peticiones.push(
-            axios.post<Version[]>(
-              `${API_URL}/api/olimpiadas/fases`,
-              { fases: fasesSolicitadas }
-            )
-          );
-        }
+    };
 
-        const respuestas = await Promise.all(peticiones);
-        const todasLasVersiones = respuestas.flatMap(r => r.data);
-        setVersiones(todasLasVersiones);
-      }
-    } catch (error) {
-      console.error("Error fetching versiones:", error);
-    } finally {
-      setLoading(false);
-    }
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-  }
-
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return (
-    <>
-      <ReturnComponent to={returnTo} />
-      <div className="flex flex-col min-h-screen">
-        <div className="w-full p-4 md:w-4/5 mx-auto">
-          <h1 className="text-4xl font-bold text-center py-4">{title}</h1>
-          {loading ? (
-            <Loading />
-          ) : versiones.length > 0 ? (
-            <Versiones versiones={versiones} />
-          ) : (
-            <p className="text-center text-gray-500">No hay versiones disponibles aún.</p>
-          )}
-        </div>
-        <Footer />
-      </div>
-    </>
-  );
+    return (
+        <>
+            <ReturnComponent to={returnTo} />
+            <div className="flex flex-col min-h-screen">
+                <div className="w-full p-4 md:w-4/5 mx-auto">
+                    <h1 className="text-4xl font-bold text-center py-4">
+                        {title}
+                    </h1>
+                    {loading ? (
+                        <Loading />
+                    ) : versiones.length > 0 ? (
+                        <Versiones versiones={versiones} />
+                    ) : (
+                        <p className="text-center text-gray-500">
+                            No hay versiones en fase de Preparación o no hay
+                            versiones disponibles aún .
+                        </p>
+                    )}
+                </div>
+                <Footer />
+            </div>
+        </>
+    );
 }
