@@ -107,7 +107,12 @@ const SubirComprobantePage = () => {
         selectedResult.extractedData.ordenPago, 
         selectedResult.extractedData.fecha,
       );
-      await pagarLista( codigo, selectedResult.extractedData.ordenPago , selectedResult.extractedData.fecha );
+      await pagarLista( 
+        codigo, 
+        selectedResult?.extractedData?.nro ?? "",
+        selectedResult.extractedData.fecha, 
+        selectedResult.extractedData.ordenPago 
+      );
       navigate(`..\\..\\`);
       toast.success("La orden pago fue valida exitosamente");    
     } catch (error) {
