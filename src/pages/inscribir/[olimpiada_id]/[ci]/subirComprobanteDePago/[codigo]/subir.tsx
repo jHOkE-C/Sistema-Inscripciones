@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import cv from '@techstark/opencv-js';
 import ReturnComponent from '@/components/ReturnComponent';
 import FileUpload from '@/components/fileUpload';
@@ -67,7 +67,8 @@ const SubirComprobantePage = () => {
   const outputCanvasRef1 = useRef<HTMLCanvasElement>(null);
   const outputCanvasRef2 = useRef<HTMLCanvasElement>(null);
   const outputCanvasRef3 = useRef<HTMLCanvasElement>(null);
-  const outputCanvasRefs = [outputCanvasRef1, outputCanvasRef2, outputCanvasRef3];
+  const outputCanvasRefs = useMemo(() => [outputCanvasRef1, outputCanvasRef2, outputCanvasRef3], 
+    [outputCanvasRef1, outputCanvasRef2, outputCanvasRef3]);
   
   
   const step2Ref = useRef<HTMLDivElement>(null);
@@ -179,7 +180,7 @@ const SubirComprobantePage = () => {
     }
   };
 
-  const adjustGamma = (src: CvMat, gamma: number): CvMat => {
+  const adjustGamma = useCallback((src: CvMat, gamma: number): CvMat => {
     const invGamma = 1.0 / gamma;
     const table = new cv.Mat(1, 256, cv.CV_8U);
     for (let i = 0; i < 256; i++) {
@@ -203,9 +204,9 @@ const SubirComprobantePage = () => {
     }
     table.delete();
     return dst;
-  };
+  }, []);
 
-  const analizarExposicion = (
+  const analizarExposicion = useCallback((
     mat: CvMat
   ): { mediana: number; estado: string; gammaRecomendado: number } => {
     console.log('Analizando exposición...');
@@ -249,155 +250,9 @@ const SubirComprobantePage = () => {
     matVector.delete();
 
     return { mediana, estado, gammaRecomendado };
-  };
+  }, []);
 
-  const applyGrayscalePipeline = (src: CvMat): CvMat => {
-    console.log('Pipeline gris → denoise → γ → CLAHE → Otsu');
-    const gray = new cv.Mat();
-    const denoised = new cv.Mat();
-    const gammaAdjusted = new cv.Mat();
-    const claheMat = new cv.Mat();
-    const binary = new cv.Mat();
-
-    try {
-      if (src.channels() > 1) {
-        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-      } else {
-        src.copyTo(gray);
-      }
-
-      cv.medianBlur(gray, denoised, 3);
-
-      const { estado, gammaRecomendado } = analizarExposicion(denoised);
-
-      if (estado !== 'bien expuesta') {
-        const tmp = adjustGamma(denoised, gammaRecomendado);
-        tmp.copyTo(gammaAdjusted);
-        tmp.delete();
-      } else {
-        denoised.copyTo(gammaAdjusted);
-      }
-
-      const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
-      clahe.apply(gammaAdjusted, claheMat);
-      clahe.delete();
-
-      cv.threshold(claheMat, binary, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
-      
-      return binary.clone();
-    } catch (e) {
-      console.error('Error pipeline gris:', e);
-      return src.clone();
-    } finally {
-      gray.delete();
-      denoised.delete();
-      gammaAdjusted.delete();
-      claheMat.delete();
-      binary.delete();
-    }
-  };
-
-  const scaleGraysPipelineV2 = (src: CvMat): CvMat => {
-    // ───── parámetros de ajuste "anti-grano" ──────────────────────────────
-    const CLAHE_CLIP = 1.5;   // contraste local más moderado (antes 2.5)
-    const BLOCK      = 31;    // tamaño del bloque del umbral adaptativo
-    const C_TH       = 11;    // C más alto ⇒ menos "sal y pimienta"
-    const KSIZE      = 3;     // kernel elíptico 3×3
-    const MIN_AREA   = 20;    // elimina manchas < 20 px²
-    // ──────────────────────────────────────────────────────────────────────
-  
-    // mats de trabajo
-    const gray   = new cv.Mat(), blur = new cv.Mat(), claheMat = new cv.Mat();
-    const den    = new cv.Mat(), bin  = new cv.Mat(), mask    = new cv.Mat();
-    const res    = new cv.Mat(), lbls = new cv.Mat(), stats   = new cv.Mat(), cents = new cv.Mat();
-  
-    try {
-      /* 1) gris + blur ligero ............................................... */
-      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-      cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0);
-  
-      /* 2) CLAHE con clip=1.5 y tile 16×16 .................................. */
-      const clahe = new cv.CLAHE(CLAHE_CLIP, new cv.Size(16, 16));
-      clahe.apply(blur, claheMat);
-      clahe.delete();
-  
-      /* 3) Denoise suave: medianBlur 3×3  ................................... */
-      cv.medianBlur(claheMat, den, 3);
-  
-      /* 4) Umbral adaptativo (block 31, C 11) ............................... */
-      cv.adaptiveThreshold(
-        den, bin, 255,
-        cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY,
-        BLOCK, C_TH
-      );
-  
-      /* 5) Una sola apertura (kernel 3×3) ................................... */
-      const k = cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(KSIZE, KSIZE));
-      cv.morphologyEx(bin, res, cv.MORPH_OPEN, k, new cv.Point(-1, -1), 1);
-      k.delete();
-
-      /* 5½) Engrosar 1 px los trazos */
-      const dilK = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(2, 2));
-      cv.dilate(res, res, dilK, new cv.Point(-1, -1), 1);
-      dilK.delete();
-  
-      /* 6) Filtrado por área: borra manchas < 20 px² ........................ */
-      const nComp = cv.connectedComponentsWithStats(res, lbls, stats, cents);
-      for (let i = 1; i < nComp; i++) {                 // 0 = fondo
-        if (stats.intAt(i, cv.CC_STAT_AREA) < MIN_AREA) {
-          const constant = new cv.Mat(lbls.rows, lbls.cols, lbls.type(), new cv.Scalar(i));
-          cv.compare(lbls, constant, mask, cv.CMP_EQ);
-          constant.delete();
-          res.setTo(new cv.Scalar(0), mask);
-        }
-      }
-  
-      /* 7) Invertir para OCR ............................................... */
-      cv.bitwise_not(res, res);
-      return res.clone();
-  
-    } finally {           // liberación de memoria
-      gray.delete(); blur.delete(); claheMat.delete(); den.delete();
-      bin.delete(); mask.delete(); lbls.delete(); stats.delete(); cents.delete();
-    }
-  };
-        
-  const runOCR = async (
-    worker: Worker,
-    imageDataUrl: string,
-    id: string,
-    name: string
-  ): Promise<OcrResult> => {
-    console.log(`Ejecutando OCR para: ${name}`);
-    try {
-      const {
-        data: { text }
-      } = await worker.recognize(imageDataUrl);
-      const extracted:ExtractedData = extractData(text);
-      return {
-        id,
-        name,
-        extractedData: extracted,
-      };
-    } catch (err) {
-      console.error(`Error OCR (${name}):`, err);
-      return {
-        id,
-        name,
-        extractedData: {
-          nro: null,
-          fecha: null,
-          nroControl: null,
-          documento: null,
-          ordenPago: null,
-          fullText: `Error en OCR: ${err instanceof Error ? err.message : String(err)}`
-        }
-      };
-    }
-  };
-
-  
-  const extractData = (raw: string): ExtractedData => {
+  const extractData = useCallback((raw: string): ExtractedData => {
     
     console.log(raw);
     const norm = raw
@@ -415,16 +270,16 @@ const SubirComprobantePage = () => {
       rxs.reduce<RegExpExecArray | null>((m, rx) => m || rx.exec(norm), null);
     
     const NRO_PATTERNS: RegExp[] = [
-      /\bN(?:R?[O0])?[.:­-]?\s*([A-Z0-9](?:\s*[0-9O]){6,})\b/,
+      /\bN(?:R?[O0])?[.:u00ad-]?\s*([A-Z0-9](?:\s*[0-9O]){6,})\b/,
     
 
       /\bNR[O0]8?\s*([0-9O](?:\s*[0-9O]){6,})\b/,
     
 
-      /\bN[º°]\s*([0-9O](?:\s*[0-9O]){6,})\b/,
+      /\bN[u00bau00b0]\s*([0-9O](?:\s*[0-9O]){6,})\b/,
     
 
-      /\bNUM(?:ERO)?[.:­-]?\s*([0-9O](?:\s*[0-9O]){6,})\b/,
+      /\bNUM(?:ERO)?[.:u00ad-]?\s*([0-9O](?:\s*[0-9O]){6,})\b/,
     ];
 
   
@@ -476,9 +331,151 @@ const SubirComprobantePage = () => {
     }
   }
     return { nro, fecha, nroControl, documento, ordenPago, fullText: norm || null };
-  };
+  }, []);
+
+  const applyGrayscalePipeline = useCallback((src: CvMat): CvMat => {
+    const gray = new cv.Mat();
+    const denoised = new cv.Mat();
+    const gammaAdjusted = new cv.Mat();
+    const claheMat = new cv.Mat();
+    const binary = new cv.Mat();
+
+    try {
+      if (src.channels() > 1) {
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+      } else {
+        src.copyTo(gray);
+      }
+
+      cv.medianBlur(gray, denoised, 3);
+
+      const { estado, gammaRecomendado } = analizarExposicion(denoised);
+
+      if (estado !== 'bien expuesta') {
+        const tmp = adjustGamma(denoised, gammaRecomendado);
+        tmp.copyTo(gammaAdjusted);
+        tmp.delete();
+      } else {
+        denoised.copyTo(gammaAdjusted);
+      }
+
+      const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
+      clahe.apply(gammaAdjusted, claheMat);
+      clahe.delete();
+
+      cv.threshold(claheMat, binary, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU);
+      
+      return binary.clone();
+    } catch (e) {
+      console.error('Error pipeline gris:', e);
+      return src.clone();
+    } finally {
+      gray.delete();
+      denoised.delete();
+      gammaAdjusted.delete();
+      claheMat.delete();
+      binary.delete();
+    }
+  }, [analizarExposicion, adjustGamma]);
+
+  const scaleGraysPipelineV2 = useCallback((src: CvMat): CvMat => {
+    const CLAHE_CLIP = 1.5;   // contraste local
+    const BLOCK      = 31;    // tamaño del bloque del umbral adaptativo
+    const C_TH       = 11;    // C más alto u21d2 menos "sal y pimienta"
+    const KSIZE      = 3;     // kernel elíptico 3u00d73
+    const MIN_AREA   = 20;    // elimina manchas < 20 pxu00b2
   
+    const gray   = new cv.Mat(), blur = new cv.Mat(), claheMat = new cv.Mat();
+    const den    = new cv.Mat(), bin  = new cv.Mat(), mask    = new cv.Mat();
+    const res    = new cv.Mat(), lbls = new cv.Mat(), stats   = new cv.Mat(), cents = new cv.Mat();
   
+    try {
+      /* 1) gris + blur ligero ............................................... */
+      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+      cv.GaussianBlur(gray, blur, new cv.Size(5, 5), 0);
+  
+      /* 2) CLAHE con clip=1.5 y tile 16u00d716 .................................. */
+      const clahe = new cv.CLAHE(CLAHE_CLIP, new cv.Size(16, 16));
+      clahe.apply(blur, claheMat);
+      clahe.delete();
+  
+      /* 3) Denoise suave: medianBlur 3u00d73  ................................... */
+      cv.medianBlur(claheMat, den, 3);
+  
+      /* 4) Umbral adaptativo (block 31, C 11) ............................... */
+      cv.adaptiveThreshold(
+        den, bin, 255,
+        cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY,
+        BLOCK, C_TH
+      );
+  
+      /* 5) Una sola apertura (kernel 3u00d73) ................................... */
+      const k = cv.getStructuringElement(cv.MORPH_ELLIPSE, new cv.Size(KSIZE, KSIZE));
+      cv.morphologyEx(bin, res, cv.MORPH_OPEN, k, new cv.Point(-1, -1), 1);
+      k.delete();
+
+      /* 5u00bd) Engrosar 1 px los trazos */
+      const dilK = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(2, 2));
+      cv.dilate(res, res, dilK, new cv.Point(-1, -1), 1);
+      dilK.delete();
+  
+      /* 6) Filtrado por área: borra manchas < 20 pxu00b2 ........................ */
+      const nComp = cv.connectedComponentsWithStats(res, lbls, stats, cents);
+      for (let i = 1; i < nComp; i++) {                 // 0 = fondo
+        if (stats.intAt(i, cv.CC_STAT_AREA) < MIN_AREA) {
+          const constant = new cv.Mat(lbls.rows, lbls.cols, lbls.type(), new cv.Scalar(i));
+          cv.compare(lbls, constant, mask, cv.CMP_EQ);
+          constant.delete();
+          res.setTo(new cv.Scalar(0), mask);
+        }
+      }
+  
+      /* 7) Invertir para OCR ............................................... */
+      cv.bitwise_not(res, res);
+      return res.clone();
+  
+    }catch (e) {
+      console.error('Error pipeline gris:', e);
+      
+    } finally {           // liberación de memoria
+      gray.delete(); blur.delete(); claheMat.delete(); den.delete();
+      bin.delete(); mask.delete(); lbls.delete(); stats.delete(); cents.delete();
+    }
+  }, []);
+      
+  const runOCR = useCallback(async (
+    worker: Worker,
+    imageDataUrl: string,
+    id: string,
+    name: string
+  ): Promise<OcrResult> => {
+    console.log(`Ejecutando OCR para: ${name}`);
+    try {
+      const {
+        data: { text }
+      } = await worker.recognize(imageDataUrl);
+      const extracted: ExtractedData = extractData(text);
+      return {
+        id,
+        name,
+        extractedData: extracted,
+      };
+    } catch (err) {
+      console.error(`Error OCR (${name}):`, err);
+      return {
+        id,
+        name,
+        extractedData: {
+          nro: null,
+          fecha: null,
+          nroControl: null,
+          documento: null,
+          ordenPago: null,
+          fullText: `Error en OCR: ${err instanceof Error ? err.message : String(err)}`
+        }
+      };
+    }
+  }, [extractData]);
 
   const processImage = useCallback(async () => {
     if (!originalFile || !isCvReady || !tesseractWorker || isLoading) return;
@@ -549,7 +546,7 @@ const SubirComprobantePage = () => {
     };
 
     imgElement.src = imageURL;
-  }, [originalFile, isCvReady, tesseractWorker, isLoading, applyGrayscalePipeline, scaleGraysPipelineV2, outputCanvasRefs, runOCR]);
+  }, [originalFile, isCvReady, tesseractWorker, isLoading, applyGrayscalePipeline, scaleGraysPipelineV2, runOCR, outputCanvasRefs]);
 
   const checkOcrDataValidity = () => {
     if (ocrResults.length === 0) return false;
