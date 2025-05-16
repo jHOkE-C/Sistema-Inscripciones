@@ -41,7 +41,7 @@ const Admin = () => {
         <>
             <ReturnComponent  />
             <div className="flex flex-col min-h-screen">
-                <div className="w-full p-4 md:w-4/5 mx-auto">
+                <div className="w-full p-4 md:w-11/12 mx-auto">
                     <h1 className="text-4xl font-bold text-center py-4">
                         Seleccione una olimpiada para Generar el Reporte deseado
                     </h1>
