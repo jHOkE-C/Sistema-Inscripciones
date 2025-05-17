@@ -45,6 +45,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { apiClient } from "@/api/request";
+import NotFoundPage from "@/pages/404";
+import { cn } from "@/lib/utils";
 
 interface Fase {
     id: string;
@@ -58,6 +60,7 @@ export default function Page() {
     const [data, setData] = useState<OlimpiadaData | null>(null);
     const [loading, setLoading] = useState(true);
     const [openAdd, setOpenAdd] = useState(false);
+    const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedIdFases, setSelectedTipos] = useState<string[]>([]);
 
     const [cronos, setCronos] = useState<Cronograma[]>([]);
@@ -79,6 +82,7 @@ export default function Page() {
             );
             setData(res.data);
             const cronogramas = res.data.olimpiada.cronogramas;
+
             if (cronogramas.length > 0) {
                 setCronos(cronogramas);
             }
@@ -87,7 +91,7 @@ export default function Page() {
             setFases(fases.data);
 
             const selected = cronogramas.map(({ id_fase }) => id_fase);
-            console.log(selected);
+
             setSelectedTipos(selected);
             setLoading(false);
         } catch (err) {
@@ -97,7 +101,7 @@ export default function Page() {
     }
 
     if (loading) return <Loading />;
-    if (!data) return <p>No se encontró la olimpiada</p>;
+    if (!data) return <NotFoundPage />;
 
     const { olimpiada } = data;
     const vStart = parseLocalDate(olimpiada.fecha_inicio);
@@ -170,7 +174,10 @@ export default function Page() {
                     );
                     valid = false;
                 }
-                console.log("diferencias", differenceInCalendarDays(end, start));
+                console.log(
+                    "diferencias",
+                    differenceInCalendarDays(end, start)
+                );
                 if (differenceInCalendarDays(end, start) < 0) {
                     errorFlags.start = true;
                     errorFlags.end = true;
@@ -239,18 +246,24 @@ export default function Page() {
                 : [...prev, id_fase];
         });
     }
-    async function addPhase() {
+    const idFasesCronogramas = cronos.map(({ id_fase }) => id_fase);
+    const agregar = selectedIdFases.filter(
+        (id) => !idFasesCronogramas.includes(id)
+    );
+    const eliminar = idFasesCronogramas.filter(
+        (id) => !selectedIdFases.includes(id)
+    );
+
+    async function changePhase(confirm?: boolean) {
         setLoading(true);
         try {
             //selected tipos - cronogramas
             //cronogramas - selected tipos
-            const idFasesCronogramas = cronos.map(({ id_fase }) => id_fase);
-            const agregar = selectedIdFases.filter(
-                (id) => !idFasesCronogramas.includes(id)
-            );
-            const eliminar = idFasesCronogramas.filter(
-                (id) => !selectedIdFases.includes(id)
-            );
+            if (!confirm && eliminar.length > 0) {
+                setOpenConfirm(true);
+                return;
+            }
+
             const data = {
                 id_olimpiada: olimpiada_id,
                 fases_agregar: agregar,
@@ -259,6 +272,7 @@ export default function Page() {
 
             await apiClient.put("/api/cronogramas/fases/olimpiada", data);
             refresh();
+            setOpenConfirm(false);
             setOpenAdd(false);
         } catch {
             toast.error("Ocurrio un error al agregar fases");
@@ -316,11 +330,17 @@ export default function Page() {
     }
 
     const getTipoPlazoLabel = (text: string) => {
-        console.log(text);
         return text
             .split(" ")
             .map((t) => t.at(0)?.toUpperCase() + t.slice(1) + " ");
     };
+
+    const FasesActualesPasadas = cronos.filter(
+        ({ fecha_inicio }) => new Date(fecha_inicio) < new Date()
+    );
+    const idsFasesActualesPasadas = FasesActualesPasadas.map(
+        ({ id_fase }) => id_fase
+    );
 
     return (
         <>
@@ -374,12 +394,45 @@ export default function Page() {
                                         <DialogTitle>
                                             Agregar Nuevas Fases
                                         </DialogTitle>
-                                        <DialogDescription>
-                                            Selecciona las fases que quieres
-                                            añadir
+                                        <DialogDescription className="text-sm mt-2">
+                                            <p className="italic">
+                                                Las fases en curso o finalizadas
+                                                están deshabilitadas.
+                                            </p>
                                         </DialogDescription>
+                                        <div className="text-sm mt-4">
+                                            <p className="mb-2">
+                                                Selecciona las fases que deseas
+                                                añadir o eliminar:
+                                            </p>
+                                            <ul className="space-y-1 text-center">
+                                                <li>
+                                                    <span className="text-blue-600 font-medium">
+                                                        Azul
+                                                    </span>
+                                                    <span className="ml-2">
+                                                        Fases activas
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span className="text-green-600 font-medium">
+                                                        Verde
+                                                    </span>
+                                                    <span className="ml-2">
+                                                        Fases a agregar
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span className="text-red-600 font-medium">
+                                                        Rojo
+                                                    </span>
+                                                    <span className="ml-2">
+                                                        Fases a eliminar
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </DialogHeader>
-
                                     <div className="p-2 space-y-2">
                                         {fases.map((tp) => (
                                             <div
@@ -388,12 +441,14 @@ export default function Page() {
                                             >
                                                 <Checkbox
                                                     disabled={
-                                                        tp.id == "1" &&
-                                                        selectedIdFases.includes(
+                                                        (tp.id == "1" &&
+                                                            selectedIdFases.includes(
+                                                                tp.id
+                                                            )) ||
+                                                        idsFasesActualesPasadas.includes(
                                                             tp.id
                                                         )
                                                     }
-                                                    className=""
                                                     id={tp.id}
                                                     checked={selectedIdFases.includes(
                                                         tp.id
@@ -404,7 +459,34 @@ export default function Page() {
                                                 />
                                                 <Label
                                                     htmlFor={tp.id}
-                                                    className="ml-3"
+                                                    className={cn(
+                                                        cronos.find(
+                                                            ({ id_fase }) =>
+                                                                tp.id == id_fase
+                                                        )
+                                                            ? "text-red-600"
+                                                            : "",
+                                                        cronos.find(
+                                                            ({ id_fase }) =>
+                                                                tp.id != id_fase
+                                                        ) &&
+                                                            selectedIdFases.includes(
+                                                                tp.id
+                                                            )
+                                                            ? "text-green-600"
+                                                            : "",
+                                                        cronos.find(
+                                                            ({ id_fase }) =>
+                                                                tp.id == id_fase
+                                                        ) &&
+                                                            selectedIdFases.includes(
+                                                                tp.id
+                                                            )
+                                                            ? "text-blue-600"
+                                                            : "",
+
+                                                        "ml-4"
+                                                    )}
                                                 >
                                                     {tp.nombre_fase}
                                                 </Label>
@@ -419,7 +501,9 @@ export default function Page() {
                                         >
                                             Cancelar
                                         </Button>
-                                        <Button onClick={addPhase}>
+                                        <Button
+                                            onClick={() => changePhase(false)}
+                                        >
                                             Guardar
                                         </Button>
                                     </DialogFooter>
@@ -601,6 +685,45 @@ export default function Page() {
                     </CardFooter>
                 </Card>
             </div>
+            <Dialog open={openConfirm} onOpenChange={setOpenConfirm}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>¿Estas seguro?</DialogTitle>
+                        <DialogDescription>
+                            Se eliminarán las siguientes fases y toda su
+                            información relacionada:{" "}
+                            <span className="font-bold">
+                                {eliminar
+                                    .map(
+                                        (id) =>
+                                            fases.find((f) => f.id === id)
+                                                ?.nombre_fase
+                                    )
+                                    .join(", ")}
+                            </span>
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <p className="text-sm ">¿Desea continuar?</p>
+
+                    <DialogFooter>
+                        <Button
+                            variant={"default"}
+                            onClick={() => changePhase(true)}
+                        >
+                            Continuar
+                        </Button>
+                        <Button
+                            variant={"secondary"}
+                            onClick={() => {
+                                setOpenConfirm(false);
+                            }}
+                        >
+                            Cancelar
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
