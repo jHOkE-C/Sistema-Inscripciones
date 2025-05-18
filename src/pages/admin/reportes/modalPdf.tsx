@@ -90,9 +90,9 @@ const crearPdfDocumento = (
     tableWidth: 'auto',
   });
 
-  
+
   const dataUrl = doc.output('datauristring');
-  
+
   const arrayBuffer = doc.output('arraybuffer');
   const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
 
@@ -124,12 +124,12 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
     };
   }, []);
 
-  
+
   useEffect(() => {
     if (isOpen && postulantesFiltrados.length > 0) {
       const postulantesOrdenados = postulantesFiltrados;
       setPostulantes(postulantesOrdenados);
-      
+
       const pdfOutput = crearPdfDocumento(postulantesOrdenados, nombreOlimpiada);
       if (pdfOutput) {
         setPdfDoc(pdfOutput.doc);
@@ -149,7 +149,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
       toast.error("Por favor, seleccione una gestión válida antes de generar el reporte.");
       return;
     }
-    
+
     // Solo generamos desde la API si no tenemos datos filtrados
     if (postulantesFiltrados.length === 0) {
       setIsGeneratingFromApi(true);
@@ -162,7 +162,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
 
       try {
         if (postulantesFiltrados.length === 0) {
-        
+
           setPostulantes([]);
         } else {
           const postulantesOrdenados = postulantesFiltrados;
@@ -230,101 +230,105 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
 
   const escogerHeader = () => {
     if (pdfDataUrl && postulantes && postulantes.length > 0) {
-      return <Button onClick={handleExportarPdf} variant="outline" size="icon" className="absolute m-2 z-1 bg-background/40" title="Descargar PDF">
-                <Download className="h-4 w-4" />
-            </Button>
+      return <div className="absolute z-1 bg-background m-2 rounded-[4px]">
+        <Button onClick={handleExportarPdf} variant="outline"
+        className='flex items-center justify-center bg-background'>
+          <Download className="h-4 w-4" />
+          <span>Descargar</span>
+        </Button>
+      </div>
     }
     if (postulantes !== null && postulantes.length === 0) {
       return <DialogTitle className="text-lg font-semibold">Sin Registros</DialogTitle>
     }
     return <DialogTitle className="text-lg font-semibold">Espere por favor</DialogTitle>
-    
+
   }
 
 
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent  
+      <DialogContent
         className={
-          `${pdfDataUrl && postulantes && postulantes.length > 0?
-            'bg-transparent p-0 border-none xl:max-w-screen w-full h-full sm:max-w-screen md:max-w-screen lg:max-w-screen ' 
-            : 
+          `${pdfDataUrl && postulantes && postulantes.length > 0 ?
+            'bg-transparent p-0 border-none xl:max-w-screen w-full h-full sm:max-w-screen md:max-w-screen lg:max-w-screen '
+            :
             'bg-background '
           } 
            flex flex-col  rounded-l`}
       >
-        
+
         <DialogHeader className="w-full max-w-md text-center">
           {escogerHeader()}
         </DialogHeader>
         {pdfDataUrl && postulantes && postulantes.length > 0 ? (
-          
-            <div className="flex flex-col flex-grow overflow-hidden p-0 h-full w-full">
-              <div className="pdf-controls flex items-center justify-between gap-2 bg-background/40">
-                <Button onClick={goToPrevPage} disabled={pageNumber <= 1} variant="outline" size="icon" title="Página anterior">
-                  <ChevronLeft className="h-3 w-3" />
-                </Button>
-                
-                <span className="text-xl whitespace-nowrap">{pageNumber || '-'}</span>
-                <span className="text-xl whitespace-nowrap">/ {numPages || '-'}</span>
-                
-                <Button onClick={goToNextPage} disabled={pageNumber >= (numPages || 1)} variant="outline" size="icon" title="Página siguiente">
-                  <ChevronRight className="h-3 w-3" />
-                </Button>
 
-                <Button onClick={zoomOut} variant="outline" size="icon" title="Reducir">
-                  <ZoomOut className="h-3 w-3" />
-                </Button>
-                <span className="text-xl w-10 text-center whitespace-nowrap">{Math.round(scale * 100)}%</span>
-                <Button onClick={zoomIn} variant="outline" size="icon" title="Ampliar" className="ml-2">
-                  <ZoomIn className="h-3 w-3" />
-                </Button>
-              </div>
+          <div className="flex flex-col flex-grow overflow-hidden p-0 h-full w-full">
+            <div className="pdf-controls flex items-center justify-between gap-2 bg-background/40">
+              <Button onClick={goToPrevPage} disabled={pageNumber <= 1} variant="outline" size="icon" title="Página anterior">
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
 
-              <div className="flex justify-center flex-grow overflow-auto bg-transparent h-full w-full relative touch-pan-x">
-                <Document
-                  file={pdfBlob}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  className="pdf-document h-full bg"
-                  loading={
-                    <LoadingAlert />
-                  }
-                  error={
-                    <div className="error-message p-4 text-center bg-red-50 rounded-md border border-red-200">
-                      <p className="text-red-500 font-medium">Error al cargar el PDF</p>
-                      <p className="text-sm text-gray-500 mt-1">Intente generar el reporte nuevamente</p>
-                    </div>
-                  }
-                  noData={
-                    <div className="no-data p-4 text-center bg-yellow-50 rounded-md border border-yellow-200">
-                      <p className="text-yellow-500 font-medium">No hay datos disponibles</p>
-                    </div>
-                  }
-                >
-                  <div className="overflow-x-auto">
-                    <Page 
-                      pageNumber={pageNumber} 
-                      scale={scale}
-                      className="shadow-lg bg-white mx-auto" 
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                      loading={
-                        <div className="loading-indicator flex flex-col items-center justify-center p-6">
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        </div>
-                      }
-                      width={isMobile ? undefined : undefined}
-                    />
-                  </div>
-                </Document>
-              </div>
+              <span className="text-xl whitespace-nowrap">{pageNumber || '-'}</span>
+              <span className="text-xl whitespace-nowrap">/ {numPages || '-'}</span>
+
+              <Button onClick={goToNextPage} disabled={pageNumber >= (numPages || 1)} variant="outline" size="icon" title="Página siguiente">
+                <ChevronRight className="h-3 w-3" />
+              </Button>
+
+              <Button onClick={zoomOut} variant="outline" size="icon" title="Reducir">
+                <ZoomOut className="h-3 w-3" />
+              </Button>
+              <span className="text-xl w-10 text-center whitespace-nowrap">{Math.round(scale * 100)}%</span>
+              <Button onClick={zoomIn} variant="outline" size="icon" title="Ampliar" className="ml-2">
+                <ZoomIn className="h-3 w-3" />
+              </Button>
             </div>
-          
+
+            <div className="flex justify-center flex-grow overflow-auto bg-transparent h-full w-full relative touch-pan-x">
+              <Document
+                file={pdfBlob}
+                onLoadSuccess={onDocumentLoadSuccess}
+                className="pdf-document h-full bg"
+                loading={
+                  <LoadingAlert />
+                }
+                error={
+                  <div className="error-message p-4 text-center bg-red-50 rounded-md border border-red-200">
+                    <p className="text-red-500 font-medium">Error al cargar el PDF</p>
+                    <p className="text-sm text-gray-500 mt-1">Intente generar el reporte nuevamente</p>
+                  </div>
+                }
+                noData={
+                  <div className="no-data p-4 text-center bg-yellow-50 rounded-md border border-yellow-200">
+                    <p className="text-yellow-500 font-medium">No hay datos disponibles</p>
+                  </div>
+                }
+              >
+                <div className="overflow-x-auto">
+                  <Page
+                    pageNumber={pageNumber}
+                    scale={scale}
+                    className="shadow-lg bg-white mx-auto"
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    loading={
+                      <div className="loading-indicator flex flex-col items-center justify-center p-6">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      </div>
+                    }
+                    width={isMobile ? undefined : undefined}
+                  />
+                </div>
+              </Document>
+            </div>
+          </div>
+
         ) : postulantes !== null && postulantes.length === 0 ? (
           <>
             <DialogDescription className="mt-2">
-                No existen registros de postulantes para la gestión seleccionada.
+              No existen registros de postulantes para la gestión seleccionada.
             </DialogDescription>
             <DialogFooter className="mt-6">
               <DialogClose asChild>
