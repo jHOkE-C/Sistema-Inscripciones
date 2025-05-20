@@ -23,7 +23,7 @@ import { Calendar, Clock, Trophy } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
-import type { Olimpiada } from "@/types/versiones.type";
+import type { Olimpiada2 } from "@/types/versiones.type";
 
 import DescargarPlantilla from "@/components/DescargarPlantilla";
 
@@ -35,14 +35,14 @@ const formatDate = (dateString: string) => {
 
 export function OlimpiadasCarousel() {
     const [isMounted, setIsMounted] = useState(false);
-    const [olimpiadas, setOlimpiadas] = useState<Olimpiada[]>([]);
+    const [olimpiadas, setOlimpiadas] = useState<Olimpiada2[]>([]);
 
     useEffect(() => {
         const fetchOlimpiadas = async () => {
-            const response = await axios.get<Olimpiada[]>(
+            const response = await axios.get<Olimpiada2[]>(
                 `${API_URL}/api/olimpiadas/hoy`
             );
-            console.log(response.data);
+            console.log("carosel", response.data);
             setOlimpiadas(response.data);
         };
         fetchOlimpiadas();
@@ -78,16 +78,18 @@ export function OlimpiadasCarousel() {
                 <CarouselContent className="-ml-2 md:-ml-4">
                     {olimpiadas
                         .sort((a, b) => {
-                            const aHasInscripcion = a.fase?.fase.nombre_fase
-                                .toLowerCase()
-                                .includes("inscripción")
-                                ? 1
-                                : 0;
-                            const bHasInscripcion = b.fase?.fase.nombre_fase
-                                .toLowerCase()
-                                .includes("inscripción")
-                                ? 1
-                                : 0;
+                            const aHasInscripcion =
+                                a.fase_actual?.fase.nombre_fase
+                                    .toLowerCase()
+                                    .includes("inscripción")
+                                    ? 1
+                                    : 0;
+                            const bHasInscripcion =
+                                b.fase_actual?.fase.nombre_fase
+                                    .toLowerCase()
+                                    .includes("inscripción")
+                                    ? 1
+                                    : 0;
                             return bHasInscripcion - aHasInscripcion;
                         })
                         .map((olimpiada) => (
@@ -126,7 +128,7 @@ export function OlimpiadasCarousel() {
                                                 </div>
                                             </div>
 
-                                            {olimpiada.fase ? (
+                                            {olimpiada.fase_actual ? (
                                                 <div className=" p-3 rounded-lg border">
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <Clock className="h-5 w-5 text-gray-500" />
@@ -135,7 +137,7 @@ export function OlimpiadasCarousel() {
                                                             <span className="font-semibold">
                                                                 {
                                                                     olimpiada
-                                                                        .fase
+                                                                        .fase_actual
                                                                         .fase
                                                                         .nombre_fase
                                                                 }
@@ -148,7 +150,8 @@ export function OlimpiadasCarousel() {
                                                                 Inicio:
                                                             </span>{" "}
                                                             {formatDate(
-                                                                olimpiada.fase
+                                                                olimpiada
+                                                                    .fase_actual
                                                                     .fecha_inicio
                                                             )}
                                                         </p>
@@ -157,7 +160,8 @@ export function OlimpiadasCarousel() {
                                                                 Fin:
                                                             </span>{" "}
                                                             {formatDate(
-                                                                olimpiada.fase
+                                                                olimpiada
+                                                                    .fase_actual
                                                                     .fecha_fin
                                                             )}
                                                         </p>
@@ -176,7 +180,7 @@ export function OlimpiadasCarousel() {
                                             )}
                                         </CardContent>
                                         <CardFooter className="p-4 pt-0 mt-auto flex flex-col justify-center">
-                                            {olimpiada.fase?.fase.nombre_fase.includes(
+                                            {olimpiada.fase_actual?.fase.nombre_fase.includes(
                                                 "inscripción"
                                             ) ? (
                                                 <>
