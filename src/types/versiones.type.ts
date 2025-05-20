@@ -18,6 +18,15 @@ export interface Olimpiada {
     fase?: Fase;
     url_plantilla?: string;
 }
+export interface Olimpiada2 {
+    id: number;
+    nombre: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    gestion: string;
+    fase_actual: Fase;
+    url_plantilla?: string;
+}
 export interface Fase {
     id: number;
     fecha_inicio: string;
