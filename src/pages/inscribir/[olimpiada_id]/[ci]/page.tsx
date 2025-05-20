@@ -92,9 +92,8 @@ const Page = () => {
             />
         );
     if (!olimpiada) return <NotFoundPage />;
-    if (
-        !olimpiada.fase_actual?.fase.nombre_fase.includes("inscripción")
-    ) {
+    console.log(olimpiada);
+    if (!olimpiada.fase?.fase.nombre_fase.includes("inscripción")) {
         return <OlimpiadaNoEnCurso olimpiada={olimpiada} />;
     }
     return (

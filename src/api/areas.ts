@@ -35,14 +35,7 @@ export const getCategoriaAreaPorGrado = async (grado: string,olimpiada_id:string
     return await request<Categoria[]>(`/api/categorias/areas/curso/${grado}/olimpiada/${olimpiada_id}`);
 };
 
-export const getCategoriaAreaPorGradoOlimpiada = async (
-    grado: string,
-    olimpiada: string
-) => {
-    return await request<Categoria[]>(
-        `/api/categorias/areas/curso/${grado}/olimpiada/${olimpiada}`
-    );
-};
+
 export const crearArea = async (data: { nombre: string }) => {
     return await request("/api/areas", {
         method: "POST",

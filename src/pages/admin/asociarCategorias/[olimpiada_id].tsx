@@ -43,19 +43,18 @@ export default function Page() {
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const { olimpiada_id } = useParams();
-        const [olimpiada, setOlimpiada] = useState<Olimpiada>();
-    
+    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
 
     useEffect(() => {
         loadData();
         fetchOlimpiada();
     }, []);
-    if(!olimpiada_id) return
+    if (!olimpiada_id) return;
 
     const fetchOlimpiada = async () => {
-            const olimpiada = await getOlimpiada(olimpiada_id);
-            setOlimpiada(olimpiada);
-        };
+        const olimpiada = await getOlimpiada(olimpiada_id);
+        setOlimpiada(olimpiada);
+    };
     const loadData = async () => {
         try {
             const [areasData, catsData] = await Promise.all([
@@ -121,7 +120,10 @@ export default function Page() {
     );
 
     const selectedCount = Object.values(checked).filter(Boolean).length;
-if (olimpiada &&( olimpiada?.fase_actual?.fase.nombre_fase !== "Preparación" || !olimpiada.fase_actual))
+    if (
+        olimpiada &&
+        (olimpiada?.fase?.fase.nombre_fase !== "Preparación" || !olimpiada.fase)
+    )
         return (
             <OlimpiadaNoEnCurso
                 olimpiada={olimpiada}
@@ -149,9 +151,7 @@ if (olimpiada &&( olimpiada?.fase_actual?.fase.nombre_fase !== "Preparación" ||
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nombre de Área</TableHead>
-                                    <TableHead className="text-right">
-                                        
-                                    </TableHead>
+                                    <TableHead className="text-right"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

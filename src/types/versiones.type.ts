@@ -15,7 +15,7 @@ export interface Olimpiada {
     fecha_inicio: string;
     fecha_fin: string;
     gestion: string;
-    fase_actual?: Fase;
+    fase?: Fase;
     url_plantilla?: string;
 }
 export interface Fase {

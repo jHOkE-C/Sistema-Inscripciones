@@ -131,7 +131,10 @@ export default function Page() {
         a.nombre.toLowerCase().includes(searchAssociatedTerm.toLowerCase())
     );
 
-    if (olimpiada &&( olimpiada?.fase_actual?.fase.nombre_fase !== "Preparación" || !olimpiada.fase_actual))
+    if (
+        olimpiada &&
+        (olimpiada?.fase?.fase.nombre_fase !== "Preparación" || !olimpiada.fase)
+    )
         return (
             <OlimpiadaNoEnCurso
                 olimpiada={olimpiada}
