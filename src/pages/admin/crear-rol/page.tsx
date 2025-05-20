@@ -75,7 +75,7 @@ export default function CrearRol() {
               <Label
                 htmlFor="role-name"
                 className="flex items-center justify-between"
-              >
+              />
                 Nombre del Rol
                 <span
                   className={`text-xs ${
@@ -86,28 +86,25 @@ export default function CrearRol() {
                 >
                   {roleName.length}/30
                 </span>
-              </Label>
-              <Input
+                <Input
                 id="role-name"
                 value={roleName}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  const regex = /^[a-zA-ZÀ-ÿ0-9\s]*$/; // Allow alphanumeric, spaces, and accents
+                  const value = e.target.value.toLowerCase(); // Convert to lowercase
+                  const regex = /^[a-z0-9\s]*$/; // Allow only lowercase letters and spaces
                   if (regex.test(value)) {
-                    setRoleName(value);
-                    if (value.trim() && error) {
-                      setError("");
-                    }
+                  setRoleName(value);
+                  if (value.trim() && error) {
+                    setError("");
+                  }
                   } else {
-                    setError(
-                      "Solo se permiten caracteres alfanuméricos, espacios y acentos"
-                    );
+                  setError("Solo se permiten letras minúsculas, números y espacios");
                   }
                 }}
                 placeholder="Ingresa el nombre del rol"
                 className={error ? "border-destructive" : ""}
                 maxLength={30}
-              />
+                />
               {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
           </div>
