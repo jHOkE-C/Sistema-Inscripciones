@@ -1,0 +1,32 @@
+
+.reportes-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+
+.col-nombre { width: 180px; max-width: 180px; }
+.col-ci { width: 100px; max-width: 100px; }
+.col-fechaNac { width: 120px; max-width: 120px; }
+.col-area { width: 180px; max-width: 180px; }
+.col-categoria { width: 150px; max-width: 150px; }
+.col-departamento { width: 150px; max-width: 150px; }
+.col-provincia { width: 150px; max-width: 150px; }
+.col-colegio { width: 150px; max-width: 150px; }
+.col-grado { width: 80px; max-width: 80px; }
+.col-responsable { width: 180px; max-width: 180px; }
+.col-estado { width: 150px; max-width: 150px; }
+
+
+.table-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.table-header {
+  font-weight: 600;
+  font-size: 0.875rem;
+} 

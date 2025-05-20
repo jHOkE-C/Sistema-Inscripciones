@@ -90,7 +90,6 @@ const crearPdfDocumento = (
     tableWidth: 'auto',
   });
 
-
   const dataUrl = doc.output('datauristring');
 
   const arrayBuffer = doc.output('arraybuffer');

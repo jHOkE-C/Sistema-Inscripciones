@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Column,
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -32,12 +33,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ArrowUpDown, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, SquareArrowDown, SquareArrowUp } from "lucide-react";
 import { API_URL } from "@/hooks/useApiRequest";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import ModalPdf from "../modalPdf";
-
+import "@/styles/reportes.css";
 
 interface Postulante {
   id: string;
@@ -56,7 +57,6 @@ interface Postulante {
   estado: "Preinscrito" | "Pago Pendiente" | "Inscripcion Completa";
 }
 
-
 const sortGrados = (grados: string[]): string[] => {
   const gradosOrdenados = [...grados];
   return gradosOrdenados.sort((a, b) => {
@@ -71,7 +71,6 @@ const sortGrados = (grados: string[]): string[] => {
   });
 };
 
-
 const yearFilterFn: FilterFn<Postulante> = (row, columnId, filterValue) => {
   if (!filterValue || filterValue === "all") return true;
   
@@ -85,6 +84,102 @@ const yearFilterFn: FilterFn<Postulante> = (row, columnId, filterValue) => {
     console.error("Error al filtrar por año:", error);
     return false;
   }
+};
+
+const renderColumnHeader = (column: Column<Postulante, unknown>, label: string) => {
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between w-full">
+        <span className="font-medium">{label}</span>
+        <div >
+          <div>
+          <button
+            onClick={() => {
+              if (column.getIsSorted() === "asc") {
+                column.clearSorting();
+              } else {
+                column.toggleSorting(false, true); 
+              }
+            }}
+            className={`h-6 w-6 flex items-center justify-center rounded-sm ${column.getIsSorted() === "asc" ? "bg-green-100 text-green-700 font-bold" : "text-gray-400 hover:text-gray-700"}`}
+            title="Ordenar ascendente"
+          >
+            <SquareArrowUp />
+          </button>
+          </div>
+          <div>
+          <button
+            onClick={() => {
+              if (column.getIsSorted() === "desc") {
+                column.clearSorting();
+              } else {
+                column.toggleSorting(true, true); 
+              }
+            }}
+            className={`h-6 w-6 flex items-center justify-center rounded-sm ${column.getIsSorted() === "desc" ? "bg-red-100 text-red-700 font-bold" : "text-gray-400 hover:text-gray-700"}`}
+            title="Ordenar descendente"
+          >
+            <SquareArrowDown/>
+          </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CustomTableHeader = ({
+  children,
+  column,
+}: {
+  children: React.ReactNode;
+  column?: string;
+}) => {
+  return (
+    <TableHead 
+      className={`table-header ${column ? `col-${column}` : ''}`}
+    >
+      {children}
+    </TableHead>
+  );
+};
+
+const CustomTableCell = ({
+  children,
+  colSpan,
+  className,
+  column,
+}: {
+  children: React.ReactNode;
+  colSpan?: number;
+  className?: string;
+  column?: string;
+}) => {
+  return (
+    <TableCell 
+      className={`table-cell ${column ? `col-${column}` : ''} ${className || ''}`}
+      colSpan={colSpan}
+    >
+      {children}
+    </TableCell>
+  );
+};
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  } catch {
+    return dateString || "N/A";
+  }
+};
+
+
+const getGradoNumerico = (grado: string): number => {
+  const numero = parseInt(grado.replace(/\D/g, ''));
+  return isNaN(numero) ? 0 : numero;
 };
 
 const PostulantesPage = () => {
@@ -169,164 +264,147 @@ const PostulantesPage = () => {
     }
   }, [olimpiada_id]);
 
-  // Definir columnas
   const columns: ColumnDef<Postulante>[] = useMemo(
     () => [
       {
         id: "nombre",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Nombre
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: ({ column }) => renderColumnHeader(column, "Nombre"),
         accessorFn: (row) => `${row.nombre} ${row.apellidos}`,
         cell: ({ row }) => (
-          <div>
-            {row.original.nombre} {row.original.apellidos}
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={`${row.original.nombre} ${row.original.apellidos}`}>
+              {row.original.nombre} {row.original.apellidos}
+            </span>
           </div>
         ),
       },
       {
         accessorKey: "ci",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            CI
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "CI"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.ci}>
+              {row.original.ci}
+            </span>
+          </div>
         ),
       },
       {
         accessorKey: "fechaNac",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Fecha Nac.
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: ({ column }) => renderColumnHeader(column, "Fecha Nac."),
         cell: ({ row }) => {
           try {
-            const fecha = new Date(row.original.fechaNac);
-            return <div>{fecha.toLocaleDateString()}</div>;
+            const fechaFormateada = formatDate(row.original.fechaNac);
+            return (
+              <div className="w-full overflow-hidden">
+                <span className="block truncate" title={fechaFormateada}>
+                  {fechaFormateada}
+                </span>
+              </div>
+            );
           } catch {
-            return <div>{row.original.fechaNac || "N/A"}</div>;
+            return (
+              <div className="w-full overflow-hidden">
+                <span className="block truncate" title={row.original.fechaNac || "N/A"}>
+                  {row.original.fechaNac || "N/A"}
+                </span>
+              </div>
+            );
           }
         },
         filterFn: yearFilterFn
       },
       {
         accessorKey: "area",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Área
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "Área"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.area}>
+              {row.original.area}
+            </span>
+          </div>
         ),
       },
       {
         accessorKey: "categoria",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Categoría
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "Categoría"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.categoria}>
+              {row.original.categoria}
+            </span>
+          </div>
         ),
       },
       {
         accessorKey: "departamento",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Departamento
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "Departamento"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.departamento}>
+              {row.original.departamento}
+            </span>
+          </div>
         ),
       },
       {
         accessorKey: "provincia",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Provincia
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "Provincia"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.provincia}>
+              {row.original.provincia}
+            </span>
+          </div>
         ),
       },
       {
         accessorKey: "colegio",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Colegio
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "Colegio"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.colegio}>
+              {row.original.colegio}
+            </span>
+          </div>
         ),
       },
       {
         accessorKey: "grado",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Grado
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        header: ({ column }) => renderColumnHeader(column, "Grado"),
+        cell: ({ row }) => (
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={row.original.grado}>
+              {row.original.grado}
+            </span>
+          </div>
         ),
+        sortingFn: (rowA, rowB) => {
+          const gradoA = getGradoNumerico(rowA.original.grado);
+          const gradoB = getGradoNumerico(rowB.original.grado);
+          return gradoA - gradoB;
+        }
       },
       {
         id: "responsable",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Responsable
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: ({ column }) => renderColumnHeader(column, "Responsable"),
         accessorFn: (row) => `${row.responsable} (${row.responsableCi})`,
         cell: ({ row }) => (
-          <div>
-            {row.original.responsable} ({row.original.responsableCi})
+          <div className="w-full overflow-hidden">
+            <span className="block truncate" title={`${row.original.responsable} (${row.original.responsableCi})`}>
+              {row.original.responsable} ({row.original.responsableCi})
+            </span>
           </div>
         ),
       },
       {
         accessorKey: "estado",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Estado
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
+        header: ({ column }) => renderColumnHeader(column, "Estado"),
         cell: ({ row }) => (
-          <div className={row.original.estado === "Inscripcion Completa" ? "text-green-600 font-semibold" : "text-amber-600 font-semibold"}>
-            {row.original.estado}
+          <div className="w-full overflow-hidden">
+            <span className={`block truncate ${row.original.estado === "Inscripcion Completa" ? "text-green-600 font-semibold" : "text-amber-600 font-semibold"}`} title={row.original.estado}>
+              {row.original.estado}
+            </span>
           </div>
         ),
       },
@@ -364,6 +442,7 @@ const PostulantesPage = () => {
     filterFns: {
       yearFilter: yearFilterFn,
     },
+    enableMultiSort: true,
   });
 
   
@@ -380,10 +459,48 @@ const PostulantesPage = () => {
 
   
   const postulantesFiltrados = useMemo(() => {
-    return table.getFilteredRowModel().rows.map(row => row.original);
-  }, [table.getFilteredRowModel().rows]);
+    const sortedData = [...table.getFilteredRowModel().rows];
+    
+    if (sorting.length > 0) {
+      sortedData.sort((rowA, rowB) => {
+        for (let i = 0; i < sorting.length; i++) {
+          const { id, desc } = sorting[i];
+          
+          // Ordenamiento especial para la columna grado
+          if (id === 'grado') {
+            const gradoA = getGradoNumerico(rowA.original.grado);
+            const gradoB = getGradoNumerico(rowB.original.grado);
+            const direction = desc ? -1 : 1;
+            const result = gradoA - gradoB;
+            if (result !== 0) return direction * result;
+            continue;
+          }
+          
+          const valueA = rowA.getValue(id) as string | number;
+          const valueB = rowB.getValue(id) as string | number;
+          
+          // Si los valores son iguales, continúa con el siguiente criterio de ordenamiento
+          if (valueA === valueB) continue;
+          
+          // Aplica el ordenamiento según la dirección (ascendente o descendente)
+          const direction = desc ? -1 : 1;
+          
+          // Compara valores dependiendo del tipo
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+            return direction * valueA.localeCompare(valueB);
+          }
+          
+          return direction * (valueA > valueB ? 1 : -1);
+        }
+        return 0; 
+      });
+    }
+    
+    return sortedData.map(row => row.original);
+  }, [table.getFilteredRowModel().rows, sorting]);
 
   const handleGenerarPdf = () => {
+    // Asegurarse de que los datos se ordenan correctamente antes de enviarlos al PDF
     setIsModalOpen(true);
   };
 
@@ -403,13 +520,18 @@ const PostulantesPage = () => {
     
     <div className="container  w-5/6 mx-auto py-6 md:w-5/6 lg:w-full xl:w-full">
       
-      <h1 className="text-3xl font-bold mb-6 text-center">
+      <h1 className="text-3xl font-bold mb-2 text-center">
         Postulantes: {nombreOlimpiada}
       </h1>
 
+      <div className="mb-2 text-center text-sm text-gray-600">
+        Presiona en ▲ o ▼ para ordenar. Puedes ordenar por múltiples columnas a la vez.
+        <br/>
+        Para deseleccionar una columna, Presiona nuevamente en la flecha activa.
+      </div>
       
       <div className="space-y-4 mb-6">
-        <div className="grid grid-cols-2">
+        <div className="grid ms:grid-cols-1 md:grid-cols-2 gap-2">
           <Input
             placeholder="Buscar por nombre, apellido, CI o responsable..."
             value={globalFilter}
@@ -417,16 +539,27 @@ const PostulantesPage = () => {
             className="max-w-sm"
           />
           
-          <Button 
-            onClick={handleGenerarPdf} 
-            className="flex items-center gap-2 ml-auto"
-          >
-            <Download className="h-4 w-4" />
-            Generar PDF
-          </Button>
+          <div className="flex items-center gap-2 ml-auto">
+            {sorting.length > 0 && (
+              <Button 
+                variant="outline"
+                onClick={() => setSorting([])} 
+                className="flex items-center gap-2"
+              >
+                Resetear ordenamiento
+              </Button>
+            )}
+            <Button 
+              onClick={handleGenerarPdf} 
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Generar PDF
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-1">
           
           <div>
             <label className="text-sm font-medium">Año de nacimiento</label>
@@ -636,19 +769,19 @@ const PostulantesPage = () => {
 
       
       <div className="rounded-md border">
-        <Table>
+        <Table className="reportes-table">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <CustomTableHeader key={header.id} column={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </TableHead>
+                  </CustomTableHeader>
                 ))}
               </TableRow>
             ))}
@@ -661,23 +794,23 @@ const PostulantesPage = () => {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <CustomTableCell key={cell.id} column={cell.column.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </TableCell>
+                    </CustomTableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
+                <CustomTableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   No se encontraron resultados.
-                </TableCell>
+                </CustomTableCell>
               </TableRow>
             )}
           </TableBody>
