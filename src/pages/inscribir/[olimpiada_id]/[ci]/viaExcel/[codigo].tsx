@@ -12,7 +12,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
 import { getInscritosPorLista } from "@/api/postulantes";
-import InscribirExcel from "./InscribirExcel";
 
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
@@ -37,7 +36,6 @@ export default function Page() {
         try {
             const data = await getInscritosPorLista(codigo);
             setData(data.data);
-            console.log(data.estado, data.estado !== "Preinscrito");
             setEditar(data.estado === "Preinscrito");
             setNotFound(false);
         } catch {
@@ -65,9 +63,10 @@ export default function Page() {
                             <div className="flex justify-between">
                                 {editar && (
                                     <>
-                                        <InscribirExcel
+                                        {/* <InscribirExcel
                                             onSubmit={() => fetchData()}
-                                        />
+                                        /> */}
+                                        <div></div>
                                         <ButtonFinalizarRegistro
                                             codigo_lista={codigo}
                                             show
