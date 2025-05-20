@@ -300,10 +300,11 @@ const SubirComprobantePage = () => {
     const documento = docMatch ? digits(docMatch[1]) : null;
 
     const ORDENPAGO_PATTERNS: RegExp[] = [
-      /\bACLARACION:\s*OF\s*(\d+)/i,
-      /\bOF\s+(\d+)\b/i,
-      /\bOP\s+(\d+)\b/i,
+      /\b(?:O|C|0)\s*F\s*(\d+)\b/i,
+      /\b(?:O|C|0)\s*P\s*(\d+)\b/i,      
+      /\bOP(?:O)*(\d+)\b/i,
     ];
+    
     const ordenPagoMatch = firstMatch(ORDENPAGO_PATTERNS);
     const ordenPago = ordenPagoMatch ? ordenPagoMatch[1] : null;
   
