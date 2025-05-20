@@ -17,6 +17,7 @@ export interface Olimpiada {
     gestion: string;
     fase?: Fase;
     url_plantilla?: string;
+    limite_inscripciones?: number;
 }
 export interface Fase {
     id: number;

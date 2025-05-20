@@ -15,16 +15,10 @@ import {
 import { API_URL } from "@/hooks/useApiRequest";
 import {
     CategoriaExtendida,
-    grados,
     UploadResponse,
     type newExcelPostulante,
     type newPostulante,
 } from "@/interfaces/postulante.interface";
-import {
-    Departamento,
-    Provincia,
-    Colegio,
-} from "@/interfaces/ubicacion.interface";
 import {
     ValidationError,
     ErroresDeFormato,
@@ -40,11 +34,9 @@ import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
 import { Olimpiada } from "@/types/versiones.type";
 import { ExcelParser } from "@/lib/ExcelParser";
-import {
-    getAreasConCategorias,
-    getCategoriasOlimpiada,
-} from "@/api/categorias";
 import { useNavigate } from "react-router-dom";
+import { useUbicacion } from "@/context/UbicacionContext";
+import { useCategorias } from "@/context/CategoriasContext";
 
 interface FileUploadModalProps {
     maxFiles?: number;
@@ -80,75 +72,24 @@ export default function FileUploadModal({
     >([]);
 
     const [cargandoCategorias, setCargandoCategorias] = useState(false);
-
-    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
-    const [provincias, setProvincias] = useState<Provincia[]>([]);
-    const [colegios, setColegios] = useState<Colegio[]>([]);
     const [areasCategorias, setAreasCategorias] = useState<
         Map<string, CategoriaExtendida[]>
     >(new Map());
 
+    const { departamentos, provincias, colegios } = useUbicacion();
+    const { getAreasCategoriasPorOlimpiada } = useCategorias();
+
     const navigate = useNavigate();
+    
     useEffect(() => {
-        const fetchOlimpiadas = async () => {
-            try {
-                const deptResponse = await axios.get(
-                    `${API_URL}/api/departamentos`
-                );
-                setDepartamentos(deptResponse.data);
-                const provResponse = await axios.get(
-                    `${API_URL}/api/provincias`
-                );
-                setProvincias(provResponse.data);
-                const colResponse = await axios.get(`${API_URL}/api/colegios`);
-                setColegios(colResponse.data);
-
-                setCargandoCategorias(true);
-            } catch (error) {
-                console.error("Error al cargar olimpiadas:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchOlimpiadas();
-    }, []);
-
-    useEffect(() => {
-        if (!loading && open && cargandoCategorias) {
+        if (!loading && open) {
+            setCargandoCategorias(true);
             const fetchData = async () => {
                 try {
-                    const areasConCategoriasData = await getAreasConCategorias(
-                        Number(olimpiada.id)
-                    );
-                    const gradosCategoriasData = await getCategoriasOlimpiada(
-                        Number(olimpiada.id)
-                    );
-                    const areasMap = new Map<string, CategoriaExtendida[]>();
-
-                    grados.forEach((grado, index) => {
-                        const categorias = gradosCategoriasData[index] || [];
-                        const categoriasConArea: CategoriaExtendida[] =
-                            categorias.map((cat) => {
-                                const area = areasConCategoriasData.find((a) =>
-                                    a.categorias.some((c) => c.id === cat.id)
-                                );
-
-                                return {
-                                    ...cat,
-                                    areaId: area?.id ?? 0,
-                                    areaNombre: area?.nombre ?? "Desconocida",
-                                };
-                            });
-                        areasMap.set(grado.id, categoriasConArea);
-                    });
-                    console.log(areasMap);
+                    const areasMap = await getAreasCategoriasPorOlimpiada(Number(olimpiada.id));
                     setAreasCategorias(areasMap);
                 } catch (error) {
-                    console.error(
-                        "Error al cargar datos de validación:",
-                        error
-                    );
+                    console.error("Error al cargar datos de validación:", error);
                 } finally {
                     setCargandoCategorias(false);
                 }
@@ -156,7 +97,7 @@ export default function FileUploadModal({
 
             fetchData();
         }
-    }, [loading, open, cargandoCategorias]);
+    }, [loading, open, olimpiada.id, getAreasCategoriasPorOlimpiada]);
 
     const handleFilesChange = (newFiles: File[]) => {
         setFiles(newFiles);

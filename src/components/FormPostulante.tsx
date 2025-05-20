@@ -29,7 +29,8 @@ import { useParams } from "react-router-dom";
 import { MyCombobox } from "@/components/MyComboBox";
 import { DateSelector } from "@/components/DateSelector";
 import { toast } from "sonner";
-import type { Olimpiada } from "@/pages/admin/version/[id]/types";
+import type { Olimpiada } from "@/types/versiones.type";
+import { useUbicacion } from "@/context/UbicacionContext";
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -114,21 +115,6 @@ export const postulanteSchema = z.object({
     colegio: z.string(),
 });
 
-interface Departamento {
-    id: string;
-    nombre: string;
-    abreviatura: string;
-}
-
-interface Provincia {
-    departamento_id: string;
-    nombre: string;
-    id: number;
-}
-interface Colegio {
-    id: string;
-    nombre: string;
-}
 interface FormProps {
     onCancel?: () => void;
     onSubmit?: (data: z.infer<typeof postulanteSchema>) => void;
@@ -147,50 +133,27 @@ const FormPostulante = ({
 
     const { olimpiada_id } = useParams();
     const [loading, setLoading] = useState(false);
+    const { departamentos, provincias, colegios, loading: ubicacionesLoading } = useUbicacion();
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
 
     useEffect(() => {
-        const endpoints = [
-            {
-                label: "Departamentos",
-                url: API_URL + "/api/departamentos",
-                setData: setDepartamentos,
-            },
-            {
-                label: "Provincias",
-                url: API_URL + "/api/provincias",
-                setData: setProvincias,
-            },
-            {
-                label: "Colegios",
-                url: API_URL + "/api/colegios",
-                setData: setColegios,
-            },
-            {
-                label: "Olimpiada",
-                url: API_URL + "/api/olimpiadas/" + olimpiada_id,
-                setData: setOlimpiada,
-            },
-        ];
-
-        const fetchData = async () => {
-            for (const endpoint of endpoints) {
-                try {
-                    const response = await fetch(endpoint.url);
-                    if (!response.ok) {
-                        console.error(`Error al obtener ${endpoint.label}`);
-                    } else {
-                        const data = await response.json();
-                        //  console.log(endpoint.label, data);
-                        endpoint.setData(data);
-                    }
-                } catch (error) {
-                    console.error(`Error en ${endpoint.label}:`, error);
+        const fetchOlimpiada = async () => {
+            try {
+                const response = await fetch(API_URL + "/api/olimpiadas/" + olimpiada_id);
+                if (!response.ok) {
+                    console.error("Error al obtener olimpiada");
+                } else {
+                    const data = await response.json();
+                    setOlimpiada(data);
                 }
+            } catch (error) {
+                console.error("Error en olimpiada:", error);
             }
         };
 
-        fetchData();
-    }, []);
+        fetchOlimpiada();
+    }, [olimpiada_id]);
+
     useEffect(() => {
         if (!selectedGrado || !olimpiada_id) return;
         const fetchArea = async () => {
@@ -201,15 +164,11 @@ const FormPostulante = ({
             setCategorias(areas);
         };
         fetchArea();
-    }, [selectedGrado]);
+    }, [selectedGrado, olimpiada_id]);
+
     const [openAccordions, setOpenAccordions] = useState<string[]>([
         "personal",
     ]);
-
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
-    const [provincias, setProvincias] = useState<Provincia[]>([]);
-    const [colegios, setColegios] = useState<Colegio[]>([]);
 
     const handleErrors = (errors: Record<string, unknown>) => {
         const errorFields = Object.keys(errors);
@@ -734,7 +693,7 @@ const FormPostulante = ({
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button
-                            disabled={loading}
+                            disabled={loading || ubicacionesLoading}
                             type="submit"
                             onClick={form.handleSubmit(enviar, handleErrors)}
                         >
