@@ -36,6 +36,7 @@ export default function Page() {
         try {
             const data = await getInscritosPorLista(codigo);
             setData(data.data);
+            console.log(data.estado, data.estado !== "Preinscrito");
             setEditar(data.estado === "Preinscrito");
             setNotFound(false);
         } catch {

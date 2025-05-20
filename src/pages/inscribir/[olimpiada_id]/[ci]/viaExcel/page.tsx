@@ -9,7 +9,7 @@ import FormResponsable from "../../../FormResponsable";
 import NotFoundPage from "../../../../404";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
-import InscribirExcel from "./InscribirExcel";
+
 
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -112,7 +112,7 @@ const Page = () => {
                                 {olimpiada && (
                                     <DescargarPlantilla olimpiada={olimpiada} />
                                 )}
-                                <InscribirExcel />
+                                {/* <InscribirExcel /> */}
                             </div>
                             <DataTable
                                 goToCode

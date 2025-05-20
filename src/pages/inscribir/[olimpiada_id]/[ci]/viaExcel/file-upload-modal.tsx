@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus } from "lucide-react";
+import { FileSpreadsheet, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -337,8 +337,13 @@ export default function FileUploadModal({
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button>
-                        <Plus /> {triggerText}
+                    <Button
+                        className={`h-auto p-10 text-white flex bg-emerald-600 hover:bg-emerald-700 flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg`}
+                    >
+                        <FileSpreadsheet className="size-8 mb-1" />{" "}
+                        <p className="font-bolt text-lg">
+                            {triggerText || "Inscribir por Excel"}
+                        </p>
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[500px] md:max-w-[600px]">

@@ -1,11 +1,12 @@
 import Loading from "@/components/Loading";
 import { Suspense, useEffect, useState } from "react";
-import FileUploadModal from "./file-upload-modal";
+
 import { useParams } from "react-router-dom";
 import type { Olimpiada } from "@/types/versiones.type";
 import { getOlimpiada } from "@/api/olimpiada";
+import FileUploadModal from "@/pages/inscribir/[olimpiada_id]/[ci]/viaExcel/file-upload-modal";
 
-const IncribirExcel = ({ onSubmit }: { onSubmit?: () => void }) => {
+export const IncribirExcel = ({ onSubmit }: { onSubmit?: () => void }) => {
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { olimpiada_id } = useParams();
 

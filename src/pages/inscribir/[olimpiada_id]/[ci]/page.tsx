@@ -8,12 +8,13 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import { FileIcon, Receipt, List, CheckCircle } from "lucide-react";
+import {  Receipt, List, CheckCircle } from "lucide-react";
 import { apiClient } from "@/api/request";
 import { Olimpiada } from "@/types/versiones.type";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
 import ShareUrl from "../../ShareUrl";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
+import InscribirExcel from "@/components/InscribirExcel";
 
 const Page = () => {
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
@@ -21,12 +22,12 @@ const Page = () => {
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { ci, olimpiada_id } = useParams();
     const buttons: ButtonConfig[] = [
-        {
-            label: "Inscribir por Excel",
-            to: `/inscribir/${olimpiada_id}/${ci}/viaExcel`,
-            Icon: FileIcon,
-            color: "green",
-        },
+        // {
+        //     label: "Inscribir por Excel",
+        //     to: `/inscribir/${olimpiada_id}/${ci}/viaExcel`,
+        //     Icon: FileIcon,
+        //     color: "green",
+        // },
         {
             label: "Ver Inscripciones",
             to: `listas`,
@@ -111,6 +112,7 @@ const Page = () => {
             <div className="w-full p-4 md:w-3/5 mx-auto my-auto gap-3 flex flex-col">
                 <ButtonsGrid buttons={buttons}>
                     <InscribirPostulante />
+                    <InscribirExcel onSubmit={() => fetchData()} />
                 </ButtonsGrid>
             </div>
             <ShareUrl />
