@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,lazy, Suspense } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -25,8 +25,7 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
 import type { Olimpiada2 } from "@/types/versiones.type";
 
-import DescargarPlantilla from "@/components/DescargarPlantilla";
-
+const DescargarPlantilla = lazy(() => import("@/components/DescargarPlantilla"));
 // Tipos para los datos de olimpiadas
 const formatDate = (dateString: string) => {
     const date = new Date(`${dateString}T12:00:00`);
@@ -184,9 +183,11 @@ export function OlimpiadasCarousel() {
                                                 "inscripción"
                                             ) ? (
                                                 <>
-                                                    <DescargarPlantilla
-                                                        olimpiada={olimpiada}
-                                                    />
+                                                    <Suspense fallback={<div>Cargando...</div>}>
+                                                        <DescargarPlantilla
+                                                            olimpiada={olimpiada}
+                                                        />
+                                                    </Suspense>
                                                     <Button variant={"link"}>
                                                         <Link
                                                             to={`/inscribir/${olimpiada.id}`}
