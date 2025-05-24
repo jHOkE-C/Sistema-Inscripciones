@@ -1,46 +1,53 @@
+import React, { Suspense, lazy } from 'react';
 import PrivateRoute from "./components/PrivateRoute";
+import Loading from '@/components/Loading';
 
-const pages = import.meta.glob("./pages/**/*.tsx", { eager: true });
 
-const protectedPrefixes = ["/admin", "/usuario"];
+const pages = import.meta.glob("./pages/**/*.tsx");
+const protectedPrefixes = ["/admin", "/usuario", "/subir"];
 
-const routes = Object.keys(pages)
-    .map((path) => {
-        const routePath = path
-            .replace("./pages", "")
-            .replace(/\.tsx$/, "")
-            .replace(/\/page$/, "")
-            .replace(/\[(\w+)\]/g, ":$1");
+const routeConfigs = Object.entries(pages)
+  .map(([filePath, importer]) => {
 
-        const module = pages[path] as { default: React.ComponentType };
-        const Component = module.default;
-        if (!Component) return null;
+    const routePath = filePath
+      .replace("./pages", "")
+      .replace(/\.tsx$/, "")
+      .replace(/\/page$/, "")
+      .replace(/\[(\w+)\]/g, ":$1");
 
-        const authRequired = protectedPrefixes.some((prefix) =>
-            routePath.startsWith(prefix)
-        );
 
-        const WrappedComponent = authRequired
-            ? () => (
-                  <PrivateRoute>
-                      <Component />
-                  </PrivateRoute>
-              )
-            : Component;
+    const LazyPage = lazy(importer as () => Promise<{ default: React.ComponentType<any> }>);
 
-        return {
-            path: routePath || "/",
-            element: <WrappedComponent />,
-        };
-    })
-    .filter(Boolean);
-const NotFound = (pages["./pages/404.tsx"] as { default: React.ComponentType })
-    ?.default;
 
-if (NotFound) {
-    routes.push({
-        path: "*",
-        element: <NotFound />,
-    });
+    const pageElement = (
+      <Suspense fallback={<Loading />}>
+        <LazyPage />
+      </Suspense>
+    );
+
+
+    const element = protectedPrefixes.some(pref => routePath.startsWith(pref))
+      ? <PrivateRoute>{pageElement}</PrivateRoute>
+      : pageElement;
+
+    return {
+      path: routePath || "/",
+      element
+    };
+  })
+  .filter(Boolean);
+
+
+if (pages["./pages/404.tsx"]) {
+  const NotFound = lazy(pages["./pages/404.tsx"] as () => Promise<{ default: React.ComponentType<any> }>);
+  routeConfigs.push({
+    path: "*",
+    element: (
+      <Suspense fallback={<Loading />}>
+        <NotFound />
+      </Suspense>
+    )
+  });
 }
-export default routes;
+
+export default routeConfigs;
