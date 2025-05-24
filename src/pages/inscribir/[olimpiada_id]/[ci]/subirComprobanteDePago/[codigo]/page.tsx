@@ -25,9 +25,25 @@ export default function Page() {
     const { codigo } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingNavegacion, setLoadingNavegacion] = useState(false);
+    const [tiempoTranscurrido, setTiempoTranscurrido] = useState(0);
+
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+        if (loadingNavegacion) {
+            intervalId = setInterval(() => {
+                setTiempoTranscurrido(prev => prev + 1);
+            }, 1000);
+        }
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [loadingNavegacion]);
+
     if (!codigo) return;
 
     const fetchData = async () => {
@@ -43,14 +59,24 @@ export default function Page() {
         }
     };
 
+    
     const navegarASubirComprobante = () => {
-        // Navegamos a la página de subir comprobante
-        navigate(`subir`);
+        navigate('subir');
+        setLoadingNavegacion(true);
     };
 
+    const mensajeLoading = () => {
+        if (tiempoTranscurrido < 5) {
+            return "Descargando dependencias, por favor espere...";
+        } else if (tiempoTranscurrido < 10) {
+            return "Descargando dependencias, por favor espere en 5s...";
+        } else {
+            return "Revise su conexión a internet";
+        }
+    };
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;
-
+    if (loadingNavegacion) return <Loading textoLoading={mensajeLoading()} />;
     return (
         <>
             <ReturnComponent />

@@ -16,7 +16,7 @@ const routeConfigs = Object.entries(pages)
       .replace(/\[(\w+)\]/g, ":$1");
 
 
-    const LazyPage = lazy(importer as () => Promise<{ default: React.ComponentType<any> }>);
+    const LazyPage = lazy(importer as () => Promise<{ default: React.ComponentType<unknown> }>);
 
 
     const pageElement = (
@@ -39,7 +39,7 @@ const routeConfigs = Object.entries(pages)
 
 
 if (pages["./pages/404.tsx"]) {
-  const NotFound = lazy(pages["./pages/404.tsx"] as () => Promise<{ default: React.ComponentType<any> }>);
+  const NotFound = lazy(pages["./pages/404.tsx"] as () => Promise<{ default: React.ComponentType<unknown> }>);
   routeConfigs.push({
     path: "*",
     element: (
