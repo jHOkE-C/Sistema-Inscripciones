@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import cv from '@techstark/opencv-js';
+import { useOpenCv, type CvModule } from '@/hooks/useOpencv';
 import ReturnComponent from '@/components/ReturnComponent';
 import FileUpload from '@/components/fileUpload';
 import { Button } from '@/components/ui/button';
@@ -55,7 +55,9 @@ const SubirComprobantePage = () => {
   const [processedImages, setProcessedImages] = useState<ProcessedImageData[]>([]);
   const [ocrResults, setOcrResults] = useState<OcrResult[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [cv, setCv] = useState<CvModule | null>(null);
   const [isCvReady, setIsCvReady] = useState<boolean>(false);
+  const [isOpenCvLoading, setIsOpenCvLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [tesseractWorker, setTesseractWorker] =
   useState<Worker | null>(null);
@@ -74,23 +76,25 @@ const SubirComprobantePage = () => {
   const step2Ref = useRef<HTMLDivElement>(null);
   const step3Ref = useRef<HTMLDivElement>(null);
 
+  const loadCv = useOpenCv();
+
   useEffect(() => {
-    if (typeof cv !== 'undefined' && cv.onRuntimeInitialized) {
-      cv.onRuntimeInitialized = () => {
-        console.log('OpenCV Runtime inicializado');
+    setIsOpenCvLoading(true);
+    loadCv()
+      .then((cvModule) => {
+        setCv(cvModule);
         setIsCvReady(true);
-      };
-    } else {
-      const intervalId = setInterval(() => {
-        if (typeof cv !== 'undefined' && cv.Mat) {
-          console.log('OpenCV detectado vía intervalo.');
-          setIsCvReady(true);
-          clearInterval(intervalId);
-        }
-      }, 500);
-      return () => clearInterval(intervalId);
-    }
-  }, []);
+        console.log('OpenCV Runtime inicializado via hook');
+      })
+      .catch(err => {
+        console.error("Error cargando OpenCV via hook:", err);
+        setError("No se pudo cargar OpenCV. Intente recargar la página.");
+        setIsCvReady(false);
+      })
+      .finally(() => {
+        setIsOpenCvLoading(false);
+      });
+  }, [loadCv]);
 
   const terminarRegistro = async () => {
     if (!codigo) {
@@ -129,8 +133,6 @@ const SubirComprobantePage = () => {
   useEffect(() => {
     const initializeWorker = async () => {
       const worker: Worker = await createWorker('spa',1);
-    
-      await worker.load();
     
       await worker.setParameters({
         user_defined_dpi:          '300',
@@ -181,6 +183,7 @@ const SubirComprobantePage = () => {
   };
 
   const adjustGamma = useCallback((src: CvMat, gamma: number): CvMat => {
+    if (!cv) throw new Error("cv no está listo para adjustGamma");
     const invGamma = 1.0 / gamma;
     const table = new cv.Mat(1, 256, cv.CV_8U);
     for (let i = 0; i < 256; i++) {
@@ -204,11 +207,12 @@ const SubirComprobantePage = () => {
     }
     table.delete();
     return dst;
-  }, []);
+  }, [cv]);
 
   const analizarExposicion = useCallback((
     mat: CvMat
   ): { mediana: number; estado: string; gammaRecomendado: number } => {
+    if (!cv) throw new Error("cv no está listo para analizarExposicion");
     console.log('Analizando exposición...');
     const src = mat.clone();
     const gray = new cv.Mat();
@@ -250,7 +254,7 @@ const SubirComprobantePage = () => {
     matVector.delete();
 
     return { mediana, estado, gammaRecomendado };
-  }, []);
+  }, [cv]);
 
   const extractData = useCallback((raw: string): ExtractedData => {
     
@@ -335,6 +339,7 @@ const SubirComprobantePage = () => {
   }, []);
 
   const applyGrayscalePipeline = useCallback((src: CvMat): CvMat => {
+    if (!cv) throw new Error("cv no está listo para applyGrayscalePipeline");
     const gray = new cv.Mat();
     const denoised = new cv.Mat();
     const gammaAdjusted = new cv.Mat();
@@ -377,9 +382,10 @@ const SubirComprobantePage = () => {
       claheMat.delete();
       binary.delete();
     }
-  }, [analizarExposicion, adjustGamma]);
+  }, [cv, analizarExposicion, adjustGamma]);
 
   const scaleGraysPipelineV2 = useCallback((src: CvMat): CvMat => {
+    if (!cv) throw new Error("cv no está listo para scaleGraysPipelineV2");
     const CLAHE_CLIP = 1.5;   // contraste local
     const BLOCK      = 31;    // tamaño del bloque del umbral adaptativo
     const C_TH       = 11;    // C más alto u21d2 menos "sal y pimienta"
@@ -442,7 +448,7 @@ const SubirComprobantePage = () => {
       gray.delete(); blur.delete(); claheMat.delete(); den.delete();
       bin.delete(); mask.delete(); lbls.delete(); stats.delete(); cents.delete();
     }
-  }, []);
+  }, [cv]);
       
   const runOCR = useCallback(async (
     worker: Worker,
@@ -494,6 +500,7 @@ const SubirComprobantePage = () => {
         if (!inputCanvasRef.current) throw new Error('Input canvas ref missing');
         const ctx = inputCanvasRef.current.getContext('2d');
         if (!ctx) throw new Error('No 2D context');
+        if (!cv) throw new Error('OpenCV module no está cargado');
 
         inputCanvasRef.current.width = imgElement.naturalWidth;
         inputCanvasRef.current.height = imgElement.naturalHeight;
@@ -599,11 +606,12 @@ const SubirComprobantePage = () => {
       <canvas ref={outputCanvasRef2} style={{ display: 'none' }} />
       <canvas ref={outputCanvasRef3} style={{ display: 'none' }} />
 
-      {isLoading || !isCvReady || !tesseractWorker ? (
-        <>
-          {!isCvReady && <LoadingAlert message="Cargando OpenCV..." />}
-          {!tesseractWorker && <LoadingAlert message="Cargando Tesseract..." />}
-        </>
+      {isOpenCvLoading ? (
+        <LoadingAlert message="Inicializando OpenCV..." />
+      ) : !isCvReady ? (
+        <LoadingAlert message="Error al cargar OpenCV. Por favor, recargue la página." />
+      ) : !tesseractWorker ? (
+        <LoadingAlert message="Cargando Tesseract..." />
       ) : (
         <div className="mb-4 p-4 border rounded-md shadow-sm bg-card">
           <h2 className="text-lg font-semibold mb-2">1. Cargar Imagen del Recibo</h2>
