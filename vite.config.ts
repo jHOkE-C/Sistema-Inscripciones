@@ -26,25 +26,26 @@ export default defineConfig(({ mode }) => {
             VitePWA({
                 registerType: 'autoUpdate',
                 workbox: {
-                globPatterns: ['**/*.{js,css,html,wasm,br,gz,woff2,png,jpg,svg,webp}'],
-                runtimeCaching: [
-                    {
-                    urlPattern: ({ request }) => request.destination !== 'document',
-                    handler: 'CacheFirst',
-                    options: {
-                        cacheName: 'static-12h',
-                        expiration: { maxAgeSeconds: 43200, purgeOnQuotaError: true }
-                    }
-                    },
-                    {
-                    urlPattern: new RegExp(`^${API_URL}/api/(olimpiadas/\\d+|departamentos|provincias|colegios)$`),
-                    handler: 'StaleWhileRevalidate',
-                    options: {
-                        cacheName: 'api-12h',
-                        expiration: { maxAgeSeconds: 43200, purgeOnQuotaError: true }
-                    }
-                    }
-                ]
+                    maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+                    globPatterns: ['**/*.{js,css,html,wasm,br,gz,woff2,png,jpg,svg,webp}'],
+                    runtimeCaching: [
+                        {
+                            urlPattern: ({ request }) => request.destination !== 'document',
+                            handler: 'CacheFirst',
+                            options: {
+                                cacheName: 'static-12h',
+                                expiration: { maxAgeSeconds: 43200, purgeOnQuotaError: true }
+                            }
+                        },
+                        {
+                            urlPattern: new RegExp(`^${API_URL}/api/(olimpiadas/\\d+|departamentos|provincias|colegios)$`),
+                            handler: 'StaleWhileRevalidate',
+                            options: {
+                                cacheName: 'api-12h',
+                                expiration: { maxAgeSeconds: 43200, purgeOnQuotaError: true }
+                            }
+                        }
+                    ]
                 }
             })
         ],
