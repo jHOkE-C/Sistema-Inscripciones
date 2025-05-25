@@ -1,38 +1,22 @@
 import Loading from "@/components/Loading";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 
-import { useParams } from "react-router-dom";
-import type { Olimpiada } from "@/types/versiones.type";
-import { getOlimpiada } from "@/api/olimpiada";
 import FileUploadModal from "@/pages/inscribir/[olimpiada_id]/[ci]/viaExcel/file-upload-modal";
+import type { Olimpiada } from "@/types/versiones.type";
 
-export const IncribirExcel = ({ onSubmit }: { onSubmit?: () => void }) => {
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
-    const { olimpiada_id } = useParams();
-
-    useEffect(() => {
-        getData();
-    }, []);
-    const getData = async () => {
-        try {
-            if (!olimpiada_id) {
-                throw new Error("No se proporciono un id de olimpiada");
-            }
-            const olimpiada = await getOlimpiada(olimpiada_id);
-            setOlimpiada(olimpiada);
-            console.log(olimpiada);
-        } catch (e) {
-            //recordatoro falta mejorar esta wea
-            console.log(e);
-        }
-    };
-    if (!olimpiada) return;
+export const IncribirExcel = ({
+    onSubmit,
+    olimpiada,
+}: {
+    onSubmit?: () => void;
+    olimpiada: Olimpiada;
+}) => {
     return (
         <Suspense fallback={<Loading />}>
             <FileUploadModal
                 maxFiles={1}
                 maxSize={10}
-                accept=".xlsx,.xls"
+                accept=".xlsx"
                 onFilesChange={(files) => console.log("Files changed:", files)}
                 triggerText="Inscribir por Excel"
                 title="Añadir archivo Excel"

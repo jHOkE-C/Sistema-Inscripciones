@@ -1,12 +1,9 @@
 import { apiClient } from "@/api/request";
-import FormPostulante, {
-    type postulanteSchema,
-} from "@/components/FormPostulante";
+
 import { Button } from "@/components/ui/button";
 import {
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -14,7 +11,6 @@ import { Dialog } from "@radix-ui/react-dialog";
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { z } from "zod";
 import { getListasPostulantes } from "@/api/postulantes";
 import { ListaPostulantes } from "@/pages/inscribir/columns";
 import NotFoundPage from "@/pages/404";
@@ -31,8 +27,19 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { QRCode } from "react-qrcode-logo";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ButtonFinalizarRegistro } from "@/pages/inscribir/[olimpiada_id]/[ci]/[codigo_lista]";
+import { type StepData } from "./StepFormPostulante";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "./ui/alert-dialog";
+import type { Olimpiada } from "@/types/versiones.type";
+import StepFormPostulante from "./StepFormPostulante";
 
-const InscribirPostulante = () => {
+const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
     const [openForm, setOpenForm] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [codigo_lista, setCodigoLista] = useState<string | undefined>();
@@ -52,15 +59,17 @@ const InscribirPostulante = () => {
     const refresh = async () => {
         try {
             const { data } = await getListasPostulantes(ci);
-            const listas = data.filter(({ estado }) => estado == "Preinscrito");
+            const listas = data.filter(
+                ({ estado, olimpiada_id: id }) =>
+                    estado == "Preinscrito" && id == olimpiada_id
+            );
             setListas(listas);
         } catch {
             toast.error("ocurrio un error al obtener las listas");
-        } 
+        }
     };
 
-    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
-       
+    const onSubmit = async (data: StepData) => {
         const { codigo_lista } = await apiClient.post<
             { codigo_lista: string },
             { ci: string; olimpiada_id: string }
@@ -74,7 +83,7 @@ const InscribirPostulante = () => {
             codigo_lista,
         });
         setCodigoLista(codigo_lista);
-        refresh()
+        refresh();
         setOpenConfirm(true);
     };
 
@@ -113,7 +122,8 @@ const InscribirPostulante = () => {
                             Crear Una Nueva Inscripcion
                         </Button>
                         <DialogDescription>
-                            Puede continuar inscribiendo en una de estas inscripciones:
+                            Puede continuar inscribiendo en una de estas
+                            inscripciones:
                         </DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[300px] overflow-y-scroll">
@@ -132,7 +142,11 @@ const InscribirPostulante = () => {
                             <TableBody className="">
                                 {listas.map(
                                     (
-                                        { codigo_lista, postulantes_count,created_at },
+                                        {
+                                            codigo_lista,
+                                            postulantes_count,
+                                            created_at,
+                                        },
                                         i
                                     ) => (
                                         <TableRow
@@ -161,7 +175,7 @@ const InscribirPostulante = () => {
             </Dialog>
 
             <Dialog open={openForm} onOpenChange={setOpenForm}>
-                <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto ">
+                <DialogContent className="md:max-w-[90vw] max-h-[90vh] overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
                         <DialogDescription>
@@ -169,27 +183,25 @@ const InscribirPostulante = () => {
                             olimpiadas ohSansi
                         </DialogDescription>
                     </DialogHeader>
-                    <FormPostulante
+                    <StepFormPostulante
                         onSubmit={onSubmit}
-                        onCancel={() => {
-                            setOpenForm(false);
-                        }}
+                        olimpiada={olimpiada}
                     />
                 </DialogContent>
             </Dialog>
-            <Dialog open={openConfirm}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
+            <AlertDialog open={openConfirm}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
                             ¿Desea Registrar más postulantes?
-                        </DialogTitle>
-                        <DialogDescription>
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
                             Presione continuar para registrar mas postulantes en
                             una inscripcion Presione finalizar para terminar el
                             registro
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
                         <Link to={codigo_lista + ""}>
                             <Button>Continuar</Button>
                         </Link>
@@ -202,9 +214,9 @@ const InscribirPostulante = () => {
                                 setOpenCode(true);
                             }}
                         />
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
             <Dialog open={openCode} onOpenChange={setOpenCode}>
                 <DialogContent className="flex flex-col items-center p-4 ">
                     <DialogHeader>

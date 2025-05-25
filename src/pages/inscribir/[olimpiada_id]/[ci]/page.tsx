@@ -111,8 +111,8 @@ const Page = () => {
             </p>
             <div className="w-full p-4 md:w-3/5 mx-auto my-auto gap-3 flex flex-col">
                 <ButtonsGrid buttons={buttons}>
-                    <InscribirPostulante />
-                    <InscribirExcel onSubmit={() => fetchData()} />
+                    <InscribirPostulante olimpiada={olimpiada}/>
+                    <InscribirExcel olimpiada={olimpiada} onSubmit={() => fetchData()} />
                 </ButtonsGrid>
             </div>
             <ShareUrl />
