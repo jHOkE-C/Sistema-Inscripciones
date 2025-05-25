@@ -15,13 +15,13 @@ export default defineConfig(({ mode }) => {
                 algorithm: 'brotliCompress',
                 ext: '.br',
                 deleteOriginFile: false,
-                threshold: 0
+                
             }),
             compression({
                 algorithm: 'gzip',
                 ext: '.gz',
                 deleteOriginFile: false,
-                threshold: 1024
+                
             }),
             VitePWA({
                 registerType: 'autoUpdate',
