@@ -1,10 +1,23 @@
 import { FeatureCard } from "@/components/FeatureCard";
 import Footer from "@/components/Footer";
-import { Calendar, Medal, Trophy, Users } from "lucide-react";
+import {
+  Atom,
+  Beaker,
+  BookOpen,
+  Calculator,
+  Calendar,
+  Medal,
+  Microscope,
+  Star,
+  Trophy,
+  Users,
+  Zap,
+} from "lucide-react";
 import { OlimpiadasCarousel } from "./carousel";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 const PageHome = () => {
   return (
@@ -13,35 +26,131 @@ const PageHome = () => {
 
       {/* Main */}
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-5 bg-gradient-to-b from-background-50 to-background">
-          <div className="px-6 md:px-10">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-              <div className="space-y-4">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Sistema de Inscripciones para las Olimpiadas Oh!SanSi
-                </h1>
-                <p className="max-w-[600px] text-foreground/70 md:text-xl">
-                  Regístrate, sigue los eventos y participa en las competencias
-                  más emocionantes del año.
-                </p>
-                <Button>
-                  <Link to="/consultar-estado">Consultar estado de Inscripción</Link>
-                </Button>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row"></div>
+        <section className="relative  flex items-center overflow-hidden bg-background mt-8">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Floating scientific icons */}
+            <div className="absolute top-20 left-10 text-muted-foreground/20 animate-pulse">
+              <Atom className="w-16 h-16" />
+            </div>
+            <div className="absolute top-40 right-20 text-muted-foreground/20 animate-pulse delay-1000">
+              <Microscope className="w-12 h-12" />
+            </div>
+            <div className="absolute bottom-40 left-20 text-muted-foreground/20 animate-pulse delay-2000">
+              <Calculator className="w-14 h-14" />
+            </div>
+            <div className="absolute bottom-20 right-10 text-muted-foreground/20 animate-pulse delay-500">
+              <Beaker className="w-10 h-10" />
+            </div>
+            <div className="absolute top-60 left-1/4 text-muted-foreground/20 animate-pulse delay-1500">
+              <Zap className="w-8 h-8" />
+            </div>
+
+  
+
+            {/* Sparkle effects */}
+            <div className="absolute top-1/4 left-1/2 text-primary/60 animate-ping">
+              <Star className="w-4 h-4" />
+            </div>
+            <div className="absolute top-3/4 right-1/3 text-primary/60 animate-ping delay-700">
+              <Star className="w-3 h-3" />
+            </div>
+            <div className="absolute top-1/2 left-1/4 text-primary/60 animate-ping delay-1400">
+              <Star className="w-2 h-2" />
+            </div>
+          </div>
+
+          <div className="container px-6 md:px-10 mx-auto relative z-10">
+            <div className="text-center space-y-12">
+              <div className="space-y-6">
+                {/* Main title */}
+                <div className="space-y-4">
+                  <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl text-foreground animate-pulse">
+                    Oh!SanSi
+                  </h1>
+
+                  {/* Subtitle */}
+                  <div className="relative">
+                    <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-muted-foreground">
+                      Olimpiada de Ciencia y Tecnología
+                    </span>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-primary rounded-full"></div>
+                  </div>
+                </div>
+
+                {/* Enhanced description */}
+                <div className="relative max-w-4xl mx-auto">
+                  <Card className="backdrop-blur-sm bg-card/50 border-border/50 shadow-lg">
+                    <CardContent className="p-6">
+                      <p className="text-muted-foreground md:text-lg lg:text-xl leading-relaxed">
+                        El Comité de la Olimpiadas Científica Nacional San Simón
+                        <span className="font-semibold text-primary">
+                          {" "}
+                          Oh!SanSi
+                        </span>
+                        , a través de la Facultad de Ciencias y Tecnología de la
+                        Universidad Mayor de San Simón, convoca a los
+                        estudiantes del Sistema de Educación Regular a
+                        participar en las Olimpiadas Oh!SanSi{" "}
+                        <span className="font-bold text-primary">
+                          {new Date().getFullYear()}
+                        </span>
+                        .
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
 
-              <div className="mx-auto lg:mr-0 w-full max-w-[500px] h-[350px] aspect-video rounded-xl overflow-hidden hidden sm:block">
-                <img
-                  alt="Olimpiadas ohSansi"
-                  className="object-cover w-full h-full drop-shadow-white drop-shadow-xs "
-                  src="/ohsansi.png"
-                />
+              {/* Enhanced buttons */}
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <Link to="/consultar-estado">
+                  <Button
+                    size="lg"
+                    className="text-base px-10 py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 rounded-full"
+                  >
+                    <Users className="w-5 h-5 mr-3" />
+                    Consultar Inscripción
+                  </Button>
+                </Link>
+                <a href="#olimpiadas">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-base px-10 py-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-full"
+                  >
+                    <BookOpen className="w-5 h-5 mr-3" />
+                    ¡Incribete ahora!
+                  </Button>
+                </a>
+              </div>
+
+              {/* Categories */}
+              <div className="flex justify-center items-center space-x-5 md:space-x-8 mt-12">
+                <div className="flex items-center space-x-2 text-muted-foreground">
+                  <Atom className="w-6 h-6" />
+                  <span className="text-sm font-medium">Ciencias</span>
+                </div>
+                <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                <div className="flex items-center space-x-2 text-muted-foreground">
+                  <Zap className="w-6 h-6" />
+                  <span className="text-sm font-medium">Tecnología</span>
+                </div>
+                <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                <div className="flex items-center space-x-2 text-muted-foreground">
+                  <Calculator className="w-6 h-6" />
+                  <span className="text-sm font-medium">Matemáticas</span>
+                </div>
               </div>
             </div>
           </div>
         </section>
-        <h2 className="text-3xl md:text-5xl text-center md:p-10 text-foreground tracking-wide">
-          OLIMPIADAS NACIONALES <br /> SAN SIMÓN {new Date().getFullYear()}
+        <h2
+          className="text-3xl tracking-tighter md:text-5xl text-center md:p-10 text-foreground  font-bold scroll-mt-20 md:scroll-mt-12 mt-12 sm:mt-4"
+          id="olimpiadas"
+        >
+          Olimpiadas Nacionales <br className="md:hidden"></br>San Simón{" "}
+          {new Date().getFullYear()}
         </h2>
         <OlimpiadasCarousel />
 
