@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
                             options: {
                                 cacheName: 'static-assets',
                                 expiration: {
-                                    maxAgeSeconds: 43200,
+                                    maxAgeSeconds: 60,
                                     maxEntries: 200
                                 },
                                 cacheableResponse: {
@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => {
                             options: {
                                 cacheName: 'api-cache',
                                 expiration: {
-                                    maxAgeSeconds: 43200,
+                                    maxAgeSeconds: 60,
                                     maxEntries: 100
                                 },
                                 cacheableResponse: {
