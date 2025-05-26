@@ -20,6 +20,9 @@ export default defineConfig({
                 srcDir: 'src',
                 filename: 'sw.ts',
                 injectRegister: 'auto',
+                injectManifest: {
+                  globIgnores: ['**/opencv_js.wasm'],
+                }
             }),
 
     ],

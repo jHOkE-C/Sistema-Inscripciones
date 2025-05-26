@@ -24,6 +24,20 @@ registerRoute(
     ],
   }),
 );
+
+registerRoute(
+  ({ url }) => url.pathname.endsWith('.wasm'),
+  new CacheFirst({
+    cacheName: 'wasm-assets',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 10, 
+        maxAgeSeconds: 60 
+      }),
+    ],
+  })
+);
+
 registerRoute(
   ({ request }) => request.destination === 'document' || request.destination === '',
   new StaleWhileRevalidate({ cacheName: 'pages' }),
