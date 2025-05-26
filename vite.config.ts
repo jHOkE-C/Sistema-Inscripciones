@@ -24,8 +24,8 @@ export default defineConfig(({ mode }) => {
                 injectRegister: 'auto',
                 workbox: {
                     maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-                    globPatterns: [            
-                        '**/*.{js.gz,css.gz,html,wasm.gz,woff2,png,jpg,svg,webp}'
+                    globPatterns: [
+                        '**/*.{js,css,html,wasm,woff2,png,jpg,svg,webp}'
                     ], 
                     cleanupOutdatedCaches: true,
                     clientsClaim: true,
