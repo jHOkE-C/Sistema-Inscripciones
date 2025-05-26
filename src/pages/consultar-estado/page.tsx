@@ -9,7 +9,7 @@ const ConsultarEstadoPage = () => {
     <>
       <div className="flex flex-col items-center justify-center min-h-screen">
         <Header />
-        <main className="flex flex-grow items-center justify-center p-6 w-full">
+        <main className="flex flex-col items-center justify-center p-6 w-full">
           <ConsultaInscripcion />
         </main>
         <Footer />

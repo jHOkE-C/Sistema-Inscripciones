@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import ResponsableCard, { Responsable } from "./responsable-card";
 import PostulanteCard, { Postulante } from "./postulante-card";
 import { Button } from "@/components/ui/button";
+import InactivityModal from "./inactivity-modal";
 
 interface ConsultaInscripcionProps {
   titulo?: string;
@@ -108,57 +109,60 @@ export function ConsultaInscripcion({
     }
   }, []);
 
-
   return (
     <>
       {postulante ? (
-        <div className="flex flex-col items-center justify-center w-5/6">
+        <div className="flex flex-col items-center justify-center ">
+          <InactivityModal clean={clean} />
           <PostulanteCard data={{ postulante }} />
           <Button className="w-30 mt-4" onClick={clean}>
             Probar otro CI
           </Button>
         </div>
       ) : responsable ? (
-        <div className="flex flex-col items-center justify-center w-5/6">
+        <div className="flex flex-col items-center justify-center">
           <ResponsableCard data={{ responsable }} />
+          <InactivityModal clean={clean} />
           <Button className="w-30 mt-4" onClick={clean}>
             Probar otro CI
           </Button>
         </div>
       ) : (
-        <Card className="w-xl">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">{titulo}</CardTitle>
-            <CardDescription>{descripcion}</CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="grid gap-2">
-              <label htmlFor="carnet" className="text-sm font-medium">
-                Número de Carnet
-              </label>
-              <Input
-                id="carnet"
-                type="text"
-                placeholder="Ingrese solo números"
-                value={carnet}
-                onChange={handleInputChange}
-                maxLength={maxLength}
-                className="w-full"
-              />
-              {error && (
-                <Label className="flex items-center gap-2 text-sm text-destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{error}</span>
-                </Label>
-              )}
-            </CardContent>
-            <CardFooter className="mt-4">
-              <Button type="submit" className="w-full">
-                Continuar
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
+        <div className=" flex items-center justify-center w-screen h-[70vh]">
+          <Card className="w-full m-4 max-w-xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold">{titulo}</CardTitle>
+              <CardDescription>{descripcion}</CardDescription>
+            </CardHeader>
+            <form onSubmit={handleSubmit}>
+              <CardContent className="grid gap-2">
+                <label htmlFor="carnet" className="text-sm font-medium">
+                  Número de Carnet
+                </label>
+                <Input
+                  id="carnet"
+                  type="text"
+                  placeholder="Ingrese solo números"
+                  value={carnet}
+                  onChange={handleInputChange}
+                  maxLength={maxLength}
+                  className="w-full"
+                />
+                {error && (
+                  <Label className="flex items-center gap-2 text-sm text-destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{error}</span>
+                  </Label>
+                )}
+              </CardContent>
+              <CardFooter className="mt-4">
+                <Button type="submit" className="w-full">
+                  Continuar
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
       )}
     </>
   );
