@@ -8,7 +8,7 @@ import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategi
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 const API_URL = import.meta.env.VITE_API_URL;
-
+//por ahora 60s pero cuando este acabado puede ser 1h o mas, esto ayudara al servidor 
 registerRoute(
   ({ request }) => request.mode === 'navigate',
   new NetworkFirst({
@@ -44,7 +44,7 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({
         maxEntries: 10, 
-        maxAgeSeconds: 60  
+        maxAgeSeconds: 86400//1dia  
       }),
     ],
   })
