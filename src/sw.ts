@@ -29,9 +29,9 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => url.pathname.endsWith('.wasm'),
+  ({ url }) => url.pathname.endsWith('.wasm, /octet-stream'),
   new CacheFirst({
-    cacheName: 'wasm-assets',
+    cacheName: 'assets-hard',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 10, 
