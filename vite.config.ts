@@ -9,6 +9,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const API_URL = env.VITE_API_URL?.replace(/\./g, '\\.');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ORIGIN  = (globalThis as any).location?.origin ?? '';
     return {
         plugins: [
             react(),
@@ -16,25 +18,28 @@ export default defineConfig(({ mode }) => {
             compression({
                 algorithm: 'gzip',
                 ext: '.gz',
-                deleteOriginFile: false,
+                deleteOriginFile: true,
             }),
             VitePWA({
                 registerType: 'autoUpdate',
                 injectRegister: 'auto',
                 workbox: {
                     maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-                    globPatterns: ['**/*.{js,css,html,wasm,br,gz,woff2,png,jpg,svg,webp}'],
+                    globPatterns: [            
+                        '**/*.{js.gz,css.gz,html,wasm.gz,woff2,png,jpg,svg,webp}'
+                    ], 
                     cleanupOutdatedCaches: true,
                     clientsClaim: true,
                     skipWaiting: true,
                     runtimeCaching: [
                         {
-                            urlPattern: ({ request }) => request.destination !== 'document',
+                            urlPattern: ({ request, url }) => request.destination !== 'document' &&
+                            url.origin === ORIGIN,
                             handler: 'CacheFirst',
                             options: {
                                 cacheName: 'static-assets',
                                 expiration: {
-                                    maxAgeSeconds: 7 * 24 * 60 * 60,
+                                    maxAgeSeconds: 43200,
                                     maxEntries: 200
                                 },
                                 cacheableResponse: {
@@ -43,7 +48,9 @@ export default defineConfig(({ mode }) => {
                             }
                         },
                         {
-                            urlPattern: new RegExp(`^${API_URL}/api/(olimpiadas/\\d+|departamentos|provincias|colegios)$`),
+                            urlPattern: new RegExp(
+                                `^${API_URL}/api/(olimpiadas/\\d+|departamentos|provincias|colegios)$`
+                            ),
                             handler: 'StaleWhileRevalidate',
                             options: {
                                 cacheName: 'api-cache',
@@ -57,26 +64,6 @@ export default defineConfig(({ mode }) => {
                             }
                         }
                     ]
-                },
-                manifest: {
-                    short_name: "Cutie",
-                    name: "Cutie App",
-                    start_url: "/",
-                    display: "standalone",
-                    background_color: "#ffffff",
-                    theme_color: "#000000",
-                    icons: [
-                        {
-                            src: "/icon-192x192.png",
-                            sizes: "192x192",
-                            type: "image/png"
-                        },
-                        {
-                            src: "/icon-512x512.png",
-                            sizes: "512x512",
-                            type: "image/png"
-                        }
-                    ]
                 }
             })
         ],
@@ -85,15 +72,5 @@ export default defineConfig(({ mode }) => {
                 "@": path.resolve(__dirname, "./src"),
             },
         },
-        build: {
-            rollupOptions: {
-                output: {
-                    manualChunks: {
-                        vendor: ['react', 'react-dom'],
-                    }
-                }
-            },
-            chunkSizeWarningLimit: 1000,
-        }
     }    
 });
