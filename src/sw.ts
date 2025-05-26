@@ -16,8 +16,8 @@ registerRoute(
     networkTimeoutSeconds: 5,
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 20,
-        maxAgeSeconds: 24 * 60 * 60,
+        maxEntries: 30,
+        maxAgeSeconds: 60,
       }),
     ],
   })
@@ -30,7 +30,7 @@ registerRoute(
     cacheName: 'static-assets',
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 1000,         
+        maxEntries: 200,         
         maxAgeSeconds: 60
       }),
     ],
@@ -38,7 +38,7 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => /\.(wasm|js|css)$/i.test(url.pathname),
+  ({ url }) => /\.(wasm)$/i.test(url.pathname),
   new CacheFirst({
     cacheName: 'assets-hard',
     plugins: [
