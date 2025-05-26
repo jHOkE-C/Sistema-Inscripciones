@@ -104,7 +104,7 @@ const Page = () => {
             </div>
 
             <h1 className="text-3xl font-bold text-center">
-                PRUEBA: Bienvenido a la Olimpiada {olimpiada?.nombre}
+                Bienvenido a la Olimpiada {olimpiada?.nombre}
             </h1>
             <p className="text-center">
                 Selecciona alguna de las opciones que realizara en la olimpiada
