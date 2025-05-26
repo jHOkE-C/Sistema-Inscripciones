@@ -7,6 +7,9 @@ import { registerRoute } from 'workbox-routing';
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+const API_URL = import.meta.env.VITE_API_URL;
+
 precacheAndRoute(self.__WB_MANIFEST || [
   { url: '/', revision: null },
 //  { url: '/icon-192x192.png', revision: null }, 
@@ -32,16 +35,29 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({
         maxEntries: 10, 
-        maxAgeSeconds: 60 
+        maxAgeSeconds: 60  
       }),
     ],
   })
 );
 
 registerRoute(
-  ({ request }) => request.destination === 'document' || request.destination === '',
-  new StaleWhileRevalidate({ cacheName: 'pages' }),
+  ({url}) => url.href.startsWith(API_URL) && 
+             new RegExp(`^${API_URL}/api/(olimpiadas/\\d+|departamentos|provincias|colegios)$`).test(url.href),
+  new StaleWhileRevalidate({
+    cacheName: 'api-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200], 
+      }),
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 60
+      }),
+    ],
+  })
 );
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
