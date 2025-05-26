@@ -126,7 +126,7 @@ const PageHome = () => {
               </div>
 
               {/* Categories */}
-              <div className="flex justify-center items-center space-x-5 md:space-x-8 mt-12">
+              <div className="flex justify-center items-center space-x-2 md:space-x-8 mt-12">
                 <div className="flex items-center space-x-2 text-muted-foreground">
                   <Atom className="w-6 h-6" />
                   <span className="text-sm font-medium">Ciencias</span>
