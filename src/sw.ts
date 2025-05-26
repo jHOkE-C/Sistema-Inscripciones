@@ -29,7 +29,7 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => url.pathname.endsWith('.wasm, /octet-stream'),
+  ({ url }) => url.pathname.endsWith('.wasm'),
   new CacheFirst({
     cacheName: 'assets-hard',
     plugins: [
@@ -52,6 +52,24 @@ registerRoute(
       }),
       new ExpirationPlugin({
         maxEntries: 100,
+        maxAgeSeconds: 60
+      }),
+    ],
+  })
+);
+
+registerRoute(
+  ({ request, url }) => request.destination === '' && !url.href.startsWith(API_URL), 
+  new CacheFirst({
+    cacheName: 'octet-stream-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        headers: {
+          'Content-Type': 'application/octet-stream'
+        }
+      }),
+      new ExpirationPlugin({
+        maxEntries: 10, 
         maxAgeSeconds: 60
       }),
     ],
