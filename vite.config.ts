@@ -21,7 +21,7 @@ export default defineConfig({
                 filename: 'sw.ts',
                 injectRegister: 'auto',
                 injectManifest: {
-                  globIgnores: ['**/opencv_js.wasm'],
+                    globPatterns: [],
                 }
             }),
 

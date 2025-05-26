@@ -4,16 +4,25 @@
 declare const self: ServiceWorkerGlobalScope;
 
 import { registerRoute } from 'workbox-routing';
-import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
-import { precacheAndRoute } from 'workbox-precaching';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 const API_URL = import.meta.env.VITE_API_URL;
 
-precacheAndRoute(self.__WB_MANIFEST || [
-  { url: '/', revision: null },
-//  { url: '/icon-192x192.png', revision: null }, 
-]);
+registerRoute(
+  ({ request }) => request.mode === 'navigate',
+  new NetworkFirst({
+    cacheName: 'pages',
+    networkTimeoutSeconds: 5,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 24 * 60 * 60,
+      }),
+    ],
+  })
+);
+
 registerRoute(
   ({ request }) =>
     ['script', 'style', 'image', 'font'].includes(request.destination),
@@ -29,7 +38,7 @@ registerRoute(
 );
 
 registerRoute(
-  ({ url }) => url.pathname.endsWith('.wasm'),
+  ({ url }) => /\.(wasm|js|css)$/i.test(url.pathname),
   new CacheFirst({
     cacheName: 'assets-hard',
     plugins: [
@@ -52,24 +61,6 @@ registerRoute(
       }),
       new ExpirationPlugin({
         maxEntries: 100,
-        maxAgeSeconds: 60
-      }),
-    ],
-  })
-);
-
-registerRoute(
-  ({ request, url }) => request.destination === '' && !url.href.startsWith(API_URL), 
-  new CacheFirst({
-    cacheName: 'octet-stream-cache',
-    plugins: [
-      new CacheableResponsePlugin({
-        headers: {
-          'Content-Type': 'application/octet-stream'
-        }
-      }),
-      new ExpirationPlugin({
-        maxEntries: 10, 
         maxAgeSeconds: 60
       }),
     ],
