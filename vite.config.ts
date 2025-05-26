@@ -9,8 +9,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const API_URL = env.VITE_API_URL?.replace(/\./g, '\\.');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ORIGIN  = (globalThis as any).location?.origin ?? '';
+    
     return {
         plugins: [
             react(),
@@ -34,7 +33,8 @@ export default defineConfig(({ mode }) => {
                     runtimeCaching: [
                         {
                             urlPattern: ({ request, url }) => request.destination !== 'document' &&
-                            url.origin === ORIGIN,
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            url.origin === (globalThis as any).location?.origin,
                             handler: 'CacheFirst',
                             options: {
                                 cacheName: 'static-assets',
