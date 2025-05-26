@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ChangeEventHandler } from "react";
 import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +21,7 @@ import type { Olimpiada } from "@/types/versiones.type";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { apiClient } from "@/api/request";
 
 const personalSchema = z.object({
     nombres: z.string().min(3).max(50),
@@ -63,6 +64,18 @@ interface StepIndicatorProps {
     currentStep: number;
     steps: string[];
 }
+interface PostulanteData {
+    ci: string;
+    nombres: string;
+    apellidos: string;
+    fecha_nacimiento: string;
+    email: string;
+    departamento: string;
+    provincia: string;
+    colegio: string;
+    curso: string;
+    inscripciones: { nivel_competencia: string; estado: string }[];
+}
 
 export type StepData = PersonalData &
     UbicacionData &
@@ -74,21 +87,66 @@ const PersonalStep = ({
     onNext,
 }: {
     initialData?: Partial<PersonalData>;
-    onNext: (data: PersonalData) => void;
+    onNext: (data: PersonalData, postulante?: PostulanteData) => void;
 }) => {
+    const [postulante, setPostulante] = useState<PostulanteData>();
     const form = useForm<PersonalData>({
         resolver: zodResolver(personalSchema),
         defaultValues: initialData,
         mode: "onSubmit",
     });
-
+    const [fieldsDisabled, setFieldsDisabled] = useState(true);
     const submit: SubmitHandler<PersonalData> = (data) => {
-        onNext(data);
+        onNext(data, postulante);
+    };
+
+    const onChangeCI: ChangeEventHandler<HTMLInputElement> = async (e) => {
+        const CI = e.target.value;
+        if (CI.length >= 7) {
+            try {
+                const { postulante } = await apiClient.get<{
+                    postulante: PostulanteData;
+                }>(`/api/inscripciones/postulante/${CI}`);
+                form.setValue("nombres", postulante.nombres);
+                form.setValue("apellidos", postulante.apellidos);
+                form.setValue("correo_postulante", postulante.email);
+                form.setValue(
+                    "fecha_nacimiento",
+                    new Date(postulante.fecha_nacimiento)
+                );
+                setPostulante(postulante);
+                setFieldsDisabled(true);
+            } catch {
+                setFieldsDisabled(false);
+            }
+        }
     };
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="ci"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>CI</FormLabel>
+                            <FormControl>
+                                <Input
+                                    {...field}
+                                    type="tel"
+                                    placeholder="Ingrese CI"
+                                    maxLength={10}
+                                    onChange={(e) => {
+                                        field.onChange(e);
+                                        onChangeCI(e);
+                                    }}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="nombres"
@@ -97,6 +155,7 @@ const PersonalStep = ({
                             <FormLabel>Nombres</FormLabel>
                             <FormControl>
                                 <Input
+                                    disabled={fieldsDisabled}
                                     {...field}
                                     placeholder="Ingrese nombres"
                                 />
@@ -113,6 +172,7 @@ const PersonalStep = ({
                             <FormLabel>Apellidos</FormLabel>
                             <FormControl>
                                 <Input
+                                    disabled={fieldsDisabled}
                                     {...field}
                                     placeholder="Ingrese apellidos"
                                 />
@@ -121,23 +181,7 @@ const PersonalStep = ({
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="ci"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>CI</FormLabel>
-                            <FormControl>
-                                <Input
-                                    {...field}
-                                    type="tel"
-                                    placeholder="Número de CI"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
                 <FormField
                     control={form.control}
                     name="fecha_nacimiento"
@@ -146,6 +190,7 @@ const PersonalStep = ({
                             <FormLabel>Fecha de Nacimiento</FormLabel>
                             <FormControl>
                                 <DateSelector
+                                    disabled={fieldsDisabled}
                                     value={field.value}
                                     onChange={field.onChange}
                                 />
@@ -162,6 +207,7 @@ const PersonalStep = ({
                             <FormLabel>Correo Electrónico</FormLabel>
                             <FormControl>
                                 <Input
+                                    disabled={fieldsDisabled}
                                     {...field}
                                     type="email"
                                     placeholder="Ingrese correo"
@@ -187,12 +233,14 @@ const UbicacionStep = ({
     initialData?: Partial<UbicacionData>;
     onBack: () => void;
     onNext: (data: UbicacionData) => void;
+    postulante?: PostulanteData;
 }) => {
     const form = useForm<UbicacionData>({
         resolver: zodResolver(ubicacionSchema),
         defaultValues: initialData,
         mode: "onSubmit",
     });
+
     const {
         departamentos,
         provincias,
@@ -300,6 +348,7 @@ const ContactoStep = ({
     initialData?: Partial<ContactoData>;
     onBack: () => void;
     onNext: (data: ContactoData) => void;
+    postulante?: PostulanteData;
 }) => {
     const form = useForm<ContactoData>({
         resolver: zodResolver(contactoSchema),
@@ -328,6 +377,7 @@ const ContactoStep = ({
                                     {...field}
                                     type="tel"
                                     placeholder="Ingrese teléfono"
+                                    maxLength={8}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -405,6 +455,7 @@ const CategoriaAreaStep = ({
     onNext,
     disabled,
     textButton,
+    postulante,
 }: {
     initialData?: Partial<CategoriaAreaData>;
     onBack: () => void;
@@ -412,6 +463,7 @@ const CategoriaAreaStep = ({
     disabled: boolean;
     textButton: string;
     olimpiada?: Olimpiada;
+    postulante?: PostulanteData;
 }) => {
     const form = useForm<CategoriaAreaData>({
         resolver: zodResolver(categoriaAreaSchema),
@@ -425,6 +477,11 @@ const CategoriaAreaStep = ({
     const [categorias, setCategorias] = useState<Categoria[]>([]);
 
     useEffect(() => {
+        console.log(postulante);
+        if (postulante) {
+            form.setValue("curso", postulante.curso + "");
+            setSelectedGrado(postulante.curso);
+        }
         if (selectedGrado && olimpiada_id) {
             getCategoriaAreaPorGrado(selectedGrado, olimpiada_id)
                 .then(setCategorias)
@@ -445,6 +502,7 @@ const CategoriaAreaStep = ({
                             <FormLabel>Grado</FormLabel>
                             <FormControl>
                                 <ComboBox
+                                    disabled={!!postulante}
                                     values={grados}
                                     value={field.value}
                                     onChange={(val) => {
@@ -535,14 +593,18 @@ const StepFormPostulante = ({
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Partial<StepData>>({});
     const [loading, setLoading] = useState(false);
-
+    const [postulante, setPostulante] = useState<PostulanteData | undefined>();
     const next = (
         stepData:
             | PersonalData
             | UbicacionData
             | ContactoData
-            | CategoriaAreaData
+            | CategoriaAreaData,
+        postulante?: PostulanteData
     ) => {
+        if (postulante) {
+            setPostulante(postulante);
+        }
         setData((prev) => ({ ...prev, ...stepData }));
         setStep((s) => s + 1);
     };
@@ -563,15 +625,20 @@ const StepFormPostulante = ({
         "Datos Personales",
         "Ubicación",
         "Contacto",
-        "Categoría & Área",
+        "Categoría Y Área",
     ];
 
     return (
-        <div className="w-full  mx-auto">
+        <div className="w-full h-full flex flex-col justify-around mx-auto">
             <StepIndicator currentStep={step} steps={stepLabels} />
             {step === 0 && <PersonalStep initialData={data} onNext={next} />}
             {step === 1 && (
-                <UbicacionStep initialData={data} onBack={back} onNext={next} />
+                <UbicacionStep
+                    initialData={data}
+                    onBack={back}
+                    onNext={next}
+                    postulante={postulante}
+                />
             )}
             {step === 2 && (
                 <ContactoStep initialData={data} onBack={back} onNext={next} />
@@ -584,6 +651,7 @@ const StepFormPostulante = ({
                     onNext={finish}
                     disabled={loading}
                     textButton={loading ? "Registrando..." : "Finalizar"}
+                    postulante={postulante}
                 />
             )}
         </div>
@@ -622,7 +690,7 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
                     </div>
                     <span
                         className={cn(
-                            "ml-2 text-sm",
+                            "ml-2 text-xsm",
                             i === currentStep
                                 ? "text-primary font-semibold"
                                 : ""

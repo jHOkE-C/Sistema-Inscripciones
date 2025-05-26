@@ -175,18 +175,18 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             </Dialog>
 
             <Dialog open={openForm} onOpenChange={setOpenForm}>
-                <DialogContent className="md:max-w-[90vw] max-h-[90vh] overflow-y-auto ">
+                <DialogContent className="md:max-w-[90vw] min-h-[500px] max-h-[90vh] overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
                         <DialogDescription>
                             Ingresa los datos del nuevo postulante para las
                             olimpiadas ohSansi
                         </DialogDescription>
-                    </DialogHeader>
                     <StepFormPostulante
                         onSubmit={onSubmit}
                         olimpiada={olimpiada}
                     />
+                    </DialogHeader>
                 </DialogContent>
             </Dialog>
             <AlertDialog open={openConfirm}>
