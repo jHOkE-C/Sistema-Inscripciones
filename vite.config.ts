@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
             compression({
                 algorithm: 'gzip',
                 ext: '.gz',
-                deleteOriginFile: true,
+                deleteOriginFile: false,
             }),
             VitePWA({
                 registerType: 'autoUpdate',
