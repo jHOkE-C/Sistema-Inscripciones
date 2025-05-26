@@ -9,7 +9,7 @@ export default function Loading() {
 
   return (
     <div
-      className={`fixed flex z-100 h-screen w-full items-center justify-center flex-col space-y-3 transition-opacity duration-2000 bg-black ${
+      className={`fixed flex z-100 h-screen w-full items-center justify-center flex-col space-y-3 pointer-events-none transition-opacity duration-2000 dark:bg-black  bg-white ${
         visible ? "opacity-0" : "opacity-100"
       }`}
     >
