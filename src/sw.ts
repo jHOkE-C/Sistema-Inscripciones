@@ -7,10 +7,9 @@ import { registerRoute } from 'workbox-routing';
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute } from 'workbox-precaching';
-
-precacheAndRoute([
-  //{ url: '/', revision: null },
-  //{ url: '/icon-192x192.png', revision: null }, 
+precacheAndRoute(self.__WB_MANIFEST || [
+  { url: '/', revision: null },
+//  { url: '/icon-192x192.png', revision: null }, 
 ]);
 registerRoute(
   ({ request }) =>
