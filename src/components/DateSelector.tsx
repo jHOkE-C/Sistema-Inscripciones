@@ -12,7 +12,7 @@ interface DateSelectorProps {
     value?: Date;
     /** Callback cuando cambia la fecha */
     onChange: (value: Date) => void;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 export const DateSelector = React.memo(function DateSelector({
