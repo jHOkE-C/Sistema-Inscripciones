@@ -52,7 +52,7 @@ const contactoSchema = z.object({
 
 const categoriaAreaSchema = z.object({
     curso: z.string().min(1),
-    areas: z.array(z.object({ id_area: z.number(), id_cat: z.number() })),
+    niveles_competencia: z.array(z.object({ id_area: z.number(), id_cat: z.number() })),
 });
 
 type PersonalData = z.infer<typeof personalSchema>;
@@ -517,7 +517,7 @@ const CategoriaAreaStep = ({
                 />
                 <FormField
                     control={form.control}
-                    name="areas"
+                    name="niveles_competencia"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Áreas</FormLabel>
