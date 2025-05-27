@@ -149,7 +149,7 @@ export default function PostulanteDisplay({ data }: PostulanteDisplayProps) {
                             <TableCell>
                               <Badge
                                 variant="outline"
-                                className="bg-gray-50 text-gray-700 border-gray-200"
+                                className="bg-gray-100 text-gray-700 border-gray-200"
                               >
                                 {inscripcion.estado}
                               </Badge>

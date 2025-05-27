@@ -10,11 +10,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getInscritosPorLista } from "@/api/postulantes";
 
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Postulante = {
   id: string;
@@ -60,7 +62,15 @@ export default function Lista() {
   return (
     <>
       <div className=" py-5">
-        <p className="text-2xl font-medium p-4 text-center">Listado de Postulantes</p>
+        <Link to="/consultar-estado">
+          <Button variant="secondary">
+            <ChevronLeft className=" h-4 w-4" />
+            Volver
+          </Button>
+        </Link>
+        <p className="text-2xl font-medium p-4 text-center">
+          Listado de Postulantes
+        </p>
         <div>
           <Card className="w-4xl">
             <CardContent className="overflow-x-auto space-y-5">

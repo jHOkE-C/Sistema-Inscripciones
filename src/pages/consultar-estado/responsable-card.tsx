@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User, Phone, Award } from "lucide-react";
+import { User, Phone, Award, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -78,6 +78,14 @@ export default function ResponsableCard({ data }: Data) {
                 <p>{responsable.telefono}</p>
               </div>
             </div>
+
+            <div className="flex items-center space-x-2">
+              <Mail className="h-5 w-5 text-gray-500" />
+              <div>
+                <p className="text-sm font-medium text-gray-500">Correo</p>
+                <p>{responsable.correo}</p>
+              </div>
+            </div>
           </div>
 
           {/* Participaciones */}
@@ -86,7 +94,9 @@ export default function ResponsableCard({ data }: Data) {
               <Award className="h-5 w-5 mr-2 text-gray-500" />
               Inscripciones
             </h3>
-
+            {responsable.participaciones.length === 0 && (
+              <p className="text-gray-500">No hay inscripciones registradas.</p>
+            )}
             {responsable.participaciones.map((participacion, index) => (
               <div key={index} className="mb-6 border rounded-lg p-4">
                 <h4 className="text-md font-medium mb-3">
@@ -113,7 +123,7 @@ export default function ResponsableCard({ data }: Data) {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className="bg-yellow-50 text-yellow-700 border-yellow-200"
+                            className="bg-gray-100 text-gray-700 border-gray-200"
                           >
                             {lista.estado}
                           </Badge>
@@ -121,9 +131,7 @@ export default function ResponsableCard({ data }: Data) {
                         <TableCell>{lista.fecha_creacion}</TableCell>
                         <TableCell>
                           <Link to={`/consultar-estado/${lista.codigo_lista}`}>
-                          <Button>
-                            Ver Inscripción
-                          </Button>
+                            <Button>Ver Inscripción</Button>
                           </Link>
                         </TableCell>
                       </TableRow>
