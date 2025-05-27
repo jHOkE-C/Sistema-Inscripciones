@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Form,
     FormControl,
@@ -19,24 +13,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
-import { toast } from "sonner";
 import { UserIcon } from "lucide-react";
 
 const formSchema = z.object({
     ci: z
         .string()
         .min(7, "La Cédula de Identidad debe tener al menos 7 dígitos")
-        .max(10, "La Cédula de Identidad no puede tener más de 10 dígitos")
+        .max(10, "La Cédula de Identidad no puede tener más de 10 dígitos"),
 });
 
 const FormCI = () => {
-    const {olimpiada_id} = useParams()
+    const { olimpiada_id } = useParams();
     const form = useForm({ resolver: zodResolver(formSchema) });
     const navigate = useNavigate();
 
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
-        localStorage.setItem('ci', ci);
-        navigate("/inscribir/"+ olimpiada_id +"/" + ci);
+        localStorage.setItem("ci", ci);
+        navigate("/inscribir/" + olimpiada_id + "/" + ci);
     };
 
     return (
@@ -47,12 +40,16 @@ const FormCI = () => {
                 </div>
                 <CardTitle className="text-xl">Ingresar al Sistema</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                    Por favor, introduce tu número de Cédula de Identidad para continuar.
+                    Por favor, introduce tu número de Cédula de Identidad para
+                    continuar.
                 </p>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4"
+                    >
                         <FormField
                             control={form.control}
                             name="ci"
@@ -83,11 +80,6 @@ const FormCI = () => {
                     </form>
                 </Form>
             </CardContent>
-            <CardFooter className="flex justify-center">
-                <Button variant="ghost" onClick={() => toast.info("Solicita ayuda al administrador")}>
-                    ¿Necesitas ayuda?
-                </Button>
-            </CardFooter>
         </Card>
     );
 };

@@ -77,11 +77,18 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             ci,
             olimpiada_id,
         });
-        console.log("lista creada", codigo_lista);
-        await apiClient.post("/api/inscripciones", {
+        //    console.log("lista creada", codigo_lista);
+        const date = data.fecha_nacimiento;
+        const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${
+            (date.getMonth() + 1).toString().padStart(2, '0')
+        }-${date.getFullYear()}`;
+        const payload = {
             ...data,
             codigo_lista,
-        });
+            fecha_nacimiento: formattedDate,
+        };
+        //console.log(payload);
+        await apiClient.post("/api/inscripciones", payload);
         setCodigoLista(codigo_lista);
         refresh();
         setOpenConfirm(true);
@@ -182,10 +189,10 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
                             Ingresa los datos del nuevo postulante para las
                             olimpiadas ohSansi
                         </DialogDescription>
-                    <StepFormPostulante
-                        onSubmit={onSubmit}
-                        olimpiada={olimpiada}
-                    />
+                        <StepFormPostulante
+                            onSubmit={onSubmit}
+                            olimpiada={olimpiada}
+                        />
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
