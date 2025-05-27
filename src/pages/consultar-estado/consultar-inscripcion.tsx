@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronLeft } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
@@ -19,6 +19,7 @@ import ResponsableCard, { Responsable } from "./responsable-card";
 import PostulanteCard, { Postulante } from "./postulante-card";
 import { Button } from "@/components/ui/button";
 import InactivityModal from "./inactivity-modal";
+import { Link } from "react-router-dom";
 
 interface ConsultaInscripcionProps {
   titulo?: string;
@@ -114,18 +115,34 @@ export function ConsultaInscripcion({
       {postulante ? (
         <div className="flex flex-col items-center justify-center ">
           <InactivityModal clean={clean} />
+          <div className="w-full flex justify-between items-center pt-4 pb-0">
+            <Link to="/">
+              <Button variant="secondary">
+                <ChevronLeft className=" h-4 w-4" />
+                Volver al Inicio
+              </Button>
+            </Link>
+            <Button className="w-30" onClick={clean}>
+              Probar otro CI
+            </Button>
+          </div>
           <PostulanteCard data={{ postulante }} />
-          <Button className="w-30 mt-4" onClick={clean}>
-            Probar otro CI
-          </Button>
         </div>
       ) : responsable ? (
         <div className="flex flex-col items-center justify-center">
-          <ResponsableCard data={{ responsable }} />
           <InactivityModal clean={clean} />
-          <Button className="w-30 mt-4" onClick={clean}>
-            Probar otro CI
-          </Button>
+          <div className="w-full flex justify-between items-center p-4 pb-0">
+            <Link to="/">
+              <Button variant="secondary">
+                <ChevronLeft className=" h-4 w-4" />
+                Volver al Inicio
+              </Button>
+            </Link>
+            <Button className="w-30" onClick={clean}>
+              Probar otro CI
+            </Button>
+          </div>
+          <ResponsableCard data={{ responsable }} />
         </div>
       ) : (
         <div className=" flex items-center justify-center w-screen h-[70vh]">
@@ -155,10 +172,14 @@ export function ConsultaInscripcion({
                   </Label>
                 )}
               </CardContent>
-              <CardFooter className="mt-4">
-                <Button type="submit" className="w-full">
-                  Continuar
-                </Button>
+              <CardFooter className="mt-4 justify-between flex">
+                <Link to="/">
+                  <Button variant="secondary">
+                    <ChevronLeft className=" h-4 w-4" />
+                    Volver
+                  </Button>
+                </Link>
+                <Button type="submit">Continuar</Button>
               </CardFooter>
             </form>
           </Card>

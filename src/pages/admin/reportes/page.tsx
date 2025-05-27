@@ -49,7 +49,7 @@ const Admin = () => {
                         <Versiones
                             versiones={versiones}
                             container={(version: Version) => (
-                                <div className="flex justify-center">
+                                <div className="flex justify-end">
                                     <Link to={`/admin/reportes/${version.id}`}>
                                         <Button>
                                             Ver información

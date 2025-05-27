@@ -116,7 +116,7 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
                 </span>
             </Button>
             <Dialog open={openOptions} onOpenChange={setOpenOptions}>
-                <DialogContent className="sm:max-w-[700px] max-h-10/12 overflow-y-auto  ">
+                <DialogContent className="sm:max-w-[700px] max-h-10/12 overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="text-3xl font-bold text-center">
                             Inscripciones
@@ -182,7 +182,7 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             </Dialog>
 
             <Dialog open={openForm} onOpenChange={setOpenForm}>
-                <DialogContent className="md:max-w-[90vw] min-h-[500px] max-h-[90vh] overflow-y-auto ">
+                <DialogContent className="md:max-w-4xl min-h-[500px] max-h-[90vh] overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
                         <DialogDescription>
