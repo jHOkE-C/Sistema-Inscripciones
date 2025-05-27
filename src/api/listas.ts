@@ -17,6 +17,7 @@ export const cambiarEstadoLista = async (
 export const pagarLista = async (codigo: string, n_orden: string, fecha: string, ordenPago: string) => {
 
     const fechaNormalizada = normalizarFecha(fecha);
+    console.log({recibo_caja: n_orden, fecha:fechaNormalizada, codigo_lista: codigo, n_orden_pago: ordenPago});
     return await request(`/api/ordenes-pago/pagar`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

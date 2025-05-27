@@ -303,15 +303,32 @@ const SubirComprobantePage = () => {
     ]);
     const documento = docMatch ? digits(docMatch[1]) : null;
 
-    const ORDENPAGO_PATTERNS: RegExp[] = [
-      /\b(?:O|C|0)\s*F\s*(\d+)\b/i,
-      /\b(?:O|C|0)\s*P\s*(\d+)\b/i,      
-      /\bOP(?:O)*(\d+)\b/i,
-    ];
-    
-    const ordenPagoMatch = firstMatch(ORDENPAGO_PATTERNS);
-    const ordenPago = ordenPagoMatch ? ordenPagoMatch[1] : null;
-  
+const ORDENPAGO_PATTERNS: RegExp[] = [
+  /\b(?:O|0)\s*[FP]\s*([0-9OQDSBGILZ]{1,7})\b/i,
+  /\bOP([0-9OQDSBGILZ]{1,7})\b/i,
+];
+
+const DIGIT_MAP: Record<string, string> = {
+  'O':'0','Q':'0','D':'0',
+  'I':'1','L':'1','|':'1',
+  'Z':'2',
+  'S':'5',
+  'G':'6',
+  'B':'8',
+  'g':'9','q':'9'
+};
+
+const toDigits7 = (raw: string) =>
+  raw
+    .split('')
+    .map(c => DIGIT_MAP[c.toUpperCase()] ?? c)
+    .join('')
+    .replace(/\D/g, '')         
+    .slice(0, 7);                             
+
+  const ordenPagoMatch = firstMatch(ORDENPAGO_PATTERNS);
+  const ordenPago = ordenPagoMatch ? toDigits7(ordenPagoMatch[1]) : null;
+
   
   const fechaLabel = /\bF\w?E?\w?C?\w?H?\w?A?\b\s*[:-]?\s*([0-9/\- ]{6,}(?:\s+[0-9:]{4,5})?)/;
   
