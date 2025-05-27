@@ -108,6 +108,7 @@ const PageHome = () => {
                   <Button
                     size="lg"
                     className="text-base px-10 py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 rounded-full"
+                    variant={"outline"}
                   >
                     <Users className="w-5 h-5 mr-3" />
                     Consultar Inscripción
@@ -115,7 +116,6 @@ const PageHome = () => {
                 </Link>
                 <a href="#olimpiadas">
                   <Button
-                    variant="outline"
                     size="lg"
                     className="text-base px-10 py-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-full"
                   >
