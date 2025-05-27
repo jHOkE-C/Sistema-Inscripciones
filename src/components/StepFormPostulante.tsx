@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEventHandler } from "react";
+import { useState, useEffect, type ChangeEventHandler, type FC } from "react";
 import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +22,14 @@ import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/api/request";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "./ui/dialog";
 
 const personalSchema = z.object({
     nombres: z.string().min(3).max(50),
@@ -52,7 +60,9 @@ const contactoSchema = z.object({
 
 const categoriaAreaSchema = z.object({
     curso: z.string().min(1),
-    niveles_competencia: z.array(z.object({ id_area: z.number(), id_cat: z.number() })),
+    niveles_competencia: z.array(
+        z.object({ id_area: z.number(), id_cat: z.number() })
+    ),
 });
 
 type PersonalData = z.infer<typeof personalSchema>;
@@ -64,6 +74,13 @@ interface StepIndicatorProps {
     currentStep: number;
     steps: string[];
 }
+interface Inscripcion {
+    nivel_competencia: string;
+    id_area: number;
+    id_categoria: number;
+    estado: string;
+}
+
 interface PostulanteData {
     ci: string;
     nombres: string;
@@ -71,23 +88,39 @@ interface PostulanteData {
     fecha_nacimiento: string;
     email: string;
     departamento: string;
+    id_departamento: string;
     provincia: string;
+    id_provincia: string;
     colegio: string;
+    id_colegio: string;
     curso: string;
-    inscripciones: { nivel_competencia: string; estado: string }[];
+    inscripciones: Inscripcion[];
+    fieldsDisabled: boolean;
+}
+interface ExtraData {
+    niveles_inscritos?: {
+        id_area: number;
+        id_cat: number;
+        nivel_competencia: string;
+    }[];
+    fieldsDisabled: boolean;
 }
 
 export type StepData = PersonalData &
     UbicacionData &
     ContactoData &
-    CategoriaAreaData;
+    CategoriaAreaData &
+    ExtraData;
 
 const PersonalStep = ({
     initialData,
     onNext,
 }: {
     initialData?: Partial<PersonalData>;
-    onNext: (data: PersonalData, postulante?: PostulanteData) => void;
+    onNext: (
+        data: PersonalData & ExtraData,
+        postulante?: PostulanteData
+    ) => void;
 }) => {
     const [postulante, setPostulante] = useState<PostulanteData>();
     const form = useForm<PersonalData>({
@@ -96,8 +129,9 @@ const PersonalStep = ({
         mode: "onSubmit",
     });
     const [fieldsDisabled, setFieldsDisabled] = useState(true);
+
     const submit: SubmitHandler<PersonalData> = (data) => {
-        onNext(data, postulante);
+        onNext({ ...data, fieldsDisabled }, postulante);
     };
 
     const onChangeCI: ChangeEventHandler<HTMLInputElement> = async (e) => {
@@ -230,10 +264,9 @@ const UbicacionStep = ({
     onBack,
     onNext,
 }: {
-    initialData?: Partial<UbicacionData>;
+    initialData?: Partial<UbicacionData> & Partial<ExtraData>;
     onBack: () => void;
     onNext: (data: UbicacionData) => void;
-    postulante?: PostulanteData;
 }) => {
     const form = useForm<UbicacionData>({
         resolver: zodResolver(ubicacionSchema),
@@ -264,7 +297,10 @@ const UbicacionStep = ({
                             <FormLabel>Departamento</FormLabel>
                             <FormControl>
                                 <ComboBox
-                                    disabled={ubicacionesLoading}
+                                    disabled={
+                                        ubicacionesLoading ||
+                                        initialData?.fieldsDisabled
+                                    }
                                     values={departamentos.map((d) => ({
                                         id: d.id.toString(),
                                         nombre: d.nombre,
@@ -290,7 +326,10 @@ const UbicacionStep = ({
                             <FormLabel>Provincia</FormLabel>
                             <FormControl>
                                 <ComboBox
-                                    disabled={!selectedDepartamento}
+                                    disabled={
+                                        !selectedDepartamento ||
+                                        initialData?.fieldsDisabled
+                                    }
                                     values={provincias
                                         .filter(
                                             (p) =>
@@ -318,7 +357,8 @@ const UbicacionStep = ({
                             <FormControl>
                                 <ComboBox
                                     disabled={
-                                        !field.value && ubicacionesLoading
+                                        (!field.value && ubicacionesLoading) ||
+                                        initialData?.fieldsDisabled
                                     }
                                     values={colegios}
                                     value={field.value}
@@ -455,15 +495,13 @@ const CategoriaAreaStep = ({
     onNext,
     disabled,
     textButton,
-    postulante,
 }: {
-    initialData?: Partial<CategoriaAreaData>;
+    initialData?: Partial<CategoriaAreaData> & Partial<ExtraData>;
     onBack: () => void;
     onNext: (data: CategoriaAreaData) => void;
     disabled: boolean;
     textButton: string;
     olimpiada?: Olimpiada;
-    postulante?: PostulanteData;
 }) => {
     const form = useForm<CategoriaAreaData>({
         resolver: zodResolver(categoriaAreaSchema),
@@ -477,11 +515,6 @@ const CategoriaAreaStep = ({
     const [categorias, setCategorias] = useState<Categoria[]>([]);
 
     useEffect(() => {
-        console.log(postulante);
-        if (postulante) {
-            form.setValue("curso", postulante.curso + "");
-            setSelectedGrado(postulante.curso);
-        }
         if (selectedGrado && olimpiada_id) {
             getCategoriaAreaPorGrado(selectedGrado, olimpiada_id)
                 .then(setCategorias)
@@ -502,7 +535,7 @@ const CategoriaAreaStep = ({
                             <FormLabel>Grado</FormLabel>
                             <FormControl>
                                 <ComboBox
-                                    disabled={!!postulante}
+                                    disabled={initialData?.fieldsDisabled}
                                     values={grados}
                                     value={field.value}
                                     onChange={(val) => {
@@ -518,57 +551,81 @@ const CategoriaAreaStep = ({
                 <FormField
                     control={form.control}
                     name="niveles_competencia"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Áreas</FormLabel>
-                            <FormControl>
-                                <MultiSelect
-                                    disabled={!selectedGrado}
-                                    max={olimpiada?.limite_inscripciones}
-                                    values={
-                                        categorias?.flatMap(
-                                            ({
-                                                id: idCat,
-                                                nombre: nombreCat,
-                                                areas,
-                                            }) =>
-                                                areas?.map(
-                                                    ({
-                                                        id: idArea,
-                                                        nombre: nombreArea,
-                                                    }) => ({
-                                                        id: `${idArea}-${idCat}`,
-                                                        nombre: `${nombreArea} - ${nombreCat}`,
-                                                    })
-                                                ) || []
-                                        ) || []
-                                    }
-                                    value={
-                                        field.value?.map(
+                    render={({ field }) => {
+                        let categoriasAreas =
+                            categorias?.flatMap(
+                                ({ id: idCat, nombre: nombreCat, areas }) =>
+                                    areas?.map(
+                                        ({
+                                            id: idArea,
+                                            nombre: nombreArea,
+                                        }) => ({
+                                            id: `${idArea}-${idCat}`,
+                                            nombre: `${nombreArea} - ${nombreCat}`,
+                                        })
+                                    ) || []
+                            ) || [];
+                        if (initialData?.niveles_inscritos) {
+                            categoriasAreas = categoriasAreas.filter(
+                                ({ id }) => {
+                                    const encontrado =
+                                        initialData.niveles_inscritos?.find(
                                             ({ id_area, id_cat }) =>
-                                                `${id_area}-${id_cat}`
-                                        ) || []
-                                    }
-                                    onChange={(selected: string[]) => {
-                                        const transformed = selected.map(
-                                            (item) => {
-                                                const [idArea, idCat] = item
-                                                    .split("-")
-                                                    .map(Number);
-                                                return {
-                                                    id_cat: idCat,
-                                                    id_area: idArea,
-                                                };
-                                            }
+                                                `${id_area}-${id_cat}` == id
                                         );
-                                        field.onChange(transformed);
-                                    }}
-                                    messageWithoutValues="No hay areas disponibles seleccione otro grado"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                                    return !encontrado;
+                                }
+                            );
+                        }
+                        return (
+                            <FormItem>
+                                <div className="flex justify-between">
+                                    <FormLabel>Áreas - Categorias</FormLabel>
+
+                                    {initialData?.niveles_inscritos && (
+                                        <ModalIncritos
+                                            initialData={initialData}
+                                        />
+                                    )}
+                                </div>
+                                <FormControl>
+                                    <MultiSelect
+                                        disabled={!selectedGrado}
+                                        max={
+                                            olimpiada?.limite_inscripciones ??
+                                            0 -
+                                                (initialData?.niveles_inscritos
+                                                    ?.length ?? 0)
+                                        }
+                                        values={categoriasAreas}
+                                        value={
+                                            field.value?.map(
+                                                ({ id_area, id_cat }) =>
+                                                    `${id_area}-${id_cat}`
+                                            ) || []
+                                        }
+                                        onChange={(selected: string[]) => {
+                                            const transformed = selected.map(
+                                                (item) => {
+                                                    const [idArea, idCat] = item
+                                                        .split("-")
+                                                        .map(Number);
+                                                    console.log(item);
+                                                    return {
+                                                        id_cat: idCat,
+                                                        id_area: idArea,
+                                                    };
+                                                }
+                                            );
+                                            field.onChange(transformed);
+                                        }}
+                                        messageWithoutValues="No hay areas disponibles seleccione otro grado"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        );
+                    }}
                 />
                 <div className="flex justify-between">
                     <Button variant="outline" onClick={onBack}>
@@ -582,6 +639,55 @@ const CategoriaAreaStep = ({
         </Form>
     );
 };
+interface ModalIncritosProps {
+    initialData: Partial<ExtraData>;
+}
+
+const ModalIncritos: FC<ModalIncritosProps> = ({ initialData }) => {
+    const inscritos = initialData.niveles_inscritos ?? [];
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="link">Ver registros previas</Button>
+            </DialogTrigger>
+
+            <DialogContent className="max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="text-md">
+                        El Postulante esta registrado a las siguiente Areas
+                        Categorias:
+                    </DialogTitle>
+                    <DialogDescription>
+                        {inscritos.length > 0 ? (
+                            <ul className="mt-2 space-y-2">
+                                {inscritos.map(({ nivel_competencia }, idx) => (
+                                    <li
+                                        key={idx}
+                                        className="flex justify-between"
+                                    >
+                                        <span className="font-medium">
+                                            {nivel_competencia
+                                                .split("-")
+                                                .slice(0, -1)}
+                                        </span>
+                                        <span className="text-sm text-foreground/80">
+                                            {nivel_competencia.split("-").pop()}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="mt-2 text-sm text-gray-500">
+                                No hay inscripciones previas.
+                            </p>
+                        )}
+                    </DialogDescription>
+                </DialogHeader>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 const StepFormPostulante = ({
     onSubmit,
@@ -593,17 +699,36 @@ const StepFormPostulante = ({
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Partial<StepData>>({});
     const [loading, setLoading] = useState(false);
-    const [postulante, setPostulante] = useState<PostulanteData | undefined>();
     const next = (
         stepData:
             | PersonalData
             | UbicacionData
             | ContactoData
-            | CategoriaAreaData,
+            | CategoriaAreaData
+            | ExtraData,
         postulante?: PostulanteData
     ) => {
         if (postulante) {
-            setPostulante(postulante);
+            setData({
+                nombres: postulante.nombres,
+                apellidos: postulante.apellidos,
+                fecha_nacimiento: new Date(postulante.fecha_nacimiento),
+                correo_postulante: postulante.email,
+                departamento: postulante.id_departamento + "",
+                provincia: postulante.id_provincia + "",
+                colegio: postulante.id_colegio + "",
+                curso: postulante.curso + "",
+                ci: postulante.ci + "",
+                niveles_inscritos: postulante.inscripciones.map(
+                    ({ id_area, id_categoria, nivel_competencia }) => {
+                        return {
+                            id_area: id_area,
+                            id_cat: id_categoria,
+                            nivel_competencia,
+                        };
+                    }
+                ),
+            });
         }
         setData((prev) => ({ ...prev, ...stepData }));
         setStep((s) => s + 1);
@@ -621,6 +746,7 @@ const StepFormPostulante = ({
             setLoading(false);
         }
     };
+
     const stepLabels = [
         "Datos Personales",
         "Ubicación",
@@ -633,12 +759,7 @@ const StepFormPostulante = ({
             <StepIndicator currentStep={step} steps={stepLabels} />
             {step === 0 && <PersonalStep initialData={data} onNext={next} />}
             {step === 1 && (
-                <UbicacionStep
-                    initialData={data}
-                    onBack={back}
-                    onNext={next}
-                    postulante={postulante}
-                />
+                <UbicacionStep initialData={data} onBack={back} onNext={next} />
             )}
             {step === 2 && (
                 <ContactoStep initialData={data} onBack={back} onNext={next} />
@@ -651,7 +772,6 @@ const StepFormPostulante = ({
                     onNext={finish}
                     disabled={loading}
                     textButton={loading ? "Registrando..." : "Finalizar"}
-                    postulante={postulante}
                 />
             )}
         </div>

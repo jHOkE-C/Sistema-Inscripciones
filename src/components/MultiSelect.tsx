@@ -19,7 +19,7 @@ interface MultiSelectProps {
     label?: string;
     disabled?: boolean;
     max?: number;
-    messageWithoutValues?: string
+    messageWithoutValues?: string;
 }
 
 export function MultiSelect({
@@ -31,7 +31,7 @@ export function MultiSelect({
     label = "Opciones",
     disabled,
     max = 999,
-    messageWithoutValues
+    messageWithoutValues,
 }: MultiSelectProps) {
     // Sincroniza los valores seleccionados con los valores disponibles
     useEffect(() => {
@@ -67,11 +67,14 @@ export function MultiSelect({
                     disabled={isDisabled}
                     id={id}
                     variant="outline"
-                    className="w-full justify-between font-normal text-wrap"
+                    className="w-full justify-between font-normal "
                 >
-                    {values.length === 0
-                        ? messageWithoutValues || "No hay opciones disponibles"
-                        : selectedNames || placeholder}
+                    <span className="text-wrap ">
+                        {values.length === 0
+                            ? messageWithoutValues ||
+                              "No hay opciones disponibles"
+                            : selectedNames || placeholder}
+                    </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </PopoverTrigger>
