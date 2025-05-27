@@ -14,6 +14,7 @@ export interface VersionesPageProps {
     returnTo?: string;
     queVersiones?: VersionFilter[];
     filter?: (value: Version, index: number, array: Version[]) => unknown;
+    container?: ((version: Version) => React.ReactNode) | React.ReactNode;
 }
 
 export default function VersionesPage({
@@ -21,6 +22,7 @@ export default function VersionesPage({
     returnTo = "/admin",
     queVersiones = [],
     filter,
+    container,
 }: VersionesPageProps) {
     const [versiones, setVersiones] = useState<Version[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -64,7 +66,7 @@ export default function VersionesPage({
                 if (hayFases) {
                     peticiones.push(
                         axios.post<Version[]>(
-                            `${API_URL}/api/olimpiadas/fases`,
+                            `${API_URL}/api/olimpiadas/por-fases`,
                             { fases: fasesSolicitadas }
                         )
                     );
@@ -96,7 +98,7 @@ export default function VersionesPage({
                     {loading ? (
                         <Loading />
                     ) : versiones.length > 0 ? (
-                        <Versiones versiones={versiones} />
+                        <Versiones versiones={versiones} container={container} />
                     ) : (
                         <p className="text-center text-gray-500">
                             No hay versiones en fase de Preparación o no hay
