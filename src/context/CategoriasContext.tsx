@@ -1,59 +1,76 @@
 import React, { createContext, useContext, useState } from "react";
-import { getAreasConCategorias, getCategoriasOlimpiada } from "@/api/categorias";
+import {
+    getAreasConCategorias,
+    getCategoriasOlimpiada,
+} from "@/api/categorias";
 import { CategoriaExtendida, grados } from "@/interfaces/postulante.interface";
 
 interface CategoriasContextType {
-    getAreasCategoriasPorOlimpiada: (olimpiadaId: number) => Promise<Map<string, CategoriaExtendida[]>>;
+    getAreasCategoriasPorOlimpiada: (
+        olimpiadaId: number
+    ) => Promise<Map<string, CategoriaExtendida[]>>;
     isLoading: boolean;
     error: string | null;
 }
 
-const CategoriasContext = createContext<CategoriasContextType | undefined>(undefined);
-
+const CategoriasContext = createContext<CategoriasContextType | undefined>(
+    undefined
+);
 
 const categoriasCache = new Map<number, Map<string, CategoriaExtendida[]>>();
 
-export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const getAreasCategoriasPorOlimpiada = async (olimpiadaId: number): Promise<Map<string, CategoriaExtendida[]>> => {
-
+    const getAreasCategoriasPorOlimpiada = async (
+        olimpiadaId: number
+    ): Promise<Map<string, CategoriaExtendida[]>> => {
         if (categoriasCache.has(olimpiadaId)) {
-            return categoriasCache.get(olimpiadaId) as Map<string, CategoriaExtendida[]>;
+            return categoriasCache.get(olimpiadaId) as Map<
+                string,
+                CategoriaExtendida[]
+            >;
         }
 
         try {
             setIsLoading(true);
             setError(null);
 
-      
-            const areasConCategoriasData = await getAreasConCategorias(olimpiadaId);
-            const gradosCategoriasData = await getCategoriasOlimpiada(olimpiadaId);
-            
-      
+            const areasConCategoriasData = await getAreasConCategorias(
+                olimpiadaId
+            );
+            const gradosCategoriasData = await getCategoriasOlimpiada(
+                olimpiadaId
+            );
+
             const areasMap = new Map<string, CategoriaExtendida[]>();
 
             grados.forEach((grado, index) => {
                 const categorias = gradosCategoriasData[index] || [];
-                const categoriasConArea: CategoriaExtendida[] =
-                    categorias.map((cat) => {
-                        const area = areasConCategoriasData.find((a) =>
-                            a.categorias.some((c) => c.id === cat.id)
-                        );
-
-                        return {
-                            ...cat,
-                            areaId: area?.id ?? 0,
-                            areaNombre: area?.nombre ?? "Desconocida",
-                        };
+                const categoriasExtendidas:CategoriaExtendida[] = []
+                categorias.forEach((cat) => {
+                     areasConCategoriasData.forEach((area) => {
+                        if (area.categorias.find(({id})=>id == cat.id)) {
+                            const categoriaExtendida: CategoriaExtendida = {
+                                ...cat,
+                                areaId: area?.id ?? 0,
+                                areaNombre: area?.nombre ?? "Desconocida",
+                            };
+                            categoriasExtendidas.push(categoriaExtendida)
+                        }
                     });
-                
-                areasMap.set(grado.id, categoriasConArea);
+                });
+
+                areasMap.set(grado.id, categoriasExtendidas);
             });
+            
+            console.log("areas map",areasMap)
 
             categoriasCache.set(olimpiadaId, areasMap);
-            
+
             return areasMap;
         } catch (error) {
             console.error("Error al cargar datos de categorías:", error);
@@ -67,7 +84,7 @@ export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const value = {
         getAreasCategoriasPorOlimpiada,
         isLoading,
-        error
+        error,
     };
 
     return (
@@ -80,7 +97,9 @@ export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 export const useCategorias = () => {
     const context = useContext(CategoriasContext);
     if (context === undefined) {
-        throw new Error("useCategorias debe usarse dentro de un CategoriasProvider");
+        throw new Error(
+            "useCategorias debe usarse dentro de un CategoriasProvider"
+        );
     }
     return context;
-}; 
+};
