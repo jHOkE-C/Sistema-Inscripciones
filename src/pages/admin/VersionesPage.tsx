@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
 import { Version, VersionFilter } from "@/types/versiones.type";
+import Header from "@/components/Header";
 
 export interface VersionesPageProps {
     title: string;
@@ -87,24 +88,32 @@ export default function VersionesPage({
         fetchData();
     }, []);
 
+    //por alguna razon si esta loading dentro  no aparece el 70% de las veces
+    if (loading) {
+        return <Loading />;
+    }
+
     return (
         <>
+            <Header/>
             <ReturnComponent to={returnTo} />
             <div className="flex flex-col min-h-screen">
                 <div className="w-full p-4 md:w-11/12 mx-auto">
                     <h1 className="text-4xl font-bold text-center py-4">
                         {title}
                     </h1>
-                    {loading ? (
-                        <Loading />
-                    ) : versiones.length > 0 ? (
-                        <Versiones versiones={versiones} container={container} />
-                    ) : (
-                        <p className="text-center text-gray-500">
-                            No hay versiones en fase de Preparación o no hay
-                            versiones disponibles aún .
-                        </p>
-                    )}
+                    {versiones.length > 0 ?
+                        (
+                            <Versiones versiones={versiones} container={container} />
+                        ) 
+                        : 
+                        (
+                            <p className="text-center text-gray-500">
+                                No hay versiones en fase de Preparación o no hay
+                                versiones disponibles aún .
+                            </p>
+                        )
+                    }
                 </div>
                 <Footer />
             </div>
