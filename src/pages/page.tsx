@@ -6,6 +6,7 @@ import {
   BookOpen,
   Calculator,
   Calendar,
+  ExternalLink,
   Medal,
   Microscope,
   Star,
@@ -18,8 +19,15 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
 
 const PageHome = () => {
+    const [open, setOpen] = useState(true)
+
+  const handleOfficialSite = () => {
+    window.open("https://ohsansi.umss.edu.bo/", "_blank")
+  }
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -186,6 +194,27 @@ const PageHome = () => {
           </div>
         </section>
       </main>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold">Oh!Sansi</DialogTitle>
+            <DialogDescription className="text-center text-base mt-4">
+              Esta es una página en construcción del sistema Oh!Sansi.
+              <br />
+              Para acceder a la versión oficial, haz clic en el botón de abajo.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-6">
+            <Button onClick={handleOfficialSite} className="w-full" size="lg">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Ir a la página oficial
+            </Button>
+            <Button variant="outline" onClick={() => setOpen(false)} className="w-full">
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <div>
