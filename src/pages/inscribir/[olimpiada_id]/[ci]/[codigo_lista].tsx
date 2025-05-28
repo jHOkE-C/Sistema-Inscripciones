@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista, postDataPostulante } from "@/api/postulantes";
+import { getInscritosPorLista } from "@/api/postulantes";
 
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
@@ -30,26 +30,46 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/api/listas";
-
-import DialogPostulante from "@/components/DialogPostulante";
-import type { postulanteSchema } from "@/components/FormPostulante";
-import type { z } from "zod";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
 import type { Postulante } from "./columns";
-import { Check } from "lucide-react";
+import { Check, PenBox } from "lucide-react";
+import { apiClient } from "@/api/request";
+import type { Olimpiada } from "@/types/versiones.type";
+import StepFormPostulante, {
+    type StepData,
+} from "@/components/StepFormPostulante";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Page() {
+    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const [data, setData] = useState<Postulante[]>([]);
     const { codigo_lista } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     const [editar, setEditar] = useState(false);
+    const { olimpiada_id, ci } = useParams();
+    const [openForm, setOpenForm] = useState(false);
     useEffect(() => {
         fetchData();
+        getOlimpiada();
     }, []);
-    if (!codigo_lista) return;
+
+    const getOlimpiada = async () => {
+        const olimpiada = await apiClient.get<Olimpiada>(
+            "/api/olimpiadas/" + olimpiada_id
+        );
+        setOlimpiada(olimpiada);
+    };
+    if (!codigo_lista || !ci || !olimpiada_id) return;
     const refresh = async () => {
         const data = await getInscritosPorLista(codigo_lista);
+        console.log("nuevos datos", data.data);
         setData(data.data);
     };
 
@@ -69,21 +89,27 @@ export default function Page() {
         }
     };
 
-    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
-        if (loading) return;
-        setLoading(true);
+    const onSubmit = async (data: StepData) => {
+        const date = data.fecha_nacimiento;
+        const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
+            date.getMonth() + 1
+        )
+            .toString()
+            .padStart(2, "0")}-${date.getFullYear()}`;
+        const payload = {
+            ...data,
+            codigo_lista,
+            fecha_nacimiento: formattedDate,
+        };
+        console.log("payload", payload);
         try {
-            await postDataPostulante({ ...data, codigo_lista: codigo_lista });
-            toast.success("El postulante fue registrado exitosamente");
-            //setShowForm(false);
-            refresh();
-        } catch (e) {
-            toast.error(
-                e instanceof Error ? e.message : "Hubo un error desconocido"
-            );
-        } finally {
-            setLoading(false);
+            await apiClient.post("/api/inscripciones", payload);
+            toast.success("Postulante inscrito correctamente");
+            await refresh();
+        } catch (e: unknown) {
+            throw e instanceof Error ? e : new Error(String(e));
         }
+        setOpenForm(false);
     };
 
     if (loading) return <Loading />;
@@ -103,7 +129,17 @@ export default function Page() {
                         <CardContent className="overflow-x-auto space-y-5">
                             <div className="flex justify-between">
                                 {editar && (
-                                    <DialogPostulante onSubmit={onSubmit} />
+                                    <Button
+                                        className="text-sm"
+                                        onClick={() => {
+                                            setOpenForm(true);
+                                        }}
+                                    >
+                                        <PenBox />
+                                        <span className=" font-semibold text-wrap text-center">
+                                            Inscribir Postulante
+                                        </span>
+                                    </Button>
                                 )}
                                 <ButtonFinalizarRegistro
                                     show={editar && data.length > 0}
@@ -154,6 +190,21 @@ export default function Page() {
                 </div>
                 <ShareUrl />
             </div>
+            <Dialog open={openForm} onOpenChange={setOpenForm}>
+                <DialogContent className=" md:max-w-4xl min-h-[500px] max-h-[90vh] overflow-y-auto ">
+                    <DialogHeader>
+                        <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
+                        <DialogDescription>
+                            Ingresa los datos del nuevo postulante para las
+                            olimpiadas ohSansi
+                        </DialogDescription>
+                        <StepFormPostulante
+                            onSubmit={onSubmit}
+                            olimpiada={olimpiada}
+                        />
+                    </DialogHeader>{" "}
+                </DialogContent>{" "}
+            </Dialog>
         </>
     );
 }

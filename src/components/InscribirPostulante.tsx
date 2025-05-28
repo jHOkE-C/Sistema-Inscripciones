@@ -250,7 +250,7 @@ const ModalConfirmarMasPostulantes = ({
                         onFinish={onFinish}
                     />
                     <Link to={codigo_lista + ""}>
-                        <Button variant={"secondary"} className="w-full"> <Plus/>Continuar Inscribiendo mas postulante</Button>
+                        <Button variant={"secondary"} className="w-full"> <Plus/>Continuar Inscribiendo más postulantes</Button>
                     </Link>
                 </AlertDialogFooter>
             </AlertDialogContent>
