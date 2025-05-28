@@ -68,8 +68,11 @@ export async function request<T>(
 
         // Comprobamos si la respuesta no es satisfactoria
         if (!response.ok) {
+            console.log("debug");
+            console.log(responseData);
             const message =
                 (responseData as { error?: string })?.error ||
+                (responseData as { message?: string })?.message ||
                 "Error desconocido del servidor.";
             throw new Error(message);
         }
@@ -102,14 +105,14 @@ export class ApiClient {
         return request<T>(endpoint, { method: "GET" });
     }
 
-    post<T,U>(endpoint: string, body: U) {
+    post<T, U>(endpoint: string, body: U) {
         return request<T>(endpoint, {
             method: "POST",
             body: JSON.stringify(body),
         });
     }
 
-    put<T,U>(endpoint: string, body: U) {
+    put<T, U>(endpoint: string, body: U) {
         return request<T>(endpoint, {
             method: "PUT",
             body: JSON.stringify(body),
