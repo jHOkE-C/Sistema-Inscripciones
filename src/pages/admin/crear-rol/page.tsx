@@ -46,7 +46,7 @@ export default function CrearRol() {
       setOpen(false);
       setRoleName("");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 400) {
+      if (axios.isAxiosError(error) && error.response?.status === 422) {
         toast.error("El nombre del rol ingresado ya existe");
       } else {
         toast.error("Error al crear el rol");
