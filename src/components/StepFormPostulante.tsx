@@ -803,7 +803,7 @@ const grados = [
 
 const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
     return (
-        <nav className="flex space-x-4 mb-6 mx-auto justify-center">
+        <nav className="flex flex-wrap space-x-2 mb-6 mx-auto justify-between space-y-2">
             {steps.map((label, i) => (
                 <div key={i} className="flex items-center">
                     <div

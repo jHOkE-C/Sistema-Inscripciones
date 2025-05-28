@@ -92,9 +92,13 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
         try {
             await apiClient.post("/api/inscripciones", payload);
         } catch (e: unknown) {
-            await apiClient.delete(`/api/listas/
-                ${codigo_lista}/eliminar`);
-            throw e instanceof Error ? e : new Error(String(e))
+            try {
+                await apiClient.delete(`/api/listas/
+                    ${codigo_lista}/eliminar`);
+            } catch (e) {
+                console.log(e);
+            }
+            throw e instanceof Error ? e : new Error(String(e));
         }
         setCodigoLista(codigo_lista);
         refresh();
@@ -189,7 +193,7 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             </Dialog>
 
             <Dialog open={openForm} onOpenChange={setOpenForm}>
-                <DialogContent className="md:max-w-4xl min-h-[500px] max-h-[90vh] overflow-y-auto ">
+                <DialogContent className=" md:max-w-4xl min-h-[500px] max-h-[90vh] overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
                         <DialogDescription>
