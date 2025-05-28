@@ -1,0 +1,51 @@
+.btn {
+    position: relative;
+    background: transparent;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    font-weight: bold;
+    overflow: hidden;    
+}
+
+.btn::before,
+.btn::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    transform: skewX(30deg);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: -1; /* Behind the text */
+}
+
+.btn::before {
+    background-color: #2a8af0; /* Azul */
+    top: -0.5rem;
+    left: 0rem;
+}
+
+.btn::after {
+    background-color: #2a8af0; /* Otro tono de azul o blanco */
+    top: 0.5rem;
+    left: 4rem;
+}
+
+.btn:hover::before,
+.btn:hover::after {
+    top: 0;
+    transform: skewx(0deg);
+}
+
+.btn:hover::after {
+    left: 0rem;
+}
+
+.btn:hover::before {
+    left: 50%; /* Ajustar left para que ocupen la mitad cada uno al hacer hover */
+}
+
+/* Make sure text is visible */
+.btn span {
+    position: relative;
+    z-index: 1;
+} 

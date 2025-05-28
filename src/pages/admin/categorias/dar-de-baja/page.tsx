@@ -114,7 +114,7 @@ export default function Page() {
 
     return (
         <>
-            <ReturnComponent  />
+            <ReturnComponent to={`..\\..\\`}/>
 
             <div className="container mx-auto max-w-6xl px-4 py-10">
                 <Suspense fallback={<div>Cargando...</div>} />

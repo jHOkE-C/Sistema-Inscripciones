@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 import EditCategoryModal from "../edit-modal";
+import ReturnComponent from "@/components/ReturnComponent";
 const Page = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -72,6 +73,8 @@ const Page = () => {
 
     return (
         <>
+                        <ReturnComponent to={`..\\..\\`}/>
+
             <div className="container mx-auto max-w-6xl px-4 py-10">
 
                 <Suspense fallback={<div>Cargando...</div>}></Suspense>

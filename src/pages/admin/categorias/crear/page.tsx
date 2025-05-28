@@ -18,6 +18,7 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
 import CreateCategoryModal from "../create-category-modal";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import ReturnComponent from "@/components/ReturnComponent";
 
 const Page = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -64,8 +65,9 @@ const Page = () => {
 
     return (
         <>
+                        <ReturnComponent to={`..\\..\\`}/>
+
             <div className="container mx-auto max-w-6xl px-4 py-10">
-              
                 <Suspense fallback={<div>Cargando...</div>}></Suspense>
                 <Card>
                     <CardContent>

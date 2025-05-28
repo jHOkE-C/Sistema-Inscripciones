@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
+import ReturnComponent from "@/components/ReturnComponent";
 
 export const Page = () => {
     const {
@@ -79,7 +80,9 @@ export const Page = () => {
     return (
         <div className="flex flex-col min-h-screen">
         <Header rutas={rutasAdmin}/>
+        <ReturnComponent to={`..\\..\\`}/>
             <div className="w-4/5 mx-auto my-6">
+                
                 <Card>
                     <CardTitle>
                         <h1 className="text-4xl font-bold text-center py-5">

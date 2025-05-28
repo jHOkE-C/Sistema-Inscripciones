@@ -1,5 +1,4 @@
 import { request } from "./request";
-
 export type EstadoLista =
     | "Preinscrito"
     | "Pago Pendiente"

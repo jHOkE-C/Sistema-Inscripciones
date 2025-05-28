@@ -25,6 +25,7 @@ import { Trash2, RefreshCw } from "lucide-react";
 import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
+import ReturnComponent from "@/components/ReturnComponent";
 
 export interface Area {
     id: number;
@@ -57,7 +58,7 @@ export default function Page() {
         fetchAreas();
     }, []);
 
-    // abre modal, el segundo parámetro indica si es “dar de baja” o “habilitar”
+    // abre modal, el segundo parámetro indica si es "dar de baja" o "habilitar"
     const openDialog = (area: Area, act: "deactivate" | "activate") => {
         setSelected(area);
         setAction(act);
@@ -104,7 +105,9 @@ export default function Page() {
     return (
         <div className="flex flex-col min-h-screen">
                 <Header rutas={rutasAdmin}/>
+                <ReturnComponent to={`..\\..\\`}/>
             <div className="container mx-auto max-w-4xl py-5 space-y-8">
+                
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -203,13 +206,13 @@ export default function Page() {
                         <DialogDescription id="dialog-desc" className="px-6">
                             {action === "deactivate" ? (
                                 <>
-                                    ¿Estás seguro de dar de baja el área “
-                                    {selected?.nombre}”?
+                                    ¿Estás seguro de dar de baja el área "
+                                    {selected?.nombre}"?
                                 </>
                             ) : (
                                 <>
-                                    ¿Estás seguro de habilitar el área “
-                                    {selected?.nombre}”?
+                                    ¿Estás seguro de habilitar el área "
+                                    {selected?.nombre}"?
                                 </>
                             )}
                         </DialogDescription>

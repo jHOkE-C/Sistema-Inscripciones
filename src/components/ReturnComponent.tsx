@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { ChevronLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import styles from "./ReturnButton.module.css";
 
 interface ReturnComponentProps {
     to?: string;
@@ -8,6 +9,21 @@ interface ReturnComponentProps {
 
 export default function ReturnComponent({ to }: ReturnComponentProps) {
     const navigate = useNavigate();
+    const [hasHeader, setHasHeader] = useState(true);
+
+    useEffect(() => {
+        const checkHeader = () => {
+            const header = document.querySelector('header');
+            setHasHeader(!!header);
+        };
+
+        checkHeader();
+
+        const observer = new MutationObserver(checkHeader);
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        return () => observer.disconnect();
+    }, []);
 
     const handleClick = () => {
         if (to) {
@@ -18,13 +34,16 @@ export default function ReturnComponent({ to }: ReturnComponentProps) {
     };
 
     return (
-        <Button
-            variant="ghost"
-            onClick={handleClick}
-            className="flex items-center gap-1 mb-4"
-        >
-            <ChevronLeft className="w-4 h-4" />
-            Volver
-        </Button>
+        <div className={`sticky ${hasHeader ? 'top-16' : 'top-0'} z-40 w-auto`}>
+            <div className="container">
+                <Button
+                    variant="ghost"
+                    onClick={handleClick}
+                    className={styles.btn}
+                >
+                    <span> {`< Volver`}</span>
+                </Button>
+            </div>
+        </div>
     );
 }

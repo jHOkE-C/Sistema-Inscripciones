@@ -25,7 +25,7 @@ import { RefreshCw, Check } from "lucide-react";
 import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
-
+import ReturnComponent from "@/components/ReturnComponent";
 export interface Area {
     id: number;
     nombre: string;
@@ -104,6 +104,7 @@ export default function Page() {
     return (
         <div className="flex flex-col min-h-screen">
                 <Header rutas={rutasAdmin}/>
+                <ReturnComponent to={`..\\..\\`}/>
             <div className="container mx-auto max-w-4xl py-5 space-y-8">
                 
             {disabledAreas.length > 0 && (

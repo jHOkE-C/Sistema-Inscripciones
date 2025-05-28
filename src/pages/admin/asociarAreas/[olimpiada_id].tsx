@@ -30,6 +30,7 @@ import { Search } from "lucide-react";
 import type { Olimpiada } from "@/types/versiones.type";
 import { getOlimpiada } from "@/api/olimpiada";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
+import ReturnComponent from "@/components/ReturnComponent";
 
 export default function Page() {
     const [areas, setAreas] = useState<Area[]>([]);
@@ -143,6 +144,8 @@ export default function Page() {
         );
 
     return (
+        <>
+        <ReturnComponent to={`..\\..\\`}/>
         <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
                 <CardHeader className="flex items-center justify-between">
@@ -314,5 +317,6 @@ export default function Page() {
                 </AlertDialogContent>
             </AlertDialog>
         </div>
+        </>
     );
 }
