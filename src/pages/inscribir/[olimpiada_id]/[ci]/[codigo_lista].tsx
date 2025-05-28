@@ -207,7 +207,7 @@ export const ButtonFinalizarRegistro = ({
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction onClick={terminarRegistro}>
                         Continuar
                     </AlertDialogAction>

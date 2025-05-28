@@ -30,6 +30,25 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "./ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "./ui/alert-dialog";
+import { getDateUTC } from "@/utils/fechas";
+import type {
+    Colegio,
+    Departamento,
+    Provincia,
+} from "@/interfaces/ubicacion.interface";
+
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { ArrowRight, TriangleAlert } from "lucide-react";
 
 const personalSchema = z.object({
     nombres: z.string().min(3).max(50),
@@ -78,7 +97,7 @@ interface Inscripcion {
     nivel_competencia: string;
     id_area: number;
     id_categoria: number;
-    estado: string;
+    estado: "Pago Pendiente" | "Inscripcion Completa" | "Preinscrito";
 }
 
 interface PostulanteData {
@@ -116,7 +135,7 @@ const PersonalStep = ({
     initialData,
     onNext,
 }: {
-    initialData?: Partial<PersonalData>;
+    initialData?: Partial<PersonalData> & Partial<ExtraData>;
     onNext: (
         data: PersonalData & ExtraData,
         postulante?: PostulanteData
@@ -128,7 +147,9 @@ const PersonalStep = ({
         defaultValues: initialData,
         mode: "onSubmit",
     });
-    const [fieldsDisabled, setFieldsDisabled] = useState(true);
+    const [fieldsDisabled, setFieldsDisabled] = useState(
+        initialData?.fieldsDisabled || false
+    );
 
     const submit: SubmitHandler<PersonalData> = (data) => {
         onNext({ ...data, fieldsDisabled }, postulante);
@@ -144,21 +165,23 @@ const PersonalStep = ({
                 form.setValue("nombres", postulante.nombres);
                 form.setValue("apellidos", postulante.apellidos);
                 form.setValue("correo_postulante", postulante.email);
-                form.setValue(
-                    "fecha_nacimiento",
-                    new Date(postulante.fecha_nacimiento)
-                );
+                const [dia, mes, anio] = postulante.fecha_nacimiento.split("-");
+                const nacimiento = new Date(`${anio}-${mes}-${dia}`);
+                form.setValue("fecha_nacimiento", nacimiento);
                 setPostulante(postulante);
-                setFieldsDisabled(true);
+                if (
+                    postulante.inscripciones.some(
+                        ({ estado }) => estado == "Inscripcion Completa"
+                    )
+                ) {
+                    setFieldsDisabled(true);
+                }
             } catch {
                 form.setValue("nombres", "");
                 form.setValue("apellidos", "");
                 form.setValue("correo_postulante", "");
-                form.setValue(
-                    "fecha_nacimiento",
-                    new Date()
-                );
-                setPostulante(undefined)
+                form.setValue("fecha_nacimiento", new Date());
+                setPostulante(undefined);
                 setFieldsDisabled(false);
             }
         }
@@ -696,7 +719,11 @@ const ModalIncritos: FC<ModalIncritosProps> = ({ initialData }) => {
         </Dialog>
     );
 };
-
+interface Cambio {
+    campo: string;
+    anterior: string | number;
+    nuevo: string | number;
+}
 const StepFormPostulante = ({
     onSubmit,
     olimpiada,
@@ -706,7 +733,12 @@ const StepFormPostulante = ({
 }) => {
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Partial<StepData>>({});
+    const [openConfirmModification, setOpenConfirmModification] =
+        useState(false);
     const [loading, setLoading] = useState(false);
+    const [postulante, setPostulante] = useState<PostulanteData>();
+    const [cambios, setCambios] = useState<Cambio[]>([]);
+    const { departamentos, provincias, colegios } = useUbicacion();
     const next = (
         stepData:
             | PersonalData
@@ -717,6 +749,7 @@ const StepFormPostulante = ({
         postulante?: PostulanteData
     ) => {
         if (postulante) {
+            setPostulante(postulante);
             setData({
                 nombres: postulante.nombres,
                 apellidos: postulante.apellidos,
@@ -743,8 +776,34 @@ const StepFormPostulante = ({
     };
     const back = () => setStep((s) => Math.max(0, s - 1));
 
-    const finish = async (stepData: CategoriaAreaData) => {
-        const final = { ...data, ...stepData } as StepData;
+    const finish = async (
+        stepData: null | CategoriaAreaData,
+        force?: boolean
+    ) => {
+        let final = data as StepData;
+        if (stepData) {
+            setData({...data, ...stepData });
+            final = { ...data, ...stepData } as StepData;
+        }
+        console.log("categorias???", stepData);
+        console.log("final", final);
+        // verificar diferencias entre datos anteriores y nuevos del postulante
+        if (postulante && !force) {
+            const cambios = obtenerCambios(
+                postulante,
+                final,
+                departamentos,
+                provincias,
+                colegios
+            );
+
+            if (cambios.length > 0) {
+                setCambios(cambios);
+                setOpenConfirmModification(true);
+                return;
+            }
+        }
+
         setLoading(true);
         try {
             await onSubmit(final);
@@ -782,6 +841,65 @@ const StepFormPostulante = ({
                     textButton={loading ? "Registrando..." : "Finalizar"}
                 />
             )}
+            <AlertDialog
+                open={openConfirmModification}
+                onOpenChange={setOpenConfirmModification}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            ¿Estas seguro de que desea modificar los siguiente
+                            datos?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Se reemplazarán los datos de las otras inscripciones
+                            por los siguientes:
+                            <ul className="pl-5">
+                                {cambios.map((cambio, index) => (
+                                    <li key={index}>
+                                        <div className="flex items-center space-x-2">
+                                            <strong>{cambio.campo}:</strong>{" "}
+                                            <span className="font-semibold text-red-600">
+                                                Anterior: {cambio.anterior}
+                                            </span>
+                                            <ArrowRight className="size-6" />
+                                            <span className="font-semibold text-green-600">
+                                                Nuevo: {cambio.nuevo}
+                                            </span>
+                                        </div>
+                                        {cambio.campo === "Curso" && (
+                                            <Alert
+                                                className=""
+                                                variant={"destructive"}
+                                            >
+                                                <TriangleAlert />
+                                                <AlertTitle className="font-medium">
+                                                    Estás cambiando de grado:
+                                                </AlertTitle>{" "}
+                                                <AlertDescription>
+                                                    se eliminarán las
+                                                    inscripciones que no
+                                                    pertenecen a este grado.
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                finish(null, true);
+                            }}
+                        >
+                            Continuar
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };
@@ -832,3 +950,101 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
     );
 };
 export default StepFormPostulante;
+
+const obtenerCambios = (
+    postulante: PostulanteData,
+    data: StepData,
+    departamentos: Departamento[],
+    provincias: Provincia[],
+    colegios: Colegio[]
+) => {
+    const cambios = [];
+
+    if (postulante.ci != data.ci) {
+        cambios.push({
+            campo: "CI",
+            anterior: postulante.ci,
+            nuevo: data.ci,
+        });
+    }
+    if (postulante.nombres != data.nombres) {
+        cambios.push({
+            campo: "Nombres",
+            anterior: postulante.nombres,
+            nuevo: data.nombres,
+        });
+    }
+    if (postulante.apellidos != data.apellidos) {
+        cambios.push({
+            campo: "Apellidos",
+            anterior: postulante.apellidos,
+            nuevo: data.apellidos,
+        });
+    }
+
+    if (postulante.fecha_nacimiento != getDateUTC(data.fecha_nacimiento)) {
+        cambios.push({
+            campo: "Fecha de Nacimiento",
+            anterior: postulante.fecha_nacimiento,
+            nuevo: getDateUTC(data.fecha_nacimiento),
+        });
+    }
+    if (postulante.email != data.correo_postulante) {
+        cambios.push({
+            campo: "Correo Electrónico",
+            anterior: postulante.email,
+            nuevo: data.correo_postulante,
+        });
+    }
+    console.log("departamentos", departamentos);
+    if (postulante.id_departamento != data.departamento) {
+        cambios.push({
+            campo: "Departamento",
+            anterior:
+                departamentos.find(
+                    ({ id }) =>
+                        id.toString() === postulante.id_departamento.toString()
+                )?.nombre || "",
+            nuevo:
+                departamentos.find(
+                    ({ id }) => id.toString() === data.departamento.toString()
+                )?.nombre || "",
+        });
+    }
+    if (postulante.id_provincia != data.provincia) {
+        cambios.push({
+            campo: "Provincia",
+            anterior:
+                provincias.find(
+                    ({ id }) =>
+                        id.toString() === postulante.id_provincia.toString()
+                )?.nombre || "",
+            nuevo:
+                provincias.find(
+                    ({ id }) => id.toString() === data.provincia.toString()
+                )?.nombre || "",
+        });
+    }
+    if (postulante.id_colegio != data.colegio) {
+        cambios.push({
+            campo: "Colegio",
+            anterior:
+                colegios.find(
+                    ({ id }) =>
+                        id.toString() === postulante.id_colegio.toString()
+                )?.nombre || "",
+            nuevo:
+                colegios.find(
+                    ({ id }) => id.toString() === data.colegio.toString()
+                )?.nombre || "",
+        });
+    }
+    if (postulante.curso != data.curso) {
+        cambios.push({
+            campo: "Curso",
+            anterior: grados[Number(postulante.curso) - 1].nombre || "",
+            nuevo: grados[Number(data.curso) - 1].nombre || "",
+        });
+    }
+    return cambios;
+};

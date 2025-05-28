@@ -22,7 +22,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Copy, PenBox, QrCodeIcon } from "lucide-react";
+import { Copy, PenBox, Plus, QrCodeIcon } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { QRCode } from "react-qrcode-logo";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -46,11 +46,10 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
     const [listas, setListas] = useState<ListaPostulantes[]>([]);
     const [openOptions, setOpenOptions] = useState(false);
     const [openCode, setOpenCode] = useState(false);
-    const [copied, setCopied] = useState(false);
-    const [showQrCode, setShowQrCode] = useState(false);
-
     const { ci, olimpiada_id } = useParams();
     const navigate = useNavigate();
+
+
     useEffect(() => {
         refresh();
     }, []);
@@ -77,7 +76,6 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             ci,
             olimpiada_id,
         });
-        //    console.log("lista creada", codigo_lista);
         const date = data.fecha_nacimiento;
         const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
             date.getMonth() + 1
@@ -89,12 +87,13 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             codigo_lista,
             fecha_nacimiento: formattedDate,
         };
+        console.log("payload", payload);
         try {
             await apiClient.post("/api/inscripciones", payload);
         } catch (e: unknown) {
+            console.log("codigo", codigo_lista);
             try {
-                await apiClient.delete(`/api/listas/
-                    ${codigo_lista}/eliminar`);
+                await apiClient.delete(`/api/listas/${codigo_lista}/eliminar`);
             } catch (e) {
                 console.log(e);
             }
@@ -105,10 +104,6 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
         setOpenConfirm(true);
     };
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(codigo_lista + "");
-        setCopied(true);
-    };
     return (
         <>
             <Button
@@ -204,106 +199,145 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
                             onSubmit={onSubmit}
                             olimpiada={olimpiada}
                         />
-                    </DialogHeader>
-                </DialogContent>
+                    </DialogHeader>{" "}
+                </DialogContent>{" "}
             </Dialog>
-            <AlertDialog open={openConfirm}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            ¿Desea Registrar más postulantes?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Presione continuar para registrar mas postulantes en
-                            una inscripcion Presione finalizar para terminar el
-                            registro
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <Link to={codigo_lista + ""}>
-                            <Button>Continuar</Button>
-                        </Link>
-                        <ButtonFinalizarRegistro
-                            codigo_lista={codigo_lista + ""}
-                            show
-                            onFinish={() => {
-                                setOpenConfirm(false);
-                                setOpenForm(false);
-                                setOpenCode(true);
-                            }}
-                        />
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-            <Dialog open={openCode} onOpenChange={setOpenCode}>
-                <DialogContent className="flex flex-col items-center p-4 ">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-semibold mb-4">
-                            Este es su Codigo de Inscripción
-                        </DialogTitle>
-                    </DialogHeader>
+  
 
-                    <p className="font-bold text-6xl text-primary">
-                        {codigo_lista}
-                    </p>
+            <ModalConfirmarMasPostulantes
+                codigo_lista={codigo_lista}
+                openConfirm={openConfirm}
+                onFinish={() => {
+                    setOpenConfirm(false);
+                    setOpenForm(false);
+                    setOpenCode(true);
+                }}
+            />
 
-                    <p>
-                        le ofrecemos las distintas opciones para poder
-                        guardarla:
-                    </p>
-                    <Button
-                        variant="outline"
-                        onClick={handleCopy}
-                        className="w-full mb-2"
-                    >
-                        <Copy className="w-5 h-5 mr-2" />
-                        {copied ? "Copiado!" : "Copiar"}
-                    </Button>
-                    <Button asChild variant="outline" className="w-full mb-2">
-                        <Link
-                            to={`https://wa.me/?text=${encodeURIComponent(
-                                "Su codigo de inscripcion es el siguiente: *" +
-                                    codigo_lista +
-                                    "*"
-                            )}`}
-                            target="_blank"
-                        >
-                            <WhatsAppIcon className="w-5 h-5 mr-2 tex" />
-                            WhatsApp
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => setShowQrCode(!showQrCode)}
-                        className="w-full mb-2"
-                    >
-                        <QrCodeIcon />
-                        QR
-                    </Button>
-
-                    {showQrCode && (
-                        <Card className="w-full mt-4">
-                            <CardTitle className="text-center">
-                                Escanea el código QR
-                            </CardTitle>
-                            <CardContent className="flex justify-center">
-                                <QRCode
-                                    value={
-                                        "Su codigo de inscripcion es el siguiente: " +
-                                        codigo_lista
-                                    }
-                                    logoImage="/logo_umss.png"
-                                    logoWidth={50}
-                                    logoPadding={2}
-                                    size={250}
-                                    ecLevel="H"
-                                />
-                            </CardContent>
-                        </Card>
-                    )}
-                </DialogContent>
-            </Dialog>
+            <ModalCodigo
+                openCode={openCode}
+                setOpenCode={setOpenCode}
+                codigo_lista={codigo_lista}
+            />
         </>
+    );
+};
+const ModalConfirmarMasPostulantes = ({
+    openConfirm,
+    codigo_lista,
+    onFinish,
+}: {
+    openConfirm: boolean;
+    codigo_lista: string | undefined;
+    onFinish: () => void;
+}) => {
+    return (
+        <AlertDialog open={openConfirm}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        ¿Desea Registrar más postulantes?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Presione continuar para registrar mas postulantes en una
+                        inscripcion Presione finalizar para terminar el registro
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <ButtonFinalizarRegistro
+                        codigo_lista={codigo_lista + ""}
+                        show
+                        onFinish={onFinish}
+                    />
+                    <Link to={codigo_lista + ""}>
+                        <Button variant={"secondary"} className="w-full"> <Plus/>Continuar Inscribiendo mas postulante</Button>
+                    </Link>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+};
+const ModalCodigo = ({
+    openCode,
+    setOpenCode,
+    codigo_lista,
+}: {
+    openCode: boolean;
+    setOpenCode: (open: boolean) => void;
+    codigo_lista: string | undefined;
+}) => {
+    const [copied, setCopied] = useState(false);
+    const [showQrCode, setShowQrCode] = useState(false);
+    const handleCopy = () => {
+        navigator.clipboard.writeText(codigo_lista + "");
+        setCopied(true);
+    };
+    return (
+        <Dialog open={openCode} onOpenChange={setOpenCode}>
+            <DialogContent className="flex flex-col items-center p-4 ">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-semibold mb-4">
+                        Este es su Codigo de Inscripción
+                    </DialogTitle>
+                </DialogHeader>
+
+                <p className="font-bold text-6xl text-primary">
+                    {codigo_lista}
+                </p>
+
+                <p>le ofrecemos las distintas opciones para poder guardarla:</p>
+                <Button
+                    variant="outline"
+                    onClick={handleCopy}
+                    className="w-full mb-2"
+                >
+                    <Copy className="w-5 h-5 mr-2" />
+                    {copied ? "Copiado!" : "Copiar"}
+                </Button>
+                <Button asChild variant="outline" className="w-full mb-2">
+                    <Link
+                        to={`https://wa.me/?text=${encodeURIComponent(
+                            "Su codigo de inscripcion es el siguiente: *" +
+                                codigo_lista +
+                                "*"
+                        )}`}
+                        target="_blank"
+                    >
+                        <WhatsAppIcon className="w-5 h-5 mr-2 tex" />
+                        WhatsApp
+                    </Link>
+                </Button>
+                <Button
+                    variant="outline"
+                    onClick={() => setShowQrCode(!showQrCode)}
+                    className="w-full mb-2"
+                >
+                    <QrCodeIcon />
+                    QR
+                </Button>
+
+                {showQrCode && (
+                    <Card className="w-full mt-4">
+                        <CardTitle className="text-center">
+                            Escanea el código QR
+                        </CardTitle>
+                        <CardContent className="flex justify-center">
+                            <QRCode
+                                value={
+                                    "Su codigo de inscripcion es el siguiente: " +
+                                    codigo_lista
+                                }
+                                logoImage="/logo_umss.png"
+                                logoWidth={50}
+                                logoPadding={2}
+                                size={250}
+                                ecLevel="H"
+                            />
+                        </CardContent>
+                    </Card>
+                )}
+            </DialogContent>
+        </Dialog>
     );
 };
 
