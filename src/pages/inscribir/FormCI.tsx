@@ -28,7 +28,7 @@ const FormCI = () => {
     const navigate = useNavigate();
 
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
-        localStorage.setItem("ci", ci);
+        sessionStorage.setItem("ci", ci);
         navigate("/inscribir/" + olimpiada_id + "/" + ci);
     };
 

@@ -151,6 +151,14 @@ const PersonalStep = ({
                 setPostulante(postulante);
                 setFieldsDisabled(true);
             } catch {
+                form.setValue("nombres", "");
+                form.setValue("apellidos", "");
+                form.setValue("correo_postulante", "");
+                form.setValue(
+                    "fecha_nacimiento",
+                    new Date()
+                );
+                setPostulante(undefined)
                 setFieldsDisabled(false);
             }
         }
