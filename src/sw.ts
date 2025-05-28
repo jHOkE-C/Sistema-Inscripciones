@@ -4,11 +4,12 @@
 declare const self: ServiceWorkerGlobalScope;
 
 import { registerRoute } from 'workbox-routing';
-import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
+import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 const API_URL = import.meta.env.VITE_API_URL;
 //por ahora 60s pero cuando este acabado puede ser 1h o mas, esto ayudara al servidor 
+/*
 registerRoute(
   ({ request }) => request.mode === 'navigate',
   new NetworkFirst({
@@ -22,7 +23,6 @@ registerRoute(
     ],
   })
 );
-
 registerRoute(
   ({ request }) =>
     ['script', 'style', 'image', 'font'].includes(request.destination),
@@ -36,6 +36,7 @@ registerRoute(
     ],
   }),
 );
+*/
 
 registerRoute(
   ({ url }) => /\.(wasm)$/i.test(url.pathname),

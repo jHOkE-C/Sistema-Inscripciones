@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const Page = () => {
     const navigate = useNavigate()
-    const ci = localStorage.getItem("ci")
+    const ci = sessionStorage.getItem("ci")
     console.log(ci)
     useEffect(()=>{
         if(ci){

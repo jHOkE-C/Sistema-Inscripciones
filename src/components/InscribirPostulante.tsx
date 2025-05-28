@@ -79,16 +79,23 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
         });
         //    console.log("lista creada", codigo_lista);
         const date = data.fecha_nacimiento;
-        const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${
-            (date.getMonth() + 1).toString().padStart(2, '0')
-        }-${date.getFullYear()}`;
+        const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
+            date.getMonth() + 1
+        )
+            .toString()
+            .padStart(2, "0")}-${date.getFullYear()}`;
         const payload = {
             ...data,
             codigo_lista,
             fecha_nacimiento: formattedDate,
         };
-        console.log("payload",payload);
-        await apiClient.post("/api/inscripciones", payload);
+        try {
+            await apiClient.post("/api/inscripciones", payload);
+        } catch (e: unknown) {
+            await apiClient.delete(`/api/listas/
+                ${codigo_lista}/eliminar`);
+            throw e instanceof Error ? e : new Error(String(e))
+        }
         setCodigoLista(codigo_lista);
         refresh();
         setOpenConfirm(true);
