@@ -46,8 +46,6 @@ const PageHome = () => {
               <Zap className="w-8 h-8" />
             </div>
 
-  
-
             {/* Sparkle effects */}
             <div className="absolute top-1/4 left-1/2 text-primary/60 animate-ping">
               <Star className="w-4 h-4" />
@@ -65,7 +63,7 @@ const PageHome = () => {
               <div className="space-y-6">
                 {/* Main title */}
                 <div className="space-y-4">
-                  <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl text-foreground animate-pulse">
+                  <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl text-foreground">
                     Oh!SanSi
                   </h1>
 
@@ -74,7 +72,6 @@ const PageHome = () => {
                     <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-muted-foreground">
                       Olimpiada de Ciencia y Tecnología
                     </span>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-primary rounded-full"></div>
                   </div>
                 </div>
 
