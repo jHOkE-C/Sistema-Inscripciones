@@ -21,17 +21,17 @@ export const generarExcel = async (
     const numFilas = 50;
 
     const SheetPlantilla = async () => {
-        const provinciasConDepartamentos =
+        const departamentosConProvincias =
             await getDepartamentosWithProvinces();
-        departamentos = provinciasConDepartamentos.map(({ nombre }) =>
+        departamentos = departamentosConProvincias.map(({ nombre }) =>
             nombre.replace(" ", "_")
         );
-
-        provinciasConDepartamentos.forEach((dep) => {
-            provinciasPorDep[dep.nombre] = dep.provincias.map(
-                ({ nombre }) => nombre
-            );
+        departamentosConProvincias.forEach((dep) => {
+            // convierto el nombre a la clave con guión bajo
+            const key = dep.nombre.replace(/\s+/g, "_");
+            provinciasPorDep[key] = dep.provincias.map((p) => p.nombre);
         });
+        console.log("por dep", provinciasPorDep);
 
         const ws = wb.addWorksheet("Inscripciones");
         let columns = [
@@ -52,7 +52,15 @@ export const generarExcel = async (
             { name: "Correo pertenece a" },
         ];
         for (let index = 1; index <= olimpiada.limite_inscripciones; index++) {
-            columns = [...columns, { name: "Área categoría " + index+ (index>1? " (opcional)" :" ") }];
+            columns = [
+                ...columns,
+                {
+                    name:
+                        "Área categoría " +
+                        index +
+                        (index > 1 ? " (opcional)" : " "),
+                },
+            ];
         }
 
         ws.getColumn(4).numFmt = "dd/mm/yyyy";
@@ -286,6 +294,7 @@ const agregarAreasCategorias = async (
             "/api/categorias/areas/olimpiada/" + id_olimpiada
         );
         const organizado = organizarPorGrado(areasCategorias).slice(1);
+        console.log(organizado)
         organizado.forEach((areaCategoria, index) => {
             const grado = listSheet.getCell(1, 12 + index).value;
             listSheet.getColumn(12 + index).values = [grado, ...areaCategoria];
