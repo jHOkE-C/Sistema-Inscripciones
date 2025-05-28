@@ -117,7 +117,7 @@ export function ConsultaInscripcion({
           <InactivityModal clean={clean} />
           <div className="w-full flex justify-between items-center pt-4 pb-0">
             <Link to="/">
-              <Button variant="secondary">
+              <Button variant="secondary" onClick={clean}>
                 <ChevronLeft className=" h-4 w-4" />
                 Volver al Inicio
               </Button>
@@ -134,7 +134,7 @@ export function ConsultaInscripcion({
           <div className="w-full flex justify-between items-center p-4 pb-0">
             <Link to="/">
               <Button variant="secondary">
-                <ChevronLeft className=" h-4 w-4" />
+                <ChevronLeft className=" h-4 w-4" onClick={clean}/>
                 Volver al Inicio
               </Button>
             </Link>
@@ -174,7 +174,7 @@ export function ConsultaInscripcion({
               </CardContent>
               <CardFooter className="mt-4 justify-between flex">
                 <Link to="/">
-                  <Button variant="secondary">
+                  <Button variant="secondary" type="button">
                     <ChevronLeft className=" h-4 w-4" />
                     Volver
                   </Button>
