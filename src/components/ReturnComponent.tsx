@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import styles from "./ReturnButton.module.css";
 
 interface ReturnComponentProps {
     to?: string;
@@ -37,9 +36,9 @@ export default function ReturnComponent({ to }: ReturnComponentProps) {
         <div className={`sticky ${hasHeader ? 'top-16' : 'top-0'} z-40 w-auto`}>
             <div className="container">
                 <Button
-                    variant="ghost"
+                    variant="link"
                     onClick={handleClick}
-                    className={styles.btn}
+                    className="text-md"
                 >
                     <span> {`< Volver`}</span>
                 </Button>
