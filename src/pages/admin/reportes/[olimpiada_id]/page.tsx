@@ -541,25 +541,16 @@ const PostulantesPage = () => {
         Para deseleccionar una columna, Presiona nuevamente en la flecha activa.
       </div>
       
-      <div className="space-y-4 mb-6">
+      <div className="space-y-4 mb-3">
         <div className="grid ms:grid-cols-1 md:grid-cols-2 gap-2">
           <Input
             placeholder="Buscar por nombre, apellido, CI o responsable..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="max-w-sm"
+            className="max-w-full"
           />
           
-          <div className="flex items-center gap-2 ml-auto">
-            {sorting.length > 0 && (
-              <Button 
-                variant="outline"
-                onClick={() => setSorting([])} 
-                className="flex items-center gap-2"
-              >
-                Resetear ordenamiento
-              </Button>
-            )}
+          <div className="flex gap-2 xl:ml-auto md:ml-auto items-center justify-center">
             <DownloadExcel 
               data={postulantesFiltrados} 
               fileName={`postulantes_${nombreOlimpiada}`}
@@ -782,7 +773,17 @@ const PostulantesPage = () => {
         </div>
       </div>
 
-      
+      <div className="h-12">
+      {sorting.length > 0 && (
+        <Button 
+          variant="outline"
+          onClick={() => setSorting([])} 
+          className="flex items-center gap-2"
+        >
+          Resetear ordenamiento
+        </Button>
+      )}
+      </div>
       <div className="rounded-md border">
         <Table className="reportes-table">
           <TableHeader>

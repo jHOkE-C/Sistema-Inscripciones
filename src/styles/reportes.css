@@ -2,6 +2,8 @@
 .reportes-table {
   table-layout: fixed;
   width: 100%;
+  height: 420px;
+  display: block;
 }
 
 
