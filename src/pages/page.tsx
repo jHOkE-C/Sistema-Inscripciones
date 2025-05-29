@@ -230,7 +230,7 @@ const PageHome = () => {
                     <Alert className="text-yellow-600 mt-4 block">
                         <div className="flex justify-center aling-center">
                             <TriangleAlert />
-                            <AlertTitle className="text-xl">-Pagina en Construccion-</AlertTitle>
+                            <AlertTitle className="text-lg">-Pagina en Construccion-</AlertTitle>
                             <TriangleAlert />
                         </div>
                         <AlertDescription className="flex justify-center aling-center text-center">
