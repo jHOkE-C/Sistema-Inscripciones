@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
+import { ChevronLeft } from "lucide-react";
 
 interface ReturnComponentProps {
     to?: string;
@@ -33,14 +34,15 @@ export default function ReturnComponent({ to }: ReturnComponentProps) {
     };
 
     return (
-        <div className={`sticky ${hasHeader ? 'top-16' : 'top-0'} z-40 w-auto`}>
+        <div className={`sticky ${hasHeader ? 'top-20' : 'top-0'} z-40 ml-5 mb-2`}>
             <div className="container">
                 <Button
-                    variant="link"
+                    variant="secondary"
                     onClick={handleClick}
                     className="text-md"
                 >
-                    <span> {`< Volver`}</span>
+                    <ChevronLeft className="size-4" />
+                    <span> {`Volver`}</span>
                 </Button>
             </div>
         </div>
