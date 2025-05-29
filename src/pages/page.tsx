@@ -23,7 +23,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -224,23 +223,24 @@ const PageHome = () => {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-center text-2xl font-bold flex items-center justify-around text-yellow-600">
+                        <DialogTitle className="text-center text-3xl font-bold flex items-center justify-around text-yellow-600">
                             Oh!SanSi
                         </DialogTitle>
-                        <DialogDescription className="text-center text-base mt-4">
-                            <Alert className="text-yellow-600">
-                                <TriangleAlert />
-                                <AlertTitle>Pagina en Construccion</AlertTitle>
-                                <AlertDescription className="">
-                                    Esta es una página en construcción del
-                                    sistema Oh!Sansi.
-                                    <br />
-                                    Para acceder a la versión oficial, haz clic
-                                    en el botón de abajo.
-                                </AlertDescription>
-                            </Alert>
-                        </DialogDescription>
                     </DialogHeader>
+                    <Alert className="text-yellow-600 mt-4 block">
+                        <div className="flex justify-center aling-center">
+                            <TriangleAlert />
+                            <AlertTitle className="text-xl">-Pagina en Construccion-</AlertTitle>
+                            <TriangleAlert />
+                        </div>
+                        <AlertDescription className="flex justify-center aling-center text-center">
+                            Esta es una página en construcción del
+                            sistema Oh!Sansi.
+                            <br />
+                            Para acceder a la versión oficial, haz clic
+                            en el botón de abajo.
+                        </AlertDescription>
+                    </Alert>
                     <div className="flex flex-col gap-3 mt-6">
                         <Button
                             onClick={handleOfficialSite}
