@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const AdminReportesPage = () => {
     const renderVersionContainer = (version: Version) => (
-        <div className="flex justify-end">
+        <div className="flex justify-center items-center">
             <Link to={`/admin/reportes/${version.id}`}>
                 <Button>Ver información</Button>
             </Link>

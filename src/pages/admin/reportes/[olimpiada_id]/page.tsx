@@ -182,6 +182,17 @@ const getGradoNumerico = (grado: string): number => {
   return isNaN(numero) ? 0 : numero;
 };
 
+const formatGrado = (grado: string): string => {
+  const gradoNum = parseInt(grado.replace(/\D/g, ''));
+  if (isNaN(gradoNum)) return grado;
+  
+  if (gradoNum <= 6) {
+    return `${gradoNum}° P`;
+  } else {
+    return `${gradoNum - 6}° S`;
+  }
+};
+
 const PostulantesPage = () => {
   const params = useParams();
   const olimpiada_id = params?.olimpiada_id as string;
@@ -375,7 +386,7 @@ const PostulantesPage = () => {
         cell: ({ row }) => (
           <div className="w-full overflow-hidden">
             <span className="block truncate" title={row.original.grado}>
-              {row.original.grado}
+              {formatGrado(row.original.grado)}
             </span>
           </div>
         ),
@@ -732,7 +743,7 @@ const PostulantesPage = () => {
                 <SelectItem value="all">Todos</SelectItem>
                 {gradosFilter.map((grado) => (
                   <SelectItem key={grado} value={grado}>
-                    {grado}
+                    {formatGrado(grado)}
                   </SelectItem>
                 ))}
               </SelectContent>

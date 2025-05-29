@@ -273,7 +273,7 @@ export function Versiones({
                         >
                             <CardHeader className="flex justify-between items-center">
 
-                                <CardTitle className="text-xl">
+                                <CardTitle className="text-xl truncate"     title={event.nombre}>
                                     {event.nombre}
                                 </CardTitle>
                                 <Badge

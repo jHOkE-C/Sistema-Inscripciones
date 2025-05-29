@@ -47,6 +47,17 @@ interface ModalPdfProps {
   postulantesFiltrados?: Postulante[];
 }
 
+const formatGrado = (grado: string): string => {
+  const gradoNum = parseInt(grado.replace(/\D/g, ''));
+  if (isNaN(gradoNum)) return grado;
+  
+  if (gradoNum <= 6) {
+    return `${gradoNum}° P`;
+  } else {
+    return `${gradoNum - 6}° S`;
+  }
+};
+
 const crearPdfDocumento = (
   postulantesData: Postulante[],
   gestionValor: string
@@ -73,7 +84,7 @@ const crearPdfDocumento = (
   postulantesData.forEach(p => {
     const postulanteFila = [
       p.nombre, p.apellidos, p.ci, p.fechaNac, p.area, p.categoria,
-      p.departamento, p.provincia, p.colegio, p.grado,
+      p.departamento, p.provincia, p.colegio, formatGrado(p.grado),
       p.responsable, p.responsableCi, p.estado,
     ];
     tableRows.push(postulanteFila);
