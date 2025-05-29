@@ -205,7 +205,7 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
 
   const handleExportarPdf = () => {
     if (pdfDoc && gestion) {
-      pdfDoc.save(`postulantes_${gestion}.pdf`);
+      pdfDoc.save(`postulantes_${nombreOlimpiada}.pdf`);
     } else {
       toast.error("No hay documento PDF para exportar o la gestión no está definida.");
     }

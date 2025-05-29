@@ -39,6 +39,7 @@ import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import ModalPdf from "../modalPdf";
 import "@/styles/reportes.css";
+import DownloadExcel from "@/components/DownloadExcel";
 
 interface Postulante {
   id: string;
@@ -511,7 +512,6 @@ const PostulantesPage = () => {
   }, [table.getFilteredRowModel().rows, sorting]);
 
   const handleGenerarPdf = () => {
-    // Asegurarse de que los datos se ordenan correctamente antes de enviarlos al PDF
     setIsModalOpen(true);
   };
 
@@ -560,6 +560,10 @@ const PostulantesPage = () => {
                 Resetear ordenamiento
               </Button>
             )}
+            <DownloadExcel 
+              data={postulantesFiltrados} 
+              fileName={`postulantes_${nombreOlimpiada}`}
+            />
             <Button 
               onClick={handleGenerarPdf} 
               className="flex items-center gap-2"
