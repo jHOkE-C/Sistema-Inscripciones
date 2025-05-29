@@ -85,9 +85,9 @@ export const Page = () => {
                 
                 <Card>
                     <CardTitle>
-                        <h1 className="text-4xl font-bold text-center py-5">
+                        <h2 className="text-4xl font-bold text-center py-5">
                             Agregar Áreas
-                        </h1>
+                        </h2>
                     </CardTitle>
                     <CardDescription className="mx-auto">
                         Agrega una nueva area para las olimpiadas Oh!SanSi

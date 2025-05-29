@@ -99,9 +99,9 @@ export default function VersionesPage({
             <ReturnComponent to={returnTo} />
             <div className="flex flex-col min-h-screen">
                 <div className="w-full p-4 md:w-11/12 mx-auto">
-                    <h1 className="text-4xl font-bold text-center py-4">
+                    <h2 className="text-4xl font-bold text-center py-4">
                         {title}
-                    </h1>
+                    </h2>
                     {versiones.length > 0 ?
                         (
                             <Versiones versiones={versiones} container={container} />

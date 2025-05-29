@@ -16,7 +16,7 @@ export function UserPanel() {
             <User className="h-8 w-8" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">{user?.usuario}</h1>
+            <h2 className="text-3xl font-bold">{user?.usuario}</h2>
             <p className="text-slate-500 dark:text-slate-400">Panel de Administración</p>
           </div>
         </div>

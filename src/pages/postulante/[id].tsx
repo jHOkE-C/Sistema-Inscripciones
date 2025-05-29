@@ -4,7 +4,7 @@ const Postulante = () => {
     const { id } = useParams();
     return (
         <div>
-            <h1>Postulante {id}</h1>
+            <h2>Postulante {id}</h2>
         </div>
     );
 };

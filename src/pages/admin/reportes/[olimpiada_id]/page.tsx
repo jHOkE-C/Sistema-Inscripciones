@@ -520,9 +520,9 @@ const PostulantesPage = () => {
     
     <div className="container  w-5/6 mx-auto py-6 md:w-5/6 lg:w-full xl:w-full">
       
-      <h1 className="text-3xl font-bold mb-2 text-center">
+      <h2 className="text-3xl font-bold mb-2 text-center">
         Postulantes: {nombreOlimpiada}
-      </h1>
+      </h2>
 
       <div className="mb-2 text-center text-sm text-gray-600">
         Presiona en ▲ o ▼ para ordenar. Puedes ordenar por múltiples columnas a la vez.

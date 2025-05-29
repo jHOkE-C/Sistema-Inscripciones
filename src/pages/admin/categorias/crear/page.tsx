@@ -72,10 +72,10 @@ const Page = () => {
                 <Card>
                     <CardContent>
                         <CardTitle>
-                            <h1 className="text-2xl text-primary font-bold mb-2 flex items-center gap-3">
+                            <h2 className="text-2xl text-primary font-bold mb-2 flex items-center gap-3">
                                 <PlusCircle/>
                                 Agregar Categorías
-                            </h1>
+                            </h2>
                             <p className="mb-4 text-gray-600">
                                 Agregar categorías personalizadas para las
                                 competiciones de las olimpiadas.

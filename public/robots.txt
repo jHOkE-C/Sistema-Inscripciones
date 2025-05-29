@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/area/agregar
+Disallow: /admin/area/dar-de-baja
+
+

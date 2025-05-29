@@ -492,7 +492,7 @@ const FileUploadFormato: React.FC = () => {
             <div className="w-full">
                 <ReturnComponent />
             </div>
-            <h1 className="text-3xl font-bold text-center mb-8">Subir Plantilla de Excel para la Olimpiada</h1>
+            <h2 className="text-3xl font-bold text-center mb-8">Subir Plantilla de Excel para la Olimpiada</h2>
             <div className="w-full max-w-lg p-6 border rounded-lg shadow-md bg-card text-card-foreground space-y-5">
                 <div
                     className="overflow-hidden transition-all duration-1000 ease-in-out"
