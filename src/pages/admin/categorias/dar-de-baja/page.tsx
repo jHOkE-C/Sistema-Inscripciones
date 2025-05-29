@@ -122,10 +122,10 @@ export default function Page() {
                 <Card className="mb-8">
                     <CardContent>
                         <CardTitle>
-                            <h1 className="text-2xl text-red-600 font-bold mb-2 flex items-center gap-3">
+                            <h2 className="text-2xl text-red-600 font-bold mb-2 flex items-center gap-3">
                                 <Trash2 />
                                 Dar de Baja Categorías
-                            </h1>
+                            </h2>
                             <p className="mb-4 text-gray-600">
                                 Desactiva categorías que ya no sean necesarias
                                 para que no aparezcan en futuras convocatorias.

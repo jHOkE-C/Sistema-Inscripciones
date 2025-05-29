@@ -93,9 +93,9 @@ const Page = () => {
                 <div className="container mx-auto ">
                     <Card className="border-0 shadow-white">
                         <CardTitle>
-                            <h1 className="text-3xl font-bold text-center">
+                            <h2 className="text-3xl font-bold text-center">
                                 Inscripciones de Postulantes
-                            </h1>
+                            </h2>
                         </CardTitle>
                         <CardContent className="space-y-5 justify-between">
                             <DataTable

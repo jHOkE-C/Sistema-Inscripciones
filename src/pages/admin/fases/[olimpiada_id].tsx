@@ -349,9 +349,9 @@ export default function Page() {
                 <Card className="mb-4">
                     <CardHeader>
                         <CardTitle>
-                            <h1 className="text-2xl font-bold ">
+                            <h2 className="text-2xl font-bold ">
                                 Definición de Fases de Version de Olimpiada
-                            </h1>
+                            </h2>
                         </CardTitle>
                         <CardDescription>
                             <h2 className="text-xl font-semibold ">

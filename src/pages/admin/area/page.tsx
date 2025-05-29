@@ -26,9 +26,9 @@ export const Page = () => {
           <div className="bg-primary/10 p-3 rounded-full mb-4">
             <Building2 className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+          <h2 className="text-3xl font-bold tracking-tight mb-2">
             Gestión de Áreas
-          </h1>
+          </h2>
           <p className="text-muted-foreground max-w-md">
             Administre las áreas de la olimpiada de manera eficiente. Agregue
             nuevas áreas para las competencias o desactive las que ya no sean

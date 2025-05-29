@@ -81,9 +81,9 @@ const Page = () => {
                 <Card>
                     <CardContent>
                         <CardTitle>
-                            <h1 className="text-2xl font-bold mb-2 text-amber-600 flex gap-3 items-center">
+                            <h2 className="text-2xl font-bold mb-2 text-amber-600 flex gap-3 items-center">
                                 <EditIcon /> Editar Categorías
-                            </h1>
+                            </h2>
                             <p className="mb-4 text-gray-600">
                                 Edita categorías para las competiciones de las
                                 olimpiadas.

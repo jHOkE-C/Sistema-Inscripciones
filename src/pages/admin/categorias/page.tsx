@@ -18,7 +18,7 @@ export default function Page() {
           <div className="inline-flex items-center justify-center bg-primary/10 p-4 rounded-full mb-4">
             <Building2 className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-4xl font-extrabold mb-2">Gestión de Categorías</h1>
+          <h2 className="text-4xl font-extrabold mb-2">Gestión de Categorías</h2>
           <p className="text-foreground/60 max-w-2xl mx-auto">
             Administra las categorías de la olimpiada de manera eficiente:
             crea, edita o desactiva categoria según tus necesidades.

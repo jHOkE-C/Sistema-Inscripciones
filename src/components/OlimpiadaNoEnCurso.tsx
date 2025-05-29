@@ -14,9 +14,9 @@ const OlimpiadaNoEnCurso = ({
             <Card className="w-xl">
                 <CardHeader>
                     <CardTitle>
-                        <h1 className="text-3xl font-bold text-foreground mb-4">
+                        <h2 className="text-3xl font-bold text-foreground mb-4">
                             {olimpiada.nombre}
-                        </h1>
+                        </h2>
                     </CardTitle>
                     <CardDescription>
                         <p className="text-xl text-foreground/60">

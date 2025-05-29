@@ -616,7 +616,7 @@ const toDigits7 = (raw: string) =>
       <ReturnComponent />
     <div className="container mx-auto p-4">
     
-      <h1 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h1>
+      <h2 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h2>
 
       <canvas ref={inputCanvasRef} style={{ display: 'none' }} />
       <canvas ref={outputCanvasRef1} style={{ display: 'none' }} />

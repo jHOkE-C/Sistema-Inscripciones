@@ -103,9 +103,9 @@ const Page = () => {
                 <ReturnComponent to="/" />
             </div>
 
-            <h1 className="text-3xl font-bold text-center">
+            <h2 className="text-3xl font-bold text-center">
                 Bienvenido a la Olimpiada {olimpiada?.nombre}
-            </h1>
+            </h2>
             <p className="text-center">
                 Selecciona alguna de las opciones que realizara en la olimpiada
             </p>

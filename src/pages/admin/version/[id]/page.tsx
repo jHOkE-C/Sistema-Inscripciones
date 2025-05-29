@@ -109,7 +109,7 @@ export default function OlimpiadaPage() {
         <Card className="mb-4">
           <CardHeader>
             <CardTitle>
-              <h1 className="text-2xl font-bold ">Información de Olimpiada</h1>
+              <h2 className="text-2xl font-bold ">Información de Olimpiada</h2>
             </CardTitle>
             <CardDescription>
               <h2 className="text-xl font-semibold ">

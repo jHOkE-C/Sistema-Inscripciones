@@ -76,9 +76,9 @@ const Page = () => {
                     <Card className="border-0 shadow-white">
                         <CardHeader>
                             <CardTitle>
-                                <h1 className="text-3xl font-bold text-center">
+                                <h2 className="text-3xl font-bold text-center">
                                     Inscripciones de Postulantes
-                                </h1>
+                                </h2>
                             </CardTitle>
                             <CardDescription className="text-center">
                                 Selecciona una inscripcion para inscribir postulantes
