@@ -23,7 +23,7 @@ import { API_URL } from "@/hooks/useApiRequest";
 interface Role {
   id: number;
   nombre: string;
-  servicios?: Array<{ id: number; nombre: string }>;
+  servicios: Array<{ id: number; nombre: string }>;
 }
 
 interface UserData {
@@ -50,7 +50,6 @@ export default function UsersPage() {
     try {
       const res = await axios.get(`${API_URL}/api/usuarios/`);
       setUserData(res.data);
-      fetchUserData();
     } catch (error) {
       console.error("Error fetching user data:", error);
       toast.error("Error al cargar los datos de los usuarios");
@@ -138,7 +137,7 @@ function UserCard({
               <User className="h-5 w-5 text-muted-foreground" />
               <CardTitle className="text-xl">{user.nombre_usuario}</CardTitle>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="items-center gap-2 grid sm:flex justify-center">
               <Badge variant={hasRoles ? "default" : "destructive"}>
                 {hasRoles ? `${user.roles.length} roles` : "Sin roles"}
               </Badge>
@@ -195,21 +194,23 @@ function UserCard({
           ) : (
             <ScrollArea className="max-h-[60vh] pr-4">
               <div className="space-y-4 py-4">
-                {unassignedRoles.map((role) => (
-                  <div key={role.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`role-${role.id}`}
-                      checked={selectedRoleIds.includes(role.id)}
-                      onCheckedChange={() => handleRoleCheckboxChange(role.id)}
-                    />
-                    <label
-                      htmlFor={`role-${role.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {role.nombre}
-                    </label>
-                  </div>
-                ))}
+                {unassignedRoles
+                  .filter((role) => role.servicios.length > 0)
+                  .map((role) => (
+                    <div key={role.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`role-${role.id}`}
+                        checked={selectedRoleIds.includes(role.id)}
+                        onCheckedChange={() => handleRoleCheckboxChange(role.id)}
+                      />
+                      <label
+                        htmlFor={`role-${role.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {role.nombre}
+                      </label>
+                    </div>
+                  ))}
               </div>
             </ScrollArea>
           )}
