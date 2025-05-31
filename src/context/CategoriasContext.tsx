@@ -3,7 +3,7 @@ import {
     getAreasConCategorias,
     getCategoriasOlimpiada,
 } from "@/api/categorias";
-import { CategoriaExtendida, grados } from "@/interfaces/postulante.interface";
+import { CategoriaExtendida, GRADOS } from "@/interfaces/postulante.interface";
 
 interface CategoriasContextType {
     getAreasCategoriasPorOlimpiada: (
@@ -48,26 +48,26 @@ export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({
 
             const areasMap = new Map<string, CategoriaExtendida[]>();
 
-            grados.forEach((grado, index) => {
+            GRADOS.forEach((grado, index) => {
                 const categorias = gradosCategoriasData[index] || [];
-                const categoriasExtendidas:CategoriaExtendida[] = []
+                const categoriasExtendidas: CategoriaExtendida[] = [];
                 categorias.forEach((cat) => {
-                     areasConCategoriasData.forEach((area) => {
-                        if (area.categorias.find(({id})=>id == cat.id)) {
+                    areasConCategoriasData.forEach((area) => {
+                        if (area.categorias.find(({ id }) => id == cat.id)) {
                             const categoriaExtendida: CategoriaExtendida = {
                                 ...cat,
                                 areaId: area?.id ?? 0,
                                 areaNombre: area?.nombre ?? "Desconocida",
                             };
-                            categoriasExtendidas.push(categoriaExtendida)
+                            categoriasExtendidas.push(categoriaExtendida);
                         }
                     });
                 });
 
                 areasMap.set(grado.id, categoriasExtendidas);
             });
-            
-            console.log("areas map",areasMap)
+
+            console.log("areas map", areasMap);
 
             categoriasCache.set(olimpiadaId, areasMap);
 

@@ -70,13 +70,14 @@ export interface newPostulante {
     inscripciones: { idArea: string | number; idCategoria: string | number }[];
 }
 
-export const CONTACTOS_PERMITIDOS = [
-    { id: 1, contacto: "padre/madre" },
-    { id: 2, contacto: "profesor" },
-    { id: 3, contacto: "estudiante" },
+export const CONTACTOS: { id: string; nombre: string }[] = [
+    { id: "1", nombre: "Padre/Madre" },
+    { id: "2", nombre: "Profesor" },
+    { id: "3", nombre: "Estudiante" },
+    { id: "4", nombre: "Responsable" },
 ];
 
-export const grados = [
+export const GRADOS = [
     { id: "1", nombre: "1ro_Primaria" },
     { id: "2", nombre: "2do_Primaria" },
     { id: "3", nombre: "3ro_Primaria" },

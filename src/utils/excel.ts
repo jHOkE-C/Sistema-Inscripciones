@@ -1,10 +1,7 @@
 import { Colegio, type Categoria } from "@/api/areas";
 import { apiClient } from "@/api/request";
 import { getDepartamentosWithProvinces } from "@/api/ubicacion";
-import {
-    CONTACTOS_PERMITIDOS,
-    grados,
-} from "@/interfaces/postulante.interface";
+import { CONTACTOS, GRADOS } from "@/interfaces/postulante.interface";
 import type { Olimpiada } from "@/pages/admin/version/[id]/types";
 import ExcelJS, { type Workbook, type Worksheet } from "exceljs";
 import { saveAs } from "file-saver";
@@ -240,7 +237,7 @@ const agregarDepartamentos = (wb: Workbook, listSheet: Worksheet) => {
     });
 };
 const agregarPertenencias = (wb: Workbook, listSheet: Worksheet) => {
-    const pertenencias = CONTACTOS_PERMITIDOS.map(({ contacto }) => contacto);
+    const pertenencias = CONTACTOS.map(({ nombre: contacto }) => contacto);
     listSheet.getColumn(10).values = pertenencias;
 
     wb.definedNames.add(`Lists!$J$1:$J$${pertenencias.length}`, "pertenencias");
@@ -255,7 +252,7 @@ const agregarColegios = async (wb: Workbook, listSheet: Worksheet) => {
     }
 };
 const agregarGrados = (wb: Workbook, listSheet: Worksheet) => {
-    grados.forEach(({ nombre }, idx) => {
+    GRADOS.forEach(({ nombre }, idx) => {
         listSheet.getColumn(idx + 12).values = [nombre];
     });
     wb.definedNames.add(`Lists!$L$1:$W$1`, "grados");
@@ -294,7 +291,7 @@ const agregarAreasCategorias = async (
             "/api/categorias/areas/olimpiada/" + id_olimpiada
         );
         const organizado = organizarPorGrado(areasCategorias).slice(1);
-        console.log(organizado)
+        console.log(organizado);
         organizado.forEach((areaCategoria, index) => {
             const grado = listSheet.getCell(1, 12 + index).value;
             listSheet.getColumn(12 + index).values = [grado, ...areaCategoria];
@@ -303,7 +300,7 @@ const agregarAreasCategorias = async (
                     `Lists!$${colLetter(12 + index)}$2:$${colLetter(
                         12 + index
                     )}$${areaCategoria.length + 1}`,
-                    "Grado_" + grados.map(({ nombre }) => nombre)[index]
+                    "Grado_" + GRADOS.map(({ nombre }) => nombre)[index]
                 );
             }
         });

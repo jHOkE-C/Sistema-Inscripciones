@@ -31,6 +31,7 @@ import { DateSelector } from "@/components/DateSelector";
 import { toast } from "sonner";
 import type { Olimpiada } from "@/types/versiones.type";
 import { useUbicacion } from "@/context/UbicacionContext";
+import { CONTACTOS } from "@/interfaces/postulante.interface";
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -47,11 +48,6 @@ export const grados = [
     { id: "12", nombre: "6to Secundaria" },
 ];
 
-const contactos = [
-    { id: "1", nombre: "Profesor" },
-    { id: "2", nombre: "Mamá/Papá" },
-    { id: "3", nombre: "Estudiante" },
-];
 export const postulanteSchema = z.object({
     nombres: z
         .string()
@@ -133,13 +129,20 @@ const FormPostulante = ({
 
     const { olimpiada_id } = useParams();
     const [loading, setLoading] = useState(false);
-    const { departamentos, provincias, colegios, loading: ubicacionesLoading } = useUbicacion();
+    const {
+        departamentos,
+        provincias,
+        colegios,
+        loading: ubicacionesLoading,
+    } = useUbicacion();
     const [categorias, setCategorias] = useState<Categoria[]>([]);
 
     useEffect(() => {
         const fetchOlimpiada = async () => {
             try {
-                const response = await fetch(API_URL + "/api/olimpiadas/" + olimpiada_id);
+                const response = await fetch(
+                    API_URL + "/api/olimpiadas/" + olimpiada_id
+                );
                 if (!response.ok) {
                     console.error("Error al obtener olimpiada");
                 } else {
@@ -494,7 +497,7 @@ const FormPostulante = ({
                                                         <FormControl>
                                                             <ComboBox
                                                                 values={
-                                                                    contactos
+                                                                    CONTACTOS
                                                                 }
                                                                 value={
                                                                     field.value
@@ -544,7 +547,7 @@ const FormPostulante = ({
                                                         <FormControl>
                                                             <ComboBox
                                                                 values={
-                                                                    contactos
+                                                                    CONTACTOS
                                                                 }
                                                                 value={
                                                                     field.value

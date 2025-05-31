@@ -1,9 +1,9 @@
 import {
     CategoriaExtendida,
-    grados,
+    GRADOS,
     ExcelPostulante,
     Postulante,
-    CONTACTOS_PERMITIDOS,
+    CONTACTOS,
     type newExcelPostulante,
     type newPostulante,
 } from "@/interfaces/postulante.interface";
@@ -14,7 +14,9 @@ import {
     Colegio,
 } from "@/interfaces/ubicacion.interface";
 
-export const validarCamposRequeridos = (headers: string[]): {campo: string, columna: string}[] => {
+export const validarCamposRequeridos = (
+    headers: string[]
+): { campo: string; columna: string }[] => {
     const camposRequeridos = [
         { columna: "A", nombre: "Nombre" },
         { columna: "B", nombre: "Apellidos" },
@@ -33,15 +35,20 @@ export const validarCamposRequeridos = (headers: string[]): {campo: string, colu
     ];
 
     const camposFaltantes = camposRequeridos.filter((campo) => {
-        const indice = headers.findIndex((h) => h.normalize().toLocaleLowerCase().trim() === campo.nombre.normalize().toLocaleLowerCase().trim());
+        const indice = headers.findIndex(
+            (h) =>
+                h.normalize().toLocaleLowerCase().trim() ===
+                campo.nombre.normalize().toLocaleLowerCase().trim()
+        );
         return indice === -1;
     });
 
-    return camposFaltantes.map(
-        (campo) => {
-            return {campo:`${campo.nombre}`, columna: `(Columna ${campo.columna})`}
-        }
-    );
+    return camposFaltantes.map((campo) => {
+        return {
+            campo: `${campo.nombre}`,
+            columna: `(Columna ${campo.columna})`,
+        };
+    });
 };
 
 export const validarFila = (
@@ -190,8 +197,8 @@ export const validarFila = (
         const valorCampo = String(fila[campo as keyof ExcelPostulante] ?? "")
             .trim()
             .toLowerCase();
-        const contacto = CONTACTOS_PERMITIDOS.find(
-            (c) => c.contacto.toLowerCase() === valorCampo
+        const contacto = CONTACTOS.find(
+            (c) => c.nombre.toLowerCase() === valorCampo
         );
         if (!contacto) {
             errores.push({
@@ -260,7 +267,7 @@ export const validarFila = (
         postulante.idColegio = parseInt(colegioEncontrado.id);
     }
 
-    const gradoEncontrado = grados.find((g) => {
+    const gradoEncontrado = GRADOS.find((g) => {
         return g.nombre.toLowerCase() == fila.grado.toLowerCase();
     });
 
@@ -471,8 +478,8 @@ export const newValidarFila = (
         const valorCampo = String(fila[campo as keyof newExcelPostulante] ?? "")
             .trim()
             .toLowerCase();
-        const contacto = CONTACTOS_PERMITIDOS.find(
-            (c) => c.contacto.toLowerCase() === valorCampo
+        const contacto = CONTACTOS.find(
+            (c) => c.nombre.toLowerCase() === valorCampo
         );
         if (!contacto) {
             errores.push({
@@ -541,7 +548,7 @@ export const newValidarFila = (
         postulante.idColegio = parseInt(colegioEncontrado.id);
     }
 
-    const gradoEncontrado = grados.find((g) => {
+    const gradoEncontrado = GRADOS.find((g) => {
         return g.nombre.toLowerCase() == fila.grado.toLowerCase();
     });
 

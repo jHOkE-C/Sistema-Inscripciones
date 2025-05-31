@@ -15,7 +15,22 @@ export const registrarResponsable = async (values: {
         }
     );
 };
+type Responsable = {
+    id: number;
+    nombre_completo: string;
+    ci: string;
+    email: string;
+    telefono: string;
+    created_at?: string;
+    updated_at?: string;
+};
 
-export const getResponsable = async (ci: string) => {
-    return { nombre: "jose", email: "email@example.com", ci };
+export const getResponsable = async (ci: string): Promise<Responsable> => {
+    return {
+        nombre_completo: "jose",
+        email: "email@example.com",
+        ci: ci,
+        telefono: "15465448",
+        id: 45,
+    };
 };
