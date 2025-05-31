@@ -195,7 +195,7 @@ export function OlimpiadasCarousel() {
                                                     </Suspense>
                                                     <Button variant={"link"}>
                                                         <Link
-                                                            to={`/inscribir/${btoa(
+                                                            to={`/inscribir/${(
                                                                 olimpiada.id +
                                                                     ""
                                                             )}`}

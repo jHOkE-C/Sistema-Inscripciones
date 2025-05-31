@@ -30,8 +30,8 @@ const FormCI = () => {
     if(!olimpiada_id) return
     
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
-        sessionStorage.setItem("ci", btoa(ci));
-        navigate("/inscribir/" + (olimpiada_id) + "/" + btoa(ci));
+        sessionStorage.setItem("ci", (ci));
+        navigate("/inscribir/" + (olimpiada_id) + "/" + (ci));
     };
 
     return (

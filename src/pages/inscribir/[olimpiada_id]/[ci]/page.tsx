@@ -14,13 +14,13 @@ import InscribirPostulante from "../../../../components/InscribirPostulante";
 import ShareUrl from "../../ShareUrl";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import InscribirExcel from "@/components/InscribirExcel";
-import { useDecodeParams } from "@/utils/encode";
+import { useParams } from "react-router-dom";
 
 const Page = () => {
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(true);
     const [olimpiada, setOlimpiada] = useState<Olimpiada>();
-    const { ci, olimpiada_id } = useDecodeParams();
+    const { ci, olimpiada_id } = useParams();
     const buttons: ButtonConfig[] = [
         {
             label: "Ver Inscripciones",
