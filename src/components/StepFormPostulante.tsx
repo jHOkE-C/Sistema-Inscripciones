@@ -921,12 +921,12 @@ const grados = [
 
 const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
     return (
-        <nav className="flex flex-wrap space-x-2 mb-6 mx-auto justify-between space-y-2">
+        <nav className="flex flex-wrap space-x-2  mx-auto justify-between  space-y-2 gap-3 mb-5">
             {steps.map((label, i) => (
-                <div key={i} className="flex items-center">
+                <div key={i} className="flex m-0 items-center ">
                     <div
                         className={cn(
-                            "flex items-center justify-center w-8 h-8 rounded-full border-2",
+                            "flex items-center justify-center w-8 h-8 rounded-full border-3 m-0",
                             i === currentStep
                                 ? "border-primary bg-primary text-foreground"
                                 : "border-foreground "
@@ -936,9 +936,9 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
                     </div>
                     <span
                         className={cn(
-                            "ml-2 text-xsm",
+                            "ml-2 ",
                             i === currentStep
-                                ? "text-primary font-semibold"
+                                ? "text-primary font-bold"
                                 : ""
                         )}
                     >
