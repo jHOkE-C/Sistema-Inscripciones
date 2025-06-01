@@ -16,23 +16,28 @@ import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../orden-pago";
 import DescargarPlantilla from "@/components/DescargarPlantilla";
-import { Olimpiada } from "@/types/versiones.type";
-import { apiClient } from "@/api/request";
+import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(false);
     const { ci, olimpiada_id } = useParams();
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
+    const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } = useOlimpiada(Number(olimpiada_id));
 
     useEffect(() => {
         if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
     }, []);
 
+    useEffect(() => {
+        if (olimpiadaError) {
+            console.error("Error al obtener olimpiada");
+        }
+    }, [olimpiadaError]);
+
     if (!ci || ci.length < 7 || ci.length > 10) {
         return <NotFoundPage />;
     }
-    if (!olimpiada_id) return;
+    if (!olimpiada_id || olimpiadaLoading) return <Loading />;
 
     const refresh = async () => {
         setLoading(true);
@@ -56,10 +61,6 @@ const Page = () => {
     const fetchData = async () => {
         try {
             refresh();
-            const olimpiada = await apiClient.get<Olimpiada>(
-                "/api/olimpiadas/" + olimpiada_id
-            );
-            setOlimpiada(olimpiada);
         } catch {
             console.error("Error al obtener las inscripciones de postulantes");
         }
