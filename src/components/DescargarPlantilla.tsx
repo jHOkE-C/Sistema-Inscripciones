@@ -16,48 +16,54 @@ const DescargarPlantilla = ({ olimpiada }: { olimpiada: Olimpiada }) => {
     const { data: departamentosConProvincias, isLoading: isLoadingDepartamentos, isError: isErrorDepartamentos } = useDepartamentosWithProvinces({ queryKey: ["departamentosWithProvinces"], enabled: fetchData });
     const { data: areasCategorias, isLoading: isLoadingAreasCategorias, isError: isErrorAreasCategorias } = useAreasConCategorias(olimpiada.id, { queryKey: ["areasConCategorias", olimpiada.id], enabled: fetchData });
 
-    const isLoading = isLoadingColegios || isLoadingDepartamentos || isLoadingAreasCategorias;
-    const isError = isErrorColegios || isErrorDepartamentos || isErrorAreasCategorias;
+    const isDataLoading = isLoadingColegios || isLoadingDepartamentos || isLoadingAreasCategorias;
+    const isDataError = isErrorColegios || isErrorDepartamentos || isErrorAreasCategorias;
 
     useEffect(() => {
         const generateExcelWhenReady = async () => {
-            if (fetchData && !isLoading && !isError && colegios && departamentosConProvincias && areasCategorias) {
+            if (fetchData && !isDataLoading && !isDataError && colegios && departamentosConProvincias && areasCategorias) {
                 try {
                     await generarExcel(olimpiada, departamentosConProvincias, colegios, areasCategorias, olimpiada.nombre);
+                    toast.success("Plantilla generada correctamente.");
                 } catch (error) {
                     console.error("Error al generar el excel:", error);
                     toast.error("Error al generar el excel.");
                 } finally {
                     setLoadingExcel(false);
-                    setFetchData(false); // Reset fetchData after generation
+                    setFetchData(false);
                 }
-            } else if (fetchData && isError) {
+            } else if (fetchData && isDataError) {
                 toast.error("Error al cargar los datos necesarios para generar el excel.");
                 setLoadingExcel(false);
-                setFetchData(false); // Reset fetchData on error
+                setFetchData(false);
             }
         };
 
         generateExcelWhenReady();
-    }, [fetchData, isLoading, isError, colegios, departamentosConProvincias, areasCategorias, olimpiada]);
+    }, [fetchData, isDataLoading, isDataError, colegios, departamentosConProvincias, areasCategorias, olimpiada]);
 
     const onClick = () => {
-        setFetchData(true); // Start fetching data
-        setLoadingExcel(true); // Show loading state for Excel generation
+        setFetchData(true); 
+        setLoadingExcel(true);
     };
 
     return (
         <>
             <Button
                 variant={"link"}
-                disabled={loadingExcel || isLoading || isError}
+                disabled={loadingExcel || isDataLoading || isDataError}
                 className=" mb-2  text-green-600 border-green-200 hover:text-green-500 transition-colors"
-                onClick={onClick} // Changed to direct onClick
+                onClick={onClick}
             >
-                {loadingExcel || isLoading ? (
+                {loadingExcel ? (
                     <div className="flex items-center gap-2">
                         <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full" />
-                        {isLoading ? "Cargando datos..." : "Descargando..."}
+                        Descargando...
+                    </div>
+                ) : isDataLoading ? (
+                    <div className="flex items-center gap-2">
+                        <Download className="h-4 w-4" />
+                        Plantilla de Inscripción
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
