@@ -134,6 +134,7 @@ const FormPostulante = ({
         provincias,
         colegios,
         loading: ubicacionesLoading,
+        fetchUbicaciones,
     } = useUbicacion();
     const [categorias, setCategorias] = useState<Categoria[]>([]);
 
@@ -155,7 +156,7 @@ const FormPostulante = ({
         };
 
         fetchOlimpiada();
-    }, [olimpiada_id]);
+    }, [olimpiada_id, fetchUbicaciones]);
 
     useEffect(() => {
         if (!selectedGrado || !olimpiada_id) return;

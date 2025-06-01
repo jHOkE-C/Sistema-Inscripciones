@@ -77,7 +77,7 @@ export const IncribirExcel = ({
         Map<string, CategoriaExtendida[]>
     >(new Map());
 
-    const { departamentos, provincias, colegios } = useUbicacion();
+    const { departamentos, provincias, colegios, fetchUbicaciones } = useUbicacion();
     const { getAreasCategoriasPorOlimpiada } = useCategorias();
 
     const navigate = useNavigate();
@@ -87,6 +87,7 @@ export const IncribirExcel = ({
             setCargandoCategorias(true);
             const fetchData = async () => {
                 try {
+                    await fetchUbicaciones(); 
                     const areasMap = await getAreasCategoriasPorOlimpiada(
                         Number(olimpiada.id)
                     );
@@ -103,7 +104,7 @@ export const IncribirExcel = ({
 
             fetchData();
         }
-    }, [loading, open, olimpiada.id, getAreasCategoriasPorOlimpiada]);
+    }, [loading, open, olimpiada.id, getAreasCategoriasPorOlimpiada, fetchUbicaciones]);
 
     const handleFilesChange = (newFiles: File[]) => {
         setFiles(newFiles);

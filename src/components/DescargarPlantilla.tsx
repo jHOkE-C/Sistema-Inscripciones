@@ -12,7 +12,8 @@ const DescargarPlantilla = ({ olimpiada }: { olimpiada: Olimpiada }) => {
                 variant={"link"}
                 disabled={loadingExcel}
                 className=" mb-2  text-green-600 border-green-200 hover:text-green-500 transition-colors"
-                onClick={async () => {
+                onClick={async (e) => {
+                    e.stopPropagation();
                     setLoadingExcel(true);
                     await generarExcel(olimpiada.id, olimpiada.nombre);
                     setLoadingExcel(false);
