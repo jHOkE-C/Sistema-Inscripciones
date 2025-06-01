@@ -39,26 +39,10 @@ const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } 
             color: "slate",
         },
     ];
-useEffect(() => {
-    if (!ci || ci.length < 7 || ci.length > 10) return;
-    fetchData();
-}, [ci]);
-
-useEffect(() => {
-    if (olimpiadaError) {
-        console.error("Error al obtener olimpiada");
-    }
-}, [olimpiadaError]);
-
-    if (!ci || ci.length < 7 || ci.length > 10) {
-        return <NotFoundPage />;
-    }
-if (!olimpiada_id || olimpiadaLoading) return <Loading />;
-
     const refresh = async () => {
         setLoading(true);
         try {
-            await getListasPostulantes(ci);
+            await getListasPostulantes(ci!);
             setOpenFormResponsable(false);
         } catch {
             setOpenFormResponsable(true);
@@ -74,6 +58,22 @@ if (!olimpiada_id || olimpiadaLoading) return <Loading />;
             console.error("Error al obtener las inscripciones de postulantes");
         }
     };
+
+    useEffect(() => {
+        if (!ci || ci.length < 7 || ci.length > 10) return;
+        fetchData();
+    }, [ci]);
+
+    useEffect(() => {
+        if (olimpiadaError) {
+            console.error("Error al obtener olimpiada");
+        }
+    }, [olimpiadaError]);
+
+    if (!ci || ci.length < 7 || ci.length > 10) {
+        return <NotFoundPage />;
+    }
+    if (!olimpiada_id || olimpiadaLoading) return <Loading />;
 
     if (loading) return <Loading />;
     if (openFormResponsable)
