@@ -16,9 +16,9 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { API_URL } from "@/hooks/useApiRequest";
 import { getCategoriaAreaPorGrado, type Categoria } from "@/api/areas";
 import { MultiSelect } from "@/components/MultiSelect";
+import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
 import {
     Accordion,
     AccordionContent,
@@ -29,7 +29,7 @@ import { useParams } from "react-router-dom";
 import { MyCombobox } from "@/components/MyComboBox";
 import { DateSelector } from "@/components/DateSelector";
 import { toast } from "sonner";
-import type { Olimpiada } from "@/types/versiones.type";
+
 import { useUbicacion } from "@/context/UbicacionContext";
 import { CONTACTOS } from "@/interfaces/postulante.interface";
 
@@ -121,13 +121,13 @@ const FormPostulante = ({
 }: FormProps) => {
     const [selectedGrado, setSelectedGrado] = useState<string>();
     const [selectedDepartamento, setSelectedDepartamento] = useState<string>();
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const form = useForm<z.infer<typeof postulanteSchema>>({
         resolver: zodResolver(postulanteSchema),
         mode: "onSubmit",
     });
 
     const { olimpiada_id } = useParams();
+    const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } = useOlimpiada(Number(olimpiada_id));
     const [loading, setLoading] = useState(false);
     const {
         departamentos,
@@ -139,24 +139,14 @@ const FormPostulante = ({
     const [categorias, setCategorias] = useState<Categoria[]>([]);
 
     useEffect(() => {
-        const fetchOlimpiada = async () => {
-            try {
-                const response = await fetch(
-                    API_URL + "/api/olimpiadas/" + olimpiada_id
-                );
-                if (!response.ok) {
-                    console.error("Error al obtener olimpiada");
-                } else {
-                    const data = await response.json();
-                    setOlimpiada(data);
-                }
-            } catch (error) {
-                console.error("Error en olimpiada:", error);
-            }
-        };
+        fetchUbicaciones();
+    }, [fetchUbicaciones]);
 
-        fetchOlimpiada();
-    }, [olimpiada_id, fetchUbicaciones]);
+    useEffect(() => {
+        if (olimpiadaError) {
+            console.error("Error al obtener olimpiada");
+        }
+    }, [olimpiadaError]);
 
     useEffect(() => {
         if (!selectedGrado || !olimpiada_id) return;
@@ -697,7 +687,7 @@ const FormPostulante = ({
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button
-                            disabled={loading || ubicacionesLoading}
+                            disabled={loading || ubicacionesLoading || olimpiadaLoading}
                             type="submit"
                             onClick={form.handleSubmit(enviar, handleErrors)}
                         >
