@@ -34,7 +34,7 @@ import ShareUrl from "@/pages/inscribir/ShareUrl";
 import type { Postulante } from "./columns";
 import { Check, PenBox } from "lucide-react";
 import { apiClient } from "@/api/request";
-import type { Olimpiada } from "@/types/versiones.type";
+import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
 import StepFormPostulante, {
     type StepData,
 } from "@/components/StepFormPostulante";
@@ -47,28 +47,25 @@ import {
 } from "@/components/ui/dialog";
 
 export default function Page() {
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const [data, setData] = useState<Postulante[]>([]);
     const { codigo_lista } = useParams();
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
     const [editar, setEditar] = useState(false);
     const { olimpiada_id, ci } = useParams();
+    const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } = useOlimpiada(Number(olimpiada_id));
     const [openForm, setOpenForm] = useState(false);
     useEffect(() => {
         fetchData();
-        getOlimpiada();
     }, []);
 
-    const getOlimpiada = async () => {
-        const olimpiada = await apiClient.get<Olimpiada>(
-            "/api/olimpiadas/" + olimpiada_id
-        );
-        setOlimpiada(olimpiada);
-    };
-    if (!codigo_lista || !ci || !olimpiada_id) return;
+    useEffect(() => {
+        if (olimpiadaError) {
+            console.error("Error al obtener olimpiada");
+        }
+    }, [olimpiadaError]);
     const refresh = async () => {
-        const data = await getInscritosPorLista(codigo_lista);
+        const data = await getInscritosPorLista(codigo_lista!);
         console.log("nuevos datos", data.data);
         setData(data.data);
     };
@@ -76,7 +73,7 @@ export default function Page() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const data = await getInscritosPorLista(codigo_lista);
+            const data = await getInscritosPorLista(codigo_lista!);
 
             setData(data.data);
             console.log(data.estado, data.estado !== "Preinscrito");
@@ -114,6 +111,7 @@ export default function Page() {
 
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;
+    if (!codigo_lista || !ci || !olimpiada_id || olimpiadaLoading) return <Loading />;
 
     return (
         <>
@@ -165,7 +163,7 @@ export default function Page() {
                                 </TableHeader>
                                 <TableBody>
                                     {data.map((inscripcion) => (
-                                        <TableRow key={inscripcion.id}>
+                                        <TableRow key={inscripcion.area+inscripcion.categoria+""+inscripcion.id}>
                                             <TableCell>
                                                 {inscripcion.nombres}
                                             </TableCell>
