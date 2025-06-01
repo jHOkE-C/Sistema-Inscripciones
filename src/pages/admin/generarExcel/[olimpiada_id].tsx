@@ -11,22 +11,53 @@ import { generarExcel } from "@/utils/excel";
 import { DownloadCloud, FileSpreadsheet, Info } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useEffect } from "react"; // Import useEffect
+import { useColegios } from "../../../hooks/getCacheResponsable/useColegios";
+import { useDepartamentosWithProvinces } from "../../../hooks/getCacheResponsable/useUbicacion";
+import { useOlimpiada } from "../../../hooks/getCacheResponsable/useOlimpiadas";
+import { useAreasConCategorias } from "../../../hooks/getCacheResponsable/useCategoriasAreas";
+import { toast } from "sonner";
+import type { Olimpiada } from "../../../types/versiones.type";
 
 const Page = () => {
     const [loading, setLoading] = useState<boolean>(false);
-    const {olimpiada_id} = useParams()
-    const handleDownload = async () => {
-        setLoading(true);
-        try {
-            if(olimpiada_id){
+    const [fetchData, setFetchData] = useState(false);
+    const { olimpiada_id } = useParams();
 
-                await generarExcel(olimpiada_id);
-            }else{
-                console.error("no existe la olimpiada")
+    const { data: colegios, isLoading: isLoadingColegios, isError: isErrorColegios } = useColegios({ queryKey: ["colegios"], enabled: fetchData });
+    const { data: departamentosConProvincias, isLoading: isLoadingDepartamentos, isError: isErrorDepartamentos } = useDepartamentosWithProvinces({ queryKey: ["departamentosWithProvinces"], enabled: fetchData });
+    const { data: olimpiadaData, isLoading: isLoadingOlimpiada, isError: isErrorOlimpiada } = useOlimpiada(Number(olimpiada_id), { queryKey: ["olimpiada", Number(olimpiada_id)], enabled: fetchData });
+    const { data: areasCategorias, isLoading: isLoadingAreasCategorias, isError: isErrorAreasCategorias } = useAreasConCategorias(Number(olimpiada_id), { queryKey: ["areasConCategorias", Number(olimpiada_id)], enabled: fetchData });
+    const olimpiada: Olimpiada | undefined = olimpiadaData;
+
+    const isLoading = isLoadingColegios || isLoadingDepartamentos || isLoadingOlimpiada || isLoadingAreasCategorias;
+    const isError = isErrorColegios || isErrorDepartamentos || isErrorOlimpiada || isErrorAreasCategorias;
+
+    useEffect(() => {
+        const generateExcelWhenReady = async () => {
+            if (fetchData && !isLoading && !isError && colegios && departamentosConProvincias && olimpiada && areasCategorias) {
+                try {
+                    await generarExcel(olimpiada, departamentosConProvincias, colegios, areasCategorias, olimpiada.nombre);
+                } catch (error) {
+                    console.error("Error al generar el excel:", error);
+                    toast.error("Error al generar el excel.");
+                } finally {
+                    setLoading(false);
+                    setFetchData(false); 
+                }
+            } else if (fetchData && isError) {
+                toast.error("Error al cargar los datos necesarios para generar el excel.");
+                setLoading(false);
+                setFetchData(false);
             }
-        } finally {
-            setLoading(false);
-        }
+        };
+
+        generateExcelWhenReady();
+    }, [fetchData, isLoading, isError, colegios, departamentosConProvincias, olimpiada, areasCategorias, olimpiada_id]);
+
+    const handleDownload = () => {
+        setFetchData(true); // Start fetching data when button is clicked
+        setLoading(true); // Show loading state for Excel generation
     };
 
     return (
@@ -53,13 +84,13 @@ const Page = () => {
                     <Button
                         onClick={handleDownload}
                         className="w-full group relative transition-all duration-300 bg-gradient-to-br from-green-600 to-emerald-600 hover:from-emerald-600 hover:to-green-700 shadow-lg hover:shadow-emerald-200"
-                        disabled={loading}
+                        disabled={loading || isLoading || isError}
                     >
                         <div className="flex items-center justify-center space-x-2">
-                            {loading ? (
+                            {loading || isLoading ? (
                                 <>
                                     <div className="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full" />
-                                    <span>Generando plantilla...</span>
+                                    <span>{isLoading ? "Cargando datos..." : "Generando plantilla..."}</span>
                                 </>
                             ) : (
                                 <>
