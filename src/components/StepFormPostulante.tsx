@@ -146,6 +146,7 @@ const PersonalStep = ({
         postulante?: PostulanteData
     ) => void;
 }) => {
+    const {olimpiada_id} = useParams()
     const [postulante, setPostulante] = useState<PostulanteData>();
     const form = useForm<PersonalData>({
         resolver: zodResolver(personalSchema),
@@ -166,7 +167,7 @@ const PersonalStep = ({
             try {
                 const { postulante } = await apiClient.get<{
                     postulante: PostulanteData;
-                }>(`/api/inscripciones/postulante/${CI}`);
+                }>(`/api/inscripciones/postulante/${CI}/olimpiada/${olimpiada_id}`);
                 form.setValue("nombres", postulante.nombres);
                 form.setValue("apellidos", postulante.apellidos);
                 form.setValue("correo_postulante", postulante.email);
