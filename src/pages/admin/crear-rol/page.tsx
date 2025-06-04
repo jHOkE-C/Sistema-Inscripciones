@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import axios from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
+import HelpTooltip from "@/components/help-tooltip";
 
 export default function CrearRol() {
   const [open, setOpen] = useState(false);
@@ -57,9 +58,17 @@ export default function CrearRol() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1">
+        <Button className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg  lg:col-span-1 text-lg relative">
           <ShieldPlus className="size-8 mb-1" />
-          <span className="text-lg font-semibold">Crear Rol</span>
+          Crear Rol
+          <div className="absolute top-2 right-2">
+            <HelpTooltip
+              title="Crear Rol"
+              content="Define nuevos roles de usuario con nombres y descripciones específicas que luego pueden ser asignados a usuarios para controlar sus permisos."
+              position="left"
+              size="sm"
+            />
+          </div>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -76,35 +85,37 @@ export default function CrearRol() {
                 htmlFor="role-name"
                 className="flex items-center justify-between"
               />
-                Nombre del Rol
-                <span
-                  className={`text-xs ${
-                    roleName.length > 30
-                      ? "text-destructive"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {roleName.length}/30
-                </span>
-                <Input
+              Nombre del Rol
+              <span
+                className={`text-xs ${
+                  roleName.length > 30
+                    ? "text-destructive"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {roleName.length}/30
+              </span>
+              <Input
                 id="role-name"
                 value={roleName}
                 onChange={(e) => {
                   const value = e.target.value.toLowerCase(); // Convert to lowercase
                   const regex = /^[a-z0-9\s]*$/; // Allow only lowercase letters and spaces
                   if (regex.test(value)) {
-                  setRoleName(value);
-                  if (value.trim() && error) {
-                    setError("");
-                  }
+                    setRoleName(value);
+                    if (value.trim() && error) {
+                      setError("");
+                    }
                   } else {
-                  setError("Solo se permiten letras minúsculas, números y espacios");
+                    setError(
+                      "Solo se permiten letras minúsculas, números y espacios"
+                    );
                   }
                 }}
                 placeholder="Ingresa el nombre del rol"
                 className={error ? "border-destructive" : ""}
                 maxLength={30}
-                />
+              />
               {error && <p className="text-sm text-destructive">{error}</p>}
             </div>
           </div>
