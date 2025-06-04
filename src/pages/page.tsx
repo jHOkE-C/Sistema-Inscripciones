@@ -137,7 +137,7 @@ const PageHome = () => {
                                         className="text-base px-10 py-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-full"
                                     >
                                         <BookOpen className="w-5 h-5 mr-3" />
-                                        ¡Incribete ahora!
+                                        ¡Inscribete ahora!
                                     </Button>
                                 </a>
                             </div>
