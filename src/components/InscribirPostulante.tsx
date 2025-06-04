@@ -86,7 +86,7 @@ const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {
             ...data,
             codigo_lista,
             fecha_nacimiento: formattedDate,
-        };
+        }; 
         console.log("payload", payload);
         try {
             await apiClient.post("/api/inscripciones", payload);
