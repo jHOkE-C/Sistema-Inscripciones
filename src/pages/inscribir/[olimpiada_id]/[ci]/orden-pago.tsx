@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Download, CheckCircle2, PenBox } from "lucide-react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { API_URL } from "@/hooks/useApiRequest";
 import { toast } from "sonner";
 import { descargarPDF, generarOrden } from "@/utils/pdf";
@@ -94,7 +94,9 @@ export default function OrdenPago({ codigo_lista }: Props) {
                 fecha_emision: data.fecha_emision,
             });
             setPdfOpen(true);
-            setPdfBlob(new Blob([pdf as BlobPart], { type: "application/pdf" }));
+            setPdfBlob(
+                new Blob([pdf as BlobPart], { type: "application/pdf" })
+            );
             setPdf(pdf);
         } catch {
             //toast.error("Hubo un error al cargar la orden.");
@@ -154,8 +156,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
         };
 
         const crearOrden = async () => {
-            //generarOrden()
-            console.log("payload",data)
+            setLoading(true);
             try {
                 const response = await axios.post(
                     `${API_URL}/api/ordenes-pago`,
@@ -166,6 +167,9 @@ export default function OrdenPago({ codigo_lista }: Props) {
                 console.log("Orden creada:", response.data);
             } catch (error) {
                 console.error("Error al crear la orden:", error);
+                if (error instanceof AxiosError) {
+                    toast.error(error.message);
+                }
             }
             await fetchOrden();
             setLoading(false);
@@ -210,7 +214,9 @@ export default function OrdenPago({ codigo_lista }: Props) {
                     <DialogDescription asChild>
                         <div className="grid gap-5 py-4">
                             <div className="grid grid-cols-2 gap-3 p-4 rounded-lg border">
-                                <div className="font-medium">Código de inscripción:</div>
+                                <div className="font-medium">
+                                    Código de inscripción:
+                                </div>
                                 <div className="font-semibold">
                                     {codigo_lista}
                                 </div>
@@ -231,8 +237,6 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                 <div className="font-semibold">
                                     {datosPrevios?.cantidad_inscripciones}
                                 </div>
-
-                                
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-2">
                                 <Label htmlFor="nombre">Sr./Sra.</Label>
@@ -311,8 +315,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
                             variant={"secondary"}
                             onClick={() => {
                                 setPdfOpen(false);
-                                fetchDatosPrevios()
-                       
+                                fetchDatosPrevios();
                             }}
                             className=""
                         >
