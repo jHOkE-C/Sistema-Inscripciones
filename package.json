@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve -s dist -l $PORT -c 60"
+    "start": "serve -s dist -l $PORT -c 900"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
