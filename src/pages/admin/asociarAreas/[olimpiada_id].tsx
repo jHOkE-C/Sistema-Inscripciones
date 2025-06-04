@@ -175,7 +175,6 @@ export default function Page() {
                                 {availableAreas.map((area) => (
                                     <TableRow
                                         key={area.id}
-                                        className="hover:bg-gray-50"
                                     >
                                         <TableCell>{area.nombre}</TableCell>
                                         <TableCell className="text-right">
