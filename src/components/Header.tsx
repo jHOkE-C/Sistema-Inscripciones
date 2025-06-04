@@ -74,23 +74,26 @@ const Header = ({ rutas = [] }: navigation) => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden focus:outline-none"
-          onClick={toggleMenu}
-          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-        >
-          <div
-            className={`transition-transform duration-300 transform ${
-              isMenuOpen ? "rotate-90" : "rotate-0"
-            }`}
+        <div className="flex items-center md:hidden gap-3">
+          <ModeToggle />
+          <button
+            className="md:hidden focus:outline-none"
+            onClick={toggleMenu}
+            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
           >
-            {isMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </div>
-        </button>
+            <div
+              className={`transition-transform duration-300 transform ${
+                isMenuOpen ? "rotate-90" : "rotate-0"
+              }`}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -101,7 +104,7 @@ const Header = ({ rutas = [] }: navigation) => {
             : "-translate-y-full opacity-0 pointer-events-none"
         } ease-in-out`}
       >
-        <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg rounded-xl border-1 m-3">
+        <div className="px-4 py-3 space-y-3 bg-background border-b shadow-lg rounded-xl border-1 m-3 pb-0">
           <Link
             to="/"
             className="block py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3"
@@ -138,9 +141,7 @@ const Header = ({ rutas = [] }: navigation) => {
               Cerrar Sesión
             </button>
           )}
-          <div className="pb-1 flex justify-end">
-            <ModeToggle />
-          </div>
+          <div className="pb-1 flex justify-end"></div>
         </div>
       </div>
     </header>
