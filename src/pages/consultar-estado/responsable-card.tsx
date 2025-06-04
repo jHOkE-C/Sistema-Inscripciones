@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 
 type Lista = {
   codigo_lista: string;
-  cantidad: number;
+  cantidad_inscritos: number;
   estado: string;
   fecha_creacion: string;
 };
@@ -119,7 +119,7 @@ export default function ResponsableCard({ data }: Data) {
                         <TableCell className="font-medium">
                           {lista.codigo_lista}
                         </TableCell>
-                        <TableCell>{lista.cantidad}</TableCell>
+                        <TableCell>{lista.cantidad_inscritos}</TableCell>
                         <TableCell>
                           <Badge
                             variant="outline"
