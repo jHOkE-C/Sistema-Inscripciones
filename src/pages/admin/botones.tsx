@@ -102,8 +102,7 @@ export default function Botones() {
             >
               <Link to="/admin/area/habilitar">
                 <CheckCircle className="size-8 mb-1" />
-                    Habilitar un Área
-
+                Habilitar un Área
               </Link>
             </Button>
             <div className="absolute top-2 right-2">
@@ -325,8 +324,17 @@ export default function Botones() {
         )}
 
         {hasAccess("crear un rol") && (
+          <div className="relative">
             <CrearRol />
-            
+            <div className="absolute top-2 right-2">
+              <HelpTooltip
+                title="Crear Olimpiada"
+                content="Permite crear una nueva olimpiada definiendo su nombre, descripción, fechas de inicio y fin, y configuraciones básicas del evento."
+                position="left"
+                size="sm"
+              />
+            </div>
+          </div>
         )}
 
         {hasAccess("asignar roles a un usuario") && (

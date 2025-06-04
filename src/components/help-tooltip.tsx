@@ -54,7 +54,7 @@ export default function HelpTooltip({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               {title && (
-                <h4 className="font-semibold text-sm text-gray-900">{title}</h4>
+                <h4 className="font-semibold text-sm text-gray-900 ">{title}</h4>
               )}
               <Button
                 variant="ghost"
@@ -85,7 +85,7 @@ export default function HelpTooltip({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             {title && (
-              <h4 className="font-semibold text-sm text-gray-900">{title}</h4>
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">{title}</h4>
             )}
             <Button
               variant="ghost"
@@ -96,7 +96,7 @@ export default function HelpTooltip({
               <X className="h-3 w-3" />
             </Button>
           </div>
-          <p className="text-sm text-gray-600 leading-relaxed">{content}</p>
+          <p className="text-sm text-gray-500 leading-relaxed">{content}</p>
         </div>
       </PopoverContent>
     </Popover>
