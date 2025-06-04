@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import SectionVideoTutorial from "@/components/SectionVideoTutorial";
 
 const PageHome = () => {
     const [open, setOpen] = useState(true);
@@ -136,7 +137,7 @@ const PageHome = () => {
                                         className="text-base px-10 py-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-full"
                                     >
                                         <BookOpen className="w-5 h-5 mr-3" />
-                                        ¡Incribete ahora!
+                                        ¡Inscribete ahora!
                                     </Button>
                                 </a>
                             </div>
@@ -175,8 +176,7 @@ const PageHome = () => {
                     Simón {new Date().getFullYear()}
                 </h2>
                 <OlimpiadasCarousel />
-
-                {/* Características */}
+                <SectionVideoTutorial />
                 <section className="w-full py-12 md:py-24 lg:py-32">
                     <div className="px-6 md:px-6 text-center">
                         <h2 className="text-3xl font-bold sm:text-5xl">
@@ -230,15 +230,17 @@ const PageHome = () => {
                     <Alert className="text-yellow-600 mt-4 block">
                         <div className="flex justify-center aling-center">
                             <TriangleAlert />
-                            <AlertTitle className="text-lg">-Pagina en Construccion-</AlertTitle>
+                            <AlertTitle className="text-lg">
+                                -Pagina en Construccion-
+                            </AlertTitle>
                             <TriangleAlert />
                         </div>
                         <AlertDescription className="flex justify-center aling-center text-center">
-                            Esta es una página en construcción del
-                            sistema Oh!Sansi.
+                            Esta es una página en construcción del sistema
+                            Oh!Sansi.
                             <br />
-                            Para acceder a la versión oficial, haz clic
-                            en el botón de abajo.
+                            Para acceder a la versión oficial, haz clic en el
+                            botón de abajo.
                         </AlertDescription>
                     </Alert>
                     <div className="flex flex-col gap-3 mt-6">

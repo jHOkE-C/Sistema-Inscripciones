@@ -31,7 +31,6 @@ import {
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/api/listas";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
-import type { Postulante } from "./columns";
 import { Check, PenBox } from "lucide-react";
 import { apiClient } from "@/api/request";
 import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
@@ -45,6 +44,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import type { Postulante } from "../columns";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);

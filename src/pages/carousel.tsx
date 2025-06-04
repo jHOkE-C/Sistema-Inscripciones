@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect,lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -25,7 +25,9 @@ import { API_URL } from "@/hooks/useApiRequest";
 import { Link } from "react-router-dom";
 import type { Olimpiada } from "@/types/versiones.type";
 
-const DescargarPlantilla = lazy(() => import("@/components/DescargarPlantilla"));
+const DescargarPlantilla = lazy(
+    () => import("@/components/DescargarPlantilla")
+);
 // Tipos para los datos de olimpiadas
 const formatDate = (dateString: string) => {
     const date = new Date(`${dateString}T12:00:00`);
@@ -41,8 +43,11 @@ export function OlimpiadasCarousel() {
             const response = await axios.get<Olimpiada[]>(
                 `${API_URL}/api/olimpiadas/hoy`
             );
-            console.log("carosel", response.data);
-            setOlimpiadas(response.data);
+            if (Array.isArray(response.data)) {
+                setOlimpiadas(response.data);
+            } else {
+                setOlimpiadas([]); // Ensure olimpiadas is always an array
+            }
         };
         fetchOlimpiadas();
         setIsMounted(true);
@@ -77,18 +82,16 @@ export function OlimpiadasCarousel() {
                 <CarouselContent className="-ml-2 md:-ml-4">
                     {olimpiadas
                         .sort((a, b) => {
-                            const aHasInscripcion =
-                                a.fase?.fase.nombre_fase
-                                    .toLowerCase()
-                                    .includes("inscripción")
-                                    ? 1
-                                    : 0;
-                            const bHasInscripcion =
-                                b.fase?.fase.nombre_fase
-                                    .toLowerCase()
-                                    .includes("inscripción")
-                                    ? 1
-                                    : 0;
+                            const aHasInscripcion = a.fase?.fase.nombre_fase
+                                .toLowerCase()
+                                .includes("inscripción")
+                                ? 1
+                                : 0;
+                            const bHasInscripcion = b.fase?.fase.nombre_fase
+                                .toLowerCase()
+                                .includes("inscripción")
+                                ? 1
+                                : 0;
                             return bHasInscripcion - aHasInscripcion;
                         })
                         .map((olimpiada) => (
@@ -149,8 +152,7 @@ export function OlimpiadasCarousel() {
                                                                 Inicio:
                                                             </span>{" "}
                                                             {formatDate(
-                                                                olimpiada
-                                                                    .fase
+                                                                olimpiada.fase
                                                                     .fecha_inicio
                                                             )}
                                                         </p>
@@ -159,8 +161,7 @@ export function OlimpiadasCarousel() {
                                                                 Fin:
                                                             </span>{" "}
                                                             {formatDate(
-                                                                olimpiada
-                                                                    .fase
+                                                                olimpiada.fase
                                                                     .fecha_fin
                                                             )}
                                                         </p>
@@ -183,14 +184,25 @@ export function OlimpiadasCarousel() {
                                                 "inscripción"
                                             ) ? (
                                                 <>
-                                                    <Suspense fallback={<div>Cargando...</div>}>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando...
+                                                            </div>
+                                                        }
+                                                    >
                                                         <DescargarPlantilla
-                                                            olimpiada={olimpiada}
+                                                            olimpiada={
+                                                                olimpiada
+                                                            }
                                                         />
                                                     </Suspense>
                                                     <Button variant={"link"}>
                                                         <Link
-                                                            to={`/inscribir/${olimpiada.id}`}
+                                                            to={`/inscribir/${(
+                                                                olimpiada.id +
+                                                                    ""
+                                                            )}`}
                                                         >
                                                             Inscribite Ahora
                                                         </Link>

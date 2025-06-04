@@ -15,6 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { UserIcon } from "lucide-react";
 
+
 const formSchema = z.object({
     ci: z
         .string()
@@ -24,12 +25,18 @@ const formSchema = z.object({
 
 const FormCI = () => {
     const { olimpiada_id } = useParams();
-    const form = useForm({ resolver: zodResolver(formSchema) });
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            ci: ""
+        }
+    });    
     const navigate = useNavigate();
-
+    if(!olimpiada_id) return
+    
     const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
-        sessionStorage.setItem("ci", ci);
-        navigate("/inscribir/" + olimpiada_id + "/" + ci);
+        sessionStorage.setItem("ci", (ci));
+        navigate("/inscribir/" + (olimpiada_id) + "/" + (ci));
     };
 
     return (

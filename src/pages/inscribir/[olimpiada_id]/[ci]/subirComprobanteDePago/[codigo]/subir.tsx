@@ -160,8 +160,8 @@ const SubirComprobantePage = () => {
         return;
       }
 
-      if (file.size < 1048576) {
-        setError('La imagen debe pesar al menos 1MB para asegurar buena calidad.');
+      if (file.size < 348576) {
+        setError('La imagen debe pesar al menos 300kb para asegurar buena calidad.');
         setOriginalFile(null);
         setProcessedImages([]);
         setOcrResults([]);
@@ -526,8 +526,8 @@ const toDigits7 = (raw: string) =>
         const src = cv.imread(inputCanvasRef.current);
 
         const pipelines = [
-          { id: 'grayscale', name: 'Escala de Grises Optimizada', processFunc: applyGrayscalePipeline },
-          { id: 'color', name: 'Escala de Grises Optimizada V2', processFunc: scaleGraysPipelineV2 }
+          { id: 'grayscale', name: 'Opción 1:', processFunc: applyGrayscalePipeline },
+          { id: 'color', name: 'Opción 2:', processFunc: scaleGraysPipelineV2 }
         ];
 
         const processedDataUrls: ProcessedImageData[] = [];
@@ -631,7 +631,7 @@ const toDigits7 = (raw: string) =>
         <LoadingAlert message="Cargando Tesseract..." />
       ) : (
         <div className="mb-4 p-4 border rounded-md shadow-sm bg-card">
-          <h2 className="text-lg font-semibold mb-2">1. Cargar Imagen del Recibo</h2>
+          <h2 className="text-lg font-semibold mb-2">Cargar Imagen del Recibo</h2>
           <h3 className="font-semibold mb-2 ">Recomendaciones:</h3>
           <ul className="list-disc list-inside">
             <li>El recibo debe estar recto</li>
@@ -670,39 +670,11 @@ const toDigits7 = (raw: string) =>
         </Button>
       )}
 
-      {processedImages.length > 0 && (
-        <div ref={step2Ref} className="mb-4 p-4 border rounded-md shadow-sm bg-card">
-          <h2 className="text-lg font-semibold mb-2">2. Imágenes Procesadas</h2>
-          <div className="flex flex-wrap gap-4">
-            {processedImages.map((imgData) => (
-              <div key={imgData.id} className="border p-2 rounded flex-1 min-w-[280px]">
-                <h3 className="text-center font-medium mb-1">{imgData.name}</h3>
-                {imgData.dataUrl ? (
-                  <img
-                    src={imgData.dataUrl}
-                    alt={`Procesado ${imgData.name}`}
-                    className="w-full h-auto object-contain max-h-80"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-40 bg-gray-100 text-gray-500">
-                    No disponible
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          {ocrResults.length > 0 && (
-            <div className="flex flex-col items-center justify-center">
-              <p className="text-sm text-muted-foreground mb-2">Baje para ver los resultados</p>
-                <ChevronDown className="h-8 w-8 text-primary animate-bounce" />
-            </div>
-          )}
-        </div>
-      )}
+
 
       {ocrResults.length > 0 && (
         <div ref={step3Ref} className="p-4 border rounded-md shadow-sm bg-card">
-          <h2 className="text-lg font-semibold mb-2">3. Resultados del OCR</h2>
+          <h2 className="text-lg font-semibold mb-2">Resultados Obtenidos</h2>
           <div className="flex">
           
           <h2 className="text-lg mb-4 text-indigo-500">Seleccione el resultado que muestre la información prioritaria para validar su comprobante fecha y orden de pago</h2>

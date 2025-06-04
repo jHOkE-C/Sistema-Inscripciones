@@ -48,7 +48,10 @@ import type {
 } from "@/interfaces/ubicacion.interface";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { ArrowRight, TriangleAlert } from "lucide-react";
+import { ArrowRight, Trash2, TriangleAlert, User } from "lucide-react";
+import { getResponsable } from "@/api/responsables";
+import { CONTACTOS } from "@/interfaces/postulante.interface";
+import { Card, CardContent } from "./ui/card";
 
 const personalSchema = z.object({
     nombres: z.string().min(3).max(50),
@@ -124,12 +127,14 @@ interface ExtraData {
     }[];
     fieldsDisabled: boolean;
 }
-
+interface ContactoLista {
+    contactos: ContactoData[];
+}
 export type StepData = PersonalData &
     UbicacionData &
-    ContactoData &
     CategoriaAreaData &
-    ExtraData;
+    ExtraData &
+    ContactoLista;
 
 const PersonalStep = ({
     initialData,
@@ -141,6 +146,7 @@ const PersonalStep = ({
         postulante?: PostulanteData
     ) => void;
 }) => {
+    const { olimpiada_id } = useParams();
     const [postulante, setPostulante] = useState<PostulanteData>();
     const form = useForm<PersonalData>({
         resolver: zodResolver(personalSchema),
@@ -161,7 +167,9 @@ const PersonalStep = ({
             try {
                 const { postulante } = await apiClient.get<{
                     postulante: PostulanteData;
-                }>(`/api/inscripciones/postulante/${CI}`);
+                }>(
+                    `/api/inscripciones/postulante/${CI}/olimpiada/${olimpiada_id}`
+                );
                 form.setValue("nombres", postulante.nombres);
                 form.setValue("apellidos", postulante.apellidos);
                 form.setValue("correo_postulante", postulante.email);
@@ -410,8 +418,7 @@ const UbicacionStep = ({
         </Form>
     );
 };
-
-const ContactoStep = ({
+const ContactoForm = ({
     initialData,
     onBack,
     onNext,
@@ -419,18 +426,12 @@ const ContactoStep = ({
     initialData?: Partial<ContactoData>;
     onBack: () => void;
     onNext: (data: ContactoData) => void;
-    postulante?: PostulanteData;
 }) => {
     const form = useForm<ContactoData>({
         resolver: zodResolver(contactoSchema),
         defaultValues: initialData,
         mode: "onSubmit",
     });
-    const contactos = [
-        { id: "1", nombre: "Profesor" },
-        { id: "2", nombre: "Mamá/Papá" },
-        { id: "3", nombre: "Estudiante" },
-    ];
 
     const submit: SubmitHandler<ContactoData> = (data) => onNext(data);
 
@@ -465,7 +466,7 @@ const ContactoStep = ({
                             </FormLabel>
                             <FormControl>
                                 <ComboBox
-                                    values={contactos}
+                                    values={CONTACTOS}
                                     value={field.value}
                                     onChange={field.onChange}
                                 />
@@ -499,7 +500,7 @@ const ContactoStep = ({
                             <FormLabel>¿A quién pertenece el correo?</FormLabel>
                             <FormControl>
                                 <ComboBox
-                                    values={contactos}
+                                    values={CONTACTOS}
                                     value={field.value}
                                     onChange={field.onChange}
                                 />
@@ -516,6 +517,143 @@ const ContactoStep = ({
                 </div>
             </form>
         </Form>
+    );
+};
+// ContactoStep.tsx
+const ContactoStep = ({
+    initialData,
+    onBack,
+    onNext,
+}: {
+    initialData?: ContactoData[]; // Ahora es un array
+    onBack: () => void;
+    onNext: (data: ContactoData[]) => void;
+}) => {
+    const [contactos, setContactos] = useState<ContactoData[]>(
+        initialData || []
+    );
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const handleAddContacto = (data: ContactoData) => {
+        if (
+            contactos.some(
+                ({ email_contacto }) => data.email_contacto == email_contacto
+            )
+        ) {
+            toast.error("Correo de contacto duplicado");
+        } else if (
+            contactos.some(
+                ({ telefono_contacto }) =>
+                    telefono_contacto == data.telefono_contacto
+            )
+        ) {
+            toast.error("Telefono de contacto duplicado ");
+        } else {
+            setContactos((prev) => [...prev, data]);
+            setDialogOpen(false);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        setContactos((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    return (
+        <>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button
+                        disabled={contactos.length >= 3}
+                        className="w-full md:w-auto"
+                        variant="outline"
+                    >
+                        <User className="mr-2 h-4 w-4" />
+                        Agregar nuevo contacto
+                    </Button>
+                </DialogTrigger>
+
+                <DialogContent className="max-w-md">
+                    <DialogTitle>Datos de Contacto</DialogTitle>
+                    <ContactoForm
+                        onBack={() => setDialogOpen(false)}
+                        onNext={handleAddContacto}
+                        initialData={undefined}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            <div className="mt-6 space-y-4">
+                {contactos.map((contacto, index) => {
+                    const tipoTel =
+                        CONTACTOS.find(
+                            (c) => c.id === contacto.tipo_contacto_telefono
+                        )?.nombre || "—";
+                    const tipoEmail =
+                        CONTACTOS.find(
+                            (c) => c.id === contacto.tipo_contacto_email
+                        )?.nombre || "—";
+
+                    return (
+                        <Card key={index} className=" border ">
+                            <CardContent className="pt-0 flex justify-between">
+                                <div className="space-y-3 text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>
+                                            <strong>Teléfono:</strong>{" "}
+                                            {contacto.telefono_contacto}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-medium">
+                                            <strong>
+                                                Tipo de contacto telefónico :
+                                            </strong>{" "}
+                                            {tipoTel}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span>
+                                            <strong>Correo:</strong>{" "}
+                                            {contacto.email_contacto}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <strong>
+                                            Tipo de contacto correo :
+                                        </strong>{" "}
+                                        <span className="font-medium">
+                                            {tipoEmail}
+                                        </span>
+                                    </div>
+                                </div>
+                                {index != 0 && (
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() => handleRemove(index)}
+                                    >
+                                        <Trash2 className="w-4 h-4" /> Eliminar
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    );
+                })}
+            </div>
+
+            <div className="flex justify-between mt-6">
+                <Button variant="outline" onClick={onBack}>
+                    Atrás
+                </Button>
+                <Button
+                    onClick={() => onNext(contactos)}
+                    disabled={contactos.length === 0}
+                >
+                    Siguiente
+                </Button>
+            </div>
+        </>
     );
 };
 
@@ -738,18 +876,36 @@ const StepFormPostulante = ({
     const [loading, setLoading] = useState(false);
     const [postulante, setPostulante] = useState<PostulanteData>();
     const [cambios, setCambios] = useState<Cambio[]>([]);
-    const { departamentos, provincias, colegios } = useUbicacion();
-    const next = (
+    const { departamentos, provincias, colegios, fetchUbicaciones } =
+        useUbicacion();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await fetchUbicaciones();
+            } catch (error) {
+                console.error("Error al cargar datos de ubicación:", error);
+            }
+        };
+        fetchData();
+    }, [fetchUbicaciones]);
+
+    const { ci } = useParams();
+    if (!ci) return;
+
+    const next = async (
         stepData:
             | PersonalData
             | UbicacionData
-            | ContactoData
+            | ContactoLista
             | CategoriaAreaData
             | ExtraData,
+
         postulante?: PostulanteData
     ) => {
         if (postulante) {
             setPostulante(postulante);
+
             setData({
                 nombres: postulante.nombres,
                 apellidos: postulante.apellidos,
@@ -771,6 +927,23 @@ const StepFormPostulante = ({
                 ),
             });
         }
+        if (step == 0) {
+            try {
+                const {data} = await getResponsable(ci);
+                const responsableContacto = {
+                    telefono_contacto: data.telefono || "",
+                    tipo_contacto_telefono: "4",
+                    email_contacto: data.email || "",
+                    tipo_contacto_email: "4",
+                };
+                setData((prev) => ({
+                    ...prev,
+                    contactos: [responsableContacto],
+                }));
+            } catch (e) {
+                console.error(e);
+            }
+        }
         setData((prev) => ({ ...prev, ...stepData }));
         setStep((s) => s + 1);
     };
@@ -782,7 +955,7 @@ const StepFormPostulante = ({
     ) => {
         let final = data as StepData;
         if (stepData) {
-            setData({...data, ...stepData });
+            setData({ ...data, ...stepData });
             final = { ...data, ...stepData } as StepData;
         }
         console.log("categorias???", stepData);
@@ -829,8 +1002,13 @@ const StepFormPostulante = ({
                 <UbicacionStep initialData={data} onBack={back} onNext={next} />
             )}
             {step === 2 && (
-                <ContactoStep initialData={data} onBack={back} onNext={next} />
+                <ContactoStep
+                    initialData={data.contactos || []}
+                    onBack={back}
+                    onNext={(contactos) => next({ contactos })}
+                />
             )}
+
             {step === 3 && (
                 <CategoriaAreaStep
                     olimpiada={olimpiada}
@@ -921,12 +1099,12 @@ const grados = [
 
 const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
     return (
-        <nav className="flex flex-wrap space-x-2 mb-6 mx-auto justify-between space-y-2">
+        <nav className="flex flex-wrap space-x-2  mx-auto justify-between  space-y-2 gap-3 mb-5">
             {steps.map((label, i) => (
-                <div key={i} className="flex items-center">
+                <div key={i} className="flex m-0 items-center ">
                     <div
                         className={cn(
-                            "flex items-center justify-center w-8 h-8 rounded-full border-2",
+                            "flex items-center justify-center w-8 h-8 rounded-full border-3 m-0",
                             i === currentStep
                                 ? "border-primary bg-primary text-foreground"
                                 : "border-foreground "
@@ -936,10 +1114,8 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
                     </div>
                     <span
                         className={cn(
-                            "ml-2 text-xsm",
-                            i === currentStep
-                                ? "text-primary font-semibold"
-                                : ""
+                            "ml-2 ",
+                            i === currentStep ? "text-primary font-bold" : ""
                         )}
                     >
                         {label}

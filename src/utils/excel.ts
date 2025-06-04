@@ -1,28 +1,25 @@
 import { Colegio, type Categoria } from "@/api/areas";
-import { apiClient } from "@/api/request";
-import { getDepartamentosWithProvinces } from "@/api/ubicacion";
-import {
-    CONTACTOS_PERMITIDOS,
-    grados,
-} from "@/interfaces/postulante.interface";
-import type { Olimpiada } from "@/pages/admin/version/[id]/types";
+import { CONTACTOS, GRADOS } from "@/interfaces/postulante.interface";
+import type { Olimpiada } from "@/types/versiones.type";
 import ExcelJS, { type Workbook, type Worksheet } from "exceljs";
 import { saveAs } from "file-saver";
+import { type Departamento } from "@/interfaces/ubicacion.interface";
+
+
 let departamentos: string[] = [];
 
 export const generarExcel = async (
-    id_olimpiada: string | number,
+    OlimpiadaElegida: Olimpiada,
+    departamentosConProvincias: Departamento[],
+    colegios: Colegio[],
+    areasCategorias: Categoria[],
     nombre?: string
 ) => {
-    const olimpiada = await apiClient.get<Olimpiada>(
-        "/api/olimpiadas/" + id_olimpiada
-    );
+    const olimpiada = OlimpiadaElegida
     const wb = new ExcelJS.Workbook();
     const numFilas = 50;
 
     const SheetPlantilla = async () => {
-        const departamentosConProvincias =
-            await getDepartamentosWithProvinces();
         departamentos = departamentosConProvincias.map(({ nombre }) =>
             nombre.replace(" ", "_")
         );
@@ -51,17 +48,18 @@ export const generarExcel = async (
             { name: "Correo de referencia" },
             { name: "Correo pertenece a" },
         ];
-        for (let index = 1; index <= olimpiada.limite_inscripciones; index++) {
-            columns = [
-                ...columns,
-                {
-                    name:
-                        "Área categoría " +
-                        index +
-                        (index > 1 ? " (opcional)" : " "),
-                },
-            ];
-        }
+          const limiteInscripciones = olimpiada.limite_inscripciones ?? 0;        
+            for (let index = 1; index <= limiteInscripciones; index++) {
+                columns = [
+                    ...columns,
+                    {
+                        name:
+                            "Área categoría " +
+                            index +
+                            (index > 1 ? " (opcional)" : " "),
+                    },
+                ];
+            }
 
         ws.getColumn(4).numFmt = "dd/mm/yyyy";
         ws.getColumn("J").numFmt = "0";
@@ -181,7 +179,7 @@ export const generarExcel = async (
 
             for (
                 let index = 0;
-                index < olimpiada.limite_inscripciones;
+                index < limiteInscripciones;
                 index++
             ) {
                 const col = 14 + index;
@@ -205,7 +203,7 @@ export const generarExcel = async (
     };
 
     await SheetPlantilla();
-    await SheetList(wb, id_olimpiada);
+    await SheetList(wb, colegios, areasCategorias);
     const buf = await wb.xlsx.writeBuffer();
     saveAs(
         new Blob([buf]),
@@ -213,13 +211,13 @@ export const generarExcel = async (
     );
 };
 
-const SheetList = async (wb: Workbook, id_olimpiada: string | number) => {
+const SheetList = async (wb: Workbook, colegios: Colegio[], areasCategorias: Categoria[]) => {
     const listSheet = wb.addWorksheet("Lists", { state: "hidden" });
-    await agregarDepartamentos(wb, listSheet);
-    await agregarGrados(wb, listSheet);
-    await agregarPertenencias(wb, listSheet);
-    await agregarColegios(wb, listSheet);
-    await agregarAreasCategorias(id_olimpiada, wb, listSheet);
+        agregarDepartamentos(wb, listSheet);
+    agregarGrados(wb, listSheet);
+    agregarPertenencias(wb, listSheet);
+    agregarColegios(wb, listSheet, colegios);
+    agregarAreasCategorias(areasCategorias, wb, listSheet);
 };
 const agregarDepartamentos = (wb: Workbook, listSheet: Worksheet) => {
     departamentos.forEach((dep, idx) => {
@@ -240,14 +238,13 @@ const agregarDepartamentos = (wb: Workbook, listSheet: Worksheet) => {
     });
 };
 const agregarPertenencias = (wb: Workbook, listSheet: Worksheet) => {
-    const pertenencias = CONTACTOS_PERMITIDOS.map(({ contacto }) => contacto);
+    const pertenencias = CONTACTOS.map(({ nombre: contacto }) => contacto);
     listSheet.getColumn(10).values = pertenencias;
 
     wb.definedNames.add(`Lists!$J$1:$J$${pertenencias.length}`, "pertenencias");
 };
-const agregarColegios = async (wb: Workbook, listSheet: Worksheet) => {
+const agregarColegios = (wb: Workbook, listSheet: Worksheet, colegios: Colegio[]) => {
     try {
-        const colegios = await apiClient.get<Colegio[]>("/api/colegios");
         listSheet.getColumn("K").values = colegios.map(({ nombre }) => nombre);
         wb.definedNames.add(`Lists!$K$1:$K$${colegios.length}`, "Colegios");
     } catch {
@@ -255,7 +252,7 @@ const agregarColegios = async (wb: Workbook, listSheet: Worksheet) => {
     }
 };
 const agregarGrados = (wb: Workbook, listSheet: Worksheet) => {
-    grados.forEach(({ nombre }, idx) => {
+    GRADOS.forEach(({ nombre }, idx) => {
         listSheet.getColumn(idx + 12).values = [nombre];
     });
     wb.definedNames.add(`Lists!$L$1:$W$1`, "grados");
@@ -284,17 +281,14 @@ function organizarPorGrado(data: Categoria[]) {
     return resultado;
 }
 
-const agregarAreasCategorias = async (
-    id_olimpiada: string | number,
+const agregarAreasCategorias = (
+    areasCategorias: Categoria[],
     wb: Workbook,
     listSheet: Worksheet
 ) => {
     try {
-        const areasCategorias = await apiClient.get<Categoria[]>(
-            "/api/categorias/areas/olimpiada/" + id_olimpiada
-        );
         const organizado = organizarPorGrado(areasCategorias).slice(1);
-        console.log(organizado)
+        console.log(organizado);
         organizado.forEach((areaCategoria, index) => {
             const grado = listSheet.getCell(1, 12 + index).value;
             listSheet.getColumn(12 + index).values = [grado, ...areaCategoria];
@@ -303,7 +297,7 @@ const agregarAreasCategorias = async (
                     `Lists!$${colLetter(12 + index)}$2:$${colLetter(
                         12 + index
                     )}$${areaCategoria.length + 1}`,
-                    "Grado_" + grados.map(({ nombre }) => nombre)[index]
+                    "Grado_" + GRADOS.map(({ nombre }) => nombre)[index]
                 );
             }
         });

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/api/postulantes";
 import FormResponsable from "../../FormResponsable";
 import NotFoundPage from "../../../404";
@@ -8,26 +7,20 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import { ButtonConfig } from "@/interfaces/buttons.interface";
-import {  Receipt, List, CheckCircle } from "lucide-react";
-import { apiClient } from "@/api/request";
-import { Olimpiada } from "@/types/versiones.type";
+import { Receipt, List, CheckCircle } from "lucide-react";
+import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
 import ShareUrl from "../../ShareUrl";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import InscribirExcel from "@/components/InscribirExcel";
+import { useParams } from "react-router-dom";
 
 const Page = () => {
     const [openFormResponsable, setOpenFormResponsable] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
     const { ci, olimpiada_id } = useParams();
+const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } = useOlimpiada(Number(olimpiada_id));
     const buttons: ButtonConfig[] = [
-        // {
-        //     label: "Inscribir por Excel",
-        //     to: `/inscribir/${olimpiada_id}/${ci}/viaExcel`,
-        //     Icon: FileIcon,
-        //     color: "green",
-        // },
         {
             label: "Ver Inscripciones",
             to: `listas`,
@@ -46,27 +39,10 @@ const Page = () => {
             color: "slate",
         },
     ];
-    const getOlimpiada = async () => {
-        const olimpiada = await apiClient.get<Olimpiada>(
-            "/api/olimpiadas/" + olimpiada_id
-        );
-        setOlimpiada(olimpiada);
-    };
-    useEffect(() => {
-        if (!ci || ci.length < 7 || ci.length > 10) return;
-        fetchData();
-        getOlimpiada();
-    }, []);
-
-    if (!ci || ci.length < 7 || ci.length > 10) {
-        return <NotFoundPage />;
-    }
-    if (!olimpiada_id) return;
-
     const refresh = async () => {
         setLoading(true);
         try {
-            await getListasPostulantes(ci);
+            await getListasPostulantes(ci!);
             setOpenFormResponsable(false);
         } catch {
             setOpenFormResponsable(true);
@@ -82,6 +58,22 @@ const Page = () => {
             console.error("Error al obtener las inscripciones de postulantes");
         }
     };
+
+    useEffect(() => {
+        if (!ci || ci.length < 7 || ci.length > 10) return;
+        fetchData();
+    }, [ci]);
+
+    useEffect(() => {
+        if (olimpiadaError) {
+            console.error("Error al obtener olimpiada");
+        }
+    }, [olimpiadaError]);
+
+    if (!ci || ci.length < 7 || ci.length > 10) {
+        return <NotFoundPage />;
+    }
+    if (!olimpiada_id || olimpiadaLoading) return <Loading />;
 
     if (loading) return <Loading />;
     if (openFormResponsable)
@@ -111,8 +103,11 @@ const Page = () => {
             </p>
             <div className="w-full p-4 md:w-3/5 mx-auto my-auto gap-3 flex flex-col">
                 <ButtonsGrid buttons={buttons}>
-                    <InscribirPostulante olimpiada={olimpiada}/>
-                    <InscribirExcel olimpiada={olimpiada} onSubmit={() => fetchData()} />
+                    <InscribirPostulante olimpiada={olimpiada} />
+                    <InscribirExcel
+                        olimpiada={olimpiada}
+                        onSubmit={() => fetchData()}
+                    />
                 </ButtonsGrid>
             </div>
             <ShareUrl />
