@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  BracketsIcon as Asociar,
   Layers2,
   Trophy,
   Clock,
@@ -14,6 +13,7 @@ import {
   XCircle,
   PenBoxIcon,
   LinkIcon,
+  LibraryBigIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
@@ -237,7 +237,7 @@ export default function Botones() {
               asChild
             >
               <Link to="/admin/asociarCategorias">
-                <Asociar className="size-8 mb-1" />
+                <LibraryBigIcon  className="size-8 mb-1" />
                 <span className="text-lg font-semibold">
                   Asociar Categorías
                 </span>
