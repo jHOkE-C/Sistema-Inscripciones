@@ -146,7 +146,7 @@ const PersonalStep = ({
         postulante?: PostulanteData
     ) => void;
 }) => {
-    const {olimpiada_id} = useParams()
+    const { olimpiada_id } = useParams();
     const [postulante, setPostulante] = useState<PostulanteData>();
     const form = useForm<PersonalData>({
         resolver: zodResolver(personalSchema),
@@ -167,7 +167,9 @@ const PersonalStep = ({
             try {
                 const { postulante } = await apiClient.get<{
                     postulante: PostulanteData;
-                }>(`/api/inscripciones/postulante/${CI}/olimpiada/${olimpiada_id}`);
+                }>(
+                    `/api/inscripciones/postulante/${CI}/olimpiada/${olimpiada_id}`
+                );
                 form.setValue("nombres", postulante.nombres);
                 form.setValue("apellidos", postulante.apellidos);
                 form.setValue("correo_postulante", postulante.email);
@@ -874,12 +876,13 @@ const StepFormPostulante = ({
     const [loading, setLoading] = useState(false);
     const [postulante, setPostulante] = useState<PostulanteData>();
     const [cambios, setCambios] = useState<Cambio[]>([]);
-    const { departamentos, provincias, colegios, fetchUbicaciones } = useUbicacion();
-    
+    const { departamentos, provincias, colegios, fetchUbicaciones } =
+        useUbicacion();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await fetchUbicaciones(); 
+                await fetchUbicaciones();
             } catch (error) {
                 console.error("Error al cargar datos de ubicación:", error);
             }
@@ -923,12 +926,14 @@ const StepFormPostulante = ({
                     }
                 ),
             });
+        }
+        if (step == 0) {
             try {
-                const responsable = await getResponsable(ci);
+                const {data} = await getResponsable(ci);
                 const responsableContacto = {
-                    telefono_contacto: responsable.telefono || "",
+                    telefono_contacto: data.telefono || "",
                     tipo_contacto_telefono: "4",
-                    email_contacto: responsable.email || "",
+                    email_contacto: data.email || "",
                     tipo_contacto_email: "4",
                 };
                 setData((prev) => ({

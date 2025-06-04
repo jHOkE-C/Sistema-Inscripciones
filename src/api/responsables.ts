@@ -1,4 +1,4 @@
-import { request } from "./request";
+import { apiClient, request } from "./request";
 
 export const registrarResponsable = async (values: {
     ci: string;
@@ -25,12 +25,10 @@ type Responsable = {
     updated_at?: string;
 };
 
-export const getResponsable = async (ci: string): Promise<Responsable> => {
-    return {
-        nombre_completo: "jose",
-        email: "email@example.com",
-        ci: ci,
-        telefono: "15465448",
-        id: 45,
-    };
+export const getResponsable = async (
+    ci: string
+) => {
+    return await apiClient.get<{ data: Responsable }>(
+        "/api/responsables/ci/" + ci
+    );
 };
