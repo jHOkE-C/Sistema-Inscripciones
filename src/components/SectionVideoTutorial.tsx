@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 const SectionVideoTutorial = () => {
     return (
         <section className="container mx-auto px-6 md:px-10 my-12">
-            <h2 className="text-3xl font-bold mb-8 text-center text-primary">
-                Videotutoriales de Inscripción
+            <h2 className="text-5xl font-bold mb-8 text-center text-foreground tracking-tighter">
+                Video-tutoriales de Inscripción
             </h2>
             <div className="flex w-full flex-col lg:flex-row gap-6 md:gap-12">
                 <Card className="p-6 shadow-lg rounded-xl w-full transition-all duration-300 transform  hover:shadow-xl">
