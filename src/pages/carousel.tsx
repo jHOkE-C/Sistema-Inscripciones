@@ -43,7 +43,11 @@ export function OlimpiadasCarousel() {
             const response = await axios.get<Olimpiada[]>(
                 `${API_URL}/api/olimpiadas/hoy`
             );
-            setOlimpiadas(response.data);
+            if (Array.isArray(response.data)) {
+                setOlimpiadas(response.data);
+            } else {
+                setOlimpiadas([]); // Ensure olimpiadas is always an array
+            }
         };
         fetchOlimpiadas();
         setIsMounted(true);

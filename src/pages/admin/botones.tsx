@@ -307,6 +307,29 @@ export default function Botones() {
               className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
               asChild
             >
+              <Link to="./crear">
+                <ShieldCheck className="size-8 mb-1" />
+                <span className="text-lg font-semibold">
+                  Crear Usuario
+                </span>
+              </Link>
+            </Button>
+            <div className="absolute top-2 right-2">
+              <HelpTooltip
+                title="Crear Usuario"
+                content="Crear nuevos usuarios para el sistema, con sus respectivas credenciales."
+                position="left"
+                size="sm"
+              />
+            </div>
+          </div>
+        )}
+        {hasAccess("crear usuarios") && (
+          <div className="relative">
+            <Button
+              className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
+              asChild
+            >
               <Link to="./asignar-roles">
                 <ShieldUser className="size-8 mb-1" />
                 <span className="text-lg font-semibold">Asignar Roles</span>

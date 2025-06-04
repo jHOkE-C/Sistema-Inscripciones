@@ -200,7 +200,7 @@ function UserCard({
                     <div key={role.id} className="flex items-center space-x-2">
                       <Checkbox
                         id={`role-${role.id}`}
-                        checked={selectedRoleIds.includes(role.id)}
+                        checked={!!selectedRoleIds.includes(role.id)}
                         onCheckedChange={() => handleRoleCheckboxChange(role.id)}
                       />
                       <label
