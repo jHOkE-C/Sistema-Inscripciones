@@ -1,4 +1,4 @@
-import { crearListaPostulante } from "@/api/postulantes";
+import { crearListaPostulante } from "@/models/api/postulantes";
 import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
 import {

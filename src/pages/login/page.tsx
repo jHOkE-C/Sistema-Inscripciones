@@ -20,12 +20,12 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { login } from "@/api/login";
+import { login } from "@/models/api/login";
 import { useState } from "react";
 import { AlertComponent } from "@/components/AlertComponent";
-import { useAuth } from "@/hooks/auth";
+import { useAuth } from "@/viewModels/hooks/auth";
 
-//import { useAuth } from "@/hooks/Auth";
+//import { useAuth } from "@/viewModels/hooks/Auth";
 
 const loginSchema = z.object({
     nombre_usuario: z.string().min(1, "El usuario es obligatorio"),

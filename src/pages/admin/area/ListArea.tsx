@@ -12,16 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
-export interface Categoria {
-    id: string;
-    nombre: string;
-}
-export interface Area {
-    id: number;
-    nombre: string;
-    categorias?: Categoria[];
-    vigente: boolean;
-}
+import { type Area } from "@/models/api/areas";
 interface ListAreaProps {
     areas: Area[];
     loading?: boolean;
@@ -39,7 +30,7 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
     };
 
     const eliminarArea = async () => {
-        if (areaSeleccionada) await onDelete(areaSeleccionada.id);
+        if (areaSeleccionada) await onDelete(Number(areaSeleccionada.id));
         setShowConfirm(false);
     };
 

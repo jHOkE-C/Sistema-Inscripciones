@@ -17,20 +17,11 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 
-// Define types for our data structure
-interface Role {
-  id: number;
-  nombre: string;
-  servicios: Array<{ id: number; nombre: string }>;
-}
+import { type Role } from '@/models/interfaces/role.interface';
 
-interface UserData {
-  id: number;
-  nombre_usuario: string;
-  roles: Role[];
-}
+import { type UserData } from '@/models/interfaces/user.interface';
 
 export default function UsersPage() {
   const [userData, setUserData] = useState<UserData[]>([]);
@@ -86,7 +77,7 @@ function UserCard({
   const hasRoles = user.roles.length > 0;
 
   // Get IDs of roles already assigned to the user
-  const assignedRoleIds = user.roles.map((role) => role.id);
+  const assignedRoleIds = user.roles.map((role: Role) => role.id);
 
   // Filter available roles to exclude already assigned roles
   const unassignedRoles = availableRoles.filter(
@@ -158,7 +149,7 @@ function UserCard({
             <div className="mt-2">
               <h3 className="text-sm font-medium mb-2">Roles Asignados:</h3>
               <div className="flex flex-wrap gap-2">
-                {user.roles.map((role) => (
+                {user.roles.map((role: Role) => (
                   <Badge
                     key={role.id}
                     variant="secondary"
@@ -195,8 +186,8 @@ function UserCard({
             <ScrollArea className="max-h-[60vh] pr-4">
               <div className="space-y-4 py-4">
                 {unassignedRoles
-                  .filter((role) => role.servicios.length > 0)
-                  .map((role) => (
+                  .filter((role: Role) => role.servicios.length > 0)
+                  .map((role: Role) => (
                     <div key={role.id} className="flex items-center space-x-2">
                       <Checkbox
                         id={`role-${role.id}`}

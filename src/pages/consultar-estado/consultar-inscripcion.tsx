@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { AlertCircle, ChevronLeft } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
 import ResponsableCard, { Responsable } from "./responsable-card";
 import PostulanteCard, { Postulante } from "./postulante-card";

@@ -4,7 +4,7 @@ import { columns, ListaPostulantes } from "../../../columns";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ShareUrl from "../../../ShareUrl";
-import { getListasPostulantes } from "@/api/postulantes";
+import { getListasPostulantes } from "@/models/api/postulantes";
 import FormResponsable from "../../../FormResponsable";
 import NotFoundPage from "../../../../404";
 import Loading from "@/components/Loading";
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../orden-pago";
 import DescargarPlantilla from "@/components/DescargarPlantilla";
-import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
+import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 const Page = () => {
     const [data, setData] = useState<ListaPostulantes[]>([]);
     const [openFormResponsable, setOpenFormResponsable] = useState(false);

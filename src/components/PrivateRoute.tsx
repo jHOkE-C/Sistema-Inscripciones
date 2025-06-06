@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/auth";
+import { useAuth } from "@/viewModels/hooks/auth";
 import { Navigate } from "react-router-dom";
 
 function PrivateRoute ({ children }: { children: React.ReactNode })  {

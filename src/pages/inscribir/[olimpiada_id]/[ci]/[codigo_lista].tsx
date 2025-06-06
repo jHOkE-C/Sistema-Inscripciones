@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista } from "@/api/postulantes";
+import { getInscritosPorLista } from "@/models/api/postulantes";
 
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
@@ -29,12 +29,12 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { cambiarEstadoLista } from "@/api/listas";
+import { cambiarEstadoLista } from "@/models/api/listas";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
 import type { Postulante } from "./columns";
 import { Check, PenBox } from "lucide-react";
-import { apiClient } from "@/api/request";
-import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
+import { apiClient } from "@/models/api/request";
+import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import StepFormPostulante, {
     type StepData,
 } from "@/components/StepFormPostulante";

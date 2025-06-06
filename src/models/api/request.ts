@@ -1,4 +1,4 @@
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 
 export async function request<T>(
     endpoint: string,

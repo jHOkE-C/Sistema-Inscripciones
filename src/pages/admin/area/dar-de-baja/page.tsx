@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
 
 import {

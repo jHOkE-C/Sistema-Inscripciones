@@ -14,7 +14,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NotFoundPage from "@/pages/404";
-import { getListasPostulantes } from "@/api/postulantes";
+import { getListasPostulantes } from "@/models/api/postulantes";
 import Loading from "@/components/Loading";
 import FormResponsable from "@/pages/inscribir/FormResponsable";
 

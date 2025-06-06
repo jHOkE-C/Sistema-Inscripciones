@@ -9,8 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { API_URL } from "@/hooks/useApiRequest";
-import { formatDate, OlimpiadaData } from "./types";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
+import { formatDate } from "@/viewModels/utils/fechas";
+import { OlimpiadaData } from "@/models/types/versiones.type";
 
 import {
   Card,

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import routes from "./routes";
-import { AuthProvider } from "./hooks/AuthProvider";
+import routes from "./routesa";
+import { AuthProvider } from "@/viewModels/hooks/AuthProvider";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/theme-provider";
 

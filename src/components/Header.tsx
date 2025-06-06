@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
-import type { ruta } from "@/types/ruta";
+import type { ruta } from "@/models/types/ruta";
 import { Menu, X } from "lucide-react";
-import { useAuth } from "@/hooks/auth";
+import { useAuth } from "@/viewModels/hooks/auth";
 import { toast } from "sonner";
 
 interface navigation {

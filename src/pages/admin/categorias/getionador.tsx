@@ -13,9 +13,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 
-import type { Category, Area } from "./types";
+import type { Category, Area } from "@/models/categorias/types";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import CreateCategoryModal from "./create-category-modal";
 import AddAreaModal from "./add-modal";
 import EditCategoryModal from "./edit-modal";

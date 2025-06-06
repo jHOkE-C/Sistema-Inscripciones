@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista } from "@/api/postulantes";
+import { getInscritosPorLista } from "@/models/api/postulantes";
 
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";

@@ -1,4 +1,4 @@
-import type { EstadoLista } from "@/api/listas";
+import type { EstadoLista } from "@/models/api/listas";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";

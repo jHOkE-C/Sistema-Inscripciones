@@ -3,11 +3,11 @@
 import { Versiones } from "@/pages/admin/Versiones";
 import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
-import { Version, VersionFilter } from "@/types/versiones.type";
+import { Version, VersionFilter } from "@/models/types/versiones.type";
 import Header from "@/components/Header";
 
 export interface VersionesPageProps {

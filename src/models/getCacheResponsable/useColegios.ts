@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { request } from "@/api/request";
-import { type Colegio } from "@/api/areas";
+import { request } from "@/models/api/request";
+import { type Colegio } from "@/models/api/areas";
 
 export const useColegios = (options?: UseQueryOptions<Colegio[], Error>) => {
   return useQuery<Colegio[], Error>({

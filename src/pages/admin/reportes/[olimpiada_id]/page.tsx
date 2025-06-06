@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Download, SquareArrowDown, SquareArrowUp } from "lucide-react";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import ModalPdf from "../modalPdf";

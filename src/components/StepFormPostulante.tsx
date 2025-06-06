@@ -15,13 +15,13 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { getCategoriaAreaPorGrado, type Categoria } from "@/api/areas";
-import { useUbicacion } from "@/context/UbicacionContext";
-import type { Olimpiada } from "@/types/versiones.type";
+import { getCategoriaAreaPorGrado, type Categoria } from "@/models/api/areas";
+import { useUbicacion } from "@/viewModels/context/UbicacionContext";
+import type { Olimpiada } from "@/models/types/versiones.type";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { apiClient } from "@/api/request";
+import { apiClient } from "@/models/api/request";
 import {
     Dialog,
     DialogContent,
@@ -45,12 +45,12 @@ import type {
     Colegio,
     Departamento,
     Provincia,
-} from "@/interfaces/ubicacion.interface";
+} from "@/models/interfaces/ubicacion.interface";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { ArrowRight, Trash2, TriangleAlert, User } from "lucide-react";
-import { getResponsable } from "@/api/responsables";
-import { CONTACTOS } from "@/interfaces/postulante.interface";
+import { getResponsable } from "@/models/api/responsables";
+import { CONTACTOS } from "@/models/interfaces/postulante.interface";
 import { Card, CardContent } from "./ui/card";
 
 const personalSchema = z.object({

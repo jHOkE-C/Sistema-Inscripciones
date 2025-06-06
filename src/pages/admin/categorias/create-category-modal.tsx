@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Category } from "./types";
+import type { Category } from "@/models/categorias/types";
 import { toast } from "sonner";
 
 interface CreateCategoryModalProps {

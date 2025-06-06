@@ -1,5 +1,5 @@
 
-import type { Olimpiada } from "@/types/versiones.type"
+import type { Olimpiada } from "@/models/types/versiones.type"
 import { request } from "./request"
 
 export const getOlimpiada= async (id:string)=>{

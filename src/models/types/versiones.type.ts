@@ -54,3 +54,15 @@ export type FaseNombre =
 export type FiltroGlobal = "pasadas" | "futuras";
 
 export type VersionFilter = FiltroGlobal | FaseNombre;
+
+export interface Cronograma {
+    id_fase: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    fase: { id: string; nombre_fase: string; orden: number };
+}
+
+export interface OlimpiadaData {
+    olimpiada: Olimpiada;
+    cronogramas: Cronograma[];
+}

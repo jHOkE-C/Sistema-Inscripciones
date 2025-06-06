@@ -2,7 +2,7 @@
 
 import { User, Shield } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/hooks/auth"
+import { useAuth } from "@/viewModels/hooks/auth"
 
 
 export function UserPanel() {

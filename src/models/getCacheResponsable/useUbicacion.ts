@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { request } from "@/api/request";
-import { type Departamento } from "@/interfaces/ubicacion.interface";
+import { request } from "@/models/api/request";
+import { type Departamento } from "@/models/interfaces/ubicacion.interface";
 
 export const useDepartamentosWithProvinces = (options?: UseQueryOptions<Departamento[], Error>) => {
   return useQuery<Departamento[], Error>({

@@ -1,9 +1,9 @@
-import { Colegio, type Categoria } from "@/api/areas";
-import { CONTACTOS, GRADOS } from "@/interfaces/postulante.interface";
-import type { Olimpiada } from "@/types/versiones.type";
+import { Colegio, type Categoria } from "@/models/api/areas";
+import { CONTACTOS, GRADOS } from "@/models/interfaces/postulante.interface";
+import type { Olimpiada } from "@/models/types/versiones.type";
 import ExcelJS, { type Workbook, type Worksheet } from "exceljs";
 import { saveAs } from "file-saver";
-import { type Departamento } from "@/interfaces/ubicacion.interface";
+import { type Departamento } from "@/models/interfaces/ubicacion.interface";
 
 
 let departamentos: string[] = [];

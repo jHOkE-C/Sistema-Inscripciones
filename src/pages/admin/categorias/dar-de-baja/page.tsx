@@ -1,6 +1,6 @@
 import { Suspense, useState, useEffect } from "react";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
 
 import {
@@ -23,7 +23,7 @@ import {
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 
-import type { Category } from "../types";
+import type { Category } from "@/models/categorias/types";
 import ReturnComponent from "@/components/ReturnComponent";
 
 export default function Page() {

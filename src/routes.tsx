@@ -20,9 +20,10 @@ const routeConfigs = Object.entries(pages)
 
 
     const pageElement = (
-      <Suspense fallback={<Loading />}>
+      <>
+        <Loading />
         <LazyPage />
-      </Suspense>
+      </>
     );
 
 

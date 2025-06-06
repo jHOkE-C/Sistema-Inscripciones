@@ -1,4 +1,4 @@
-import { ruta } from "@/types/ruta";
+import { ruta } from "@/models/types/ruta";
 
 export const rutasAdmin: ruta[] = [
   { nombre: "Administración", url: "/admin" },

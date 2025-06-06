@@ -6,13 +6,13 @@ import {
     CONTACTOS,
     type newExcelPostulante,
     type newPostulante,
-} from "@/interfaces/postulante.interface";
-import { ValidationError } from "@/interfaces/error.interface";
+} from "@/models/interfaces/postulante.interface";
+import { ValidationError } from "@/models/interfaces/error.interface";
 import {
     Departamento,
     Provincia,
     Colegio,
-} from "@/interfaces/ubicacion.interface";
+} from "@/models/interfaces/ubicacion.interface";
 
 export const validarCamposRequeridos = (
     headers: string[]

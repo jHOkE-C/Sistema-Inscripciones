@@ -4,7 +4,7 @@ import { columns, ListaPostulantes } from "../../../columns";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ShareUrl from "../../../ShareUrl";
-import { getListasPostulantes } from "@/api/postulantes";
+import { getListasPostulantes } from "@/models/api/postulantes";
 import FormResponsable from "../../../FormResponsable";
 import NotFoundPage from "../../../../404";
 import Loading from "@/components/Loading";

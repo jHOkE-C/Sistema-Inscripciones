@@ -1,6 +1,6 @@
 import React from "react";
-import { UbicacionProvider } from "@/context/UbicacionContext";
-import { CategoriasProvider } from "@/context/CategoriasContext";
+import { UbicacionProvider } from "@/viewModels/context/UbicacionContext";
+import { CategoriasProvider } from "@/viewModels/context/CategoriasContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();

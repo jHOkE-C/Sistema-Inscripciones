@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { apiClient, request } from "@/api/request";
-import type { Area } from "@/api/areas";
+import { apiClient, request } from "@/models/api/request";
+import type { Area } from "@/models/api/areas";
 import { useParams } from "react-router-dom";
 import {
     AlertDialog,
@@ -27,8 +27,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import type { Olimpiada } from "@/types/versiones.type";
-import { getOlimpiada } from "@/api/olimpiada";
+import type { Olimpiada } from "@/models/types/versiones.type";
+import { getOlimpiada } from "@/models/api/olimpiada";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import ReturnComponent from "@/components/ReturnComponent";
 

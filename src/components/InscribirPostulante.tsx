@@ -1,4 +1,4 @@
-import { apiClient } from "@/api/request";
+import { apiClient } from "@/models/api/request";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import { Dialog } from "@radix-ui/react-dialog";
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getListasPostulantes } from "@/api/postulantes";
+import { getListasPostulantes } from "@/models/api/postulantes";
 import { ListaPostulantes } from "@/pages/inscribir/columns";
 import NotFoundPage from "@/pages/404";
 import { toast } from "sonner";
@@ -36,7 +36,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "./ui/alert-dialog";
-import type { Olimpiada } from "@/types/versiones.type";
+import type { Olimpiada } from "@/models/types/versiones.type";
 import StepFormPostulante from "./StepFormPostulante";
 
 const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {

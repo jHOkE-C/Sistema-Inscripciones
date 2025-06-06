@@ -6,18 +6,18 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { generarExcel } from "@/utils/excel";
+import { generarExcel } from "@/viewModels/utils/excel";
 
 import { DownloadCloud, FileSpreadsheet, Info } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react"; // Import useEffect
-import { useColegios } from "../../../hooks/getCacheResponsable/useColegios";
-import { useDepartamentosWithProvinces } from "../../../hooks/getCacheResponsable/useUbicacion";
-import { useOlimpiada } from "../../../hooks/getCacheResponsable/useOlimpiadas";
-import { useAreasConCategorias } from "../../../hooks/getCacheResponsable/useCategoriasAreas";
+import { useColegios } from "@/models/getCacheResponsable/useColegios";
+import { useDepartamentosWithProvinces } from "@/models/getCacheResponsable/useUbicacion";
+import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
+import { useAreasConCategorias } from "@/models/getCacheResponsable/useCategoriasAreas";
 import { toast } from "sonner";
-import type { Olimpiada } from "../../../types/versiones.type";
+import type { Olimpiada } from "@/models/types/versiones.type";
 
 const Page = () => {
     const [loading, setLoading] = useState<boolean>(false);

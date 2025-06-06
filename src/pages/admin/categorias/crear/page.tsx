@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/table";
 import { Plus, PlusCircle } from "lucide-react";
 
-import type { Category } from "../types";
+import type { Category } from "@/models/categorias/types";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
 import CreateCategoryModal from "../create-category-modal";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";

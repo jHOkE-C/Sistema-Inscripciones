@@ -16,9 +16,9 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { getCategoriaAreaPorGrado, type Categoria } from "@/api/areas";
+import { getCategoriaAreaPorGrado, type Categoria, type Area } from "@/models/api/areas";
 import { MultiSelect } from "@/components/MultiSelect";
-import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
+import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import {
     Accordion,
     AccordionContent,
@@ -30,8 +30,8 @@ import { MyCombobox } from "@/components/MyComboBox";
 import { DateSelector } from "@/components/DateSelector";
 import { toast } from "sonner";
 
-import { useUbicacion } from "@/context/UbicacionContext";
-import { CONTACTOS } from "@/interfaces/postulante.interface";
+import { useUbicacion } from "@/viewModels/context/UbicacionContext";
+import { CONTACTOS } from "@/models/interfaces/postulante.interface";
 
 export const grados = [
     { id: "1", nombre: "1ro Primaria" },
@@ -620,12 +620,12 @@ const FormPostulante = ({
                                                                             id: idCat,
                                                                             nombre: nombreCat,
                                                                             areas,
-                                                                        }) =>
+                                                                        }: Categoria) =>
                                                                             areas?.map(
                                                                                 ({
                                                                                     id: idArea,
                                                                                     nombre: nombreArea,
-                                                                                }) => ({
+                                                                                }: Area) => ({
                                                                                     id: `${idArea}-${idCat}`,
                                                                                     nombre: `${nombreArea} - ${nombreCat}`,
                                                                                 })

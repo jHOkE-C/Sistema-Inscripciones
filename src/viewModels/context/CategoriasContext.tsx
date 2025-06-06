@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState } from "react";
 import {
     getAreasConCategorias,
     getCategoriasOlimpiada,
-} from "@/api/categorias";
-import { CategoriaExtendida, GRADOS } from "@/interfaces/postulante.interface";
+} from "@/models/api/categorias";
+import { CategoriaExtendida, GRADOS } from "@/models/interfaces/postulante.interface";
 
 interface CategoriasContextType {
     getAreasCategoriasPorOlimpiada: (
@@ -53,7 +53,7 @@ export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({
                 const categoriasExtendidas:CategoriaExtendida[] = []
                 categorias.forEach((cat) => {
                      areasConCategoriasData.forEach((area) => {
-                        if (area.categorias.find(({id})=>id == cat.id)) {
+                        if (area.categorias.find(({id}:CategoriaExtendida )=>id == cat.id)) {
                             const categoriaExtendida: CategoriaExtendida = {
                                 ...cat,
                                 areaId: area?.id ?? 0,

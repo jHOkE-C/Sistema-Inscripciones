@@ -17,18 +17,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 
-interface Privilege {
-  id: number;
-  nombre: string;
-}
-
-interface Role {
-  id: number;
-  nombre: string;
-  servicios: Privilege[];
-}
+import { type Privilege, type Role } from '@/models/interfaces/role.interface';
 
 
 export default function RolesPage() {
@@ -93,7 +84,7 @@ function RoleCard({
   const hasPrivileges = role.servicios.length > 0;
 
   // Get IDs of privileges already assigned to the role
-  const assignedPrivilegeIds = role.servicios.map((privilege) => privilege.id);
+const assignedPrivilegeIds = role.servicios.map((privilege: Privilege) => privilege.id);
 
   // Filter available privileges to exclude already assigned privileges
   const unassignedPrivileges = availablePrivileges.filter(
@@ -207,7 +198,7 @@ function RoleCard({
           ) : (
             <ScrollArea className="max-h-[60vh] pr-4">
               <div className="space-y-4 py-4">
-                {unassignedPrivileges.map((privilege) => (
+                {unassignedPrivileges.map((privilege: Privilege) => (
                   <div
                     key={privilege.id}
                     className="flex items-center space-x-2"

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista, postDataPostulante } from "@/api/postulantes";
+import { getInscritosPorLista, postDataPostulante } from "@/models/api/postulantes";
 
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
@@ -29,7 +29,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { cambiarEstadoLista } from "@/api/listas";
+import { cambiarEstadoLista } from "@/models/api/listas";
 import type { Postulante } from "../columns";
 import DialogPostulante from "@/components/DialogPostulante";
 import type { postulanteSchema } from "@/components/FormPostulante";

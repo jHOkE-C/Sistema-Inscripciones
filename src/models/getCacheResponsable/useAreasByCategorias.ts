@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { request } from "@/api/request";
-import type { Area, Categoria } from "@/api/areas";
+import { request } from "@/models/api/request";
+import type { Area, Categoria } from "@/models/api/areas";
 
 interface AreaWithCategories extends Area {
   categorias?: Categoria[]; 

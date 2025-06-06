@@ -1,5 +1,5 @@
 import { request } from './request';
-import type { UploadResponse, Postulante } from '@/interfaces/postulante.interface';
+import type { UploadResponse, Postulante } from '@/models/interfaces/postulante.interface';
 //creo que sera mejor usar axios pa este
 export async function postBulkInscripciones(
   ci: string,

@@ -18,7 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 import CrearRol from "./crear-rol/page";
-import { useAuth } from "@/hooks/auth";
+import { useAuth } from "@/viewModels/hooks/auth";
 import HelpTooltip from "@/components/help-tooltip";
 
 export default function Botones() {

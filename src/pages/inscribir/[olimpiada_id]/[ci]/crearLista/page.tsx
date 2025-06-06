@@ -8,7 +8,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NotFoundPage from "@/pages/404";
-import { crearListaPostulante, getListasPostulantes } from "@/api/postulantes";
+import { crearListaPostulante, getListasPostulantes } from "@/models/api/postulantes";
 import Loading from "@/components/Loading";
 import FormResponsable from "@/pages/inscribir/FormResponsable";
 import { Button } from "@/components/ui/button";

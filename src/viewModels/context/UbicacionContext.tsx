@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import axios from "axios";
-import { Departamento, Provincia, Colegio } from "@/interfaces/ubicacion.interface";
+import { Departamento, Provincia, Colegio } from "@/models/interfaces/ubicacion.interface";
 import { toast } from "sonner";
 interface UbicacionContextType {
     departamentos: Departamento[];

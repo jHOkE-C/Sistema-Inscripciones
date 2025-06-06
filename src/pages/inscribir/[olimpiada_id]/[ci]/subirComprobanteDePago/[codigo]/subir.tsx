@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useOpenCv, type CvModule } from '@/hooks/useOpencv';
+import { useOpenCv, type CvModule } from '@/viewModels/hooks/useOpencv';
 import ReturnComponent from '@/components/ReturnComponent';
 import FileUpload from '@/components/fileUpload';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Loader2, ChevronDown } from 'lucide-react';
 import LoadingAlert from '@/components/loading-alert';
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { pagarLista } from "@/api/listas";
+import { pagarLista } from "@/models/api/listas";
 import {
   AlertDialog,
   AlertDialogAction,

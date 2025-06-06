@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { request } from "@/api/request";
-import { type Categoria } from "@/api/areas";
+import { request } from "@/models/api/request";
+import { type Categoria } from "@/models/api/areas";
 
 export const useAreasConCategorias = (olimpiadaId: number, options?: UseQueryOptions<Categoria[], Error>) => {
     return useQuery<Categoria[], Error>({

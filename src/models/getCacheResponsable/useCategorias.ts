@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { request } from "@/api/request";
-import type { Categoria } from "@/interfaces/postulante.interface";
+import { request } from "@/models/api/request";
+import type { Categoria } from "@/models/interfaces/postulante.interface";
 
 export const getCategoriasOlimpiada = async (olimpiadaId: number): Promise<Categoria[][]> => {
   return await request<Categoria[][]>(`/api/categorias/olimpiada/${olimpiadaId}`);

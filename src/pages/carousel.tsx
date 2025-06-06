@@ -21,9 +21,9 @@ import {
 } from "@/components/ui/carousel";
 import { Calendar, Clock, Trophy } from "lucide-react";
 import axios from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { Link } from "react-router-dom";
-import type { Olimpiada } from "@/types/versiones.type";
+import type { Olimpiada } from "@/models/types/versiones.type";
 
 const DescargarPlantilla = lazy(
     () => import("@/components/DescargarPlantilla")

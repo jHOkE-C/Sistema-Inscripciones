@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Download, CheckCircle2, PenBox } from "lucide-react";
 import axios, { AxiosError } from "axios";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
 import { descargarPDF, generarOrden } from "@/utils/pdf";
 import type { Olimpiada } from "@/pages/admin/version/[id]/types";
@@ -28,7 +28,7 @@ interface Props {
     olimpiada?: Olimpiada;
 }
 import { isMobile } from "react-device-detect";
-import { apiClient } from "@/api/request";
+import { apiClient } from "@/models/api/request";
 
 export interface Orden {
     id: string;

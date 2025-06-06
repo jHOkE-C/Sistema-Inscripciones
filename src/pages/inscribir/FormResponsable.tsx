@@ -1,4 +1,4 @@
-import { registrarResponsable } from "@/api/responsables";
+import { registrarResponsable } from "@/models/api/responsables";
 import { Button } from "@/components/ui/button";
 import {
     Form,

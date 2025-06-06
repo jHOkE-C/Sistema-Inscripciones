@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { getListasPostulantes } from "@/api/postulantes";
+import { getListasPostulantes } from "@/models/api/postulantes";
 import FormResponsable from "../../FormResponsable";
 import NotFoundPage from "../../../404";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
-import { ButtonConfig } from "@/interfaces/buttons.interface";
+import { ButtonConfig } from "@/models/interfaces/buttons.interface";
 import { Receipt, List, CheckCircle } from "lucide-react";
-import { useOlimpiada } from "@/hooks/getCacheResponsable/useOlimpiadas";
+import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
 import ShareUrl from "../../ShareUrl";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import {
     Card,
     CardContent,
@@ -25,11 +25,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    formatDate,
-    type Cronograma,
-    type OlimpiadaData,
-} from "../version/[id]/types";
+import { formatDate } from "@/viewModels/utils/fechas";
+import type { Cronograma, OlimpiadaData } from "@/models/types/versiones.type";
 import DatePickerPopover from "@/components/DatePickerPopover";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
@@ -44,7 +41,7 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { apiClient } from "@/api/request";
+import { apiClient } from "@/models/api/request";
 import NotFoundPage from "@/pages/404";
 import { cn } from "@/lib/utils";
 
@@ -81,7 +78,7 @@ export default function Page() {
                 `${API_URL}/api/olimpiadas/${olimpiada_id}/cronogramas`
             );
             setData(res.data);
-            const cronogramas = res.data.olimpiada.cronogramas;
+            const cronogramas: Cronograma[] = res.data.cronogramas;
 
             if (cronogramas.length > 0) {
                 setCronos(cronogramas);
@@ -90,7 +87,7 @@ export default function Page() {
             const fases = await axios.get<Fase[]>(`${API_URL}/api/fases`);
             setFases(fases.data);
 
-            const selected = cronogramas.map(({ id_fase }) => id_fase);
+            const selected = cronogramas.map(({ id_fase }: Cronograma) => id_fase);
 
             setSelectedTipos(selected);
             setLoading(false);

@@ -5,9 +5,9 @@ import {
     CardDescription,
     CardTitle,
 } from "@/components/ui/card";
-import { useApiRequest } from "@/hooks/useApiRequest";
+import { useApiRequest } from "@/viewModels/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
-import { crearArea, darDeBajaArea } from "@/api/areas";
+import { crearArea, darDeBajaArea } from "@/models/api/areas";
 import type { Area } from "../ListArea";
 import FormAddArea from "../FormAddArea";
 import ListArea from "../ListArea";
