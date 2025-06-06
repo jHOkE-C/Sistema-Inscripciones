@@ -26,7 +26,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { formatDate } from "@/viewModels/utils/fechas";
-import type { Cronograma, OlimpiadaData } from "@/models/types/versiones.type";
+import type { Cronograma, OlimpiadaData } from "@/models/interfaces/versiones.type";
 import DatePickerPopover from "@/components/DatePickerPopover";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";

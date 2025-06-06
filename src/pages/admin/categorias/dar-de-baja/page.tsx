@@ -23,7 +23,7 @@ import {
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 
-import type { Category } from "@/models/categorias/types";
+import type { Category } from "@/models/interfaces/area-Category";
 import ReturnComponent from "@/components/ReturnComponent";
 
 export default function Page() {

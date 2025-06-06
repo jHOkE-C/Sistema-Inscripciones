@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./mode-toggle";
-import type { ruta } from "@/models/types/ruta";
+import type { ruta } from "@/models/interfaces/ruta";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/viewModels/hooks/auth";
 import { toast } from "sonner";

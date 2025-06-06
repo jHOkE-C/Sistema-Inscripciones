@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { request } from "@/models/api/request";
 import type { Area, Categoria } from "@/models/api/areas";
 import { useParams } from "react-router-dom";
-import type { Olimpiada } from "@/models/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import { getOlimpiada } from "@/models/api/olimpiada";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import ReturnComponent from "@/components/ReturnComponent";

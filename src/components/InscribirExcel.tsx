@@ -30,7 +30,7 @@ import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { HoverCardContent } from "@/components/ui/hover-card";
 import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
-import { Olimpiada } from "@/models/types/versiones.type";
+import { Olimpiada } from "@/models/interfaces/versiones.type";
 import { ExcelParser } from "@/lib/ExcelParser";
 import { useNavigate } from "react-router-dom";
 import { useUbicacion } from "@/viewModels/context/UbicacionContext";

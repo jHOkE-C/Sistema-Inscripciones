@@ -14,7 +14,7 @@ import {
     CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Version } from "@/models/types/versiones.type";
+import { Version } from "@/models/interfaces/versiones.type";
 import { Link } from "react-router-dom";
 import { formatDate } from "./version/[id]/types";
 import { Input } from "@/components/ui/input";

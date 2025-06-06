@@ -17,7 +17,7 @@ import { useDepartamentosWithProvinces } from "@/models/getCacheResponsable/useU
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import { useAreasConCategorias } from "@/models/getCacheResponsable/useCategoriasAreas";
 import { toast } from "sonner";
-import type { Olimpiada } from "@/models/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 
 const Page = () => {
     const [loading, setLoading] = useState<boolean>(false);

@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 
-import type { Category, Area } from "@/models/categorias/types";
+import type { Category, Area } from "@/models/interfaces/area-Category";
 import axios from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import CreateCategoryModal from "./create-category-modal";

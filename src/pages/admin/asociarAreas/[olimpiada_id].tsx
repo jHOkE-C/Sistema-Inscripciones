@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import type { Olimpiada } from "@/models/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import { getOlimpiada } from "@/models/api/olimpiada";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import ReturnComponent from "@/components/ReturnComponent";

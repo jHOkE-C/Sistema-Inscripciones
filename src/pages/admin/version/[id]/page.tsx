@@ -11,7 +11,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { formatDate } from "@/viewModels/utils/fechas";
-import { OlimpiadaData } from "@/models/types/versiones.type";
+import { OlimpiadaData } from "@/models/interfaces/versiones.type";
 
 import {
   Card,

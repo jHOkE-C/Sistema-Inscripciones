@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { request } from "@/models/api/request";
-import { type Olimpiada } from "@/models/types/versiones.type";
+import { type Olimpiada } from "@/models/interfaces/versiones.type";
 
 export const useOlimpiada = (olimpiadaId: number, options?: UseQueryOptions<Olimpiada, Error>) => {
   return useQuery<Olimpiada, Error>({

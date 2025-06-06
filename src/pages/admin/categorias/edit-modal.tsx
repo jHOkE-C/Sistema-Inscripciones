@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Category } from "@/models/categorias/types";
+import type { Category } from "@/models/interfaces/area-Category";
 
 interface EditCategoryModalProps {
   isOpen: boolean;

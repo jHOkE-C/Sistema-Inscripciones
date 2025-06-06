@@ -36,7 +36,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "./ui/alert-dialog";
-import type { Olimpiada } from "@/models/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import StepFormPostulante from "./StepFormPostulante";
 
 const InscribirPostulante = ({ olimpiada }: { olimpiada?: Olimpiada }) => {

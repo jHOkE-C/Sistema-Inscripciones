@@ -1,7 +1,7 @@
 "use client";
 
 import VersionesPage from "@/pages/admin/VersionesPage";
-import { Version } from "@/models/types/versiones.type";
+import { Version } from "@/models/interfaces/versiones.type";
 const Admin = () => {
     return (
         <VersionesPage

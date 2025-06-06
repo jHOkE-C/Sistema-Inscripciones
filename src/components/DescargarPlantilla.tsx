@@ -1,7 +1,7 @@
 import { Download } from "lucide-react";
 import { useState, useEffect } from "react"; // Import useEffect
 import { Button } from "./ui/button";
-import type { Olimpiada } from "@/models/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import { generarExcel } from "@/viewModels/utils/excel";
 import { useColegios } from "@/models/getCacheResponsable/useColegios";
 import { useDepartamentosWithProvinces } from "@/models/getCacheResponsable/useUbicacion";

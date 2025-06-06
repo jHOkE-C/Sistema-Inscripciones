@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { getCategoriaAreaPorGrado, type Categoria } from "@/models/api/areas";
 import { useUbicacion } from "@/viewModels/context/UbicacionContext";
-import type { Olimpiada } from "@/models/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";

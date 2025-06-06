@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Edit, EditIcon } from "lucide-react";
 
-import type { Category } from "@/models/categorias/types";
+import type { Category } from "@/models/interfaces/area-Category";
 import axios from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";

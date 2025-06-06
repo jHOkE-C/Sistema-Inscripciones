@@ -7,7 +7,7 @@ import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
-import { Version, VersionFilter } from "@/models/types/versiones.type";
+import { Version, VersionFilter } from "@/models/interfaces/versiones.type";
 import Header from "@/components/Header";
 
 export interface VersionesPageProps {
