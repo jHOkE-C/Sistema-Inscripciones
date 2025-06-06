@@ -9,6 +9,7 @@ export type Version = {
     fase?: Fase;
 };
 
+
 export interface Olimpiada {
     id: number;
     nombre: string;

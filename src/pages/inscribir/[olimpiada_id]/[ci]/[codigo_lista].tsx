@@ -31,7 +31,7 @@ import {
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/models/api/listas";
 import ShareUrl from "@/pages/inscribir/ShareUrl";
-import type { Postulante } from "./columns";
+import type { Postulante } from "../../../../models/interfaces/columns";
 import { Check, PenBox } from "lucide-react";
 import { apiClient } from "@/models/api/request";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";

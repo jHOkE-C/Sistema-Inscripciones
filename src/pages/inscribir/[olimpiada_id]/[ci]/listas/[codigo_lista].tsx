@@ -44,7 +44,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import type { Postulante } from "../columns";
+import type { Postulante } from "../../../../../models/interfaces/columns";
 
 export default function Page() {
     const [data, setData] = useState<Postulante[]>([]);

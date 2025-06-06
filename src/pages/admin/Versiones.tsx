@@ -16,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Version } from "@/models/interfaces/versiones.type";
 import { Link } from "react-router-dom";
-import { formatDate } from "./version/[id]/types";
+import { formatDate } from "../../models/interfaces/types";
 import { Input } from "@/components/ui/input";
 import {
     Select,

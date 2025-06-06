@@ -21,7 +21,7 @@ import axios, { AxiosError } from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
 import { descargarPDF, generarOrden } from "@/utils/pdf";
-import type { Olimpiada } from "@/pages/admin/version/[id]/types";
+import type { Olimpiada } from "@/models/interfaces/types";
 import { Document, Page, pdfjs } from "react-pdf";
 interface Props {
     codigo_lista: string;

@@ -17,7 +17,7 @@ import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
 import ReturnComponent from "@/components/ReturnComponent";
 import { Button } from "@/components/ui/button";
-import type { Postulante } from "../../columns";
+import type { Postulante } from "../../../../../../models/interfaces/columns";
 
 export default function Page() {
     const navigate = useNavigate();

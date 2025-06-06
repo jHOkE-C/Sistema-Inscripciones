@@ -1,6 +1,6 @@
 import type { ListaPostulantes } from "@/pages/inscribir/columns";
 import { request } from "./request";
-import type { Postulante } from "@/pages/inscribir/[olimpiada_id]/[ci]/columns";
+import type { Postulante } from "@/models/interfaces/columns";
 import type { EstadoLista } from "./listas";
 
 export const postDataPostulante = async (

@@ -17,7 +17,7 @@ import Loading from "@/components/Loading";
 import NotFoundPage from "@/pages/404";
 import ReturnComponent from "@/components/ReturnComponent";
 
-import type { Postulante } from "../columns";
+import type { Postulante } from "../../../../../models/interfaces/columns";
 import { ButtonFinalizarRegistro } from "../[codigo_lista]";
 
 export default function Page() {

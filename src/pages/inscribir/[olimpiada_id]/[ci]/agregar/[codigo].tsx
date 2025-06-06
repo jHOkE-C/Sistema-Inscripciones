@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/models/api/listas";
-import type { Postulante } from "../columns";
+import type { Postulante } from "../../../../../models/interfaces/columns";
 import DialogPostulante from "@/components/DialogPostulante";
 import type { postulanteSchema } from "@/components/FormPostulante";
 import type { z } from "zod";
