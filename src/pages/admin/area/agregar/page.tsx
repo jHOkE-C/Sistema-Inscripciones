@@ -8,7 +8,7 @@ import {
 import { useApiRequest } from "@/viewModels/hooks/useApiRequest";
 import { AlertComponent } from "@/components/AlertComponent";
 import { crearArea, darDeBajaArea } from "@/models/api/areas";
-import type { Area } from "../ListArea";
+import type { Area } from "@/models/api/areas";
 import FormAddArea from "../FormAddArea";
 import ListArea from "../ListArea";
 import { toast } from "sonner";

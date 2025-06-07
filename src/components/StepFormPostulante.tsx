@@ -40,7 +40,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "./ui/alert-dialog";
-import { getDateUTC } from "@/utils/fechas";
+import { getDateUTC } from "@/viewModels/utils/fechas";
 import type {
     Colegio,
     Departamento,

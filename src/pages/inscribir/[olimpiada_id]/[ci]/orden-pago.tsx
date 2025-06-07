@@ -20,7 +20,7 @@ import { AlertCircle, Download, CheckCircle2, PenBox } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
-import { descargarPDF, generarOrden } from "@/utils/pdf";
+import { descargarPDF, generarOrden } from "@/viewModels/utils/pdf";
 import type { Olimpiada } from "@/models/interfaces/types";
 import { Document, Page, pdfjs } from "react-pdf";
 interface Props {

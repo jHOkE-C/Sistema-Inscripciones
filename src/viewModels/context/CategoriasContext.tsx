@@ -53,7 +53,7 @@ export const CategoriasProvider: React.FC<{ children: React.ReactNode }> = ({
                 const categoriasExtendidas:CategoriaExtendida[] = []
                 categorias.forEach((cat) => {
                      areasConCategoriasData.forEach((area) => {
-                        if (area.categorias.find(({id}:CategoriaExtendida )=>id == cat.id)) {
+                        if (area.categorias.find(({id} )=>id == cat.id)) {
                             const categoriaExtendida: CategoriaExtendida = {
                                 ...cat,
                                 areaId: area?.id ?? 0,

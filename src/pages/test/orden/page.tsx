@@ -1,4 +1,4 @@
-import { generarOrden } from "@/utils/pdf";
+import { generarOrden } from "@/viewModels/utils/pdf";
 
 const Page = () => {
     generarOrden()
