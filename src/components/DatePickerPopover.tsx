@@ -16,6 +16,7 @@ interface DatePickerPopoverProps {
     maxDate?: Date;
     onSelect: (date: Date) => void;
     className?: string;
+    disabled?: boolean; // Add disabled prop
 }
 
 export default function DatePickerPopover({
@@ -23,7 +24,8 @@ export default function DatePickerPopover({
     minDate,
     maxDate,
     onSelect,
-    className
+    className,
+    disabled // Destructure disabled prop
 }: DatePickerPopoverProps) {
     const [open, setOpen] = useState(false);
 
@@ -37,6 +39,7 @@ export default function DatePickerPopover({
                     variant="link"
                     size="sm"
                     className={cn("flex items-center font-normal",className)}
+                    disabled={disabled} // Pass disabled prop to Button
                 >
                     <CalendarIcon className="w-4 h-4 mr-1" />
                     {selectedDate
@@ -47,6 +50,7 @@ export default function DatePickerPopover({
             <PopoverContent className="p-0 pl-4">
                 <Calendar
                     mode="single"
+                    captionLayout="dropdown"
                     locale={es}
                     disabled={(date) => {
                         if (minDate && date < minDate) return true;

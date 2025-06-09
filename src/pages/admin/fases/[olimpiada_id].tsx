@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest.tsx";
 import {
     Card,
     CardContent,
@@ -25,8 +25,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { formatDate } from "@/viewModels/utils/fechas";
-import type { Cronograma, OlimpiadaData } from "@/models/interfaces/versiones.type";
+import {
+    formatDate,
+    type Cronograma,
+    type OlimpiadaData,
+} from "@/models/interfaces/types";
 import DatePickerPopover from "@/components/DatePickerPopover";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
@@ -78,7 +81,7 @@ export default function Page() {
                 `${API_URL}/api/olimpiadas/${olimpiada_id}/cronogramas`
             );
             setData(res.data);
-            const cronogramas: Cronograma[] = res.data.cronogramas;
+            const cronogramas = res.data.olimpiada.cronogramas;
 
             if (cronogramas.length > 0) {
                 setCronos(cronogramas);
@@ -87,7 +90,7 @@ export default function Page() {
             const fases = await axios.get<Fase[]>(`${API_URL}/api/fases`);
             setFases(fases.data);
 
-            const selected = cronogramas.map(({ id_fase }: Cronograma) => id_fase);
+            const selected = cronogramas.map(({ id_fase }) => id_fase);
 
             setSelectedTipos(selected);
             setLoading(false);
@@ -599,6 +602,8 @@ export default function Page() {
                                                                   olimpiada.fecha_fin
                                                               )
                                                     }
+                                                    //fix temporal
+                                                    disabled={index > 0 &&!cronos[index - 1].fecha_fin}
                                                 />
                                             </TableCell>
                                             <TableCell>
@@ -656,6 +661,8 @@ export default function Page() {
                                                     maxDate={parseLocalDate(
                                                         olimpiada.fecha_fin
                                                     )}
+                                                    //fix temporal
+                                                    disabled={!c.fecha_inicio}
                                                 />
                                             </TableCell>
                                             <TableCell>
