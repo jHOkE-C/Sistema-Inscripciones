@@ -35,6 +35,10 @@ const loginSchema = z.object({
 const PageLogin = () => {
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
+        defaultValues: {
+            nombre_usuario: "",
+            password: "",
+        },
     });
     const [error, setError] = useState<string | null>(null);
     const {logIn}= useAuth()

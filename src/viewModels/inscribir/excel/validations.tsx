@@ -34,12 +34,14 @@ export const validarCamposRequeridos = (
         { columna: "N", nombre: "Área categoría 1" },
     ];
 
-    const camposFaltantes = camposRequeridos.filter((campo) => {
-        const indice = headers.findIndex(
-            (h) =>
-                h.normalize().toLocaleLowerCase().trim() ===
-                campo.nombre.normalize().toLocaleLowerCase().trim()
-        );
+    //fix temporal
+    const camposFaltantes = camposRequeridos.filter((campo, i) => {
+        const indice = headers.findIndex((h) => {
+            return h.normalize().toLocaleLowerCase().trim() === campo.nombre.normalize().toLocaleLowerCase().trim()
+        });
+        if (i === 3) {
+            return indice === 3;
+        }
         return indice === -1;
     });
 

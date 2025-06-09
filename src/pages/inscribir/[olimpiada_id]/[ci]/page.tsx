@@ -60,7 +60,7 @@ const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } 
     };
 
     useEffect(() => {
-        if (typeof ci !== 'string' || ci.length < 7 || ci.length > 10) return;
+        if (ci == null || ci.length < 7 || ci.length > 10) return;
         fetchData();
     }, [ci]);
 
