@@ -1032,39 +1032,39 @@ const StepFormPostulante = ({
                         <AlertDialogDescription>
                             Se reemplazarán los datos de las otras inscripciones
                             por los siguientes:
-                            <ul className="pl-5">
-                                {cambios.map((cambio, index) => (
-                                    <li key={index}>
-                                        <div className="flex items-center space-x-2">
-                                            <strong>{cambio.campo}:</strong>{" "}
-                                            <span className="font-semibold text-red-600">
-                                                Anterior: {cambio.anterior}
-                                            </span>
-                                            <ArrowRight className="size-6" />
-                                            <span className="font-semibold text-green-600">
-                                                Nuevo: {cambio.nuevo}
-                                            </span>
-                                        </div>
-                                        {cambio.campo === "Curso" && (
-                                            <Alert
-                                                className=""
-                                                variant={"destructive"}
-                                            >
-                                                <TriangleAlert />
-                                                <AlertTitle className="font-medium">
-                                                    Estás cambiando de grado:
-                                                </AlertTitle>{" "}
-                                                <AlertDescription>
-                                                    se eliminarán las
-                                                    inscripciones que no
-                                                    pertenecen a este grado.
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
                         </AlertDialogDescription>
+                        <ul className="pl-5 pr-8">
+                            {cambios.map((cambio, index) => (
+                                <li key={index}>
+                                    <div className="flex items-center space-x-2">
+                                        <strong>{cambio.campo}:</strong>{" "}
+                                        <span className="font-semibold text-red-600">
+                                            Anterior: {cambio.anterior}
+                                        </span>
+                                        <ArrowRight className="size-6" />
+                                        <span className="font-semibold text-green-600">
+                                            Nuevo: {cambio.nuevo}
+                                        </span>
+                                    </div>
+                                    {cambio.campo === "Curso" && (
+                                        <Alert
+                                            className=""
+                                            variant={"destructive"}
+                                        >
+                                            <TriangleAlert />
+                                            <AlertTitle className="font-medium">
+                                                Estás cambiando de grado:
+                                            </AlertTitle>{" "}
+                                            <AlertDescription>
+                                                se eliminarán las
+                                                inscripciones que no
+                                                pertenecen a este grado.
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
