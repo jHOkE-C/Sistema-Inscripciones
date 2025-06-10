@@ -8,13 +8,18 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } fro
 import { ScrollArea } from './scroll-area';
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  fromYear?: number;
+  toYear?: number;
+};
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({ className, classNames, showOutsideDays = true, fromYear, toYear, ...props }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
+      fromYear={fromYear}
+      toYear={toYear}
       classNames={{
         [UI.Months]: 'relative',
         [UI.Month]: 'space-y-4 ml-0',

@@ -69,6 +69,8 @@ export default function DatePickerPopover({
                             ? selectedDate
                             : minDate
                     }
+                    fromYear={minDate?.getFullYear()}
+                    toYear={maxDate?.getFullYear()}
                 />
             </PopoverContent>
         </Popover>

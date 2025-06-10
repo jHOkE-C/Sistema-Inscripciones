@@ -160,7 +160,13 @@ export default function Page() {
                 }
                 valid = false;
             } else {
-                if (start < vStart) {
+                console.log(`Phase: ${phaseName}`);
+                console.log(`start: ${start?.toISOString()}, vStart: ${vStart.toISOString()}`);
+                console.log(`end: ${end?.toISOString()}, vEnd: ${vEnd.toISOString()}`);
+                console.log(`start.getTime(): ${start?.getTime()}, vStart.getTime(): ${vStart.getTime()}`);
+                console.log(`end.getTime(): ${end?.getTime()}, vEnd.getTime(): ${vEnd.getTime()}`);
+
+                if (start.getTime() < vStart.getTime()) {
                     errorFlags.start = true;
                     toast.error(
                         `La fecha de inicio de "${phaseName}" está antes del rango válido.`
@@ -213,7 +219,8 @@ export default function Page() {
     }
 
     async function onSave() {
-        cronos[0].fecha_inicio = olimpiada.fecha_inicio;
+        console.log("onSave");
+        console.log(cronos);
         const payload = {
             id_olimpiada: olimpiada.id,
             cronogramas: cronos,
