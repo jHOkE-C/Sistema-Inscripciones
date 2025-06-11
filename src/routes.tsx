@@ -1,53 +1,69 @@
-import React, { Suspense, lazy } from 'react';
-import PrivateRoute from "./components/PrivateRoute";
-import Loading from '@/components/Loading';
+import React from 'react';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  RouteObject,
+} from 'react-router-dom';
+import PrivateRoute from './components/PrivateRoute';
 
+const pages = import.meta.glob('./pages/**/*.tsx');
 
-const pages = import.meta.glob("./pages/**/*.tsx");
-const protectedPrefixes = ["/admin", "/usuario", "/subir"];
+const protectedPrefixes = ['/admin', '/usuario', '/subir'];
 
-const routeConfigs = Object.entries(pages)
-  .map(([filePath, importer]) => {
-
-    const routePath = filePath
-      .replace("./pages", "")
-      .replace(/\.tsx$/, "")
-      .replace(/\/page$/, "")
-      .replace(/\[(\w+)\]/g, ":$1");
-
-
-    const LazyPage = lazy(importer as () => Promise<{ default: React.ComponentType<unknown> }>);
-
-
-    const pageElement = (
-      <Suspense fallback={<Loading />}>
-        <LazyPage />
-      </Suspense>
-    );
-
-
-    const element = protectedPrefixes.some(pref => routePath.startsWith(pref))
-      ? <PrivateRoute>{pageElement}</PrivateRoute>
-      : pageElement;
-
-    return {
-      path: routePath || "/",
-      element
-    };
-  })
-  .filter(Boolean);
-
-
-if (pages["./pages/404.tsx"]) {
-  const NotFound = lazy(pages["./pages/404.tsx"] as () => Promise<{ default: React.ComponentType<unknown> }>);
-  routeConfigs.push({
-    path: "*",
-    element: (
-      <Suspense fallback={<Loading />}>
-        <NotFound />
-      </Suspense>
-    )
-  });
+interface PageModule {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  default: React.ComponentType<any>;
 }
 
-export default routeConfigs;
+const publicRoutes: RouteObject[] = [];
+const protectedRoutes: RouteObject[] = [];
+
+Object.entries(pages).forEach(([filePath, importer]) => {
+  // 1. Genera el path
+  const routePath = filePath
+    .replace('./pages', '')
+    .replace(/\.tsx$/, '')
+    .replace(/\/(page|index)$/, '')
+    .replace(/\[(\w+)\]/g, ':$1') || '/';
+
+  // 2. Crea la ruta con lazy loader
+  const routeDef: RouteObject = {
+    path: routePath,
+    lazy: async () => {
+      const module = await (importer() as Promise<PageModule>);
+      return { Component: module.default };
+    }
+  };
+
+  // 3. Clasifica pública vs protegida
+  if (protectedPrefixes.some(pref => routePath.startsWith(pref))) {
+    protectedRoutes.push(routeDef);
+  } else {
+    publicRoutes.push(routeDef);
+  }
+});
+
+// 4. Monta el router con createBrowserRouter
+const router = createBrowserRouter(
+  [
+    { children: publicRoutes },
+
+
+    {
+      element: <PrivateRoute />,
+      children: protectedRoutes
+    },
+
+    pages['./pages/404.tsx'] && {
+      path: '*',
+      lazy: async () => {
+        const module = await (import('./pages/404.tsx') as Promise<PageModule>);
+        return { Component: module.default };
+      }
+    }
+  ].filter(Boolean) as RouteObject[],
+);
+
+export default function AppRouter() {
+  return <RouterProvider router={router} />;
+}
