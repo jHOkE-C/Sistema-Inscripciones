@@ -11,17 +11,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { pagarLista } from "@/models/api/listas";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
   createWorker,
   PSM,
   Worker
@@ -713,32 +702,12 @@ const toDigits7 = (raw: string) =>
           </div>
           {selectedResultId && checkOcrDataValidity() && (
           <div className="mt-8">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
                 <Button 
                   className="w-full" 
+                  onClick={terminarRegistro}
                 >
                   Finalizar y Enviar Comprobante
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    ¿Está seguro de enviar los datos del comprobante?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>
-                    Cancelar
-                  </AlertDialogCancel>
-                  <AlertDialogAction onClick={terminarRegistro}>
-                    Continuar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-              </AlertDialog>
             </div>
           )}
         </div>
