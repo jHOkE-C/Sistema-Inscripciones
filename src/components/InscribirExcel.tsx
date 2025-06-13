@@ -56,7 +56,7 @@ export const IncribirExcel = ({
     maxSize = 10,
     accept = ".xlsx,.xls",
     onFilesChange,
-    triggerText = "Subir archivos",
+    triggerText = "Inscribir por Excel",
     title = "Añadir archivo excel",
     description = "Selecciona un archivo de Excel de tu dispositivo o arrástralo y suéltalo aquí.",
     olimpiada,
