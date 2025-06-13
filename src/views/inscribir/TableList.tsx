@@ -1,10 +1,6 @@
 import {
     ColumnDef,
     flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable,
-    type SortingState,
 } from "@tanstack/react-table";
 
 import {
@@ -15,8 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useTableListViewModel } from "@/viewModels/inscribir/useTableListViewModel";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -29,19 +24,11 @@ export function DataTable<TData, TValue>({
     data,
     goToCode,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = useState<SortingState>([]);
-
-    const table = useReactTable({
-        data,
+    const { table, handleRowClick } = useTableListViewModel({
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
-        state: {
-            sorting,
-        },
+        data,
+        goToCode,
     });
-    const navigate = useNavigate();
 
     return (
         <div className="rounded-md border">
@@ -71,13 +58,7 @@ export function DataTable<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
-                                onClick={() => {
-                                    if (goToCode) {
-                                        const codigo =
-                                            row.getValue("codigo_lista");
-                                        navigate(`${codigo}`);
-                                    }
-                                }}
+                                onClick={() => handleRowClick(row)}
                                 className={
                                     goToCode
                                         ? "hover:text-primary-foreground hover:cursor-pointer hover:bg-primary"

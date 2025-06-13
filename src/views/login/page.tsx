@@ -1,7 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -20,42 +17,12 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { login } from "@/models/api/login";
-import { useState } from "react";
 import { AlertComponent } from "@/components/AlertComponent";
-import { useAuth } from "@/viewModels/hooks/auth";
-
-//import { useAuth } from "@/viewModels/hooks/Auth";
-
-const loginSchema = z.object({
-    nombre_usuario: z.string().min(1, "El usuario es obligatorio"),
-    password: z.string().min(1, "La contraseña es obligatoria"),
-});
+import { useLoginViewModel } from "@/viewModels/viewmodels/useLoginViewModel";
 
 const PageLogin = () => {
-    const form = useForm<z.infer<typeof loginSchema>>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            nombre_usuario: "",
-            password: "",
-        },
-    });
-    const [error, setError] = useState<string | null>(null);
-    const {logIn}= useAuth()
-    
-    const navigate = useNavigate();
+    const { form, error, onSubmit, clearError } = useLoginViewModel();
 
-
-    async function onSubmit(values: z.infer<typeof loginSchema>) {
-        try {
-            const data=await login(values);
-            logIn(data)
-            
-            navigate("/admin");
-        } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Error Desconocido");
-        }
-    }
     return (
         <>
             <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -140,9 +107,7 @@ const PageLogin = () => {
             {error && (
                 <AlertComponent
                     description={error}
-                    onClose={() => {
-                        setError(null);
-                    }}
+                    onClose={clearError}
                     variant="destructive"
                 />
             )}

@@ -17,35 +17,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-const areaSchema = z.object({
-  nombre: z
-    .string()
-    .min(3, "El nombre del área debe tener al menos 3 caracteres"),
-});
+import { useFormAddAreaViewModel } from "@/viewModels/admin/area/useFormAddAreaViewModel";
+
 interface FormAddAreaProps {
   onAdd: (data: { nombre: string }) => void;
 }
 
 const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
-  const [showForm, setShowForm] = useState(false);
-
-  const form = useForm<z.infer<typeof areaSchema>>({
-    resolver: zodResolver(areaSchema),
-    defaultValues: {
-      nombre: "",
-    },
-  });
-
-  const onSubmit = async (data: { nombre: string }) => {
-    await onAdd(data);
-    form.reset({ nombre: "" });
-    setShowForm(false);
-  };
+  const {
+    showForm,
+    setShowForm,
+    form,
+    onSubmit,
+    handleCancel,
+  } = useFormAddAreaViewModel({ onAdd });
 
   return (
     <>
@@ -89,20 +75,10 @@ const FormAddArea = ({ onAdd }: FormAddAreaProps) => {
             </form>
           </Form>
           <DialogFooter>
-            <Button
-              onClick={
-                form.handleSubmit(onSubmit)
-              }
-            >
+            <Button onClick={form.handleSubmit(onSubmit)}>
               Registrar
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                form.reset({ nombre: "" });
-                setShowForm(false);
-              }}
-            >
+            <Button variant="outline" onClick={handleCancel}>
               Cancelar
             </Button>
           </DialogFooter>

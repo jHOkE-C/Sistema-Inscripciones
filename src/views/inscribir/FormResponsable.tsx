@@ -1,4 +1,3 @@
-import { registrarResponsable } from "@/models/api/responsables";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -10,52 +9,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import { z } from "zod";
 import NotFoundPage from "../404";
-import { toast } from "sonner";
 import { MailIcon, PhoneIcon, UserIcon } from "lucide-react";
-
-const formSchema = z.object({
-  nombres: z
-    .string({ required_error: "Todos los campos son obligatorios" })
-    .min(2, "Debe tener al menos 2 caracteres")
-    .max(50, "Máximo 50 caracteres"),
-  apellidos: z
-    .string({ required_error: "Todos los campos son obligatorios" })
-    .min(2, "Debe tener al menos 2 caracteres")
-    .max(50, "Máximo 50 caracteres"),
-  email: z
-    .string({ required_error: "Todos los campos son obligatorios" })
-    .email("Ingrese un correo con formato válido (ejemplo@dominio.com)"),
-  telefono: z
-    .string({ required_error: "Todos los campos son obligatorios" })
-    .regex(/^\d{8}$/, "El teléfono debe tener exactamente 8 dígitos"),
-});
+import { useFormResponsableViewModel } from "@/viewModels/inscribir/useFormResponsableViewModel";
 
 const FormResponsable = ({ onClose }: { onClose: () => void }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
-  const { ci } = useParams();
-  if (!ci || ci.length < 7) return <NotFoundPage />;
+  const {
+    form,
+    ci,
+    handleSubmit,
+    handleNameChange,
+    handleLastNameChange,
+    handlePhoneChange,
+  } = useFormResponsableViewModel({ onClose });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await registrarResponsable({ 
-        ci, 
-        email: values.email, 
-        telefono: values.telefono, 
-        nombre_completo: `${values.nombres} ${values.apellidos}` 
-      });
-      toast.success("Registro de responsable exitoso");
-      onClose();
-    } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : "Error desconocido");
-    }
-  };
+  if (!ci || ci.length < 7) return <NotFoundPage />;
 
   return (
     <div className="w-screen h-screen flex justify-center items-center">
@@ -73,7 +41,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
         </p>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             {/* Campo de Nombres */}
             <FormField
               control={form.control}
@@ -91,13 +59,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                       {...field}
                       placeholder="Ingrese Nombres"
                       autoComplete="given-name"
-                      onChange={(e) => {
-                        const value = e.target.value.replace(
-                          /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
-                          ""
-                        );
-                        field.onChange(value);
-                      }}
+                      onChange={handleNameChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,13 +84,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                       {...field}
                       placeholder="Ingrese Apellidos"
                       autoComplete="family-name"
-                      onChange={(e) => {
-                        const value = e.target.value.replace(
-                          /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
-                          ""
-                        ); // Permitir solo letras y espacios
-                        field.onChange(value);
-                      }}
+                      onChange={handleLastNameChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -176,10 +132,7 @@ const FormResponsable = ({ onClose }: { onClose: () => void }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, "");
-                        field.onChange(value);
-                      }}
+                      onChange={handlePhoneChange}
                       value={field.value || ""}
                       type="tel"
                       placeholder="Ingrese Numero de Teléfono"

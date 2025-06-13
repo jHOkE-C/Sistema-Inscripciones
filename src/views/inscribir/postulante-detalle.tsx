@@ -3,47 +3,15 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Check, FileText, X, CreditCard } from "lucide-react"
-import { JSX } from "react"
-
-interface Postulante {
-  nombre: string
-  estado: "Aprobado" | "Pendiente" | "Rechazado" | "Pendiente de Pago" | string
-  fechaNacimiento: string
-  fechaRegistro: string
-  categoria: string
-  area: string
-  email: string
-  telefono: string
-  documentos: string[]
-}
+import { usePostulanteDetalleViewModel, type Postulante } from "@/viewModels/inscribir/usePostulanteDetalleViewModel"
 
 export default function PostulanteDetalle({ postulante, onClose }: { postulante: Postulante; onClose: () => void }) {
-  interface StatusBadgeProps {
-    estado: "Aprobado" | "Pendiente" | "Rechazado" | "Pendiente de Pago" | string;
-  }
+  const { getStatusBadge, handlePagoInscripcion } = usePostulanteDetalleViewModel({
+    postulante,
+    onClose,
+  })
 
-  const getStatusBadge = (estado: StatusBadgeProps["estado"]): JSX.Element => {
-    switch (estado) {
-      case "Aprobado":
-        return <Badge className="bg-green-500">Aprobado</Badge>;
-      case "Pendiente":
-        return <Badge className="bg-yellow-500">Pendiente</Badge>;
-      case "Rechazado":
-        return <Badge className="bg-red-500">Rechazado</Badge>;
-      case "Pendiente de Pago":
-        return <Badge className="bg-orange-500">Pendiente de Pago</Badge>;
-      default:
-        return <Badge className="bg-gray-500">{estado}</Badge>;
-    }
-  };
-
-
-  const handlePagoInscripcion = (postulante: Postulante): void => {
-    // Aquí iría la lógica para procesar el pago
-    console.log(`Procesando pago para ${postulante.nombre}`)
-    // Por ahora, solo mostraremos una alerta
-    alert(`Pago de inscripción procesado para ${postulante.nombre}`)
-  }
+  const statusBadge = getStatusBadge(postulante.estado)
 
   return (
     <>
@@ -54,7 +22,9 @@ export default function PostulanteDetalle({ postulante, onClose }: { postulante:
       <div className="py-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold">{postulante.nombre}</h3>
-          {getStatusBadge(postulante.estado)}
+          <Badge variant={statusBadge.variant} className={statusBadge.className}>
+            {statusBadge.children}
+          </Badge>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -127,7 +97,7 @@ export default function PostulanteDetalle({ postulante, onClose }: { postulante:
             <div className="flex justify-end">
               <Button
                 className="gap-2 bg-green-600 hover:bg-green-700"
-                onClick={() => handlePagoInscripcion(postulante)}
+                onClick={handlePagoInscripcion}
               >
                 <CreditCard className="h-4 w-4" />
                 Pagar Inscripción

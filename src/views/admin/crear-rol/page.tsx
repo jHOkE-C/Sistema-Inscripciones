@@ -1,8 +1,5 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
 import { ShieldPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,43 +13,18 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import axios from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
+import { useCrearRolViewModel } from "@/viewModels/admin/useCrearRolViewModel";
 
 export default function CrearRol() {
-  const [open, setOpen] = useState(false);
-  const [roleName, setRoleName] = useState("");
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!roleName.trim()) {
-      setError("El nombre del rol es obligatorio");
-      return;
-    }
-
-    if (roleName.length > 30) {
-      setError("El nombre del rol no puede exceder 30 caracteres");
-      return;
-    }
-    const newRol = {
-      nombre: roleName,
-    };
-    try {
-      await axios.post(`${API_URL}/api/roles`, newRol);
-      toast.success(`Rol ${roleName} creado exitosamente`);
-      setOpen(false);
-      setRoleName("");
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 422) {
-        toast.error("El nombre del rol ingresado ya existe");
-      } else {
-        toast.error("Error al crear el rol");
-      }
-    }
-  };
+  const {
+    open,
+    setOpen,
+    roleName,
+    error,
+    handleSubmit,
+    handleRoleNameChange,
+    handleClose
+  } = useCrearRolViewModel();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -89,20 +61,7 @@ export default function CrearRol() {
               <Input
                 id="role-name"
                 value={roleName}
-                onChange={(e) => {
-                  const value = e.target.value.toLowerCase(); // Convert to lowercase
-                  const regex = /^[a-z0-9\s]*$/; // Allow only lowercase letters and spaces
-                  if (regex.test(value)) {
-                    setRoleName(value);
-                    if (value.trim() && error) {
-                      setError("");
-                    }
-                  } else {
-                    setError(
-                      "Solo se permiten letras minúsculas, números y espacios"
-                    );
-                  }
-                }}
+                onChange={(e) => handleRoleNameChange(e.target.value)}
                 placeholder="Ingresa el nombre del rol"
                 className={error ? "border-destructive" : ""}
                 maxLength={30}
@@ -114,11 +73,7 @@ export default function CrearRol() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                setRoleName("");
-                setError("");
-                setOpen(false);
-              }}
+              onClick={handleClose}
               className="gap-2"
             >
               <span>Cancelar</span>

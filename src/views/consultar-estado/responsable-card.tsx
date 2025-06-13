@@ -17,37 +17,19 @@ import {
 import { User, Phone, Award, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useResponsableCardViewModel } from "@/viewModels/viewmodels/useResponsableCardViewModel";
+import type { Responsable } from "@/models/interfaces/consultar-estado.types";
 
-type Lista = {
-  codigo_lista: string;
-  cantidad_inscritos: number;
-  estado: string;
-  fecha_creacion: string;
-};
-
-type Participacion = {
-  olimpiada: string;
-  listas: Lista[];
-};
-
-export type Responsable = {
-  ci: string;
-  nombre: string;
-  correo: string;
-  telefono: string;
-  participaciones: Participacion[];
-};
-
-type ResponsableData = {
+interface ResponsableData {
   responsable: Responsable;
-};
+}
 
 interface Data {
   data: ResponsableData;
 }
 
 export default function ResponsableCard({ data }: Data) {
-  const { responsable } = data;
+  const { responsable } = useResponsableCardViewModel({ data });
 
   return (
     <div className="container mx-auto py-10 px-4">

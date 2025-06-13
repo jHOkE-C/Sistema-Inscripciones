@@ -2,12 +2,11 @@
 
 import { User, Shield } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/viewModels/hooks/auth"
-
+import { useUserPanelViewModel } from "@/viewModels/admin/useUserPanelViewModel"
 
 export function UserPanel() {
+  const { user } = useUserPanelViewModel();
 
-  const { user } = useAuth()
   return (
     <div className="w-full max-w-3xl mx-auto p-6 pb-0 bg-gradient-to-r  rounded-lg">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

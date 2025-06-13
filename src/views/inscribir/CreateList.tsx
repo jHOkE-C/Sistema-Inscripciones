@@ -1,4 +1,3 @@
-import { crearListaPostulante } from "@/models/api/postulantes";
 import { AlertComponent } from "@/components/AlertComponent";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCreateListViewModel } from "@/viewModels/inscribir/useCreateListViewModel";
 
 interface CreateListProps {
     number?: number;
@@ -25,53 +22,33 @@ export function CreateList({
     number = 1,
     refresh = () => {},
 }: CreateListProps) {
-    const [open, setOpen] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
-    const [nombre, setNombre] = useState<string>();
-    const [loading, setLoading] = useState(false);
-    const { ci, olimpiada_id } = useParams();
-
-
-
-    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (loading) return;
-        try {
-            setLoading(true);
-            if (!ci || !olimpiada_id) return;
-            await crearListaPostulante({
-                ci,
-                olimpiada_id,
-                nombre_lista: nombre || `Lista ${number}`,
-            });
-
-            setSuccess("La lista se creó correctamente.");
-            setOpen(false);
-            setNombre("");
-            refresh();
-        } catch (e: unknown) {
-            setError(
-                e instanceof Error && e.message
-                    ? e.message
-                    : "No se pudo registrar la lista. Intente nuevamente."
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
+    const {
+        open,
+        error,
+        success,
+        nombre,
+        loading,
+        handleSubmit,
+        handleOpenChange,
+        handleNombreChange,
+        handleErrorClose,
+        handleSuccessClose,
+    } = useCreateListViewModel({
+        number,
+        refresh,
+    });
 
     return (
         <>
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
                 <DialogTrigger asChild>
-                    <Button variant="default" onClick={() => setOpen(true)}>
+                    <Button variant="default" onClick={() => handleOpenChange(true)}>
                         Crear Lista
                     </Button>
                 </DialogTrigger>
 
                 <DialogContent className="sm:max-w-[425px]">
-                    <form onSubmit={onSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <DialogHeader>
                             <DialogTitle>Crear Lista</DialogTitle>
                             <DialogDescription></DialogDescription>
@@ -87,7 +64,7 @@ export function CreateList({
                                 <Input
                                     id="name"
                                     value={nombre}
-                                    onChange={(e) => setNombre(e.target.value)}
+                                    onChange={handleNombreChange}
                                     placeholder={`Lista ${number}`}
                                     className="w-full"
                                 />
@@ -106,7 +83,7 @@ export function CreateList({
                     title="Error"
                     description={error}
                     variant="destructive"
-                    onClose={() => setError(null)}
+                    onClose={handleErrorClose}
                 />
             )}
             {success && (
@@ -114,7 +91,7 @@ export function CreateList({
                     title="Éxito"
                     description={success}
                     variant="default"
-                    onClose={() => setSuccess(null)}
+                    onClose={handleSuccessClose}
                 />
             )}
         </>

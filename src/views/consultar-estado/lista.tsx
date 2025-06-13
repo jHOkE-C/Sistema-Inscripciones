@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import {
   Table,
   TableBody,
@@ -10,51 +8,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link, useParams } from "react-router-dom";
-import { getInscritosPorLista } from "@/models/api/postulantes";
-
+import { Link } from "react-router-dom";
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/views/404";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-type Postulante = {
-  id: string;
-  nombres: string;
-  apellidos: string;
-  fecha_nacimiento: string;
-  provincia_id: string;
-  email: string;
-  ci: string;
-  curso: string;
-  area: string;
-  categoria: string;
-};
-
+import { useListaViewModel } from "@/viewModels/viewmodels/useListaViewModel";
 
 export default function Lista() {
-  const [data, setData] = useState<Postulante[]>([]);
-  const { codigo_lista } = useParams();
-  const [notFound, setNotFound] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-  if (!codigo_lista) return;
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const data = await getInscritosPorLista(codigo_lista);
-      setData(data.data);
-      setNotFound(false);
-    } catch {
-      setNotFound(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, loading, notFound } = useListaViewModel();
 
   if (loading) return <Loading />;
   if (notFound) return <NotFoundPage />;

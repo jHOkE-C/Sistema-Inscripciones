@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Copy, QrCodeIcon, Share2 } from "lucide-react";
@@ -6,26 +5,24 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { QRCode } from "react-qrcode-logo";
+import { useShareUrlViewModel } from "@/viewModels/inscribir/useShareUrlViewModel";
 
 export default function ShareUrl() {
-  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
-  const [copied, setCopied] = useState(false);
-  const [showQrCode, setShowQrCode] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(currentUrl);
-    setCopied(true);
-  };
-
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(currentUrl)}`;
+  const {
+    currentUrl,
+    copied,
+    showQrCode,
+    handleCopy,
+    whatsappUrl,
+    toggleQrCode,
+  } = useShareUrlViewModel();
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="fixed bottom-1/12 right-5 p-3 rounded-full shadow-lg bg-blue-500 text-white hover:bg-blue-600 transition duration-300 cursor-pointer">
-          <Share2 className="w-6 h-6   dark:text-white" />
+          <Share2 className="w-6 h-6 dark:text-white" />
         </div>
-       
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center p-4 w-80 max-w-full">
         <p className="text-lg font-semibold mb-4">Compartir enlace</p>
@@ -41,7 +38,7 @@ export default function ShareUrl() {
         </Button>
         <Button
           variant="outline"
-          onClick={() => setShowQrCode(!showQrCode)}
+          onClick={toggleQrCode}
           className="w-full mb-2"
         >
           <QrCodeIcon />

@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -11,72 +9,27 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Edit, EditIcon } from "lucide-react";
-
-import type { Category } from "@/models/interfaces/area-Category";
-import axios from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-
 import EditCategoryModal from "../edit-modal";
 import ReturnComponent from "@/components/ReturnComponent";
+import { useEditarPageViewModel } from "@/viewModels/admin/categorias/editar/useEditarPageViewModel";
+
 const Page = () => {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-        null
-    );
-
-    const fetchData = async () => {
-        try {
-            const categorias = await axios.get<Category[]>(
-                `${API_URL}/api/categorias`
-            );
-            setCategories(categorias.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const handleEditCategory = async (
-        categoria_id: number,
-        updates: { minimo_grado: number; maximo_grado: number }
-    ) => {
-        try {
-            await axios.put(
-                `${API_URL}/api/categorias/${categoria_id}`,
-                updates
-            );
-            fetchData();
-            setIsEditModalOpen(false);
-            setSelectedCategory(null);
-            toast.success("Categoría editada correctamente.");
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data.error);
-            }
-            console.error("Error editing category:", error);
-        }
-    };
-
-    const getGradeLabel = (grade: number) => {
-        if (grade <= 6) return `${grade}° Primaria`;
-        return `${grade - 6}° Secundaria`;
-    };
-    const openEditModal = (category: Category) => {
-        setSelectedCategory(category);
-        setIsEditModalOpen(true);
-    };
+    const {
+        categories,
+        isEditModalOpen,
+        selectedCategory,
+        handleEditCategory,
+        getGradeLabel,
+        openEditModal,
+        closeEditModal,
+    } = useEditarPageViewModel();
 
     return (
         <>
-                        <ReturnComponent to={`..\\..\\`}/>
+            <ReturnComponent to={`..\\..\\`}/>
 
             <div className="container mx-auto max-w-6xl px-4 py-10">
-
                 <Suspense fallback={<div>Cargando...</div>}></Suspense>
                 <Card>
                     <CardContent>
@@ -89,7 +42,7 @@ const Page = () => {
                                 olimpiadas.
                             </p>
                         </CardTitle>
-                        <Table className="mb-10   mx-auto">
+                        <Table className="mb-10 mx-auto">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Categoria</TableHead>
@@ -139,10 +92,7 @@ const Page = () => {
             {selectedCategory && (
                 <EditCategoryModal
                     isOpen={isEditModalOpen}
-                    onClose={() => {
-                        setIsEditModalOpen(false);
-                        setSelectedCategory(null);
-                    }}
+                    onClose={closeEditModal}
                     category={selectedCategory}
                     onEditCategory={(updates) =>
                         handleEditCategory(selectedCategory.id, updates)

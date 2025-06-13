@@ -1,7 +1,6 @@
 import AlertDialogComponent from "@/components/AlertDialogComponent";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/spinner";
-
 import {
     Table,
     TableBody,
@@ -11,8 +10,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
 import { type Area } from "@/models/api/areas";
+import { useListAreaViewModel } from "@/viewModels/admin/area/useListAreaViewModel";
+
 interface ListAreaProps {
     areas: Area[];
     loading?: boolean;
@@ -20,21 +20,15 @@ interface ListAreaProps {
     onDelete: (id: number) => void;
     eliminar?: boolean;
 }
+
 const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
-    const confirmarEliminacion = (area: Area) => {
-        setAreaSeleccionada(area);
-        setShowConfirm(true);
-        areas.sort((a, b) => Number(b.vigente) - Number(a.vigente));
-    };
-
-    const eliminarArea = async () => {
-        if (areaSeleccionada) await onDelete(Number(areaSeleccionada.id));
-        setShowConfirm(false);
-    };
-
-    
+    const {
+        showConfirm,
+        setShowConfirm,
+        areaSeleccionada,
+        confirmarEliminacion,
+        eliminarArea
+    } = useListAreaViewModel({ areas, onDelete });
 
     if (loading) return <Loading />;
     return (
@@ -59,14 +53,12 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                                 </TableCell>
 
                                 <TableCell className="text-right">
-                                    {eliminar &&area.vigente && (
+                                    {eliminar && area.vigente && (
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             className="text-destructive hover:text-destructive"
-                                            onClick={() =>
-                                                confirmarEliminacion(area)
-                                            }
+                                            onClick={() => confirmarEliminacion(area)}
                                         >
                                             <Trash2 className="mr-1 h-3 w-3" />{" "}
                                             Dar de Baja
@@ -93,7 +85,6 @@ const ListArea = ({ areas, loading, onDelete, eliminar }: ListAreaProps) => {
                 title={`¿Está seguro que desea dar de baja el área  ${areaSeleccionada?.nombre}?`}
                 continueButtonText="Dar de Baja"
                 continueIsDanger
-                
                 onConfirm={eliminarArea}
             />
         </>

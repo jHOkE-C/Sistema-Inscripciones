@@ -18,20 +18,11 @@ import {
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
 import CrearRol from "./crear-rol/page";
-import { useAuth } from "@/viewModels/hooks/auth";
 import HelpTooltip from "@/components/help-tooltip";
+import { useBotonesViewModel } from "@/viewModels/admin/useBotonesViewModel";
 
 export default function Botones() {
-  const { user } = useAuth();
-  const accesos = user?.accesos;
-  console.log(accesos);
-
-  function hasAccess(rol: string) {
-    if (accesos) {
-      return accesos.some((acceso: string) => acceso === rol);
-    }
-    return false;
-  }
+  const { hasAccess } = useBotonesViewModel();
 
   return (
     <div className="flex flex-col space-y-4 p-6 mx-auto">

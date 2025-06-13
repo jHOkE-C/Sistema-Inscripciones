@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Category, Area } from "@/models/interfaces/area-Category";
+import { useAddAreaModalViewModel } from "@/viewModels/admin/categorias/useAddAreaModalViewModel";
 
 interface AddAreaModalProps {
   isOpen: boolean;
@@ -34,25 +34,16 @@ export default function AddAreaModal({
   availableAreas,
   onAddArea,
 }: AddAreaModalProps) {
-  const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
-  const [error, setError] = useState("");
-
-  const handleSubmit = () => {
-    if (selectedAreaId === null) {
-      setError("Debe seleccionar un área");
-      return;
-    }
-
-    onAddArea(selectedAreaId);
-    setSelectedAreaId(null);
-    setError("");
-  };
-
-  const handleClose = () => {
-    setSelectedAreaId(null);
-    setError("");
-    onClose();
-  };
+  const {
+    selectedAreaId,
+    setSelectedAreaId,
+    error,
+    handleSubmit,
+    handleClose,
+  } = useAddAreaModalViewModel({
+    onClose,
+    onAddArea,
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

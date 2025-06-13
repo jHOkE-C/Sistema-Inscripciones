@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
-
 import {
     Dialog,
     DialogContent,
@@ -26,88 +21,25 @@ import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
-
-export interface Area {
-    id: number;
-    nombre: string;
-    vigente: boolean;
-}
+import { useDarDeBajaPageViewModel } from "@/viewModels/admin/area/dar-de-baja/useDarDeBajaPageViewModel";
 
 export default function Page() {
-    const [areas, setAreas] = useState<Area[]>([]);
-    const [disabledAreas, setDisabledAreas] = useState<Area[]>([]);
-    const [selected, setSelected] = useState<Area | null>(null);
-    const [action, setAction] = useState<"deactivate" | "activate" | null>(
-        null
-    );
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    // carga inicial
-    const fetchAreas = async () => {
-        try {
-            const { data } = await axios.get<Area[]>(`${API_URL}/api/areas`);
-            setAreas(data.filter((a) => a.vigente));
-            setDisabledAreas(data.filter((a) => !a.vigente));
-        } catch (e) {
-            console.error(e);
-            toast.error("Error al cargar áreas");
-        }
-    };
-
-    useEffect(() => {
-        fetchAreas();
-    }, []);
-
-    // abre modal, el segundo parámetro indica si es "dar de baja" o "habilitar"
-    const openDialog = (area: Area, act: "deactivate" | "activate") => {
-        setSelected(area);
-        setAction(act);
-        setDialogOpen(true);
-    };
-
-    // confirmación de baja/alta
-    const handleConfirm = async () => {
-        if (!selected || !action) return;
-
-        try {
-            if (action === "deactivate") {
-                await axios.put(
-                    `${API_URL}/api/areas/${selected.id}/deactivate`
-                );
-                toast.success(`Se dio de baja el área "${selected.nombre}"`);
-                // mover de activas a bajas
-                setAreas((prev) => prev.filter((a) => a.id !== selected.id));
-                setDisabledAreas((prev) => [...prev, selected]);
-            } else {
-                await axios.put(`${API_URL}/api/areas/${selected.id}/activate`);
-                toast.success(`Se habilitó el área "${selected.nombre}"`);
-                // mover de bajas a activas
-                setDisabledAreas((prev) =>
-                    prev.filter((a) => a.id !== selected.id)
-                );
-                setAreas((prev) => [...prev, selected]);
-            }
-        } catch (e:unknown) {
-            console.error(e instanceof Error && e.message);
-            
-            toast.error(
-                action === "deactivate"
-                    ? "Ocurrió un error al dar de baja el área"
-                    : "Ocurrió un error al habilitar el área"
-            );
-        } finally {
-            setDialogOpen(false);
-            setSelected(null);
-            setAction(null);
-        }
-    };
+    const {
+        areas,
+        disabledAreas,
+        selected,
+        action,
+        dialogOpen,
+        setDialogOpen,
+        openDialog,
+        handleConfirm
+    } = useDarDeBajaPageViewModel();
 
     return (
         <div className="flex flex-col min-h-screen">
-                <Header rutas={rutasAdmin}/>
-                <ReturnComponent to={`..\\..\\`}/>
+            <Header rutas={rutasAdmin}/>
+            <ReturnComponent to={`..\\..\\`}/>
             <div className="container mx-auto max-w-4xl py-5 space-y-8">
-                
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -168,7 +100,6 @@ export default function Page() {
                                 dadas de baja
                             </CardTitle>
                         </CardHeader>
-                        
                         <CardContent>
                             <Table>
                                 <TableHeader>
@@ -193,7 +124,6 @@ export default function Page() {
                     </Card>
                 )}
 
-                {/* diálogo de confirmación */}
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogContent aria-describedby="dialog-desc">
                         <DialogHeader>

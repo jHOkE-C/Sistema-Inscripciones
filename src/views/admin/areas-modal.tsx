@@ -1,8 +1,6 @@
 "use client";
 
 import { Layers, PlusCircle, Trash2 } from "lucide-react";
-import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,16 +11,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
+import { useAreasModalViewModel } from "@/viewModels/admin/useAreasModalViewModel";
 
 export function AreasModal() {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useAreasModalViewModel();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           className="h-auto p-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg"
-          
         >
           <Layers className="size-8 mb-1" />
           <span className="text-lg font-semibold">Gestionar áreas</span>

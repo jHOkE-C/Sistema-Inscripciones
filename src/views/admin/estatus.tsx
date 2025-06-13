@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useStatusViewModel } from "@/viewModels/admin/useStatusViewModel";
 
 export interface OlympicsData {
   id?: number;
@@ -13,7 +14,7 @@ export interface OlympicsData {
 }
 
 export default function Status({ data }: { data: OlympicsData }) {
-  const isActive = !data.message;
+  const { isActive } = useStatusViewModel({ data });
 
   // Format dates if they exist
 

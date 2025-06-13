@@ -9,35 +9,13 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { z } from "zod";
 import { UserIcon } from "lucide-react";
-
-
-const formSchema = z.object({
-    ci: z
-        .string()
-        .min(7, "La Cédula de Identidad debe tener al menos 7 dígitos")
-        .max(10, "La Cédula de Identidad no puede tener más de 10 dígitos"),
-});
+import { useFormCIViewModel } from "@/viewModels/inscribir/useFormCIViewModel";
 
 const FormCI = () => {
-    const { olimpiada_id } = useParams();
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            ci: ""
-        }
-    });    
-    const navigate = useNavigate();
-    if(!olimpiada_id) return
+    const { form, onSubmit, handleCIChange, olimpiada_id } = useFormCIViewModel();
     
-    const onSubmit = ({ ci }: z.infer<typeof formSchema>) => {
-        sessionStorage.setItem("ci", (ci));
-        navigate("/inscribir/" + (olimpiada_id) + "/" + (ci));
-    };
+    if (!olimpiada_id) return null;
 
     return (
         <Card className="w-full max-w-md shadow-lg rounded-2xl">
@@ -69,12 +47,7 @@ const FormCI = () => {
                                             placeholder="Ingrese  CI"
                                             type="text"
                                             maxLength={10}
-                                            onChange={(e) => {
-                                                const value = e.target.value
-                                                    .toUpperCase()
-                                                    .replace(/[^A-Z0-9]/g, "");
-                                                field.onChange(value);
-                                            }}
+                                            onChange={handleCIChange}
                                         />
                                     </FormControl>
                                     <FormMessage />

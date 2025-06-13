@@ -1,8 +1,6 @@
 "use client";
 
 import type React from "react";
-
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,62 +30,35 @@ import { CalendarIcon, PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { es } from "date-fns/locale";
-import axios from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { useRegistrarGestionViewModel } from "@/viewModels/admin/useRegistrarGestionViewModel";
 
 export default function GestionRegistration({
   refresh,
 }: {
   refresh: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [managementPeriod, setManagementPeriod] = useState("");
-  const [startDate, setStartDate] = useState<Date>(
-    new Date(new Date().setHours(0, 0, 0, 0))
-  );
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const currentYear = new Date().getFullYear();
-  const [precio, setPrecio] = useState<string | number>(15);
-  const [limite, setLimite] = useState<string>("1");
-  const [descripcion, setDescripcion] = useState<string>();
+  const {
+    open,
+    setOpen,
+    name,
+    setName,
+    managementPeriod,
+    setManagementPeriod,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    currentYear,
+    precio,
+    setPrecio,
+    limite,
+    setLimite,
+    descripcion,
+    setDescripcion,
+    handleSubmit
+  } = useRegistrarGestionViewModel({ refresh });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const start = startDate ? format(startDate, "yyyy-MM-dd") : null;
-    const end = endDate ? format(endDate, "yyyy-MM-dd") : null;
-    try {
-      const data = {
-        nombre: name,
-        gestion: managementPeriod,
-        fecha_inicio: start,
-        fecha_fin: end,
-        precio_inscripcion: precio,
-        limite_inscripciones: limite,
-        descripcion_convocatoria: descripcion,
-      };
-      console.log(data);
-      const response = await axios.post(`${API_URL}/api/olimpiadas`, data);
-      console.log(response);
-
-      setName("");
-      setManagementPeriod("");
-      setStartDate(new Date());
-      setEndDate(undefined);
-      setOpen(false);
-      refresh();
-      toast.success("La Olimpiada se creó correctamente.");
-    } catch {
-      toast.error("No se pudo registrar la gestion. Intente nuevamente");
-    }
-  };
-
-  useEffect(() => {
-    setEndDate(undefined);
-  }, [startDate]);
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -248,15 +219,14 @@ export default function GestionRegistration({
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="precio" className="text-right">
-                  Precio por inscripción (Bs)
+                  Precio de inscripción
                 </Label>
                 <Input
                   id="precio"
-                  placeholder="Ingrese Precio"
+                  type="number"
                   value={precio}
                   onChange={(e) => setPrecio(e.target.value)}
                   className="col-span-3"
-                  type="number"
                   required
                 />
               </div>
@@ -266,24 +236,20 @@ export default function GestionRegistration({
                 </Label>
                 <Input
                   id="limite"
+                  type="number"
                   value={limite}
-                  maxLength={50}
                   onChange={(e) => setLimite(e.target.value)}
                   className="col-span-3"
-                  type="number"
-                  min={1}
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="descripcion" className="ml-auto text-right">
+                <Label htmlFor="descripcion" className="text-right">
                   Descripción
                 </Label>
                 <Textarea
                   id="descripcion"
                   value={descripcion}
-                  maxLength={255}
-                  placeholder="Ingrese una descripción detallada de la olimpiada"
                   onChange={(e) => setDescripcion(e.target.value)}
                   className="col-span-3"
                   required
@@ -291,9 +257,7 @@ export default function GestionRegistration({
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" className="text-white">
-                Crear
-              </Button>
+              <Button type="submit">Crear</Button>
             </DialogFooter>
           </form>
         </DialogContent>

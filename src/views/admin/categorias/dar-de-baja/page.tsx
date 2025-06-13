@@ -1,8 +1,4 @@
-import { Suspense, useState, useEffect } from "react";
-import axios from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
-
+import { Suspense } from "react";
 import {
     Table,
     TableBody,
@@ -22,95 +18,21 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
-
-import type { Category } from "@/models/interfaces/area-Category";
 import ReturnComponent from "@/components/ReturnComponent";
+import { useDarDeBajaPageViewModel } from "@/viewModels/admin/categorias/dar-de-baja/useDarDeBajaPageViewModel";
 
 export default function Page() {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [disabledCategories, setDisabledCategories] = useState<Category[]>(
-        []
-    );
-    const [selected, setSelected] = useState<Category | null>(null);
-    // action puede ser 'deactivate' o 'activate'
-    const [action, setAction] = useState<"deactivate" | "activate" | null>(
-        null
-    );
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    // Carga inicial de todas las categorías
-    const fetchData = async () => {
-        try {
-            const { data } = await axios.get<Category[]>(
-                `${API_URL}/api/categorias`
-            );
-            // asumimos que 'vigente' indica activas
-            setCategories(data.filter((c) => c.vigente ?? true));
-            setDisabledCategories(data.filter((c) => !c.vigente));
-        } catch (e) {
-            console.error(e);
-            toast.error("Error al cargar categorías");
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const getGradeLabel = (grade: number) =>
-        grade <= 6 ? `${grade}° Primaria` : `${grade - 6}° Secundaria`;
-
-    // Abrir diálogo, pasando también la acción deseada
-    const openDialog = (
-        cat: Category,
-        actionType: "deactivate" | "activate"
-    ) => {
-        setSelected(cat);
-        setAction(actionType);
-        setDialogOpen(true);
-    };
-
-    // Al confirmar en el diálogo, hacemos PUT al endpoint correcto
-    const handleConfirm = async () => {
-        if (!selected || !action) return;
-
-        try {
-            if (action === "deactivate") {
-                await axios.put(
-                    `${API_URL}/api/categorias/${selected.id}/deactivate`
-                );
-                toast.success(
-                    `Se dio de baja la categoría "${selected.nombre}"`
-                );
-                // la quitamos de activas y la añadimos a deshabilitadas
-                setCategories((prev) =>
-                    prev.filter((c) => c.id !== selected.id)
-                );
-                setDisabledCategories((prev) => [...prev, selected]);
-            } else {
-                await axios.put(
-                    `${API_URL}/api/categorias/${selected.id}/activate`
-                );
-                toast.success(`Se habilitó la categoría "${selected.nombre}"`);
-                // la quitamos de deshabilitadas y la añadimos a activas
-                setDisabledCategories((prev) =>
-                    prev.filter((c) => c.id !== selected.id)
-                );
-                setCategories((prev) => [...prev, selected]);
-            }
-        } catch (e) {
-            console.error(e);
-            toast.error(
-                action === "deactivate"
-                    ? "Ocurrió un error al dar de baja la categoría"
-                    : "Ocurrió un error al habilitar la categoría"
-            );
-        } finally {
-            setDialogOpen(false);
-            setSelected(null);
-            setAction(null);
-        }
-    };
+    const {
+        categories,
+        disabledCategories,
+        selected,
+        action,
+        dialogOpen,
+        setDialogOpen,
+        getGradeLabel,
+        openDialog,
+        handleConfirm,
+    } = useDarDeBajaPageViewModel();
 
     return (
         <>
@@ -248,26 +170,36 @@ export default function Page() {
                             </DialogTitle>
                         </DialogHeader>
                         <DialogDescription id="dialog-desc" className="px-6">
-                            {action === "deactivate"
-                                ? `¿Estás seguro de dar de baja la categoría “${selected?.nombre}”?`
-                                : `¿Estás seguro de habilitar la categoría “${selected?.nombre}”?`}
+                            {action === "deactivate" ? (
+                                <>
+                                    ¿Estás seguro de que deseas dar de baja la
+                                    categoría{" "}
+                                    <strong>{selected?.nombre}</strong>? Esta
+                                    acción la ocultará de futuras convocatorias.
+                                </>
+                            ) : (
+                                <>
+                                    ¿Estás seguro de que deseas habilitar la
+                                    categoría{" "}
+                                    <strong>{selected?.nombre}</strong>? Esta
+                                    acción la mostrará en futuras convocatorias.
+                                </>
+                            )}
                         </DialogDescription>
-                        <DialogFooter className="flex justify-end space-x-2">
+                        <DialogFooter>
                             <Button
-                                variant="ghost"
+                                variant="outline"
                                 onClick={() => setDialogOpen(false)}
                             >
                                 Cancelar
                             </Button>
                             <Button
-                                variant={
-                                    action === "deactivate"
-                                        ? "destructive"
-                                        : undefined
-                                }
+                                variant={action === "deactivate" ? "destructive" : "default"}
                                 onClick={handleConfirm}
                             >
-                                Confirmar
+                                {action === "deactivate"
+                                    ? "Dar de Baja"
+                                    : "Habilitar"}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -11,61 +9,23 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Plus, PlusCircle } from "lucide-react";
-
-import type { Category } from "@/models/interfaces/area-Category";
-import axios from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
-import CreateCategoryModal from "../create-category-modal";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import ReturnComponent from "@/components/ReturnComponent";
+import CreateCategoryModal from "../create-category-modal";
+import { useCrearPageViewModel } from "@/viewModels/admin/categorias/crear/useCrearPageViewModel";
 
 const Page = () => {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-    const fetchData = async () => {
-        try {
-            const categorias = await axios.get<Category[]>(
-                `${API_URL}/api/categorias`
-            );
-            setCategories(categorias.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const handleCreateCategory = async (
-        newCategory: Omit<Category, "id" | "areas">
-    ) => {
-        try {
-            await axios.post<Category>(
-                `${API_URL}/api/categorias`,
-                newCategory
-            );
-            console.log("Categoría creada correctamente:", newCategory);
-            fetchData();
-            toast.success("La categoría se registro correctamente.");
-            setIsCreateModalOpen(false);
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data.error);
-            }
-            console.error("Error creating category:", error);
-        }
-    };
-
-    const getGradeLabel = (grade: number) => {
-        if (grade <= 6) return `${grade}° Primaria`;
-        return `${grade - 6}° Secundaria`;
-    };
+    const {
+        categories,
+        isCreateModalOpen,
+        setIsCreateModalOpen,
+        handleCreateCategory,
+        getGradeLabel,
+    } = useCrearPageViewModel();
 
     return (
         <>
-                        <ReturnComponent to={`..\\..\\`}/>
+            <ReturnComponent to={`..\\..\\`}/>
 
             <div className="container mx-auto max-w-6xl px-4 py-10">
                 <Suspense fallback={<div>Cargando...</div>}></Suspense>
@@ -89,7 +49,7 @@ const Page = () => {
                                 </Button>
                             </div>
                         </CardTitle>
-                        <Table className="mb-10   mx-auto">
+                        <Table className="mb-10 mx-auto">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Categoria</TableHead>

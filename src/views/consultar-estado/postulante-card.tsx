@@ -15,25 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// Definición de tipos para el JSON actualizado
-type Inscripcion = {
-  nivel_competencia: string;
-  estado: string;
-};
-
-type Participacion = {
-  olimpiada: string;
-  inscripciones: Inscripcion[];
-};
-
-export type Postulante = {
-  nombres: string;
-  apellidos: string;
-  ci: string;
-  departamento: string;
-  participaciones: Participacion[];
-};
+import { usePostulanteCardViewModel } from "@/viewModels/viewmodels/usePostulanteCardViewModel";
+import type { Postulante } from "@/models/interfaces/consultar-estado.types";
 
 type PostulanteData = {
   postulante: Postulante;
@@ -43,26 +26,8 @@ interface PostulanteDisplayProps {
   data: PostulanteData;
 }
 
-// Mapeo de códigos de departamento a nombres completos
-const departamentos: Record<string, string> = {
-  LP: "La Paz",
-  CB: "Cochabamba",
-  SC: "Santa Cruz",
-  OR: "Oruro",
-  PT: "Potosí",
-  TJ: "Tarija",
-  TJA: "Tarija",
-  CH: "Chuquisaca",
-  BN: "Beni",
-  PD: "Pando",
-};
-
 export default function PostulanteDisplay({ data }: PostulanteDisplayProps) {
-  const { postulante } = data;
-
-  // Obtener el nombre completo del departamento o usar el código si no está en el mapeo
-  const nombreDepartamento =
-    departamentos[postulante.departamento] || postulante.departamento;
+  const { postulante, nombreDepartamento } = usePostulanteCardViewModel({ data });
 
   return (
     <div className="container mx-auto py-8">

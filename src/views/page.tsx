@@ -26,16 +26,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import SectionVideoTutorial from "@/components/SectionVideoTutorial";
+import { usePageViewModel } from "@/viewModels/viewmodels/usePageViewModel";
 
 const PageHome = () => {
-    const [open, setOpen] = useState(true);
+    const { open, setOpen, handleOfficialSite } = usePageViewModel();
 
-    const handleOfficialSite = () => {
-        window.open("https://ohsansi.umss.edu.bo/", "_blank");
-    };
     return (
         <div className="flex min-h-screen flex-col">
             <Header />
@@ -249,15 +246,8 @@ const PageHome = () => {
                             className="w-full"
                             size="lg"
                         >
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            Ir a la página oficial
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => setOpen(false)}
-                            className="w-full"
-                        >
-                            Cerrar
+                            Ir al sitio oficial
+                            <ExternalLink className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
                 </DialogContent>
