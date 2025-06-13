@@ -46,9 +46,7 @@ Object.entries(pages).forEach(([filePath, importer]) => {
 // 4. Monta el router con createBrowserRouter
 const router = createBrowserRouter(
   [
-    { children: publicRoutes },
-
-
+    ...publicRoutes,
     {
       element: <PrivateRoute />,
       children: protectedRoutes
