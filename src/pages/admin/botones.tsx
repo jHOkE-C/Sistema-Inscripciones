@@ -324,28 +324,6 @@ export default function Botones() {
             </div>
           </div>
         )}
-        {hasAccess("crear usuarios") && (
-          <div className="relative">
-            <Button
-              className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
-              asChild
-            >
-              <Link to="./asignar-roles">
-                <ShieldUser className="size-8 mb-1" />
-                <span className="text-lg font-semibold">Asignar Roles</span>
-              </Link>
-            </Button>
-            <div className="absolute top-2 right-2">
-              <HelpTooltip
-                title="Asignar Roles"
-                content="Asigna uno o múltiples roles a usuarios específicos, determinando qué funciones y secciones del sistema pueden acceder."
-                position="left"
-                size="sm"
-              />
-            </div>
-          </div>
-        )}
-
         {hasAccess("crear un rol") && (
           <div className="relative">
             <CrearRol />
