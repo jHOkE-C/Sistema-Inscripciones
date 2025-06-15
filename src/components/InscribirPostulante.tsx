@@ -12,8 +12,8 @@ import { Dialog } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/models/api/postulantes";
-import { ListaPostulantes } from "@/pages/inscribir/columns";
-import NotFoundPage from "@/pages/404";
+import { ListaPostulantes } from "@/views/inscribir/columns";
+import NotFoundPage from "@/views/404";
 import { toast } from "sonner";
 import {
     Table,
@@ -26,7 +26,7 @@ import { Copy, PenBox, Plus, QrCodeIcon } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { QRCode } from "react-qrcode-logo";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { ButtonFinalizarRegistro } from "@/pages/inscribir/[olimpiada_id]/[ci]/[codigo_lista]";
+import { ButtonFinalizarRegistro } from "@/views/inscribir/[olimpiada_id]/[ci]/[codigo_lista]";
 import { type StepData } from "./StepFormPostulante";
 import {
     AlertDialog,

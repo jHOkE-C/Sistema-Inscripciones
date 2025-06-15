@@ -1,14 +1,13 @@
-export type Version = {
-    id: number;
+export interface Version {
+    id: string;
     nombre: string;
-    gestion: string;
     fecha_inicio: string;
     fecha_fin: string;
-    limite_inscripciones: number;
-    precio_inscripcion: string;
-    fase?: Fase;
-};
+    gestion: number;
+    estado: "Activo" | "Inactivo" | string;
+}
 
+export type VersionFilter = "pasadas" | "futuras" | string;
 
 export interface Olimpiada {
     id: number;
@@ -20,6 +19,7 @@ export interface Olimpiada {
     url_plantilla?: string;
     limite_inscripciones?: number;
 }
+
 export interface Olimpiada2 {
     id: number;
     nombre: string;
@@ -29,6 +29,7 @@ export interface Olimpiada2 {
     fase_actual: Fase;
     url_plantilla?: string;
 }
+
 export interface Fase {
     id: number;
     fecha_inicio: string;
@@ -53,8 +54,6 @@ export type FaseNombre =
     | "Segunda premiación";
 
 export type FiltroGlobal = "pasadas" | "futuras";
-
-export type VersionFilter = FiltroGlobal | FaseNombre;
 
 export interface Cronograma {
     id_fase: string;

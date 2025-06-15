@@ -1,4 +1,4 @@
-import type { ListaPostulantes } from "@/pages/inscribir/columns";
+import type { ListaPostulantes } from "@/views/inscribir/columns";
 import { request } from "./request";
 import type { Postulante } from "@/models/interfaces/columns";
 import type { EstadoLista } from "./listas";
