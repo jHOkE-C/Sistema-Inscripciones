@@ -1,11 +1,11 @@
 import { Download } from "lucide-react";
 import { useState, useEffect } from "react"; // Import useEffect
 import { Button } from "./ui/button";
-import type { Olimpiada } from "@/types/versiones.type";
-import { generarExcel } from "@/utils/excel";
-import { useColegios } from "../hooks/getCacheResponsable/useColegios";
-import { useDepartamentosWithProvinces } from "../hooks/getCacheResponsable/useUbicacion";
-import { useAreasConCategorias } from "../hooks/getCacheResponsable/useCategoriasAreas";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
+import { generarExcel } from "@/viewModels/utils/excel";
+import { useColegios } from "@/models/getCacheResponsable/useColegios";
+import { useDepartamentosWithProvinces } from "@/models/getCacheResponsable/useUbicacion";
+import { useAreasConCategorias } from "@/models/getCacheResponsable/useCategoriasAreas";
 import { toast } from "sonner";
 
 const DescargarPlantilla = ({ olimpiada }: { olimpiada: Olimpiada }) => {

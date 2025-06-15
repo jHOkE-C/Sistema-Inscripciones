@@ -1,6 +1,6 @@
 // src/App.tsx
 import { Toaster } from 'sonner';
-import { AuthProvider } from './hooks/AuthProvider';
+import { AuthProvider } from '@/viewModels/hooks/AuthProvider';
 import { ThemeProvider } from './components/theme-provider';
 import { Suspense } from 'react';
 import AppRouter from './routes';

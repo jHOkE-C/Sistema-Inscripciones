@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, FileText, ImageIcon, FileIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { API_URL } from '@/hooks/useApiRequest';
+import { API_URL } from '@/viewModels/hooks/useApiRequest';
 
 
 type UploadFile = File & { url_plantilla?: string };

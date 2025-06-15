@@ -12,17 +12,17 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { API_URL } from "@/hooks/useApiRequest";
+import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import {
     CategoriaExtendida,
     UploadResponse,
     type newExcelPostulante,
     type newPostulante,
-} from "@/interfaces/postulante.interface";
+} from "@/models/interfaces/postulante.interface";
 import {
     ValidationError,
     ErroresDeFormato,
-} from "@/interfaces/error.interface";
+} from "@/models/interfaces/error.interface";
 import { ErrorCheckboxRow } from "@/components/ErrorCheckboxRow";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -30,13 +30,13 @@ import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { HoverCardContent } from "@/components/ui/hover-card";
 import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
-import { Olimpiada } from "@/types/versiones.type";
+import { Olimpiada } from "@/models/interfaces/versiones.type";
 import { ExcelParser } from "@/lib/ExcelParser";
 import { useNavigate } from "react-router-dom";
-import { useUbicacion } from "@/context/UbicacionContext";
-import { useCategorias } from "@/context/CategoriasContext";
+import { useUbicacion } from "@/viewModels/context/UbicacionContext";
+import { useCategorias } from "@/viewModels/context/CategoriasContext";
 import FileUpload from "./fileUpload";
-import { newValidarFila } from "@/pages/inscribir/[olimpiada_id]/[ci]/viaExcel/validations";
+import { newValidarFila } from "@/viewModels/inscribir/excel/validations";
 import DescargarPlantilla from "./DescargarPlantilla";
 
 interface FileUploadModalProps {

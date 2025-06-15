@@ -1,4 +1,4 @@
-import type { Olimpiada } from "@/types/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import { Clock } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 

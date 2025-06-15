@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
 
-const pages = import.meta.glob('./pages/**/*.tsx');
+const pages = import.meta.glob('./views/**/*.tsx');
 
 const protectedPrefixes = ['/admin', '/usuario', '/subir'];
 
@@ -21,7 +21,7 @@ const protectedRoutes: RouteObject[] = [];
 Object.entries(pages).forEach(([filePath, importer]) => {
   // 1. Genera el path
   const routePath = filePath
-    .replace('./pages', '')
+    .replace('./views', '')
     .replace(/\.tsx$/, '')
     .replace(/\/(page|index)$/, '')
     .replace(/\[(\w+)\]/g, ':$1') || '/';
@@ -46,18 +46,16 @@ Object.entries(pages).forEach(([filePath, importer]) => {
 // 4. Monta el router con createBrowserRouter
 const router = createBrowserRouter(
   [
-    { children: publicRoutes },
-
-
+    ...publicRoutes,
     {
       element: <PrivateRoute />,
       children: protectedRoutes
     },
 
-    pages['./pages/404.tsx'] && {
+    pages['./views/404.tsx'] && {
       path: '*',
       lazy: async () => {
-        const module = await (import('./pages/404.tsx') as Promise<PageModule>);
+        const module = await (import('./views/404.tsx') as Promise<PageModule>);
         return { Component: module.default };
       }
     }
