@@ -13,7 +13,7 @@ import {
     CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Version } from "@/models/interfaces/versiones.type";
+import { Olimpiada } from "@/models/interfaces/versiones.type";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../models/interfaces/types";
 import { Input } from "@/components/ui/input";
@@ -28,8 +28,8 @@ import { Button } from "@/components/ui/button";
 import { useVersionesViewModel } from "@/viewModels/admin/useVersionesViewModel";
 
 interface VersionesProps {
-    versiones: Version[];
-    container?: ((version: Version) => React.ReactNode) | React.ReactNode;
+    versiones: Olimpiada[];
+    container?: ((version: Olimpiada) => React.ReactNode) | React.ReactNode;
 }
 
 export function Versiones({

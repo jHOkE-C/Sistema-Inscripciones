@@ -1,11 +1,11 @@
 "use client";
 
 import VersionesPage from "@/views/admin/VersionesPage";
-import { Version } from "@/models/interfaces/versiones.type";
+import { Olimpiada } from "@/models/interfaces/versiones.type";
 const Admin = () => {
     return (
         <VersionesPage
-            filter={({ fase }: Version) =>
+            filter={({ fase }: Olimpiada) =>
                 fase && fase?.fase?.nombre_fase === "Preparación"
             }
             title="Seleccione una olimpiada para asociar Areas"

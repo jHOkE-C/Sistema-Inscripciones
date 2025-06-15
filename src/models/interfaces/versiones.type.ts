@@ -1,5 +1,5 @@
 export interface Version {
-    id: string;
+    id: number;// Changed from string to number to match Olimpiada
     nombre: string;
     fecha_inicio: string;
     fecha_fin: string;
@@ -14,7 +14,8 @@ export interface Olimpiada {
     nombre: string;
     fecha_inicio: string;
     fecha_fin: string;
-    gestion: string;
+    gestion: number;
+    estado: "Activo" | "Inactivo" | string;
     fase?: Fase;
     url_plantilla?: string;
     limite_inscripciones?: number;

@@ -1,17 +1,17 @@
 import { useState, useMemo } from "react";
-import { Version } from "@/models/interfaces/versiones.type";
+import { Olimpiada } from "@/models/interfaces/versiones.type";
 
 interface VersionesProps {
-    versiones: Version[];
-    onVersionCardClick?: (id: string, nombre: string) => void;
-    container?: ((version: Version) => React.ReactNode) | React.ReactNode;
+    versiones: Olimpiada[];
+    onVersionCardClick?: (id: number, nombre: string) => void; // Changed id to number
+    container?: ((version: Olimpiada) => React.ReactNode) | React.ReactNode;
 }
 
 export function useVersionesViewModel({ versiones }: VersionesProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedYear, setSelectedYear] = useState<string>("");
     const [sortConfig, setSortConfig] = useState<{
-        key: keyof Version | "duracion";
+        key: "nombre" | "fecha_inicio" | "fecha_fin" | "gestion" | "duracion"; // Explicitly defined sortable keys
         direction: "asc" | "desc";
     }>({
         key: "fecha_inicio",
@@ -50,7 +50,9 @@ export function useVersionesViewModel({ versiones }: VersionesProps) {
         }
 
         filtered.sort((a, b) => {
-            let valA, valB;
+
+            let valA: string | number | Date | undefined;
+            let valB: string | number | Date | undefined;
 
             if (sortConfig.key === "duracion") {
                 valA = calculateDurationValue(a.fecha_inicio, a.fecha_fin);
@@ -87,9 +89,9 @@ export function useVersionesViewModel({ versiones }: VersionesProps) {
         return filtered;
     }, [versiones, searchTerm, selectedYear, sortConfig]);
 
-    const handleSort = (key: keyof Version | "duracion") => {
+    const handleSort = (key: "nombre" | "fecha_inicio" | "fecha_fin" | "gestion" | "duracion") => { // Explicitly defined sortable keys
         setSortConfig((prevConfig) => ({
-            key,
+            key, // No need for explicit cast if key is already of the correct type
             direction:
                 prevConfig.key === key && prevConfig.direction === "asc"
                     ? "desc"
@@ -113,4 +115,4 @@ export function useVersionesViewModel({ versiones }: VersionesProps) {
         processedVersiones,
         calculateDurationDisplay
     };
-} 
+}
