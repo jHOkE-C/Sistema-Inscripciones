@@ -245,7 +245,6 @@ const ModalConfirmarMasPostulantes = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <ButtonFinalizarRegistro
-                        codigo_lista={codigo_lista + ""}
                         show
                         onFinish={onFinish}
                     />
