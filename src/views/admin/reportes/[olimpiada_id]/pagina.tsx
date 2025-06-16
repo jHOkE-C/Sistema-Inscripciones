@@ -373,7 +373,7 @@ const PostulantesPage = () => {
     <>
     <ReturnComponent />
     
-    <div className="container  w-5/6 mx-auto py-6 md:w-5/6 lg:w-full xl:w-full">
+    <div className="container  w-5/6 mx-auto py-6 md:w-5/6 lg:w-11/12 xl:w-11/12">
       
       <h2 className="text-3xl font-bold mb-2 text-center">
         Postulantes: {nombreOlimpiada}

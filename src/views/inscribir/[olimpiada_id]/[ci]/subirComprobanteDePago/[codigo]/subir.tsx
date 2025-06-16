@@ -32,7 +32,7 @@ const SubirComprobantePage = () => {
   return (
     <>
       <ReturnComponent />
-      <div className="container mx-auto p-4">
+      <div className="w-2/4 mx-auto p-4">
         <h2 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h2>
 
         <canvas ref={inputCanvasRef} style={{ display: 'none' }} />
@@ -95,8 +95,8 @@ const SubirComprobantePage = () => {
               {ocrResults.map((result) => (
                 <div 
                   key={result.id} 
-                  className={`border p-3 rounded bg-background break-words cursor-pointer hover:border-primary hover:border-4 transition-colors ${
-                    selectedResultId === result.id ? "border-4 ring-primary border-primary" : ""
+                  className={`border p-3 rounded bg-background break-words cursor-pointer hover:bg-primary transition-colors ${
+                    selectedResultId === result.id ? "bg-primary" : ""
                   }`}
                   onClick={() => setSelectedResultId(result.id)}
                 >
