@@ -21,7 +21,7 @@ import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
-import { useDarDeBajaPageViewModel } from "@/viewModels/admin/area/dar-de-baja/useDarDeBajaPageViewModel";
+import { useDarDeBajaPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/dar-de-baja/useDarDeBajaPageViewModel";
 
 export default function Page() {
     const {

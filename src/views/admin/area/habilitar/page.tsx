@@ -21,7 +21,7 @@ import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
-import { useHabilitarPageViewModel } from "@/viewModels/admin/area/habilitar/useHabilitarPageViewModel";
+import { useHabilitarPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/habilitar/useHabilitarPageViewModel";
 
 export default function Page() {
     const {

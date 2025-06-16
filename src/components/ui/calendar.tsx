@@ -5,7 +5,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Select } from '@radix-ui/react-select';
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
-import { ScrollArea } from './scroll-area';
+import { ScrollArea } from './scrollArea';
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {

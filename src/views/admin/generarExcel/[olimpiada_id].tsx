@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -6,62 +8,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { generarExcel } from "@/viewModels/utils/excel";
-
 import { DownloadCloud, FileSpreadsheet, Info } from "lucide-react";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react"; // Import useEffect
-import { useColegios } from "@/models/getCacheResponsable/useColegios";
-import { useDepartamentosWithProvinces } from "@/models/getCacheResponsable/useUbicacion";
-import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
-import { useAreasConCategorias } from "@/models/getCacheResponsable/useCategoriasAreas";
-import { toast } from "sonner";
-import type { Olimpiada } from "@/models/interfaces/versiones.type";
+import { useGenerarExcel } from "@/viewModels/usarVistaModelo/privilegios/generarExcel/usarGenerarExcel";
 
 const Page = () => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [fetchData, setFetchData] = useState(false);
-    const { olimpiada_id } = useParams();
-
-    const { data: colegios, isLoading: isLoadingColegios, isError: isErrorColegios } = useColegios({ queryKey: ["colegios"], enabled: fetchData });
-    const { data: departamentosConProvincias, isLoading: isLoadingDepartamentos, isError: isErrorDepartamentos } = useDepartamentosWithProvinces({ queryKey: ["departamentosWithProvinces"], enabled: fetchData });
-    const { data: olimpiadaData, isLoading: isLoadingOlimpiada, isError: isErrorOlimpiada } = useOlimpiada(Number(olimpiada_id), { queryKey: ["olimpiada", Number(olimpiada_id)], enabled: fetchData });
-    const { data: areasCategorias, isLoading: isLoadingAreasCategorias, isError: isErrorAreasCategorias } = useAreasConCategorias(Number(olimpiada_id), { queryKey: ["areasConCategorias", Number(olimpiada_id)], enabled: fetchData });
-    const olimpiada: Olimpiada | undefined = olimpiadaData;
-
-    const isLoading = isLoadingColegios || isLoadingDepartamentos || isLoadingOlimpiada || isLoadingAreasCategorias;
-    const isError = isErrorColegios || isErrorDepartamentos || isErrorOlimpiada || isErrorAreasCategorias;
-
-    useEffect(() => {
-        const generateExcelWhenReady = async () => {
-            if (fetchData && !isLoading && !isError && colegios && departamentosConProvincias && olimpiada && areasCategorias) {
-                try {
-                    await generarExcel(olimpiada, departamentosConProvincias, colegios, areasCategorias, olimpiada.nombre);
-                } catch (error) {
-                    console.error("Error al generar el excel:", error);
-                    toast.error("Error al generar el excel.");
-                } finally {
-                    setLoading(false);
-                    setFetchData(false); 
-                }
-            } else if (fetchData && isError) {
-                toast.error("Error al cargar los datos necesarios para generar el excel.");
-                setLoading(false);
-                setFetchData(false);
-            }
-        };
-
-        generateExcelWhenReady();
-    }, [fetchData, isLoading, isError, colegios, departamentosConProvincias, olimpiada, areasCategorias, olimpiada_id]);
-
-    const handleDownload = () => {
-        setFetchData(true); // Start fetching data when button is clicked
-        setLoading(true); // Show loading state for Excel generation
-    };
+    const { loading, isLoading, isError, handleDownload } = useGenerarExcel();
 
     return (
-        <div className="flex justify-center items-center min-h-screen  p-6">
+        <div className="flex justify-center items-center min-h-screen p-6">
             <Card className="w-full max-w-lg shadow-xl hover:shadow-2xl transition-shadow duration-300 animate-fade-in-up">
                 <CardHeader className="">
                     <div className="flex items-center space-x-3">

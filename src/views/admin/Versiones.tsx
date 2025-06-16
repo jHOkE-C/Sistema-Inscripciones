@@ -25,7 +25,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useVersionesViewModel } from "@/viewModels/admin/useVersionesViewModel";
+import { useVersionesViewModel } from "@/viewModels/usarVistaModelo/privilegios/useVersionesViewModel";
 
 interface VersionesProps {
     versiones: Olimpiada[];
@@ -220,7 +220,7 @@ export function Versiones({
                                 )
                             ) : (
                                 <Link
-                                    to={`/admin/version/${version.id}`}
+                                    to={`./${version.id}`}
                                     className="w-full"
                                 >
                                     <Button className="w-full">

@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alertDialog";
 import type { Category } from "@/models/interfaces/area-Category";
 
 interface DeleteConfirmationModalProps {

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import SectionVideoTutorial from "@/components/SectionVideoTutorial";
-import { usePageViewModel } from "@/viewModels/viewmodels/usePageViewModel";
+import { usePageViewModel } from "@/viewModels/usarVistaModelo/usePageViewModel";
 
 const PageHome = () => {
     const { open, setOpen, handleOfficialSite } = usePageViewModel();

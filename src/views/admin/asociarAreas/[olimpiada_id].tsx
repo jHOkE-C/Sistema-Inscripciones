@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -10,10 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
-import { apiClient, request } from "@/models/api/request";
-import type { Area } from "@/models/api/areas";
+import { ScrollArea } from "@/components/ui/scrollArea";
 import { useParams } from "react-router-dom";
 import {
     AlertDialog,
@@ -24,113 +20,31 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alertDialog";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import type { Olimpiada } from "@/models/interfaces/versiones.type";
-import { getOlimpiada } from "@/models/api/olimpiada";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import ReturnComponent from "@/components/ReturnComponent";
+import { useUsarAsociarAreas } from "@/viewModels/usarVistaModelo/privilegios/asociarAreas/usarAsociarAreas";
 
 export default function Page() {
-    const [areas, setAreas] = useState<Area[]>([]);
-    const [associatedIds, setAssociatedIds] = useState<Set<string>>(new Set());
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedArea, setSelectedArea] = useState<Area>();
     const { olimpiada_id } = useParams();
-    const [associatedAreas, setAssociatedAreas] = useState<Area[]>([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchAssociatedTerm, setSearchAssociatedTerm] = useState("");
-    const [olimpiada, setOlimpiada] = useState<Olimpiada>();
+    const {
+        openDialog,
+        setOpenDialog,
+        setSelectedArea,
+        searchTerm,
+        setSearchTerm,
+        searchAssociatedTerm,
+        setSearchAssociatedTerm,
+        olimpiada,
+        availableAreas,
+        filteredAssociatedAreas,
+        handleAssociate,
+        handleUnassociate
+    } = useUsarAsociarAreas(olimpiada_id || "");
 
-    useEffect(() => {
-        fetchAreas();
-        fetchAssociated();
-        fetchOlimpiada();
-    }, []);
-
-    if (!olimpiada_id) return;
-    const fetchAreas = async () => {
-        try {
-            const data = await request<Area[]>("/api/areas", { method: "GET" });
-            setAreas(data.filter((a) => a.vigente));
-        } catch (e: unknown) {
-            toast.error(
-                e instanceof Error ? e.message : "Error al cargar áreas"
-            );
-        }
-    };
-    const fetchOlimpiada = async () => {
-        const olimpiada = await getOlimpiada(olimpiada_id);
-        setOlimpiada(olimpiada);
-    };
-
-    const fetchAssociated = async () => {
-        try {
-            const data = await request<Area[]>(
-                `/api/areas/categorias/olimpiada/${olimpiada_id}`
-            );
-            setAssociatedAreas(data);
-            setAssociatedIds(new Set(data.map((a) => a.id)));
-        } catch (e: unknown) {
-            toast.error(
-                e instanceof Error
-                    ? e.message
-                    : "Error al cargar áreas asociadas"
-            );
-        }
-    };
-
-    const handleAssociate = async (area: Area) => {
-        try {
-            await apiClient.post("/api/olimpiada/area", {
-                area_id: area.id,
-                olimpiada_id,
-            });
-            setAssociatedIds((prev) => new Set(prev).add(area.id));
-            setAssociatedAreas((prev) => [...prev, area]);
-            toast.success("Área asociada correctamente");
-        } catch (e: unknown) {
-            toast.error(
-                e instanceof Error ? e.message : "Error al asociar área"
-            );
-        }
-    };
-
-    const handleUnassociate = async () => {
-        if (!selectedArea) return;
-        const { id } = selectedArea;
-        try {
-            await request("/api/olimpiada/area", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ area_id: id, olimpiada_id }),
-            });
-            setAssociatedIds((prev) => {
-                const next = new Set(prev);
-                next.delete(id);
-                return next;
-            });
-            setAssociatedAreas((prev) => prev.filter((a) => a.id !== id));
-            toast.success("Área desasociada correctamente");
-        } catch (e: unknown) {
-            toast.error(
-                e instanceof Error ? e.message : "Error al desasociar área"
-            );
-        } finally {
-            setOpenDialog(false);
-        }
-    };
-
-    const availableAreas = areas
-        .filter((a) => !associatedIds.has(a.id))
-        .filter((a) =>
-            a.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-    const filteredAssociatedAreas = associatedAreas.filter((a) =>
-        a.nombre.toLowerCase().includes(searchAssociatedTerm.toLowerCase())
-    );
+    if (!olimpiada_id) return null;
 
     if (
         olimpiada &&
@@ -268,7 +182,7 @@ export default function Page() {
                                             colSpan={2}
                                             className="text-center text-gray-500"
                                         >
-                                            No se encontraron áreas asociadas
+                                            No hay áreas asociadas
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -287,35 +201,27 @@ export default function Page() {
                     </ScrollArea>
                 </CardContent>
             </Card>
-            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Desasociar área "{selectedArea?.nombre}"?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Esta acción no se puede deshacer.
-                            {selectedArea && selectedArea.categorias && (
-                                <p className="mt-2">
-                                    El área tiene las siguientes categorías
-                                    asociadas:{" "}
-                                    {selectedArea.categorias
-                                        .map((c) => c.nombre)
-                                        .join(", ")}
-                                    . Todas serán eliminadas.
-                                </p>
-                            )}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleUnassociate}>
-                            Confirmar
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
+
+        <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        ¿Estás seguro de desasociar esta área?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Esta acción no se puede deshacer. Esto eliminará la
+                        asociación entre la olimpiada y el área seleccionada.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleUnassociate}>
+                        Continuar
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
         </>
     );
 }

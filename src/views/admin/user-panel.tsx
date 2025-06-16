@@ -2,7 +2,7 @@
 
 import { User, Shield } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { useUserPanelViewModel } from "@/viewModels/admin/useUserPanelViewModel"
+import { useUserPanelViewModel } from "@/viewModels/usarVistaModelo/privilegios/useUserPanelViewModel"
 
 export function UserPanel() {
   const { user } = useUserPanelViewModel();

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Category } from "@/models/interfaces/area-Category";
-import { useCreateCategoryModalViewModel } from "@/viewModels/admin/categorias/useCreateCategoryModalViewModel";
+import { useCreateCategoryModalViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/useCreateCategoryModalViewModel";
 
 interface CreateCategoryModalProps {
   isOpen: boolean;

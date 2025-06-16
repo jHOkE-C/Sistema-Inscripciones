@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -21,106 +20,37 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
-import { request } from "@/models/api/request";
-import type { Area, Categoria } from "@/models/api/areas";
+import { ScrollArea } from "@/components/ui/scrollArea";
 import { useParams } from "react-router-dom";
-import type { Olimpiada } from "@/models/interfaces/versiones.type";
-import { getOlimpiada } from "@/models/api/olimpiada";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import ReturnComponent from "@/components/ReturnComponent";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Plus } from "lucide-react";
+import { useAsociarCategoriasViewModel } from "@/viewModels/usarVistaModelo/privilegios/asociarCategorias/useAsociarCategoriasViewModel";
 
 export default function Page() {
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [categories, setCategories] = useState<Categoria[]>([]);
-  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
-
-  const [checked, setChecked] = useState<Record<number, boolean>>({});
-  const [initialChecked, setInitialChecked] = useState<number[]>([]);
-
-  const [searchArea, setSearchArea] = useState("");
-  const [searchCategory, setSearchCategory] = useState("");
-
-  const [dialogOpen, setDialogOpen] = useState(false);
   const { olimpiada_id } = useParams();
-  const [olimpiada, setOlimpiada] = useState<Olimpiada>();
+  const {
+    categories,
+    selectedArea,
+    checked,
+    searchArea,
+    searchCategory,
+    dialogOpen,
+    olimpiada,
+    filteredAreas,
+    selectedCount,
+    setSearchArea,
+    setSearchCategory,
+    setDialogOpen,
+    openDialog,
+    toggleCategory,
+    handleSave
+  } = useAsociarCategoriasViewModel(olimpiada_id || "");
 
-  useEffect(() => {
-    loadData();
-    fetchOlimpiada();
-  }, []);
-  if (!olimpiada_id) return;
+  if (!olimpiada_id) return null;
 
-  const fetchOlimpiada = async () => {
-    const olimpiada = await getOlimpiada(olimpiada_id);
-    setOlimpiada(olimpiada);
-  };
-  const loadData = async () => {
-    try {
-      const [areasData, catsData] = await Promise.all([
-        request<Area[]>(`/api/areas/categorias/olimpiada/${olimpiada_id}`),
-        request<Categoria[]>("/api/categorias"),
-      ]);
-
-      setAreas(areasData);
-      await setCategories(catsData);
-      console.log(areasData);
-      console.log(catsData);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Error al cargar datos");
-    }
-  };
-
-  const openDialog = (area: Area) => {
-    setSelectedArea(area);
-    console.log(area);
-    const ids =
-      area.categorias?.filter((v) => v).map((c) => Number(c.id)) || [];
-    setInitialChecked(ids);
-    setChecked(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
-    setSearchCategory("");
-    setDialogOpen(true);
-  };
-
-  const toggleCategory = (id: number) => {
-    setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const handleSave = async () => {
-    if (!selectedArea) return;
-    const selectedIds = Object.entries(checked)
-      .filter(([, v]) => v)
-      .map(([k]) => Number(k));
-    const toAdd = selectedIds.filter((id) => !initialChecked.includes(id));
-    const toRemove = initialChecked.filter((id) => !selectedIds.includes(id));
-    try {
-      await request("/api/categorias/area/olimpiada", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_area: Number(selectedArea.id),
-          id_olimpiada: Number(olimpiada_id),
-          agregar: toAdd,
-          quitar: toRemove,
-        }),
-      });
-      toast.success("Se asociaron las categorías exitosamente");
-      setDialogOpen(false);
-      loadData();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Error al guardar");
-    }
-  };
-
-  const filteredAreas = areas.filter((a) =>
-    a.nombre.toLowerCase().includes(searchArea.toLowerCase())
-  );
-
-  const selectedCount = Object.values(checked).filter(Boolean).length;
   if (
     olimpiada &&
     (olimpiada?.fase?.fase.nombre_fase !== "Preparación" || !olimpiada.fase)
@@ -131,6 +61,7 @@ export default function Page() {
         text={"La olimpiada no esta en Fase de Preparación"}
       />
     );
+
   return (
     <div className="min-h-screen flex flex-col w-full">
       <Header />
@@ -156,7 +87,6 @@ export default function Page() {
                   <TableHead className="min-w-[150px]">Nombre de Área</TableHead>
                   <TableHead className="max-w-xl">Categorias Asociadas</TableHead>
                   <TableHead className="max-w-xl">Asociar Categorias</TableHead>
-                  
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -165,7 +95,7 @@ export default function Page() {
                     <TableCell>{area.nombre}</TableCell>
                     <TableCell className="flex flex-wrap w-xl gap-1">
                       {area.categorias?.map((cat) => (
-                        <Badge className=" rounded-xl" variant={"secondary"}>
+                        <Badge key={cat.id} className=" rounded-xl" variant={"secondary"}>
                           {cat.nombre}
                         </Badge>
                       ))}

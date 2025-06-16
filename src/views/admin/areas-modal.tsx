@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
-import { useAreasModalViewModel } from "@/viewModels/admin/useAreasModalViewModel";
+import { useAreasModalViewModel } from "@/viewModels/usarVistaModelo/privilegios/useAreasModalViewModel";
 
 export function AreasModal() {
   const { open, setOpen } = useAreasModalViewModel();

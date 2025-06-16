@@ -39,7 +39,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "./ui/alert-dialog";
+} from "./ui/alertDialog";
 import { getDateUTC } from "@/viewModels/utils/fechas";
 import type {
     Colegio,

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
-import { useFormAddAreaViewModel } from "@/viewModels/admin/area/useFormAddAreaViewModel";
+import { useFormAddAreaViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/useFormAddAreaViewModel";
 
 interface FormAddAreaProps {
   onAdd: (data: { nombre: string }) => void;

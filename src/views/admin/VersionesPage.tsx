@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import Loading from "@/components/Loading";
 import Header from "@/components/Header";
-import { useVersionesPageViewModel, type VersionesPageProps } from "@/viewModels/admin/useVersionesPageViewModel";
+import { useVersionesPageViewModel, type VersionesPageProps } from "@/viewModels/usarVistaModelo/privilegios/useVersionesPageViewModel";
 
 export default function VersionesPage({
     title,

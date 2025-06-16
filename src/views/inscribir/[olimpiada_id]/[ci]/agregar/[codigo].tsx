@@ -27,7 +27,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alertDialog";
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/models/api/listas";
 import type { Postulante } from "../../../../../models/interfaces/columns";

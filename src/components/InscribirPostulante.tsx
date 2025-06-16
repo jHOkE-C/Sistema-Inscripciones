@@ -35,7 +35,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "./ui/alert-dialog";
+} from "./ui/alertDialog";
 import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import StepFormPostulante from "./StepFormPostulante";
 

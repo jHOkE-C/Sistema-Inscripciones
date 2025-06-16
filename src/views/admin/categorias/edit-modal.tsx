@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Category } from "@/models/interfaces/area-Category";
-import { useEditCategoryModalViewModel } from "@/viewModels/admin/categorias/useEditCategoryModalViewModel";
+import { useEditCategoryModalViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/useEditCategoryModalViewModel";
 
 interface EditCategoryModalProps {
   isOpen: boolean;

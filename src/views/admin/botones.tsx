@@ -17,9 +17,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import GestionRegistration from "./RegistrarGestion";
-import CrearRol from "./crear-rol/page";
-import HelpTooltip from "@/components/help-tooltip";
-import { useBotonesViewModel } from "@/viewModels/admin/useBotonesViewModel";
+import CrearRol from "./crearRol/pagina";
+import HelpTooltip from "@/components/helpTooltip";
+import { useBotonesViewModel } from "@/viewModels/usarVistaModelo/privilegios/useBotonesViewModel";
 
 export default function Botones() {
   const { hasAccess } = useBotonesViewModel();

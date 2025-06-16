@@ -1,67 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, User, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import axios from "axios";
-
-// Esquema de validación
-const formSchema = z
-  .object({
-    username: z
-      .string()
-      .min(1, "Usuario obligatorio")
-      .max(30, "Máximo 30 caracteres")
-      .regex(
-        /^(?!.*\.\.)(?!\.)(?!.*\.$)[a-z0-9.]+$/,
-        "Solo minúsculas, números y puntos válidos"
-      ),
-    password: z.string().min(8, "Mínimo 8 caracteres"),
-    confirmPassword: z.string().min(1, "Confirma la contraseña"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Contraseñas no coinciden",
-    path: ["confirmPassword"],
-  });
-
-type FormData = z.infer<typeof formSchema>;
+import { useCrearUsuario } from "@/viewModels/usarVistaModelo/privilegios/crear/useCrearUsuario";
 
 export function CreateUserForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const {
+    showPassword,
+    setShowPassword,
+    showConfirmPassword,
+    setShowConfirmPassword,
+    form,
+    onSubmit,
+  } = useCrearUsuario();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-    reset,
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    mode: "onChange",
-  });
-
-  const onSubmit = async (data: FormData) => {
-    const newUser = {
-      nombre_usuario: data.username,
-      password: data.password,
-    };
-    console.log(newUser);
-    try {
-      await axios.post(`${API_URL}/api/usuarios`, newUser)
-      toast.success(`Usuario ${data.username} creado exitosamente`);
-      reset();
-    } catch (error) {
-      toast.error("Error al crear el usuario");
-      console.error("Error al crear el usuario:", error);
-    }
-  };
+  } = form;
 
   return (
     <div>
@@ -77,7 +36,7 @@ export function CreateUserForm() {
             maxLength={30}
             {...register("username", {
               setValueAs: (value) =>
-          typeof value === "string" ? value.toLowerCase().slice(0, 30) : "",
+                typeof value === "string" ? value.toLowerCase().slice(0, 30) : "",
             })}
             className={errors.username ? "border-red-500" : ""}
             onInput={(e) => {

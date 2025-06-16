@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/carousel";
 import { Calendar, Clock, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useOlimpiadasCarouselViewModel } from "@/viewModels/viewmodels/useOlimpiadasCarouselViewModel";
+import { useOlimpiadasCarouselViewModel } from "@/viewModels/usarVistaModelo/useOlimpiadasCarouselViewModel";
 
 const DescargarPlantilla = lazy(
     () => import("@/components/DescargarPlantilla")

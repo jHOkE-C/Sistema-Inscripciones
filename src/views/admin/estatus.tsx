@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStatusViewModel } from "@/viewModels/admin/useStatusViewModel";
+import { useStatusViewModel } from "@/viewModels/usarVistaModelo/privilegios/useStatusViewModel";
 
 export interface OlympicsData {
   id?: number;

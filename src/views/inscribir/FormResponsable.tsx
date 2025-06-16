@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import NotFoundPage from "../404";
 import { MailIcon, PhoneIcon, UserIcon } from "lucide-react";
-import { useFormResponsableViewModel } from "@/viewModels/inscribir/useFormResponsableViewModel";
+import { useFormResponsableViewModel } from "@/viewModels/usarVistaModelo/inscribir/useFormResponsableViewModel";
 
 const FormResponsable = ({ onClose }: { onClose: () => void }) => {
   const {

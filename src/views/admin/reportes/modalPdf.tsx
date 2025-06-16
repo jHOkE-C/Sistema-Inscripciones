@@ -109,7 +109,7 @@ const crearPdfDocumento = (
   return { doc, dataUrl, blob };
 };
 
-const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, onOpenChange, postulantesFiltrados = [] }) => {
+export default function ModalPdf({ gestion, nombreOlimpiada, isOpen, onOpenChange, postulantesFiltrados = [] }: ModalPdfProps) {
   const [postulantes, setPostulantes] = useState<Postulante[] | null>(null);
   const [pdfDataUrl, setPdfDataUrl] = useState<string>('');
   const [pdfDoc, setPdfDoc] = useState<jsPDF | null>(null);
@@ -352,6 +352,4 @@ const ModalPdf: React.FC<ModalPdfProps> = ({ gestion, nombreOlimpiada, isOpen, o
       </DialogContent>
     </Dialog>
   );
-};
-
-export default ModalPdf;
+}

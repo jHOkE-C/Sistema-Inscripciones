@@ -12,7 +12,7 @@ import { Edit, EditIcon } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import EditCategoryModal from "../edit-modal";
 import ReturnComponent from "@/components/ReturnComponent";
-import { useEditarPageViewModel } from "@/viewModels/admin/categorias/editar/useEditarPageViewModel";
+import { useEditarPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/editar/useEditarPageViewModel";
 
 const Page = () => {
     const {

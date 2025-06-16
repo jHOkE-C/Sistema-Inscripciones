@@ -30,7 +30,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { es } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
-import { useRegistrarGestionViewModel } from "@/viewModels/admin/useRegistrarGestionViewModel";
+import { useRegistrarGestionViewModel } from "@/viewModels/usarVistaModelo/privilegios/useRegistrarGestionViewModel";
 
 export default function GestionRegistration({
   refresh,

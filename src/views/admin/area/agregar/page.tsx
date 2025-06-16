@@ -12,7 +12,7 @@ import { rutasAdmin } from "../../rutas-admin";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
 import { AlertComponent } from "@/components/AlertComponent";
-import { useAgregarPageViewModel } from "@/viewModels/admin/area/agregar/useAgregarPageViewModel";
+import { useAgregarPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/agregar/useAgregarPageViewModel";
 
 export const Page = () => {
     const {

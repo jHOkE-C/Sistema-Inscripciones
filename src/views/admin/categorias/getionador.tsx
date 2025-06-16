@@ -15,7 +15,7 @@ import CreateCategoryModal from "./create-category-modal";
 import AddAreaModal from "./add-modal";
 import EditCategoryModal from "./edit-modal";
 import DeleteConfirmationModal from "./delete-modal";
-import { useGestionadorViewModel } from "@/viewModels/admin/categorias/useGestionadorViewModel";
+import { useGestionadorViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/useGestionadorViewModel";
 
 export default function Gestionador() {
   const {

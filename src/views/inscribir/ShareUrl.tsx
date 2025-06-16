@@ -5,7 +5,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { QRCode } from "react-qrcode-logo";
-import { useShareUrlViewModel } from "@/viewModels/inscribir/useShareUrlViewModel";
+import { useShareUrlViewModel } from "@/viewModels/usarVistaModelo/inscribir/useShareUrlViewModel";
 
 export default function ShareUrl() {
   const {

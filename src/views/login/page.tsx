@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AlertComponent } from "@/components/AlertComponent";
-import { useLoginViewModel } from "@/viewModels/viewmodels/useLoginViewModel";
+import { useLoginViewModel } from "@/viewModels/usarVistaModelo/login/useLoginViewModel";
 
 const PageLogin = () => {
     const { form, error, onSubmit, clearError } = useLoginViewModel();

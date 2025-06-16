@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
 import { type Area } from "@/models/api/areas";
-import { useListAreaViewModel } from "@/viewModels/admin/area/useListAreaViewModel";
+import { useListAreaViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/useListAreaViewModel";
 
 interface ListAreaProps {
     areas: Area[];

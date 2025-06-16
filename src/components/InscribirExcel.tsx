@@ -27,7 +27,7 @@ import { ErrorCheckboxRow } from "@/components/ErrorCheckboxRow";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@radix-ui/react-hover-card";
-import { HoverCardContent } from "@/components/ui/hover-card";
+import { HoverCardContent } from "@/components/ui/hoverCard";
 import LoadingAlert from "@/components/loading-alert";
 import { useParams } from "react-router-dom";
 import { Olimpiada } from "@/models/interfaces/versiones.type";
@@ -36,7 +36,7 @@ import { useNavigate } from "react-router-dom";
 import { useUbicacion } from "@/viewModels/context/UbicacionContext";
 import { useCategorias } from "@/viewModels/context/CategoriasContext";
 import FileUpload from "./fileUpload";
-import { newValidarFila } from "@/viewModels/inscribir/excel/validations";
+import { newValidarFila } from "@/viewModels/usarVistaModelo/inscribir/excel/validations";
 import DescargarPlantilla from "./DescargarPlantilla";
 
 interface FileUploadModalProps {

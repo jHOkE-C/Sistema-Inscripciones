@@ -24,6 +24,7 @@ Object.entries(pages).forEach(([filePath, importer]) => {
     .replace('./views', '')
     .replace(/\.tsx$/, '')
     .replace(/\/(page|index)$/, '')
+    .replace(/\/(pagina|index)$/, '')
     .replace(/\[(\w+)\]/g, ':$1') || '/';
 
   // 2. Crea la ruta con lazy loader

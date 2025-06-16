@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UserIcon } from "lucide-react";
-import { useFormCIViewModel } from "@/viewModels/inscribir/useFormCIViewModel";
+import { useFormCIViewModel } from "@/viewModels/usarVistaModelo/inscribir/useFormCIViewModel";
 
 const FormCI = () => {
     const { form, onSubmit, handleCIChange, olimpiada_id } = useFormCIViewModel();

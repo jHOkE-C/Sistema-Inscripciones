@@ -11,7 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useTableListViewModel } from "@/viewModels/inscribir/useTableListViewModel";
+import { useTableListViewModel } from "@/viewModels/usarVistaModelo/inscribir/useTableListViewModel";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];

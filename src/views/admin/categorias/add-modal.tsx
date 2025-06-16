@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Category, Area } from "@/models/interfaces/area-Category";
-import { useAddAreaModalViewModel } from "@/viewModels/admin/categorias/useAddAreaModalViewModel";
+import { useAddAreaModalViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/useAddAreaModalViewModel";
 
 interface AddAreaModalProps {
   isOpen: boolean;

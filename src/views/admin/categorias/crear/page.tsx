@@ -12,7 +12,7 @@ import { Plus, PlusCircle } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import ReturnComponent from "@/components/ReturnComponent";
 import CreateCategoryModal from "../create-category-modal";
-import { useCrearPageViewModel } from "@/viewModels/admin/categorias/crear/useCrearPageViewModel";
+import { useCrearPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/crear/useCrearPageViewModel";
 
 const Page = () => {
     const {

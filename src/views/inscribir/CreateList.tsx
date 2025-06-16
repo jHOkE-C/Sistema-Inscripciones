@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateListViewModel } from "@/viewModels/inscribir/useCreateListViewModel";
+import { useCreateListViewModel } from "@/viewModels/usarVistaModelo/inscribir/useCreateListViewModel";
 
 interface CreateListProps {
     number?: number;

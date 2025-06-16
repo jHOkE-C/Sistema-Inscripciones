@@ -3,7 +3,7 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Check, FileText, X, CreditCard } from "lucide-react"
-import { usePostulanteDetalleViewModel, type Postulante } from "@/viewModels/inscribir/usePostulanteDetalleViewModel"
+import { usePostulanteDetalleViewModel, type Postulante } from "@/viewModels/usarVistaModelo/inscribir/usePostulanteDetalleViewModel"
 
 export default function PostulanteDetalle({ postulante, onClose }: { postulante: Postulante; onClose: () => void }) {
   const { getStatusBadge, handlePagoInscripcion } = usePostulanteDetalleViewModel({
