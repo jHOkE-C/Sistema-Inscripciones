@@ -7,54 +7,26 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { columns, type ListaPostulantes } from "@/views/inscribir/columns";
-import ShareUrl from "@/views/inscribir/ShareUrl";
 import { DataTable } from "@/views/inscribir/TableList";
-import type { ColumnDef } from "@tanstack/react-table";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import NotFoundPage from "@/views/404";
-import { getListasPostulantes } from "@/models/api/postulantes";
 import Loading from "@/components/Loading";
 import FormResponsable from "@/views/inscribir/FormResponsable";
+import ShareUrl from "@/views/inscribir/ShareUrl";
+import { usarAgregarPageViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/usarAgregarPageViewModel";
 
 const Page = () => {
-    const [data, setData] = useState<ListaPostulantes[]>([]);
-    const [openFormResponsable, setOpenFormResponsable] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const { ci, olimpiada_id } = useParams();
-    useEffect(() => {
-        if (ci && ci.length >= 7 && ci.length <= 10) fetchData();
-    }, []);
+    const {
+        data,
+        openFormResponsable,
+        setOpenFormResponsable,
+        loading,
+        isValidCI,
+        columnsWithActions
+    } = usarAgregarPageViewModel();
 
-    if (!ci || ci.length < 7 || ci.length > 10) {
+    if (!isValidCI) {
         return <NotFoundPage />;
     }
-    if (!olimpiada_id) return;
-
-    const refresh = async () => {
-        setLoading(true);
-        try {
-            const { data } = await getListasPostulantes(ci);
-            setData(data.filter(({ olimpiada_id: id,estado}) => id == olimpiada_id && estado== "Preinscrito"));
-        } catch {
-            setOpenFormResponsable(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchData = async () => {
-        try {
-            refresh();
-        } catch {
-            console.error("Error al obtener las inscripciones de postulantes");
-        }
-    };
-
-    const columnsWithActions: ColumnDef<ListaPostulantes, unknown>[] = [
-        ...columns,
-    ];
 
     if (loading) return <Loading />;
     if (openFormResponsable)

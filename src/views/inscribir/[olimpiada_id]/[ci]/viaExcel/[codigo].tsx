@@ -69,7 +69,6 @@ export default function Page() {
                                         /> */}
                                         <div></div>
                                         <ButtonFinalizarRegistro
-                                            codigo_lista={codigo}
                                             show
                                             onFinish={() => fetchData()}
                                         />
