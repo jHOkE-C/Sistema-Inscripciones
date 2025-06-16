@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import {
     Table,
     TableBody,
@@ -10,9 +8,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista, postDataPostulante } from "@/models/api/postulantes";
-
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/views/404";
 import ReturnComponent from "@/components/ReturnComponent";
@@ -28,74 +23,18 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alertDialog";
-import { toast } from "sonner";
-import { cambiarEstadoLista } from "@/models/api/listas";
-import type { Postulante } from "../../../../../models/interfaces/columns";
 import DialogPostulante from "@/components/DialogPostulante";
-import type { postulanteSchema } from "@/components/FormPostulante";
-import type { z } from "zod";
+import { usarCodigoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/usarCodigoViewModel";
 
 export default function Page() {
-    const navigate = useNavigate();
-    const [data, setData] = useState<Postulante[]>([]);
-    const { ci, codigo, olimpiada_id } = useParams();
-    const [notFound, setNotFound] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [editar, setEditar] = useState(false);
-    useEffect(() => {
-        fetchData();
-    }, []);
-    if (!codigo) return;
-    const refresh = async () => {
-        const data = await getInscritosPorLista(codigo);
-        setData(data.data);
-    };
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const data = await getInscritosPorLista(codigo);
-            setData(data.data);
-            console.log(data.estado, data.estado !== "Preinscrito");
-            setEditar(data.estado === "Preinscrito");
-            setNotFound(false);
-        } catch {
-            setNotFound(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const terminarRegistro = async () => {
-        console.log("terminando registro");
-        try {
-            await cambiarEstadoLista(codigo, "Pago Pendiente");
-            navigate(`/inscribir/${olimpiada_id}/${ci}`);
-        } catch (error) {
-            if (error instanceof Error) {
-                toast.error(error.message);
-            } else {
-                toast.error("An unexpected error occurred");
-            }
-        }
-    };
-
-    const onSubmit = async (data: z.infer<typeof postulanteSchema>) => {
-        if (loading) return;
-        setLoading(true);
-        try {
-            await postDataPostulante({ ...data, codigo_lista: codigo });
-            toast.success("El postulante fue registrado exitosamente");
-            //setShowForm(false);
-            refresh();
-        } catch (e) {
-            toast.error(
-                e instanceof Error ? e.message : "Hubo un error desconocido"
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
+    const {
+        data,
+        notFound,
+        loading,
+        editar,
+        onSubmit,
+        terminarRegistro
+    } = usarCodigoViewModel();
 
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;

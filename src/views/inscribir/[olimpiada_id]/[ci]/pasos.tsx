@@ -1,59 +1,24 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
-import { ClipboardList, FileText, Upload } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-interface Step {
-  id: number;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}
+import { usePasosViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/usePasosViewModel";
 
 export default function Pasos() {
-  const [activeStep, setActiveStep] = useState<number | null>(null);
-
-  const steps: Step[] = [
-    {
-      id: 1,
-      title: "Inscribir Postulante/s",
-      description:
-        "Complete el formulario de inscripción con sus datos personales",
-      icon: <ClipboardList className="h-6 w-6" />,
-    },
-    {
-      id: 2,
-      title: "Generar Orden de Pago",
-      description: "Genere la orden de pago para proceder con su inscripción",
-      icon: <FileText className="h-6 w-6" />,
-    },
-    {
-      id: 3,
-      title: "Subir Comprobante",
-      description: "Suba el comprobante de pago para finalizar su inscripción",
-      icon: <Upload className="h-6 w-6" />,
-    },
-  ];
+  const { activeStep, setActiveStep, steps } = usePasosViewModel();
 
   return (
     <div className="container mx-auto p-4 max-w-5xl h-full ">
-      
-
       {/* Versión móvil (vertical) */}
       <div className="md:hidden">
         <div className="relative">
           {steps.map((step) => (
             <div key={step.id} className="flex mb-4 last:mb-0">
-              {/* Línea conectora vertical */}
-              
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -63,7 +28,7 @@ export default function Pasos() {
                       onMouseLeave={() => setActiveStep(null)}
                     >
                       <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary border-2 border-primary">
-                        {step.icon}
+                        <step.icon className="h-6 w-6" />
                       </div>
                       <div className="ml-4">
                         <p className="font-medium">Paso {step.id}</p>
@@ -84,9 +49,6 @@ export default function Pasos() {
       {/* Versión desktop (horizontal) */}
       <div className="hidden md:block">
         <div className="flex justify-between items-center relative">
-      
-          {/* Pasos */}
-
           {steps.map((step) => (
             <TooltipProvider key={step.id}>
               <Tooltip>
@@ -108,7 +70,7 @@ export default function Pasos() {
                         transition-all duration-200 cursor-pointer
                       `}
                     >
-                      {step.icon}
+                      <step.icon className="h-6 w-6" />
                     </div>
                     <div className="mt-2 text-center">
                       <p className="text-sm font-medium">Paso {step.id}</p>
@@ -124,7 +86,6 @@ export default function Pasos() {
           ))}
         </div>
       </div>
-
     </div>
   );
 }

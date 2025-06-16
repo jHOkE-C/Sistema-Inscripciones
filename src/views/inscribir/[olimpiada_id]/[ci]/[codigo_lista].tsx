@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import {
     Table,
     TableBody,
@@ -10,9 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista } from "@/models/api/postulantes";
-
+import { useParams } from "react-router-dom";
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/views/404";
 import ReturnComponent from "@/components/ReturnComponent";
@@ -28,16 +24,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alertDialog";
-import { toast } from "sonner";
-import { cambiarEstadoLista } from "@/models/api/listas";
 import ShareUrl from "@/views/inscribir/ShareUrl";
-import type { Postulante } from "../../../../models/interfaces/columns";
 import { Check, PenBox } from "lucide-react";
-import { apiClient } from "@/models/api/request";
-import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
-import StepFormPostulante, {
-    type StepData,
-} from "@/components/StepFormPostulante";
+import StepFormPostulante from "@/components/StepFormPostulante";
 import {
     Dialog,
     DialogContent,
@@ -45,69 +34,23 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { useCodigoListaViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/useCodigoListaViewModel";
 
 export default function Page() {
-    const [data, setData] = useState<Postulante[]>([]);
-    const { codigo_lista } = useParams();
-    const [notFound, setNotFound] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [editar, setEditar] = useState(false);
-    const { olimpiada_id, ci } = useParams();
-    const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } = useOlimpiada(Number(olimpiada_id));
-    const [openForm, setOpenForm] = useState(false);
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const {
+        data,
+        notFound,
+        loading,
+        editar,
+        openForm,
+        setOpenForm,
+        olimpiada,
+        olimpiadaLoading,
+        onSubmit,
+        terminarRegistro
+    } = useCodigoListaViewModel();
 
-    useEffect(() => {
-        if (olimpiadaError) {
-            console.error("Error al obtener olimpiada");
-        }
-    }, [olimpiadaError]);
-    const refresh = async () => {
-        const data = await getInscritosPorLista(codigo_lista!);
-        console.log("nuevos datos", data.data);
-        setData(data.data);
-    };
-
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const data = await getInscritosPorLista(codigo_lista!);
-
-            setData(data.data);
-            console.log(data.estado, data.estado !== "Preinscrito");
-            setEditar(data.estado === "Preinscrito");
-            setNotFound(false);
-        } catch {
-            setNotFound(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const onSubmit = async (data: StepData) => {
-        const date = data.fecha_nacimiento;
-        const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
-            date.getMonth() + 1
-        )
-            .toString()
-            .padStart(2, "0")}-${date.getFullYear()}`;
-        const payload = {
-            ...data,
-            codigo_lista,
-            fecha_nacimiento: formattedDate,
-        };
-        console.log("payload", payload);
-        try {
-            await apiClient.post("/api/inscripciones", payload);
-            toast.success("Postulante inscrito correctamente");
-            await refresh();
-        } catch (e: unknown) {
-            throw e instanceof Error ? e : new Error(String(e));
-        }
-        setOpenForm(false);
-    };
+    const { codigo_lista, ci, olimpiada_id } = useParams();
 
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;
@@ -141,14 +84,13 @@ export default function Page() {
                                 )}
                                 <ButtonFinalizarRegistro
                                     show={editar && data.length > 0}
-                                    codigo_lista={codigo_lista}
+                                    onFinish={terminarRegistro}
                                 />
                             </div>
                             <Table>
                                 {data.length === 0 && (
                                     <TableCaption>
-                                        No existen postulantes registrados a
-                                        esta inscripción
+                                        No existen postulantes registrados a esta inscripción
                                     </TableCaption>
                                 )}
 
@@ -163,22 +105,12 @@ export default function Page() {
                                 </TableHeader>
                                 <TableBody>
                                     {data.map((inscripcion) => (
-                                        <TableRow key={inscripcion.area+inscripcion.categoria+""+inscripcion.id}>
-                                            <TableCell>
-                                                {inscripcion.nombres}
-                                            </TableCell>
-                                            <TableCell>
-                                                {inscripcion.apellidos}
-                                            </TableCell>
-                                            <TableCell>
-                                                {inscripcion.ci}
-                                            </TableCell>
-                                            <TableCell>
-                                                {inscripcion.area}
-                                            </TableCell>
-                                            <TableCell>
-                                                {inscripcion.categoria}
-                                            </TableCell>
+                                        <TableRow key={inscripcion.area + inscripcion.categoria + "" + inscripcion.id}>
+                                            <TableCell>{inscripcion.nombres}</TableCell>
+                                            <TableCell>{inscripcion.apellidos}</TableCell>
+                                            <TableCell>{inscripcion.ci}</TableCell>
+                                            <TableCell>{inscripcion.area}</TableCell>
+                                            <TableCell>{inscripcion.categoria}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -193,15 +125,11 @@ export default function Page() {
                     <DialogHeader>
                         <DialogTitle>Agregar Nuevo Postulante</DialogTitle>
                         <DialogDescription>
-                            Ingresa los datos del nuevo postulante para las
-                            olimpiadas ohSansi
+                            Ingresa los datos del nuevo postulante para las olimpiadas ohSansi
                         </DialogDescription>
-                        <StepFormPostulante
-                            onSubmit={onSubmit}
-                            olimpiada={olimpiada}
-                        />
-                    </DialogHeader>{" "}
-                </DialogContent>{" "}
+                        <StepFormPostulante onSubmit={onSubmit} olimpiada={olimpiada} />
+                    </DialogHeader>
+                </DialogContent>
             </Dialog>
         </>
     );
@@ -209,32 +137,11 @@ export default function Page() {
 
 export const ButtonFinalizarRegistro = ({
     show,
-    codigo_lista,
     onFinish,
 }: {
     show: boolean;
-    codigo_lista: string;
     onFinish?: () => void;
 }) => {
-    const { olimpiada_id, ci } = useParams();
-    const navigate = useNavigate();
-    const terminarRegistro = async () => {
-        try {
-            await cambiarEstadoLista(codigo_lista, "Pago Pendiente");
-            if (onFinish) {
-                onFinish();
-            } else {
-                navigate(`/inscribir/${olimpiada_id}/${ci}`);
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                toast.error(error.message);
-            } else {
-                toast.error("Ocurrio un error inesperado");
-            }
-        }
-    };
-
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -247,19 +154,15 @@ export const ButtonFinalizarRegistro = ({
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        ¿Esta seguro que deseas finalizar el registro?
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Esta acción bloqueará la adición de postulantes futura
-                        en esta inscripcion
+                        Al finalizar el registro no podrás agregar más postulantes a esta
+                        inscripción.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={terminarRegistro}>
-                        Continuar
-                    </AlertDialogAction>
+                    <AlertDialogAction onClick={onFinish}>Continuar</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

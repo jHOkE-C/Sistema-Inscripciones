@@ -4,7 +4,6 @@ import "react-pdf/dist/esm/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 import type React from "react";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -16,185 +15,36 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Download, CheckCircle2, PenBox } from "lucide-react";
-import axios, { AxiosError } from "axios";
-import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
-import { descargarPDF, generarOrden } from "@/viewModels/utils/pdf";
-import type { Olimpiada } from "@/models/interfaces/types";
+import { AlertCircle, Download } from "lucide-react";
 import { Document, Page, pdfjs } from "react-pdf";
+import type { Olimpiada } from "@/models/interfaces/types";
+import { isMobile } from "react-device-detect";
+import { useOrdenPagoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/useOrdenPagoViewModel";
+
 interface Props {
     codigo_lista: string;
     olimpiada?: Olimpiada;
 }
-import { isMobile } from "react-device-detect";
-import { apiClient } from "@/models/api/request";
 
-export interface Orden {
-    id: string;
-    n_orden: string;
-    codigo_lista: string;
-    fecha_emision: string;
-    precio_unitario: string;
-    monto: string;
-    estado: string;
-    cantidad_inscripciones: number;
-    nombre_responsable?: string;
-    emitido_por: string;
-    nitci: string;
-    unidad: string;
-    concepto: string;
-    niveles_competencia: string[];
-}
-export interface DatosPrevios {
-    codigo_lista: string;
-    monto: number;
-    estado: string;
-    cantidad_inscripciones: number;
-}
 export default function OrdenPago({ codigo_lista }: Props) {
-    const [formOpen, setFormOpen] = useState(false);
-    const [pdfOpen, setPdfOpen] = useState(false);
-    const [nombre, setNombre] = useState("");
-    const [nitci, setNitCi] = useState("");
-    const [error, setError] = useState<{ nombre?: string; nitCi?: string }>({});
-    const [loading, setLoading] = useState(false);
-    const [pdf, setPdf] = useState<Uint8Array>();
-    const [pdfBlob, setPdfBlob] = useState<Blob>();
-
-    const [datosPrevios, setDatosPrevios] = useState<DatosPrevios>();
-
-    const fetchDatosPrevios = async () => {
-        try {
-            const response = await apiClient.get<DatosPrevios>(
-                "/api/ordenes-pago/datos-previos/" + codigo_lista
-            );
-            setDatosPrevios(response);
-            setFormOpen(true);
-        } catch {
-            toast.error("Ocurrio un error");
-        }
-    };
-
-    const fetchOrden = async () => {
-        try {
-            const { data } = await axios.get<Orden>(
-                `${API_URL}/api/ordenes-pago/lista/${codigo_lista}`
-            );
-            const pdf = await generarOrden({
-                cantidad: data.cantidad_inscripciones,
-                ci: data.nitci,
-                concepto: data.concepto,
-                emitido_por: data.emitido_por,
-                importe: data.monto,
-                n_orden: data.n_orden,
-                nombre_responsable: data.nombre_responsable,
-                precio_unitario: data.precio_unitario,
-                unidad: data.unidad,
-                fecha_emision: data.fecha_emision,
-            });
-            setPdfOpen(true);
-            setPdfBlob(
-                new Blob([pdf as BlobPart], { type: "application/pdf" })
-            );
-            setPdf(pdf);
-        } catch {
-            //toast.error("Hubo un error al cargar la orden.");
-            await fetchDatosPrevios();
-        }
-    };
-
-    const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNombre(e.target.value);
-        if (e.target.value.trim() !== "") {
-            setError((prev) => ({ ...prev, nombre: undefined }));
-        }
-    };
-
-    const handleNitCiChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Convertir a mayúsculas y eliminar caracteres no permitidos
-        const rawValue = e.target.value;
-        const upperValue = rawValue.toUpperCase();
-
-        // Filtrar solo letras mayúsculas y números
-        const filteredValue = upperValue.replace(/[^A-Z0-9]/g, "");
-
-        // Validar longitud máxima
-        if (filteredValue.length <= 10) {
-            setNitCi(filteredValue);
-            setError((prev) => ({ ...prev, nitCi: undefined }));
-        } else {
-            setNitCi(filteredValue.slice(0, 10));
-            setError((prev) => ({
-                ...prev,
-                nitCi: "El NIT/CI debe tener máximo 10 caracteres",
-            }));
-        }
-    };
-
-    const handleSubmit = () => {
-        setLoading(true);
-        const newErrors: { nombre?: string; nitCi?: string } = {};
-
-        if (nombre.trim() === "") {
-            newErrors.nombre = "Por favor ingrese el nombre";
-        }
-
-        if (nitci.trim() === "") {
-            newErrors.nitCi = "Por favor ingrese un NIT/CI";
-        }
-
-        if (Object.keys(newErrors).length > 0) {
-            setError(newErrors);
-            return;
-        }
-        const data = {
-            codigo_lista,
-            nombre_responsable: nombre,
-            emitido_por: "Sistema OhSansi",
-            nitci: nitci,
-        };
-
-        const crearOrden = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.post(
-                    `${API_URL}/api/ordenes-pago`,
-                    data
-                );
-                setFormOpen(false);
-                setPdfOpen(true);
-                console.log("Orden creada:", response.data);
-            } catch (error) {
-                console.error("Error al crear la orden:", error);
-                if (error instanceof AxiosError) {
-                    toast.error(error.message);
-                }
-            }
-            await fetchOrden();
-            setLoading(false);
-        };
-
-        crearOrden();
-    };
-
-    const handleDownload = async () => {
-        try {
-            if (pdf) descargarPDF(pdf);
-        } catch (error) {
-            console.error("Error al descargar el PDF:", error);
-        }
-
-        setPdfOpen(false);
-        setNombre("");
-        setNitCi("");
-        setError({});
-    };
-
-    const onClick = async () => {
-        await fetchOrden();
-        //setFormOpen(true);
-    };
+    const {
+        formOpen,
+        setFormOpen,
+        pdfOpen,
+        setPdfOpen,
+        nombre,
+        nitci,
+        error,
+        loading,
+        pdf,
+        pdfBlob,
+        datosPrevios,
+        handleNombreChange,
+        handleNitCiChange,
+        handleSubmit,
+        handleDownload,
+        onClick
+    } = useOrdenPagoViewModel(codigo_lista);
 
     return (
         <div>
@@ -214,12 +64,8 @@ export default function OrdenPago({ codigo_lista }: Props) {
                     <DialogDescription asChild>
                         <div className="grid gap-5 py-4">
                             <div className="grid grid-cols-2 gap-3 p-4 rounded-lg border">
-                                <div className="font-medium">
-                                    Código de inscripción:
-                                </div>
-                                <div className="font-semibold">
-                                    {codigo_lista}
-                                </div>
+                                <div className="font-medium">Código de inscripción:</div>
+                                <div className="font-semibold">{codigo_lista}</div>
 
                                 <div className="font-medium">Monto:</div>
                                 <div className="font-semibold">
@@ -231,9 +77,7 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                     {datosPrevios?.estado}
                                 </div>
 
-                                <div className="font-medium">
-                                    Inscripciones:
-                                </div>
+                                <div className="font-medium">Inscripciones:</div>
                                 <div className="font-semibold">
                                     {datosPrevios?.cantidad_inscripciones}
                                 </div>
@@ -253,13 +97,12 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                     </div>
                                 )}
 
-                                <Label htmlFor="nitCi">NIT/CI</Label>
+                                <Label htmlFor="nitci">NIT/CI</Label>
                                 <Input
-                                    id="nitCi"
+                                    id="nitci"
                                     value={nitci}
                                     onChange={handleNitCiChange}
-                                    placeholder="Ingrese NIT/CI"
-                                    maxLength={10}
+                                    placeholder="Ingrese el NIT/CI"
                                 />
                                 {error.nitCi && (
                                     <div className="flex items-center text-sm text-red-500 mt-1">
@@ -267,62 +110,61 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                         {error.nitCi}
                                     </div>
                                 )}
+
+                                <DialogFooter>
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full"
+                                    >
+                                        {loading ? "Generando..." : "Generar Orden"}
+                                    </Button>
+                                </DialogFooter>
                             </form>
                         </div>
                     </DialogDescription>
-
-                    <DialogFooter className="gap-3 sm:gap-0 space-x-2">
-                        <Button onClick={handleSubmit} disabled={loading}>
-                            {loading ? "Procesando..." : "Continuar"}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => setFormOpen(false)}
-                        >
-                            Cancelar
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Modal de la orden de pago (PDF) */}
+            {/* Modal del PDF */}
             <Dialog open={pdfOpen} onOpenChange={setPdfOpen}>
-                <DialogContent className="sm:min-w-[650px]">
+                <DialogContent className="sm:max-w-4xl">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-semibold text-center flex items-center justify-center gap-2">
-                            <CheckCircle2 className="h-5 w-5" />
-                            Orden de Pago Generada
+                        <DialogTitle className="text-xl font-semibold text-center">
+                            Orden de Pago
                         </DialogTitle>
                     </DialogHeader>
 
-                    {pdfBlob && (
-                        <Document file={pdfBlob}>
-                            <Page
-                                pageNumber={1}
-                                className="shadow-lg mx-auto"
-                                renderTextLayer={false}
-                                renderAnnotationLayer={false}
-                                scale={isMobile ? 0.5 : 1}
-                            />
-                        </Document>
-                    )}
-                    <div className="flex justify-between w-full">
-                        <Button onClick={handleDownload} className="">
-                            <Download className="mr-2 h-4 w-4" />
-                            Descargar PDF
-                        </Button>
-                        <Button
-                            variant={"secondary"}
-                            onClick={() => {
-                                setPdfOpen(false);
-                                fetchDatosPrevios();
-                            }}
-                            className=""
-                        >
-                            <PenBox className="mr-2 h-4 w-4" />
-                            Modificar Orden
-                        </Button>
-                    </div>
+                    <DialogDescription asChild>
+                        <div className="grid gap-5 py-4">
+                            <div className="flex justify-center">
+                                {pdf && (
+                                    <Document
+                                        file={pdfBlob}
+                                        className="flex flex-col items-center"
+                                    >
+                                        <Page
+                                            pageNumber={1}
+                                            width={isMobile ? 300 : 600}
+                                            renderTextLayer={false}
+                                            renderAnnotationLayer={false}
+                                        />
+                                    </Document>
+                                )}
+                            </div>
+
+                            <DialogFooter>
+                                <Button
+                                    onClick={handleDownload}
+                                    className="w-full"
+                                    variant="outline"
+                                >
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Descargar PDF
+                                </Button>
+                            </DialogFooter>
+                        </div>
+                    </DialogDescription>
                 </DialogContent>
             </Dialog>
         </div>
