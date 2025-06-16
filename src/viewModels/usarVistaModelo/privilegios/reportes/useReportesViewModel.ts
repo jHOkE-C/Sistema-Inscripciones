@@ -19,6 +19,10 @@ export interface Postulante {
   estado: "Preinscrito" | "Pago Pendiente" | "Inscripcion Completa";
 }
 
+interface OlimpiadaResponse {
+  nombre: string;
+}
+
 export const useReportesViewModel = (olimpiada_id: string) => {
   const [nombreOlimpiada, setNombreOlimpiada] = useState<string>("");
   const [postulantes, setPostulantes] = useState<Postulante[]>([]);
@@ -44,8 +48,8 @@ export const useReportesViewModel = (olimpiada_id: string) => {
       setIsLoading(true);
       try {
         const [datosOlimpiada, datosPostulantes] = await Promise.all([
-          fetch(`${API_URL}/api/olimpiadas/${olimpiada_id}`).then(res => res.json()),
-          fetch(`${API_URL}/api/olimpiadas/${olimpiada_id}/reporteDeInscripciones`).then(res => res.json())
+          fetch(`${API_URL}/api/olimpiadas/${olimpiada_id}`).then(res => res.json() as Promise<OlimpiadaResponse>),
+          fetch(`${API_URL}/api/olimpiadas/${olimpiada_id}/reporteDeInscripciones`).then(res => res.json() as Promise<Postulante[]>)
         ]);
         
         setNombreOlimpiada(datosOlimpiada.nombre || "Olimpiada");
@@ -60,18 +64,18 @@ export const useReportesViewModel = (olimpiada_id: string) => {
               return null;
             }
           })
-          .filter(Boolean))] as string[];
+          .filter((year): year is string => year !== null))];
         
         years.sort((a, b) => parseInt(b) - parseInt(a));
         setYearsFilter(years);
 
-        // Set other filters
-        setAreasFilter([...new Set(datosPostulantes.map(p => p.area))]);
-        setCategoriasFilter([...new Set(datosPostulantes.map(p => p.categoria))]);
-        setDepartamentosFilter([...new Set(datosPostulantes.map(p => p.departamento))]);
-        setProvinciasFilter([...new Set(datosPostulantes.map(p => p.provincia))]);
-        setColegiosFilter([...new Set(datosPostulantes.map(p => p.colegio))]);
-        setGradosFilter([...new Set(datosPostulantes.map(p => p.grado))]);
+        // Set other filters with proper type assertions
+        setAreasFilter([...new Set(datosPostulantes.map(p => p.area))].filter((area): area is string => area !== undefined));
+        setCategoriasFilter([...new Set(datosPostulantes.map(p => p.categoria))].filter((cat): cat is string => cat !== undefined));
+        setDepartamentosFilter([...new Set(datosPostulantes.map(p => p.departamento))].filter((dep): dep is string => dep !== undefined));
+        setProvinciasFilter([...new Set(datosPostulantes.map(p => p.provincia))].filter((prov): prov is string => prov !== undefined));
+        setColegiosFilter([...new Set(datosPostulantes.map(p => p.colegio))].filter((col): col is string => col !== undefined));
+        setGradosFilter([...new Set(datosPostulantes.map(p => p.grado))].filter((grado): grado is string => grado !== undefined));
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
