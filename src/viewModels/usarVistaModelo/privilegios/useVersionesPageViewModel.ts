@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { VersionFilter, Olimpiada } from "@/models/interfaces/versiones.type";
 
@@ -23,47 +23,20 @@ export function useVersionesPageViewModel({
         try {
             if (queVersiones.length === 0) {
                 const { data } = await axios.get<Olimpiada[]>(
-                    `${API_URL}/api/olimpiadas`
+                    `${API_URL}/api/olimpiadas/conFases`
                 );
+                console.log("Data fetched:", data);
                 if (filter) {
                     setVersiones(data.filter(filter));
                 } else {
                     setVersiones(data);
                 }
             } else {
-                const hayPasadas = queVersiones.includes("pasadas");
-                const hayFuturas = queVersiones.includes("futuras");
-                const fasesSolicitadas = queVersiones.filter(
-                    (f) => f !== "pasadas" && f !== "futuras"
+                const { data: todasLasVersiones } = await axios.post<Olimpiada[]>(
+                    `${API_URL}/api/olimpiadas/por-tipos`,
+                    { tipos: queVersiones }
                 );
-                const hayFases = fasesSolicitadas.length > 0;
-
-                const peticiones: Promise<AxiosResponse<Olimpiada[]>>[] = [];
-                if (hayPasadas) {
-                    peticiones.push(
-                        axios.get<Olimpiada[]>(
-                            `${API_URL}/api/olimpiadas/pasadas`
-                        )
-                    );
-                }
-                if (hayFuturas) {
-                    peticiones.push(
-                        axios.get<Olimpiada[]>(
-                            `${API_URL}/api/olimpiadas/futuras`
-                        )
-                    );
-                }
-                if (hayFases) {
-                    peticiones.push(
-                        axios.post<Olimpiada[]>(
-                            `${API_URL}/api/olimpiadas/por-fases`,
-                            { fases: fasesSolicitadas }
-                        )
-                    );
-                }
-
-                const respuestas = await Promise.all(peticiones);
-                const todasLasVersiones = respuestas.flatMap((r) => r.data);
+                console.log(todasLasVersiones);
                 setVersiones(todasLasVersiones);
             }
         } catch (error) {
