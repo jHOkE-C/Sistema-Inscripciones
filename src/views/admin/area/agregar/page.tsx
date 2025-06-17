@@ -34,7 +34,7 @@ export const Page = () => {
         <div className="flex flex-col min-h-screen">
             <Header rutas={rutasAdmin}/>
             <ReturnComponent to={`..\\..\\`}/>
-            <div className="w-4/5 mx-auto my-6">
+            <div className="container mx-auto max-w-4xl py-5 space-y-8">
                 <Card>
                     <CardTitle>
                         <h2 className="text-4xl font-bold text-center py-5">
