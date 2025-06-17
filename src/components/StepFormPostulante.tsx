@@ -15,13 +15,13 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { getCategoriaAreaPorGrado, type Categoria } from "@/api/areas";
-import { useUbicacion } from "@/context/UbicacionContext";
-import type { Olimpiada } from "@/types/versiones.type";
+import { getCategoriaAreaPorGrado, type Categoria } from "@/models/api/areas";
+import { useUbicacion } from "@/viewModels/context/UbicacionContext";
+import type { Olimpiada } from "@/models/interfaces/versiones.type";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { apiClient } from "@/api/request";
+import { apiClient } from "@/models/api/request";
 import {
     Dialog,
     DialogContent,
@@ -39,18 +39,18 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { getDateUTC } from "@/utils/fechas";
+} from "./ui/alertDialog";
+import { getDateUTC } from "@/viewModels/utils/fechas";
 import type {
     Colegio,
     Departamento,
     Provincia,
-} from "@/interfaces/ubicacion.interface";
+} from "@/models/interfaces/ubicacion.interface";
 
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { ArrowRight, Trash2, TriangleAlert, User } from "lucide-react";
-import { getResponsable } from "@/api/responsables";
-import { CONTACTOS } from "@/interfaces/postulante.interface";
+import { getResponsable } from "@/models/api/responsables";
+import { CONTACTOS } from "@/models/interfaces/postulante.interface";
 import { Card, CardContent } from "./ui/card";
 
 const personalSchema = z.object({
@@ -1032,39 +1032,39 @@ const StepFormPostulante = ({
                         <AlertDialogDescription>
                             Se reemplazarán los datos de las otras inscripciones
                             por los siguientes:
-                            <ul className="pl-5">
-                                {cambios.map((cambio, index) => (
-                                    <li key={index}>
-                                        <div className="flex items-center space-x-2">
-                                            <strong>{cambio.campo}:</strong>{" "}
-                                            <span className="font-semibold text-red-600">
-                                                Anterior: {cambio.anterior}
-                                            </span>
-                                            <ArrowRight className="size-6" />
-                                            <span className="font-semibold text-green-600">
-                                                Nuevo: {cambio.nuevo}
-                                            </span>
-                                        </div>
-                                        {cambio.campo === "Curso" && (
-                                            <Alert
-                                                className=""
-                                                variant={"destructive"}
-                                            >
-                                                <TriangleAlert />
-                                                <AlertTitle className="font-medium">
-                                                    Estás cambiando de grado:
-                                                </AlertTitle>{" "}
-                                                <AlertDescription>
-                                                    se eliminarán las
-                                                    inscripciones que no
-                                                    pertenecen a este grado.
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
                         </AlertDialogDescription>
+                        <ul className="pl-5 pr-8">
+                            {cambios.map((cambio, index) => (
+                                <li key={index}>
+                                    <div className="flex items-center space-x-2">
+                                        <strong>{cambio.campo}:</strong>{" "}
+                                        <span className="font-semibold text-red-600">
+                                            Anterior: {cambio.anterior}
+                                        </span>
+                                        <ArrowRight className="size-6" />
+                                        <span className="font-semibold text-green-600">
+                                            Nuevo: {cambio.nuevo}
+                                        </span>
+                                    </div>
+                                    {cambio.campo === "Curso" && (
+                                        <Alert
+                                            className=""
+                                            variant={"destructive"}
+                                        >
+                                            <TriangleAlert />
+                                            <AlertTitle className="font-medium">
+                                                Estás cambiando de grado:
+                                            </AlertTitle>{" "}
+                                            <AlertDescription>
+                                                se eliminarán las
+                                                inscripciones que no
+                                                pertenecen a este grado.
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>

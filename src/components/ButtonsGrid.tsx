@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ButtonsGridProps } from "@/interfaces/buttons.interface";
+import { ButtonsGridProps } from "@/models/interfaces/buttons.interface";
 
 const colorClasses: Record<string, { bg: string; hover: string }> = {
     sky: { bg: "bg-sky-600", hover: "hover:bg-sky-700" },

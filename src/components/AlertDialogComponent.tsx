@@ -8,7 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alertDialog";
 import { Button } from "@/components/ui/button";
 import type { JSX } from "react";
 

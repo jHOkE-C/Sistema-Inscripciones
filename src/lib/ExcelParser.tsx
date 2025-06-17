@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { validarCamposRequeridos } from '@/pages/inscribir/[olimpiada_id]/[ci]/viaExcel/validations';
+import { validarCamposRequeridos } from '@/viewModels/usarVistaModelo/inscribir/excel/validations';
 
 export interface FileParseResult {
   jsonData: (string | null)[][][];
