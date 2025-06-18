@@ -1,0 +1,18 @@
+{
+  "headers": [
+    {
+      
+      "source": "**/*.{png,jpg,jpeg,gif,ico,wasm,tgz}",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=500" }
+      ]
+    },
+    {
+      
+      "source": "**/*.{js,css}",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=500" }
+      ]
+    }
+  ]
+}
