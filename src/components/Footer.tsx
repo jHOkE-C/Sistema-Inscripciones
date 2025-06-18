@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Facebook, Instagram, Music2} from 'lucide-react'; // Assuming 'Tiktok' icon exists or using a generic icon
 
 const Footer: React.FC = () => {
   return (
@@ -30,6 +31,33 @@ const Footer: React.FC = () => {
           >
             Contacto
           </Link>
+          <a
+            href="https://www.facebook.com/UmssBolOficial"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-blue-600"
+            aria-label="Facebook"
+          >
+            <Facebook size={20} />
+          </a>
+          <a
+            href="https://www.instagram.com/UMSSBolOficial/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-pink-600"
+            aria-label="Instagram"
+          >
+            <Instagram size={20} />
+          </a>
+          <a
+            href="https://www.tiktok.com/@UMSSDigital"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-foreground"
+            aria-label="TikTok"
+          >
+            <Music2 size={20} />
+          </a>
         </div>
       </div>
     </footer>
