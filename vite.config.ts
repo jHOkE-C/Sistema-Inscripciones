@@ -15,7 +15,7 @@ export default defineConfig({
             ext: '.gz',
             deleteOriginFile: false,
         }),
-        // Add Brotli compression for better compression ratios
+
         compression({
             algorithm: 'brotliCompress',
             ext: '.br',
@@ -28,13 +28,13 @@ export default defineConfig({
         },
     },
     build: {
-        // Enable source maps for debugging
+
         sourcemap: false,
-        // Optimize chunk size
+
         rollupOptions: {
             output: {
                 manualChunks: {
-                    // Separate vendor libraries
+
                     vendor: ['react', 'react-dom'],
                     router: ['react-router-dom'],
                     ui: ['lucide-react'],

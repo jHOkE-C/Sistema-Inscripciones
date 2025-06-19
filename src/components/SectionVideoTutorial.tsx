@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { Play } from "lucide-react";
 
-const LOGO_SRC = "/logo-sansimon.png";
+const LOGO_SRC = "/cutieLogo.png";
 
 interface VideoCardProps {
   title: string;
@@ -27,7 +27,7 @@ const VideoCard = ({ title, videoId }: VideoCardProps) => {
             <img
               src={LOGO_SRC}
               alt="Logo SanSi"
-              className="w-32 h-32 object-contain z-10"
+              className="w-200 h-200 object-contain z-10"
               style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
               draggable={false}
             />
