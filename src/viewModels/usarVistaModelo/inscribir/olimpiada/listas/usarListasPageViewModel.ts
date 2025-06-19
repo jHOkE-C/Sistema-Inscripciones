@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/models/api/postulantes";
-import type { ListaPostulantes } from "@/views/inscribir/columns";
+import type { ListaPostulantes } from "@/views/inscribir/columnas";
 import type { ColumnDef } from "@tanstack/react-table";
-import { columns } from "@/views/inscribir/columns";
+import { columns } from "@/views/inscribir/columnas";
 
 export const useListasPageViewModel = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -47,6 +47,6 @@ export const useListasPageViewModel = () => {
     setOpenFormResponsable,
     loading,
     isValidCI,
-    columnsWithActions
+    columnsWithActions,
   };
-}; 
+};

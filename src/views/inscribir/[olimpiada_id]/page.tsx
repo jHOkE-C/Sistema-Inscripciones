@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import FormCI from "../FormCI";
+import FormCI from "../formularioCI";
 import { useEffect } from "react";
 
 const Page = () => {

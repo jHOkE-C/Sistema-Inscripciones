@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/models/api/postulantes";
-import type { ListaPostulantes } from "@/views/inscribir/columns";
+import type { ListaPostulantes } from "@/views/inscribir/columnas";
 import type { ColumnDef } from "@tanstack/react-table";
-import { columns } from "@/views/inscribir/columns";
+import { columns } from "@/views/inscribir/columnas";
 
 export const usarAgregarPageViewModel = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -19,7 +19,12 @@ export const usarAgregarPageViewModel = () => {
     setLoading(true);
     try {
       const { data } = await getListasPostulantes(ci!);
-      setData(data.filter(({ olimpiada_id: id, estado }) => id == olimpiada_id && estado == "Preinscrito"));
+      setData(
+        data.filter(
+          ({ olimpiada_id: id, estado }) =>
+            id == olimpiada_id && estado == "Preinscrito"
+        )
+      );
     } catch {
       setOpenFormResponsable(true);
     } finally {
@@ -47,6 +52,6 @@ export const usarAgregarPageViewModel = () => {
     setOpenFormResponsable,
     loading,
     isValidCI,
-    columnsWithActions
+    columnsWithActions,
   };
-}; 
+};

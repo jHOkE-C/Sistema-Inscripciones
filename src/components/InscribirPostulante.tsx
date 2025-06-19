@@ -12,7 +12,7 @@ import { Dialog } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/models/api/postulantes";
-import { ListaPostulantes } from "@/views/inscribir/columns";
+import { ListaPostulantes } from "@/views/inscribir/columnas";
 import NotFoundPage from "@/views/404";
 import { toast } from "sonner";
 import {
