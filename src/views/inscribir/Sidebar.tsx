@@ -29,27 +29,6 @@ const Sidebar = () => {
                         Mis Postulantes
                     </Link>
                 </Button>
-
-                {/* <Button
-                            variant="ghost"
-                            className="justify-start"
-                            asChild
-                        >
-                            <Link to="/inscribir-por-excel">
-                                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                                Inscribir por Excel
-                            </Link>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            className="justify-start"
-                            asChild
-                        >
-                            <Link to="#">
-                                <Settings className="mr-2 h-4 w-4" />
-                                Configuración
-                            </Link>
-                        </Button> */}
             </div>
         </aside>
     );

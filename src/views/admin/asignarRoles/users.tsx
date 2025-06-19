@@ -14,8 +14,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scrollArea";
-import { type Role } from '@/models/interfaces/role.interface';
-import { type UserData } from '@/models/interfaces/user.interface';
+import { type Role } from "@/models/interfaces/roles";
+import { type UserData } from "@/models/interfaces/usuarios";
 import { useUsarUsers } from "@/viewModels/usarVistaModelo/privilegios/asignarRoles/usarUsers";
 import { useUsarUserCard } from "@/viewModels/usarVistaModelo/privilegios/asignarRoles/usarUserCard";
 
@@ -46,7 +46,7 @@ function UserCard({
     unassignedRoles,
     handleOpenDialog,
     handleRoleCheckboxChange,
-    handleSaveRoles
+    handleSaveRoles,
   } = useUsarUserCard(user, availableRoles);
 
   return (
@@ -122,7 +122,9 @@ function UserCard({
                       <Checkbox
                         id={`role-${role.id}`}
                         checked={!!selectedRoleIds.includes(role.id)}
-                        onCheckedChange={() => handleRoleCheckboxChange(role.id)}
+                        onCheckedChange={() =>
+                          handleRoleCheckboxChange(role.id)
+                        }
                       />
                       <label
                         htmlFor={`role-${role.id}`}

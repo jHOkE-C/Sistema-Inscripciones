@@ -2,21 +2,20 @@ import { useState, useEffect } from "react";
 import { getListasPostulantes } from "@/models/api/postulantes";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import { useParams } from "react-router-dom";
-import { ButtonConfig } from "@/models/interfaces/buttons.interface";
+import { ButtonConfig } from "@/models/interfaces/botones";
 import { Receipt, List, CheckCircle } from "lucide-react";
 
 export const usePageViewModel = () => {
   const [openFormResponsable, setOpenFormResponsable] = useState(false);
   const [loading, setLoading] = useState(true);
   const { ci, olimpiada_id } = useParams();
-  
+
   const {
     data: olimpiada,
     isLoading: olimpiadaLoading,
     isError: olimpiadaError,
   } = useOlimpiada(Number(olimpiada_id));
 
-  
   const buttons: ButtonConfig[] = [
     {
       label: "Generar Orden de Pago",
@@ -34,7 +33,7 @@ export const usePageViewModel = () => {
       label: "Ver Inscripciones",
       to: `listas`,
       Icon: List,
-    }
+    },
   ];
 
   const refresh = async () => {
@@ -69,7 +68,8 @@ export const usePageViewModel = () => {
   }, [olimpiadaError]);
 
   const isValidCI = ci && ci.length >= 7 && ci.length <= 10;
-  const isInscripcionPhase = olimpiada?.fase?.fase.nombre_fase.includes("inscripción");
+  const isInscripcionPhase =
+    olimpiada?.fase?.fase.nombre_fase.includes("inscripción");
 
   return {
     openFormResponsable,
@@ -80,6 +80,6 @@ export const usePageViewModel = () => {
     buttons,
     isValidCI,
     isInscripcionPhase,
-    fetchData
+    fetchData,
   };
-}; 
+};

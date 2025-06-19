@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
-import type { Category } from "@/models/interfaces/area-Category";
+import type { Category } from "@/models/interfaces/areas&categorias";
 
 export function useCrearPageViewModel() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -27,10 +27,7 @@ export function useCrearPageViewModel() {
     newCategory: Omit<Category, "id" | "areas">
   ) => {
     try {
-      await axios.post<Category>(
-        `${API_URL}/api/categorias`,
-        newCategory
-      );
+      await axios.post<Category>(`${API_URL}/api/categorias`, newCategory);
       console.log("Categoría creada correctamente:", newCategory);
       fetchData();
       toast.success("La categoría se registro correctamente.");
@@ -55,4 +52,4 @@ export function useCrearPageViewModel() {
     handleCreateCategory,
     getGradeLabel,
   };
-} 
+}

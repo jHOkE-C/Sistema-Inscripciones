@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Download, SquareArrowDown, SquareArrowUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, SquareArrowDown, SquareArrowUp, ListFilter } from "lucide-react";
 import Loading from "@/components/Loading";
 import ReturnComponent from "@/components/ReturnComponent";
 import ModalPdf from "../modalPdf";
@@ -373,7 +373,7 @@ const PostulantesPage = () => {
     <>
     <ReturnComponent />
     
-    <div className="container  w-5/6 mx-auto py-6 md:w-5/6 lg:w-11/12 xl:w-11/12">
+    <div className="w-5/6 mx-auto py-6">
       
       <h2 className="text-3xl font-bold mb-2 text-center">
         Postulantes: {nombreOlimpiada}
@@ -412,7 +412,7 @@ const PostulantesPage = () => {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-1">
           
           <div>
-            <label className="text-sm font-medium">Año de nacimiento</label>
+            <label className="text-sm font-medium">Año de nacimiento <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               value={selectedYear}
               onValueChange={(value) => {
@@ -435,7 +435,7 @@ const PostulantesPage = () => {
 
           
           <div>
-            <label className="text-sm font-medium">Área</label>
+            <label className="text-sm font-medium">Área <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {
@@ -461,7 +461,7 @@ const PostulantesPage = () => {
 
           
           <div>
-            <label className="text-sm font-medium">Categoría</label>
+            <label className="text-sm font-medium">Categoría <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {
@@ -487,7 +487,7 @@ const PostulantesPage = () => {
 
       
           <div>
-            <label className="text-sm font-medium">Departamento</label>
+            <label className="text-sm font-medium">Departamento <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {
@@ -513,7 +513,7 @@ const PostulantesPage = () => {
 
       
           <div>
-            <label className="text-sm font-medium">Provincia</label>
+            <label className="text-sm font-medium">Provincia <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {
@@ -539,7 +539,7 @@ const PostulantesPage = () => {
 
       
           <div>
-            <label className="text-sm font-medium">Colegio</label>
+            <label className="text-sm font-medium">Colegio <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {
@@ -565,7 +565,7 @@ const PostulantesPage = () => {
 
       
           <div>
-            <label className="text-sm font-medium">Grado</label>
+            <label className="text-sm font-medium">Grado <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {
@@ -591,7 +591,7 @@ const PostulantesPage = () => {
 
       
           <div>
-            <label className="text-sm font-medium">Estado</label>
+            <label className="text-sm font-medium">Estado <ListFilter className="inline-block h-4 w-4 mr-1" /></label>
             <Select
               onValueChange={(value) => {
                 if (value !== "all") {

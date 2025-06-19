@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getInscritosPorLista, postDataPostulante } from "@/models/api/postulantes";
+import {
+  getInscritosPorLista,
+  postDataPostulante,
+} from "@/models/api/postulantes";
 import { cambiarEstadoLista } from "@/models/api/listas";
-import type { Postulante } from "@/models/interfaces/columns";
+import type { Postulante } from "@/models/interfaces/columnas";
 import type { postulanteSchema } from "@/components/FormPostulante";
 import type { z } from "zod";
 import { toast } from "sonner";
 
-export const usarCodigoViewModel = () => {
+export const useCodigoViewModel = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<Postulante[]>([]);
   const { ci, codigo, olimpiada_id } = useParams();
@@ -62,9 +65,7 @@ export const usarCodigoViewModel = () => {
       toast.success("El postulante fue registrado exitosamente");
       await refresh();
     } catch (e) {
-      toast.error(
-        e instanceof Error ? e.message : "Hubo un error desconocido"
-      );
+      toast.error(e instanceof Error ? e.message : "Hubo un error desconocido");
     } finally {
       setLoading(false);
     }
@@ -76,6 +77,6 @@ export const usarCodigoViewModel = () => {
     loading,
     editar,
     onSubmit,
-    terminarRegistro
+    terminarRegistro,
   };
-}; 
+};

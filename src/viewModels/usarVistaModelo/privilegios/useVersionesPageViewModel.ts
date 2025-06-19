@@ -1,84 +1,57 @@
 import { useState, useEffect } from "react";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { VersionFilter, Olimpiada } from "@/models/interfaces/versiones.type";
+import { VersionFilter, Olimpiada } from "@/models/interfaces/versiones";
 
 export interface VersionesPageProps {
-    title: string;
-    returnTo?: string;
-    queVersiones?: VersionFilter[];
-    filter?: (value: Olimpiada, index: number, array: Olimpiada[]) => unknown;
-    container?: ((version: Olimpiada) => React.ReactNode) | React.ReactNode;
+  title: string;
+  returnTo?: string;
+  queVersiones?: VersionFilter[];
+  filter?: (value: Olimpiada, index: number, array: Olimpiada[]) => unknown;
+  textoBoton?: string;
 }
 
 export function useVersionesPageViewModel({
-    queVersiones = [],
-    filter,
+  queVersiones = [],
+  filter,
 }: VersionesPageProps) {
-    const [versiones, setVersiones] = useState<Olimpiada[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+  const [versiones, setVersiones] = useState<Olimpiada[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            if (queVersiones.length === 0) {
-                const { data } = await axios.get<Olimpiada[]>(
-                    `${API_URL}/api/olimpiadas`
-                );
-                if (filter) {
-                    setVersiones(data.filter(filter));
-                } else {
-                    setVersiones(data);
-                }
-            } else {
-                const hayPasadas = queVersiones.includes("pasadas");
-                const hayFuturas = queVersiones.includes("futuras");
-                const fasesSolicitadas = queVersiones.filter(
-                    (f) => f !== "pasadas" && f !== "futuras"
-                );
-                const hayFases = fasesSolicitadas.length > 0;
-
-                const peticiones: Promise<AxiosResponse<Olimpiada[]>>[] = [];
-                if (hayPasadas) {
-                    peticiones.push(
-                        axios.get<Olimpiada[]>(
-                            `${API_URL}/api/olimpiadas/pasadas`
-                        )
-                    );
-                }
-                if (hayFuturas) {
-                    peticiones.push(
-                        axios.get<Olimpiada[]>(
-                            `${API_URL}/api/olimpiadas/futuras`
-                        )
-                    );
-                }
-                if (hayFases) {
-                    peticiones.push(
-                        axios.post<Olimpiada[]>(
-                            `${API_URL}/api/olimpiadas/por-fases`,
-                            { fases: fasesSolicitadas }
-                        )
-                    );
-                }
-
-                const respuestas = await Promise.all(peticiones);
-                const todasLasVersiones = respuestas.flatMap((r) => r.data);
-                setVersiones(todasLasVersiones);
-            }
-        } catch (error) {
-            console.error("Error fetching versiones:", error);
-        } finally {
-            setLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      if (queVersiones.length === 0) {
+        const { data } = await axios.get<Olimpiada[]>(
+          `${API_URL}/api/olimpiadas/conFases`
+        );
+        console.log("Data fetched:", data);
+        if (filter) {
+          setVersiones(data.filter(filter));
+        } else {
+          setVersiones(data);
         }
-    };
+      } else {
+        const { data: todasLasVersiones } = await axios.post<Olimpiada[]>(
+          `${API_URL}/api/olimpiadas/por-tipos`,
+          { tipos: queVersiones }
+        );
+        console.log(todasLasVersiones);
+        setVersiones(todasLasVersiones);
+      }
+    } catch (error) {
+      console.error("Error fetching versiones:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    return {
-        versiones,
-        loading
-    };
+  return {
+    versiones,
+    loading,
+  };
 }

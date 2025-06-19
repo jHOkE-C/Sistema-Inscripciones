@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import type { Category, Area } from "@/models/interfaces/area-Category";
+import type { Category, Area } from "@/models/interfaces/areas&categorias";
 
 export function useGestionadorViewModel() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -10,7 +10,9 @@ export function useGestionadorViewModel() {
   const [isAddAreaModalOpen, setIsAddAreaModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
   const [availableAreas, setAvailableAreas] = useState<Area[]>([]);
 
   const fetchData = async () => {
@@ -156,6 +158,6 @@ export function useGestionadorViewModel() {
     openAddAreaModal,
     openEditModal,
     openDeleteModal,
-    getGradeLabel
+    getGradeLabel,
   };
-} 
+}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, ChevronDown } from 'lucide-react';
 import LoadingAlert from '@/components/loading-alert';
 import { useSubirComprobanteViewModel } from '@/viewModels/usarVistaModelo/inscribir/olimpiada/subir/useSubirComprobanteViewModel';
+import Header from '@/components/Header';
 
 const SubirComprobantePage = () => {
   const {
@@ -31,10 +32,9 @@ const SubirComprobantePage = () => {
 
   return (
     <>
+      <Header />
       <ReturnComponent />
-      <div className="w-2/4 mx-auto p-4">
-        <h2 className="text-2xl font-bold mb-4">Subir Comprobante y Extraer Datos</h2>
-
+      <div className="w-5/6 mx-auto py-4">
         <canvas ref={inputCanvasRef} style={{ display: 'none' }} />
         {outputCanvasRefs.map((ref, index) => (
           <canvas key={index} ref={ref} style={{ display: 'none' }} />
@@ -46,6 +46,7 @@ const SubirComprobantePage = () => {
           <LoadingAlert message="Error al cargar OpenCV. Por favor, recargue la página." />
         ) : (
           <div className="mb-4 p-4 border rounded-md shadow-sm bg-card">
+            <h2 className="text-2xl font-bold mb-4 text-center">Subir Comprobante y Extraer Datos</h2>
             <h2 className="text-lg font-semibold mb-2">Cargar Imagen del Recibo</h2>
             <h3 className="font-semibold mb-2 ">Recomendaciones:</h3>
             <ul className="list-disc list-inside">

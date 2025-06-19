@@ -4,7 +4,11 @@ import axios, { type AxiosError } from "axios";
 import { differenceInCalendarDays } from "date-fns";
 import { toast } from "sonner";
 import { API_URL } from "@/viewModels/hooks/useApiRequest.tsx";
-import { type Cronograma, type OlimpiadaData } from "@/models/interfaces/types";
+import {
+  type Cronograma,
+  type OlimpiadaData,
+} from "@/models/interfaces/olimpiada";
+import { apiClient } from "@/models/api/solicitudes";
 
 interface Fase {
   id: string;
@@ -186,6 +190,52 @@ export function useFasesOlimpiada() {
     });
   }
 
+  const idFasesCronogramas = cronos.map(({ id_fase }) => id_fase);
+  const agregar = selectedIdFases.filter(
+    (id) => !idFasesCronogramas.includes(id)
+  );
+  const eliminar = idFasesCronogramas.filter(
+    (id) => !selectedIdFases.includes(id)
+  );
+
+  async function changePhase(confirm?: boolean) {
+    setLoading(true);
+    try {
+      if (!confirm && eliminar.length > 0) {
+        setOpenConfirm(true);
+        return;
+      }
+
+      const data = {
+        id_olimpiada: olimpiada_id,
+        fases_agregar: agregar,
+        fases_borrar: eliminar,
+      };
+
+      await apiClient.put("/api/cronogramas/fases/olimpiada", data);
+      refresh();
+      setOpenConfirm(false);
+      setOpenAdd(false);
+    } catch {
+      toast.error("Ocurrio un error al agregar fases");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const getTipoPlazoLabel = (text: string) => {
+    return text
+      .split(" ")
+      .map((t) => t.at(0)?.toUpperCase() + t.slice(1) + " ");
+  };
+
+  const FasesActualesPasadas = cronos.filter(
+    ({ fecha_inicio }) => new Date(fecha_inicio) < new Date()
+  );
+  const idsFasesActualesPasadas = FasesActualesPasadas.map(
+    ({ id_fase }) => id_fase
+  );
+
   return {
     data,
     loading,
@@ -200,5 +250,10 @@ export function useFasesOlimpiada() {
     onSelectDate,
     onSave,
     toggleTipo,
+    parseLocalDate,
+    changePhase,
+    getTipoPlazoLabel,
+    idsFasesActualesPasadas,
+    eliminar,
   };
-} 
+}

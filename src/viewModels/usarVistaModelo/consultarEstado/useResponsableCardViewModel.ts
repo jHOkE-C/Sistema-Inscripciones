@@ -1,17 +1,17 @@
-import type { Responsable } from "@/models/interfaces/consultar-estado.types";
+import type { Responsable } from "@/models/interfaces/consultarEstado.types";
 
 interface ResponsableData {
-    responsable: Responsable;
+  responsable: Responsable;
 }
 
 interface Data {
-    data: ResponsableData;
+  data: ResponsableData;
 }
 
 export const useResponsableCardViewModel = ({ data }: Data) => {
-    const { responsable } = data;
+  const { responsable } = data;
 
-    return {
-        responsable
-    };
-}; 
+  return {
+    responsable,
+  };
+};

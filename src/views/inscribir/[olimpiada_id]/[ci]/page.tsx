@@ -5,7 +5,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import ButtonsGrid from "@/components/ButtonsGrid";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
-import ShareUrl from "../../ShareUrl";
+import ShareUrl from "../../compartir";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
 import InscribirExcel from "@/components/InscribirExcel";
 import Header from "@/components/Header";
@@ -22,7 +22,7 @@ const Page = () => {
     buttons,
     isValidCI,
     isInscripcionPhase,
-    fetchData
+    fetchData,
   } = usePageViewModel();
 
   if (!isValidCI) {
@@ -44,31 +44,29 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen items-center">
+    <>
       <Header />
-      
-      <div className="flex flex-col items-center justify-center w-full p-4 max-w-6xl">
-        <div className=" w-full">
-          <ReturnComponent to="/" />
+      <ReturnComponent to="/" />
+      <div className="flex flex-col min-h-screen items-center">
+        <div className="flex flex-col items-center justify-center w-full">
+          <h2 className="text-3xl font-bold text-center">
+            Bienvenido a la Olimpiada {olimpiada?.nombre}
+          </h2>
+          <div className="w-5/6 sm:w-4/6 mb-4">
+            <Pasos />
+            <ButtonsGrid buttons={buttons}>
+              <InscribirPostulante olimpiada={olimpiada} />
+              <InscribirExcel
+                olimpiada={olimpiada}
+                onSubmit={() => fetchData()}
+              />
+            </ButtonsGrid>
+          </div>
+          <ShareUrl />
         </div>
-
-        <h2 className="text-3xl font-bold text-center">
-          Bienvenido a la Olimpiada {olimpiada?.nombre}
-        </h2>
-        <Pasos />
-        <div className="w-full p-4  mx-auto my-auto gap-3 flex flex-col">
-          <ButtonsGrid buttons={buttons}>
-            <InscribirPostulante olimpiada={olimpiada} />
-            <InscribirExcel
-              olimpiada={olimpiada}
-              onSubmit={() => fetchData()}
-            />
-          </ButtonsGrid>
-        </div>
-        <ShareUrl />
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 

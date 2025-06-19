@@ -21,6 +21,7 @@ import { Trash2 } from "lucide-react";
 import ReturnComponent from "@/components/ReturnComponent";
 import { useDarDeBajaPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/dar-de-baja/useDarDeBajaPageViewModel";
 
+
 export default function Page() {
     const {
         categories,

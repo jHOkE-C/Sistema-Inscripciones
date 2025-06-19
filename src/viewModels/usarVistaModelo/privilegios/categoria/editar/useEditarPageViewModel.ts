@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { toast } from "sonner";
-import type { Category } from "@/models/interfaces/area-Category";
+import type { Category } from "@/models/interfaces/areas&categorias";
 
 export function useEditarPageViewModel() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
 
   const fetchData = async () => {
     try {
@@ -29,10 +31,7 @@ export function useEditarPageViewModel() {
     updates: { minimo_grado: number; maximo_grado: number }
   ) => {
     try {
-      await axios.put(
-        `${API_URL}/api/categorias/${categoria_id}`,
-        updates
-      );
+      await axios.put(`${API_URL}/api/categorias/${categoria_id}`, updates);
       fetchData();
       setIsEditModalOpen(false);
       setSelectedCategory(null);
@@ -69,4 +68,4 @@ export function useEditarPageViewModel() {
     openEditModal,
     closeEditModal,
   };
-} 
+}

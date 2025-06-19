@@ -16,12 +16,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RefreshCw, Check } from "lucide-react";
+import { Trash2, RefreshCw } from "lucide-react";
 import Header from "@/components/Header";
 import { rutasAdmin } from "../../rutasAdmin";
 import Footer from "@/components/Footer";
 import ReturnComponent from "@/components/ReturnComponent";
-import { useHabilitarPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/habilitar/useHabilitarPageViewModel";
+import { useDarDeBajaPageViewModel } from "@/viewModels/usarVistaModelo/privilegios/area/dar-de-baja/useDarDeBajaPageViewModel";
 
 export default function Page() {
   const {
@@ -33,54 +33,17 @@ export default function Page() {
     setDialogOpen,
     openDialog,
     handleConfirm,
-  } = useHabilitarPageViewModel();
+  } = useDarDeBajaPageViewModel();
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header rutas={rutasAdmin} />
       <ReturnComponent to={`..\\..\\`} />
       <div className="container mx-auto max-w-4xl py-5 space-y-8">
-        {disabledAreas.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="text-gray-600" /> Áreas dadas de baja
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Área</TableHead>
-                    <TableHead className="text-right">Acción</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {disabledAreas.map((area) => (
-                    <TableRow key={area.id} className="">
-                      <TableCell className="opacity-50">
-                        {area.nombre}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          onClick={() => openDialog(area, "activate")}
-                          className="text-white"
-                        >
-                          Habilitar
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Check className="text-blue-600" /> Áreas Habilitadas
+              <Trash2 className="text-red-600" /> Dar de Baja Áreas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -88,13 +51,22 @@ export default function Page() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Área</TableHead>
+                  <TableHead className="text-right">Acción</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {areas.map((area) => (
                   <TableRow key={area.id}>
                     <TableCell>{area.nombre}</TableCell>
-                    <TableCell className="text-right"></TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => openDialog(area, "deactivate")}
+                      >
+                        Dar de Baja
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {areas.length === 0 && (
@@ -108,6 +80,35 @@ export default function Page() {
             </Table>
           </CardContent>
         </Card>
+
+        {disabledAreas.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <RefreshCw className="text-gray-600" /> Áreas dadas de baja
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Área</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {disabledAreas.map((area) => (
+                    <TableRow key={area.id} className="">
+                      <TableCell className="opacity-50">
+                        {area.nombre}
+                      </TableCell>
+                      <TableCell className="text-right"></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent aria-describedby="dialog-desc">

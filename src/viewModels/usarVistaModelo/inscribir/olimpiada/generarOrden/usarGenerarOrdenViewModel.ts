@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getListasPostulantes } from "@/models/api/postulantes";
-import type { ListaPostulantes } from "@/views/inscribir/columns";
+import type { ListaPostulantes } from "@/views/inscribir/columnas";
 import type { ColumnDef } from "@tanstack/react-table";
-import { columns } from "@/views/inscribir/columns";
+import { columns } from "@/views/inscribir/columnas";
 
 export const useGenerarOrdenViewModel = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
@@ -46,9 +46,11 @@ export const useGenerarOrdenViewModel = () => {
       id: "acciones",
       header: "Acciones",
       cell: ({ row }) => {
-        return row.original.estado === "Pago Pendiente" ? "Orden de Pago" : "Abrir Incripción";
-      }
-    }
+        return row.original.estado === "Pago Pendiente"
+          ? "Orden de Pago"
+          : "Abrir Incripción";
+      },
+    },
   ];
 
   const isValidCI = ci && ci.length >= 7 && ci.length <= 10;
@@ -59,6 +61,6 @@ export const useGenerarOrdenViewModel = () => {
     setOpenFormResponsable,
     loading,
     isValidCI,
-    columnsWithActions
+    columnsWithActions,
   };
-}; 
+};

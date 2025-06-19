@@ -25,7 +25,7 @@ export default function Botones() {
   const { hasAccess } = useBotonesViewModel();
 
   return (
-    <div className="flex flex-col space-y-4 p-6 mx-auto">
+    <div className="flex flex-col space-y-4 mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 xl:grid-cols-4">
         {hasAccess("crear olimpiada") && (
           <div className="relative">
@@ -69,7 +69,7 @@ export default function Botones() {
               className="h-auto py-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
               asChild
             >
-              <Link to="/admin/area/dar-de-baja">
+              <Link to="/admin/area/darDeBaja">
                 <XCircle className="size-8 mb-1" />
                 <span className="text-lg font-semibold">Dar de baja Áreas</span>
               </Link>
@@ -335,7 +335,7 @@ export default function Botones() {
               className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
               asChild
             >
-              <Link to="./asignar-roles">
+              <Link to="./asignarRoles">
                 <ShieldUser className="size-8 mb-1" />
                 <span className="text-lg font-semibold">Asignar Roles</span>
               </Link>
@@ -357,7 +357,7 @@ export default function Botones() {
               className="h-auto py-10 bg-indigo-500 hover:bg-indigo-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
               asChild
             >
-              <Link to="./asignar-privilegios">
+              <Link to="./asignarPrivilegios">
                 <ShieldCheck className="size-8 mb-1" />
                 <span className="text-lg font-semibold">
                   Asignar Privilegios

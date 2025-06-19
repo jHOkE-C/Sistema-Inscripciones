@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { crearListaPostulante, getListasPostulantes } from "@/models/api/postulantes";
-import type { ListaPostulantes } from "@/views/inscribir/columns";
+import {
+  crearListaPostulante,
+  getListasPostulantes,
+} from "@/models/api/postulantes";
+import type { ListaPostulantes } from "@/views/inscribir/columnas";
 import type { ColumnDef } from "@tanstack/react-table";
-import { columns } from "@/views/inscribir/columns";
+import { columns } from "@/views/inscribir/columnas";
 import { toast } from "sonner";
 
-export const usarCrearListaViewModel = () => {
+export const useCrearListaViewModel = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
   const [openFormResponsable, setOpenFormResponsable] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -67,6 +70,6 @@ export const usarCrearListaViewModel = () => {
     loading,
     isValidCI,
     columnsWithActions,
-    crearLista
+    crearLista,
   };
-}; 
+};

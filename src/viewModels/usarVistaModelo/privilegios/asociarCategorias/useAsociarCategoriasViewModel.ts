@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { request } from "@/models/api/request";
+import { request } from "@/models/api/solicitudes";
 import { getOlimpiada } from "@/models/api/olimpiada";
 import type { Area, Categoria } from "@/models/api/areas";
-import type { Olimpiada } from "@/models/interfaces/versiones.type";
+import type { Olimpiada } from "@/models/interfaces/versiones";
 import { toast } from "sonner";
 
 export const useAsociarCategoriasViewModel = (olimpiada_id: string) => {
@@ -42,7 +42,8 @@ export const useAsociarCategoriasViewModel = (olimpiada_id: string) => {
 
   const openDialog = (area: Area) => {
     setSelectedArea(area);
-    const ids = area.categorias?.filter((v) => v).map((c) => Number(c.id)) || [];
+    const ids =
+      area.categorias?.filter((v) => v).map((c) => Number(c.id)) || [];
     setInitialChecked(ids);
     setChecked(ids.reduce((acc, id) => ({ ...acc, [id]: true }), {}));
     setSearchCategory("");
@@ -102,6 +103,6 @@ export const useAsociarCategoriasViewModel = (olimpiada_id: string) => {
     setDialogOpen,
     openDialog,
     toggleCategory,
-    handleSave
+    handleSave,
   };
-}; 
+};

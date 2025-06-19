@@ -1,9 +1,9 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
-import { toast } from "sonner";
 import { descargarPDF, generarOrden } from "@/viewModels/utils/pdf";
-import { apiClient } from "@/models/api/request";
+import { apiClient } from "@/models/api/solicitudes";
 
 export interface Orden {
   id: string;
@@ -21,7 +21,6 @@ export interface Orden {
   concepto: string;
   niveles_competencia: string[];
 }
-
 export interface DatosPrevios {
   codigo_lista: string;
   monto: number;
@@ -29,7 +28,7 @@ export interface DatosPrevios {
   cantidad_inscripciones: number;
 }
 
-export const useOrdenPagoViewModel = (codigo_lista: string) => {
+export function useOrdenPagoViewModel(codigo_lista: string) {
   const [formOpen, setFormOpen] = useState(false);
   const [pdfOpen, setPdfOpen] = useState(false);
   const [nombre, setNombre] = useState("");
@@ -88,7 +87,6 @@ export const useOrdenPagoViewModel = (codigo_lista: string) => {
     const rawValue = e.target.value;
     const upperValue = rawValue.toUpperCase();
     const filteredValue = upperValue.replace(/[^A-Z0-9]/g, "");
-
     if (filteredValue.length <= 10) {
       setNitCi(filteredValue);
       setError((prev) => ({ ...prev, nitCi: undefined }));
@@ -101,44 +99,43 @@ export const useOrdenPagoViewModel = (codigo_lista: string) => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setLoading(true);
     const newErrors: { nombre?: string; nitCi?: string } = {};
-
     if (nombre.trim() === "") {
       newErrors.nombre = "Por favor ingrese el nombre";
     }
-
     if (nitci.trim() === "") {
       newErrors.nitCi = "Por favor ingrese un NIT/CI";
     }
-
     if (Object.keys(newErrors).length > 0) {
       setError(newErrors);
       setLoading(false);
       return;
     }
-
     const data = {
       codigo_lista,
       nombre_responsable: nombre,
       emitido_por: "Sistema OhSansi",
       nitci: nitci,
     };
-
-    try {
-      const response = await axios.post(`${API_URL}/api/ordenes-pago`, data);
-      setFormOpen(false);
-      setPdfOpen(true);
-      console.log("Orden creada:", response.data);
-    } catch (error) {
-      console.error("Error al crear la orden:", error);
-      if (error instanceof AxiosError) {
-        toast.error(error.message);
+    const crearOrden = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.post(`${API_URL}/api/ordenes-pago`, data);
+        setFormOpen(false);
+        setPdfOpen(true);
+        console.log("Orden creada:", response.data);
+      } catch (error) {
+        console.error("Error al crear la orden:", error);
+        if (error instanceof AxiosError) {
+          toast.error(error.message);
+        }
       }
-    }
-    await fetchOrden();
-    setLoading(false);
+      await fetchOrden();
+      setLoading(false);
+    };
+    crearOrden();
   };
 
   const handleDownload = async () => {
@@ -147,7 +144,6 @@ export const useOrdenPagoViewModel = (codigo_lista: string) => {
     } catch (error) {
       console.error("Error al descargar el PDF:", error);
     }
-
     setPdfOpen(false);
     setNombre("");
     setNitCi("");
@@ -164,16 +160,25 @@ export const useOrdenPagoViewModel = (codigo_lista: string) => {
     pdfOpen,
     setPdfOpen,
     nombre,
+    setNombre,
     nitci,
+    setNitCi,
     error,
+    setError,
     loading,
+    setLoading,
     pdf,
+    setPdf,
     pdfBlob,
+    setPdfBlob,
     datosPrevios,
+    setDatosPrevios,
+    fetchDatosPrevios,
+    fetchOrden,
     handleNombreChange,
     handleNitCiChange,
     handleSubmit,
     handleDownload,
-    onClick
+    onClick,
   };
-}; 
+}

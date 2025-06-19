@@ -18,7 +18,7 @@ import { User, Phone, Award, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useResponsableCardViewModel } from "@/viewModels/usarVistaModelo/consultarEstado/useResponsableCardViewModel";
-import type { Responsable } from "@/models/interfaces/consultar-estado.types";
+import type { Responsable } from "@/models/interfaces/consultarEstado.types";
 
 interface ResponsableData {
   responsable: Responsable;
