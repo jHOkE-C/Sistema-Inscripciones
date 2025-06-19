@@ -24,7 +24,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alertDialog";
 import DialogPostulante from "@/components/DialogPostulante";
-import { usarCodigoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/usarCodigoViewModel";
+import { usarCodigoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/useCodigoViewModel";
 
 export default function Page() {
     const {

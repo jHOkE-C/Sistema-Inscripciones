@@ -12,7 +12,7 @@ import NotFoundPage from "@/views/404";
 import Loading from "@/components/Loading";
 import FormResponsable from "@/views/inscribir/FormResponsable";
 import ShareUrl from "@/views/inscribir/compartir";
-import { usarAgregarPageViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/usarAgregarPageViewModel";
+import { usarAgregarPageViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/useAgregarPageViewModel";
 import Header from "@/components/Header";
 
 const Page = () => {

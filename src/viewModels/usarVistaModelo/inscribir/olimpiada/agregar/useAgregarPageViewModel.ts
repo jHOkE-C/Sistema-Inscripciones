@@ -1,15 +1,13 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import {
-  crearListaPostulante,
-  getListasPostulantes,
-} from "@/models/api/postulantes";
+import { getListasPostulantes } from "@/models/api/postulantes";
 import type { ListaPostulantes } from "@/views/inscribir/columnas";
 import type { ColumnDef } from "@tanstack/react-table";
 import { columns } from "@/views/inscribir/columnas";
-import { toast } from "sonner";
 
-export const usarCrearListaViewModel = () => {
+export const useAgregarPageViewModel = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
   const [openFormResponsable, setOpenFormResponsable] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,11 +18,15 @@ export const usarCrearListaViewModel = () => {
   }, []);
 
   const refresh = async () => {
-    if (!ci || !olimpiada_id) return;
     setLoading(true);
     try {
-      const { data } = await getListasPostulantes(ci);
-      setData(data.filter(({ olimpiada_id: id }) => id == olimpiada_id));
+      const { data } = await getListasPostulantes(ci!);
+      setData(
+        data.filter(
+          ({ olimpiada_id: id, estado }) =>
+            id == olimpiada_id && estado == "Preinscrito"
+        )
+      );
     } catch {
       setOpenFormResponsable(true);
     } finally {
@@ -44,23 +46,6 @@ export const usarCrearListaViewModel = () => {
     ...columns,
   ];
 
-  const crearLista = async () => {
-    if (!ci || !olimpiada_id) return;
-    setLoading(true);
-    try {
-      await crearListaPostulante({
-        ci,
-        olimpiada_id,
-      });
-      await refresh();
-      toast.success("La inscripcion se creó correctamente.");
-    } catch {
-      toast.error("No se pudo registrar la inscripcion. Intente nuevamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const isValidCI = ci && ci.length >= 7 && ci.length <= 10;
 
   return {
@@ -70,6 +55,5 @@ export const usarCrearListaViewModel = () => {
     loading,
     isValidCI,
     columnsWithActions,
-    crearLista,
   };
 };

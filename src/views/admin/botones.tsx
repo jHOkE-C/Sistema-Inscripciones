@@ -69,7 +69,7 @@ export default function Botones() {
               className="h-auto py-10 bg-sky-600 hover:bg-sky-700 text-white flex flex-col items-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg lg:col-span-1 w-full"
               asChild
             >
-              <Link to="/admin/area/dar-de-baja">
+              <Link to="/admin/area/darDeBaja">
                 <XCircle className="size-8 mb-1" />
                 <span className="text-lg font-semibold">Dar de baja Áreas</span>
               </Link>

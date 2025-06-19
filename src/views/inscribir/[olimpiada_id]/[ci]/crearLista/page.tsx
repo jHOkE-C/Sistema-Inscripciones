@@ -7,7 +7,7 @@ import NotFoundPage from "@/views/404";
 import Loading from "@/components/Loading";
 import FormResponsable from "@/views/inscribir/FormResponsable";
 import { Button } from "@/components/ui/button";
-import { usarCrearListaViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/crearLista/usarCrearListaViewModel";
+import { usarCrearListaViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/crearLista/useCrearListaViewModel";
 
 const Page = () => {
   const {

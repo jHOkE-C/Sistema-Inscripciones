@@ -10,7 +10,7 @@ import type { postulanteSchema } from "@/components/FormPostulante";
 import type { z } from "zod";
 import { toast } from "sonner";
 
-export const usarCodigoViewModel = () => {
+export const useCodigoViewModel = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<Postulante[]>([]);
   const { ci, codigo, olimpiada_id } = useParams();

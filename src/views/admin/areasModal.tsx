@@ -43,7 +43,7 @@ export function AreasModal() {
                 <span className="font-medium">Agregar un área</span>
               </Button>
             </Link>
-            <Link to="/admin/area/dar-de-baja">
+            <Link to="/admin/area/darBaja">
               <Button
                 className="flex items-center justify-center gap-2 h-14 w-full text-white bg-rose-500 hover:bg-rose-600"
               >
