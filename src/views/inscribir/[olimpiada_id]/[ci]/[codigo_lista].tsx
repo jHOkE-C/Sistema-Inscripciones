@@ -35,7 +35,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useCodigoListaViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/useCodigoListaViewModel";
-
+import Header from "@/components/Header";
 export default function Page() {
     const {
         data,
@@ -58,8 +58,9 @@ export default function Page() {
 
     return (
         <>
+            <Header />
             <ReturnComponent />
-            <div className="w-full flex justify-center min-h-screen py-5">
+            <div className="w-full flex justify-center min-h-screen py-2">
                 <div className="w-5/6 py-4 mx-auto">
                     <Card>
                         <CardHeader>
