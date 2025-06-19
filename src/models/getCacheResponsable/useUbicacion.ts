@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { request } from "@/models/api/request";
+import { request } from "@/models/api/solicitudes";
 import { type Departamento } from "@/models/interfaces/ubicaciones";
 
 export const useDepartamentosWithProvinces = (

@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { request } from "@/models/api/request";
+import { request } from "@/models/api/solicitudes";
 import { type Olimpiada } from "@/models/interfaces/versiones";
 
 export const useOlimpiada = (

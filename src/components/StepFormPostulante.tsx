@@ -21,7 +21,7 @@ import type { Olimpiada } from "@/models/interfaces/versiones";
 import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { apiClient } from "@/models/api/request";
+import { apiClient } from "@/models/api/solicitudes";
 import {
   Dialog,
   DialogContent,

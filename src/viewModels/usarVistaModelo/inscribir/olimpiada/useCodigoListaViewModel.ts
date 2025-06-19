@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getInscritosPorLista } from "@/models/api/postulantes";
 import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/models/api/listas";
-import { apiClient } from "@/models/api/request";
+import { apiClient } from "@/models/api/solicitudes";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import type { Postulante } from "@/models/interfaces/columnas";
 import type { StepData } from "@/components/StepFormPostulante";

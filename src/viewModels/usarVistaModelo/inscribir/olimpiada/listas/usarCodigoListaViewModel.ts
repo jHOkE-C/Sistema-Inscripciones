@@ -4,7 +4,7 @@ import { getInscritosPorLista } from "@/models/api/postulantes";
 import { cambiarEstadoLista } from "@/models/api/listas";
 import { toast } from "sonner";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
-import { apiClient } from "@/models/api/request";
+import { apiClient } from "@/models/api/solicitudes";
 import type { Postulante } from "@/models/interfaces/columnas";
 import type { StepData } from "@/components/StepFormPostulante";
 

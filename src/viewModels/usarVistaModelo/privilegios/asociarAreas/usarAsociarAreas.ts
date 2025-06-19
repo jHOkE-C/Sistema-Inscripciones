@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { apiClient, request } from "@/models/api/request";
+import { apiClient, request } from "@/models/api/solicitudes";
 import type { Area } from "@/models/api/areas";
 import type { Olimpiada } from "@/models/interfaces/versiones";
 import { getOlimpiada } from "@/models/api/olimpiada";

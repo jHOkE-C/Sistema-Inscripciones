@@ -1,5 +1,5 @@
 import type { ListaPostulantes } from "@/views/inscribir/columns";
-import { request } from "./request";
+import { request } from "./solicitudes";
 import type { Postulante } from "@/models/interfaces/columnas";
 import type { EstadoLista } from "./listas";
 

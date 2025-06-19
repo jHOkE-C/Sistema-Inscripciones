@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import ResponsableCard from "./responsableCard";
 import PostulanteCard from "./postulanteCard";
 import { Button } from "@/components/ui/button";
-import InactivityModal from "./inactivityModal";
+import InactivityModal from "./InatividadModal";
 import { Link } from "react-router-dom";
 import { useConsultarInscripcionViewModel } from "@/viewModels/usarVistaModelo/consultarEstado/usarConsultarInscripcion";
 

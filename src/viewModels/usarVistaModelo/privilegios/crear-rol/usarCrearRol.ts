@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { request } from "@/models/api/request";
+import { request } from "@/models/api/solicitudes";
 
 export function usarCrearRol() {
   const [open, setOpen] = useState(false);
@@ -53,4 +53,4 @@ export function usarCrearRol() {
     handleRoleNameChange,
     handleClose,
   };
-} 
+}

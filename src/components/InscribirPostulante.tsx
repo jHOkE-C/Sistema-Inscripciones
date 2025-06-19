@@ -1,4 +1,4 @@
-import { apiClient } from "@/models/api/request";
+import { apiClient } from "@/models/api/solicitudes";
 
 import { Button } from "@/components/ui/button";
 import {

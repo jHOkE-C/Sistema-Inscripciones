@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { request } from "@/models/api/request";
+import { request } from "@/models/api/solicitudes";
 import { getOlimpiada } from "@/models/api/olimpiada";
 import type { Area, Categoria } from "@/models/api/areas";
 import type { Olimpiada } from "@/models/interfaces/versiones";

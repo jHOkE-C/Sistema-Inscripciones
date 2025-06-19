@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { request } from "@/models/api/request";
+import { request } from "@/models/api/solicitudes";
 import type { Categoria } from "@/models/interfaces/postulantes";
 
 export const getCategoriasOlimpiada = async (

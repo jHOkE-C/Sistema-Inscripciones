@@ -8,7 +8,7 @@ import {
   type Cronograma,
   type OlimpiadaData,
 } from "@/models/interfaces/olimpiada";
-import { apiClient } from "@/models/api/request";
+import { apiClient } from "@/models/api/solicitudes";
 
 interface Fase {
   id: string;
