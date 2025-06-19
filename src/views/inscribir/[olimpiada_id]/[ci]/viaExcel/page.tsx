@@ -14,7 +14,7 @@ import ReturnComponent from "@/components/ReturnComponent";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
-import OrdenPago from "../orden-pago";
+import OrdenPago from "../ordenPago";
 import DescargarPlantilla from "@/components/DescargarPlantilla";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 const Page = () => {

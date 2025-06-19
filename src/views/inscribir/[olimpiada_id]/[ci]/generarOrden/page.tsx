@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import { useGenerarOrdenViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/generarOrden/usarGenerarOrdenViewModel";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import OrdenPago from "../orden-pago";
+import OrdenPago from "../ordenPago";
 import { useParams } from "react-router-dom";
 import type { Row } from "@tanstack/react-table";
 import type { ListaPostulantes } from "@/views/inscribir/columns";

@@ -2,6 +2,7 @@
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
+
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -13,9 +14,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Download } from "lucide-react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { AlertCircle, Download, CheckCircle2, PenBox } from "lucide-react";
 import type { Olimpiada } from "@/models/interfaces/types";
+import { Document, Page, pdfjs } from "react-pdf";
 import { isMobile } from "react-device-detect";
 import { useOrdenPagoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/useOrdenPagoViewModel";
 
@@ -24,6 +25,28 @@ interface Props {
     olimpiada?: Olimpiada;
 }
 
+export interface Orden {
+    id: string;
+    n_orden: string;
+    codigo_lista: string;
+    fecha_emision: string;
+    precio_unitario: string;
+    monto: string;
+    estado: string;
+    cantidad_inscripciones: number;
+    nombre_responsable?: string;
+    emitido_por: string;
+    nitci: string;
+    unidad: string;
+    concepto: string;
+    niveles_competencia: string[];
+}
+export interface DatosPrevios {
+    codigo_lista: string;
+    monto: number;
+    estado: string;
+    cantidad_inscripciones: number;
+}
 export default function OrdenPago({ codigo_lista }: Props) {
     const {
         formOpen,
@@ -34,14 +57,14 @@ export default function OrdenPago({ codigo_lista }: Props) {
         nitci,
         error,
         loading,
-        pdf,
         pdfBlob,
         datosPrevios,
+        fetchDatosPrevios,
         handleNombreChange,
         handleNitCiChange,
         handleSubmit,
         handleDownload,
-        onClick
+        onClick,
     } = useOrdenPagoViewModel(codigo_lista);
 
     return (
@@ -62,8 +85,12 @@ export default function OrdenPago({ codigo_lista }: Props) {
                     <DialogDescription asChild>
                         <div className="grid gap-5 py-4">
                             <div className="grid grid-cols-2 gap-3 p-4 rounded-lg border">
-                                <div className="font-medium">Código de inscripción:</div>
-                                <div className="font-semibold">{codigo_lista}</div>
+                                <div className="font-medium">
+                                    Código de inscripción:
+                                </div>
+                                <div className="font-semibold">
+                                    {codigo_lista}
+                                </div>
 
                                 <div className="font-medium">Monto:</div>
                                 <div className="font-semibold">
@@ -75,7 +102,9 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                     {datosPrevios?.estado}
                                 </div>
 
-                                <div className="font-medium">Inscripciones:</div>
+                                <div className="font-medium">
+                                    Inscripciones:
+                                </div>
                                 <div className="font-semibold">
                                     {datosPrevios?.cantidad_inscripciones}
                                 </div>
@@ -95,12 +124,13 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                     </div>
                                 )}
 
-                                <Label htmlFor="nitci">NIT/CI</Label>
+                                <Label htmlFor="nitCi">NIT/CI</Label>
                                 <Input
-                                    id="nitci"
+                                    id="nitCi"
                                     value={nitci}
                                     onChange={handleNitCiChange}
-                                    placeholder="Ingrese el NIT/CI"
+                                    placeholder="Ingrese NIT/CI"
+                                    maxLength={10}
                                 />
                                 {error.nitCi && (
                                     <div className="flex items-center text-sm text-red-500 mt-1">
@@ -108,61 +138,62 @@ export default function OrdenPago({ codigo_lista }: Props) {
                                         {error.nitCi}
                                     </div>
                                 )}
-
-                                <DialogFooter>
-                                    <Button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full"
-                                    >
-                                        {loading ? "Generando..." : "Generar Orden"}
-                                    </Button>
-                                </DialogFooter>
                             </form>
                         </div>
                     </DialogDescription>
+
+                    <DialogFooter className="gap-3 sm:gap-0 space-x-2">
+                        <Button onClick={handleSubmit} disabled={loading}>
+                            {loading ? "Procesando..." : "Continuar"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => setFormOpen(false)}
+                        >
+                            Cancelar
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Modal del PDF */}
+            {/* Modal de la orden de pago (PDF) */}
             <Dialog open={pdfOpen} onOpenChange={setPdfOpen}>
-                <DialogContent className="sm:max-w-4xl">
+                <DialogContent className="sm:min-w-[650px]">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-semibold text-center">
-                            Orden de Pago
+                        <DialogTitle className="text-xl font-semibold text-center flex items-center justify-center gap-2">
+                            <CheckCircle2 className="h-5 w-5" />
+                            Orden de Pago Generada
                         </DialogTitle>
                     </DialogHeader>
 
-                    <DialogDescription asChild>
-                        <div className="grid gap-5 py-4">
-                            <div className="flex justify-center">
-                                {pdf && (
-                                    <Document
-                                        file={pdfBlob}
-                                        className="flex flex-col items-center"
-                                    >
-                                        <Page
-                                            pageNumber={1}
-                                            width={isMobile ? 300 : 600}
-                                            renderTextLayer={false}
-                                            renderAnnotationLayer={false}
-                                        />
-                                    </Document>
-                                )}
-                            </div>
-
-                            <DialogFooter>
-                                <Button
-                                    onClick={handleDownload}
-                                    className="w-full"
-                                    variant="outline"
-                                >
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Descargar PDF
-                                </Button>
-                            </DialogFooter>
-                        </div>
-                    </DialogDescription>
+                    {pdfBlob && (
+                        <Document file={pdfBlob}>
+                            <Page
+                                pageNumber={1}
+                                className="shadow-lg mx-auto"
+                                renderTextLayer={false}
+                                renderAnnotationLayer={false}
+                                scale={isMobile ? 0.5 : 1}
+                            />
+                        </Document>
+                    )}
+                    <div className="flex justify-between w-full">
+                        <Button onClick={handleDownload} className="">
+                            <Download className="mr-2 h-4 w-4" />
+                            Descargar PDF
+                        </Button>
+                        <Button
+                            variant={"secondary"}
+                            onClick={() => {
+                                setPdfOpen(false);
+                                fetchDatosPrevios();
+                            }}
+                            className=""
+                        >
+                            <PenBox className="mr-2 h-4 w-4" />
+                            Modificar Orden
+                        </Button>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>
