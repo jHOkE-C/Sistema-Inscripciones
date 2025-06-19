@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alertDialog";
-import type { Category } from "@/models/interfaces/area-Category";
+import type { Category } from "@/models/interfaces/areas&categorias";
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean;

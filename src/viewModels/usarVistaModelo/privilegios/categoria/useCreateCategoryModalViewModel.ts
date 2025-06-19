@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Category } from "@/models/interfaces/area-Category";
+import type { Category } from "@/models/interfaces/areas&categorias";
 
 interface CreateCategoryModalProps {
   onClose: () => void;
@@ -75,6 +75,6 @@ export function useCreateCategoryModalViewModel({
     error,
     handleSubmit,
     handleClose,
-    gradeOptions
+    gradeOptions,
   };
-} 
+}

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { cambiarEstadoLista } from "@/models/api/listas";
 import { apiClient } from "@/models/api/request";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
-import type { Postulante } from "@/models/interfaces/columns";
+import type { Postulante } from "@/models/interfaces/columnas";
 import type { StepData } from "@/components/StepFormPostulante";
 
 export const useCodigoListaViewModel = () => {
@@ -20,7 +20,7 @@ export const useCodigoListaViewModel = () => {
   const {
     data: olimpiada,
     isLoading: olimpiadaLoading,
-    isError: olimpiadaError
+    isError: olimpiadaError,
   } = useOlimpiada(Number(olimpiada_id));
 
   useEffect(() => {
@@ -100,6 +100,6 @@ export const useCodigoListaViewModel = () => {
     olimpiada,
     olimpiadaLoading,
     onSubmit,
-    terminarRegistro
+    terminarRegistro,
   };
-}; 
+};

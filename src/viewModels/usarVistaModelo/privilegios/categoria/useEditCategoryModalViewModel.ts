@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Category } from "@/models/interfaces/area-Category";
+import type { Category } from "@/models/interfaces/areas&categorias";
 
 interface EditCategoryModalProps {
   onClose: () => void;
@@ -66,4 +66,4 @@ export function useEditCategoryModalViewModel({
     handleClose,
     gradeOptions,
   };
-} 
+}

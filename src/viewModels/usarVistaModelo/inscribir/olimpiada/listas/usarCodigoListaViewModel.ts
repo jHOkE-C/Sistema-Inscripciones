@@ -5,7 +5,7 @@ import { cambiarEstadoLista } from "@/models/api/listas";
 import { toast } from "sonner";
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
 import { apiClient } from "@/models/api/request";
-import type { Postulante } from "@/models/interfaces/columns";
+import type { Postulante } from "@/models/interfaces/columnas";
 import type { StepData } from "@/components/StepFormPostulante";
 
 export const useCodigoListaViewModel = () => {
@@ -14,7 +14,11 @@ export const useCodigoListaViewModel = () => {
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editar, setEditar] = useState(false);
-  const { data: olimpiada, isLoading: olimpiadaLoading, isError: olimpiadaError } = useOlimpiada(Number(olimpiada_id));
+  const {
+    data: olimpiada,
+    isLoading: olimpiadaLoading,
+    isError: olimpiadaError,
+  } = useOlimpiada(Number(olimpiada_id));
   const [openForm, setOpenForm] = useState(false);
   const navigate = useNavigate();
 
@@ -54,7 +58,9 @@ export const useCodigoListaViewModel = () => {
     const date = data.fecha_nacimiento;
     const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
       date.getMonth() + 1
-    ).toString().padStart(2, "0")}-${date.getFullYear()}`;
+    )
+      .toString()
+      .padStart(2, "0")}-${date.getFullYear()}`;
     const payload = {
       ...data,
       codigo_lista,
@@ -99,6 +105,6 @@ export const useCodigoListaViewModel = () => {
     setOpenForm,
     onSubmit,
     terminarRegistro,
-    fetchData
+    fetchData,
   };
-}; 
+};

@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePostulanteCardViewModel } from "@/viewModels/usarVistaModelo/consultarEstado/usePostulanteCardViewModel";
-import type { Postulante } from "@/models/interfaces/consultar-estado.types";
+import type { Postulante } from "@/models/interfaces/consultarEstado.types";
 
 type PostulanteData = {
   postulante: Postulante;
@@ -27,7 +27,9 @@ interface PostulanteDisplayProps {
 }
 
 export default function PostulanteDisplay({ data }: PostulanteDisplayProps) {
-  const { postulante, nombreDepartamento } = usePostulanteCardViewModel({ data });
+  const { postulante, nombreDepartamento } = usePostulanteCardViewModel({
+    data,
+  });
 
   return (
     <div className="container mx-auto py-8">

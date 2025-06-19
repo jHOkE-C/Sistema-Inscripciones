@@ -1,7 +1,7 @@
 import Botones from "./botones";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { UserPanel } from "./user-panel";
+import { UserPanel } from "./Panel";
 import ReturnComponent from "@/components/ReturnComponent";
 const Admin = () => {
   return (

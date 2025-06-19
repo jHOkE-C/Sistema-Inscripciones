@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scrollArea";
-import { type Privilege, type Role } from '@/models/interfaces/role.interface';
+import { type Privilege, type Role } from "@/models/interfaces/roles";
 import { useUsarRoles } from "@/viewModels/usarVistaModelo/privilegios/asignarPrivilegios/usarRoles";
 import { useUsarRoleCard } from "@/viewModels/usarVistaModelo/privilegios/asignarPrivilegios/usarRoleCard";
 
@@ -52,7 +52,7 @@ function RoleCard({
     unassignedPrivileges,
     handleOpenDialog,
     handlePrivilegeCheckboxChange,
-    handleSavePrivileges
+    handleSavePrivileges,
   } = useUsarRoleCard(role, availablePrivileges, refresh);
 
   return (

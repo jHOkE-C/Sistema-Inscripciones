@@ -52,7 +52,7 @@ const Page = () => {
         <h2 className="text-3xl font-bold text-center">
           Bienvenido a la Olimpiada {olimpiada?.nombre}
         </h2>
-        <div className="w-5/6 sm:w-4/6">
+        <div className="w-5/6 sm:w-4/6 mb-4">
           <Pasos />
           <ButtonsGrid buttons={buttons}>
             <InscribirPostulante olimpiada={olimpiada} />

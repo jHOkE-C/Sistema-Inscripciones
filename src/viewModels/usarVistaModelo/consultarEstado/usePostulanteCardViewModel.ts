@@ -1,4 +1,4 @@
-import type { Postulante } from "@/models/interfaces/consultar-estado.types";
+import type { Postulante } from "@/models/interfaces/consultarEstado.types";
 
 interface PostulanteData {
   postulante: Postulante;
@@ -33,4 +33,4 @@ export function usePostulanteCardViewModel({ data }: Data) {
     postulante,
     nombreDepartamento,
   };
-} 
+}

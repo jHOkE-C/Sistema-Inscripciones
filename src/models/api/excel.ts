@@ -1,5 +1,8 @@
-import { request } from './request';
-import type { UploadResponse, Postulante } from '@/models/interfaces/postulante.interface';
+import { request } from "./request";
+import type {
+  UploadResponse,
+  Postulante,
+} from "@/models/interfaces/postulantes";
 //creo que sera mejor usar axios pa este
 export async function postBulkInscripciones(
   ci: string,
@@ -7,11 +10,16 @@ export async function postBulkInscripciones(
   olimpiadaId: number,
   listaPostulantes: Postulante[]
 ): Promise<UploadResponse> {
-  const payload = { ci, nombre_lista: nombreLista, olimpiada_id: olimpiadaId, listaPostulantes };
+  const payload = {
+    ci,
+    nombre_lista: nombreLista,
+    olimpiada_id: olimpiadaId,
+    listaPostulantes,
+  };
   return await request<UploadResponse>(`/api/inscripciones/bulk`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(payload),
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
   });
 }
 
@@ -22,8 +30,8 @@ export async function uploadExcelOlimpiada(
 ): Promise<UploadResponse> {
   const payload = { olimpiadaId, fileName, fileContentBase64 };
   return await request<UploadResponse>(`/api/olimpiadas/upload-excel`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(payload),
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
   });
 }

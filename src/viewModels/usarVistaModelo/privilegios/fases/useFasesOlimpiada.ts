@@ -4,7 +4,10 @@ import axios, { type AxiosError } from "axios";
 import { differenceInCalendarDays } from "date-fns";
 import { toast } from "sonner";
 import { API_URL } from "@/viewModels/hooks/useApiRequest.tsx";
-import { type Cronograma, type OlimpiadaData } from "@/models/interfaces/types";
+import {
+  type Cronograma,
+  type OlimpiadaData,
+} from "@/models/interfaces/olimpiada";
 import { apiClient } from "@/models/api/request";
 
 interface Fase {

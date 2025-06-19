@@ -11,7 +11,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { API_URL } from "@/viewModels/hooks/useApiRequest";
 import { formatDate } from "@/viewModels/utils/fechas";
-import { OlimpiadaData } from "@/models/interfaces/versiones.type";
+import { OlimpiadaData } from "@/models/interfaces/versiones";
 
 import {
   Card,
@@ -97,7 +97,7 @@ export default function OlimpiadaPage() {
 
   return (
     <div className="flex flex-col min-h-screen items-center">
-    <Header />
+      <Header />
       <div className="pl-4 pt-4 3xl justify-start w-5xl">
         <Link to="/admin/version" className="">
           <Button variant="secondary" className="flex items-center gap-1 mb-4">

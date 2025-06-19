@@ -1,5 +1,9 @@
-import { request } from './request';
-import type { Departamento, Provincia, Colegio } from '@/models/interfaces/ubicacion.interface';
+import { request } from "./request";
+import type {
+  Departamento,
+  Provincia,
+  Colegio,
+} from "@/models/interfaces/ubicaciones";
 
 export async function getDepartamentos(): Promise<Departamento[]> {
   return await request<Departamento[]>(`/api/departamentos`);

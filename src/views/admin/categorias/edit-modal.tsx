@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Category } from "@/models/interfaces/area-Category";
+import type { Category } from "@/models/interfaces/areas&categorias";
 import { useEditCategoryModalViewModel } from "@/viewModels/usarVistaModelo/privilegios/categoria/useEditCategoryModalViewModel";
 
 interface EditCategoryModalProps {
