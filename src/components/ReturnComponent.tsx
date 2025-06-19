@@ -34,7 +34,7 @@ export default function ReturnComponent({ to }: ReturnComponentProps) {
     };
 
     return (
-        <div className={`sticky ${hasHeader ? 'top-20' : 'top-0'} z-40 ml-5 mb-2`}>
+        <div className={`sticky ${hasHeader ? 'top-19' : 'top-4'}  ml-[8%] z-40 mb-2`}>
             <div className="container">
                 <Button
                     variant="secondary"

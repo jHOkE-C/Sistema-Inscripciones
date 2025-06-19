@@ -15,7 +15,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Olimpiada } from "@/models/interfaces/versiones.type";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../models/interfaces/types";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -29,12 +28,12 @@ import { useVersionesViewModel } from "@/viewModels/usarVistaModelo/privilegios/
 
 interface VersionesProps {
     versiones: Olimpiada[];
-    container?: ((version: Olimpiada) => React.ReactNode) | React.ReactNode;
+    textoBoton?: string;
 }
 
 export function Versiones({
     versiones,
-    container = null,
+    textoBoton = "Ver Detalles",
 }: VersionesProps) {
     const {
         searchTerm,
@@ -176,12 +175,12 @@ export function Versiones({
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-2">
+                            <div className="">
                                 <div className="flex items-center text-sm text-muted-foreground">
                                     <CalendarDays className="h-4 w-4 mr-2" />
                                     <span>
-                                        {formatDate(version.fecha_inicio)} -{" "}
-                                        {formatDate(version.fecha_fin)}
+                                        {version.fecha_inicio} -{" "}
+                                        {version.fecha_fin}
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm text-muted-foreground">
@@ -212,22 +211,14 @@ export function Versiones({
                             </div>
                         </CardContent>
                         <CardFooter>
-                            {container ? (
-                                typeof container === "function" ? (
-                                    container(version)
-                                ) : (
-                                    container
-                                )
-                            ) : (
                                 <Link
                                     to={`./${version.id}`}
                                     className="w-full"
                                 >
                                     <Button className="w-full">
-                                        Ver Detalles
+                                        {textoBoton}
                                     </Button>
                                 </Link>
-                            )}
                         </CardFooter>
                     </Card>
                 ))}

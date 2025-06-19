@@ -39,12 +39,11 @@ const Page = () => {
       />
     );
   return (
-    <div className="flex flex-col min-h-screen items-center">
+    <>
       <Header />
-      <div className="flex flex-col  justify-center w-full p-4 max-w-7xl">
-        <div className=" w-full mb-2">
-          <ReturnComponent />
-        </div>
+      <ReturnComponent />
+      <div className="flex flex-col items-center justify-center w-full pt-4">
+      <div className="flex flex-col min-h-screen w-5/6">
         <Card className="border-0 shadow-white w-full ">
           <CardHeader>
             <CardTitle>
@@ -62,8 +61,9 @@ const Page = () => {
         </Card>
         <ShareUrl />
       </div>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 };
 

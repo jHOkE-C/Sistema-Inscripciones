@@ -10,6 +10,7 @@ const Admin = () => {
                 fase && fase?.fase?.nombre_fase === "Preparación"
             }
             title="Seleccione una olimpiada para asociar Categorías"
+            textoBoton="Asociar Categorías"
         />
     );
 };

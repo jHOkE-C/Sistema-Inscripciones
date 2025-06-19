@@ -8,7 +8,7 @@ export interface VersionesPageProps {
     returnTo?: string;
     queVersiones?: VersionFilter[];
     filter?: (value: Olimpiada, index: number, array: Olimpiada[]) => unknown;
-    container?: ((version: Olimpiada) => React.ReactNode) | React.ReactNode;
+    textoBoton?: string;
 }
 
 export function useVersionesPageViewModel({

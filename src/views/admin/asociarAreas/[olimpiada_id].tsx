@@ -60,7 +60,8 @@ export default function Page() {
     return (
         <>
         <ReturnComponent to={`..\\..\\`}/>
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="flex justify-center w-full min-h-screen pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-5/6">
             <Card>
                 <CardHeader className="flex items-center justify-between">
                     <CardTitle>Áreas Disponibles</CardTitle>
@@ -202,7 +203,7 @@ export default function Page() {
                 </CardContent>
             </Card>
         </div>
-
+        </div>
         <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
             <AlertDialogContent>
                 <AlertDialogHeader>

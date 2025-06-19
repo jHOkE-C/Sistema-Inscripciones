@@ -69,7 +69,8 @@ export default function Page() {
     return (
         <>
             <ReturnComponent />
-            <div className="container mx-auto p-6">
+            <div className="flex justify-center w-full min-h-screen pt-4">
+            <div className="w-5/6 mx-auto">
                 <Card className="mb-4">
                     <CardHeader>
                         <CardTitle>
@@ -412,6 +413,7 @@ export default function Page() {
                         </div>
                     </CardFooter>
                 </Card>
+            </div>
             </div>
             <Dialog open={openConfirm} onOpenChange={setOpenConfirm}>
                 <DialogContent className="sm:max-w-[425px]">

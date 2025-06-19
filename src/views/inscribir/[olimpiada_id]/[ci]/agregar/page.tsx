@@ -13,6 +13,7 @@ import Loading from "@/components/Loading";
 import FormResponsable from "@/views/inscribir/FormResponsable";
 import ShareUrl from "@/views/inscribir/ShareUrl";
 import { usarAgregarPageViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/usarAgregarPageViewModel";
+import Header from "@/components/Header";
 
 const Page = () => {
     const {
@@ -38,12 +39,11 @@ const Page = () => {
             />
         );
     return (
-        <div className="flex flex-col min-h-screen">
-            <div className="pt-2 pl-2">
-                <ReturnComponent />
-            </div>
-            <div className="">
-                <div className="container mx-auto ">
+        <>
+            <Header />
+            <ReturnComponent />
+            <div className="flex justify-center w-full min-h-screen">
+                <div className="w-5/6 mx-auto">
                     <Card className="border-0 shadow-white">
                         <CardHeader>
                             <CardTitle>
@@ -66,9 +66,8 @@ const Page = () => {
                 </div>
                 <ShareUrl />
             </div>
-
             <Footer />
-        </div>
+        </>
     );
 };
 

@@ -13,6 +13,7 @@ import OrdenPago from "../orden-pago";
 import { useParams } from "react-router-dom";
 import type { Row } from "@tanstack/react-table";
 import type { ListaPostulantes } from "@/views/inscribir/columns";
+import Header from "@/components/Header";
 
 const Page = () => {
     const { ci, olimpiada_id } = useParams();
@@ -61,12 +62,11 @@ const Page = () => {
     });
 
     return (
-        <div className="flex flex-col min-h-screen">
-            <div className="p-2">
-                <ReturnComponent />
-            </div>
-            <div className="m py-5">
-                <div className="container mx-auto ">
+        <>
+            <Header />
+            <ReturnComponent />
+            <div className="flex justify-center w-full min-h-screen pt-4">
+                <div className="w-5/6 mx-auto">
                     <Card className="border-0 shadow-white">
                         <CardTitle>
                             <h2 className="text-3xl font-bold text-center">
@@ -85,7 +85,7 @@ const Page = () => {
             </div>
 
             <Footer />
-        </div>
+        </>
     );
 };
 

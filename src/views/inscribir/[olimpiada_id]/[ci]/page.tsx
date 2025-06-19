@@ -44,14 +44,11 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen items-center">
-      <Header />
-      
+    <>
+    <Header />
+    <ReturnComponent to="/" />
+    <div className="flex flex-col min-h-screen items-center">    
       <div className="flex flex-col items-center justify-center w-full p-4 max-w-6xl">
-        <div className=" w-full">
-          <ReturnComponent to="/" />
-        </div>
-
         <h2 className="text-3xl font-bold text-center">
           Bienvenido a la Olimpiada {olimpiada?.nombre}
         </h2>
@@ -69,6 +66,7 @@ const Page = () => {
       </div>
       <Footer />
     </div>
+    </>
   );
 };
 

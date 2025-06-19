@@ -1,18 +1,7 @@
 "use client";
 
 import VersionesPage from "@/views/admin/VersionesPage";
-import { Version } from "@/models/interfaces/versiones.type";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-
 const AdminReportesPage = () => {
-    const renderVersionContainer = (version: Version) => (
-        <div className="flex justify-center items-center">
-            <Link to={`/admin/reportes/${version.id}`}>
-                <Button>Ver información</Button>
-            </Link>
-        </div>
-    );
 
     return (
         <VersionesPage
@@ -30,7 +19,7 @@ const AdminReportesPage = () => {
                 "Premiación",
                 "Segunda premiación",
             ]}
-            container={renderVersionContainer}
+            textoBoton="Ver Reporte"
         />
     );
 };
