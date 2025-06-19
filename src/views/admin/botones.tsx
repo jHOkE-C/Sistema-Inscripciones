@@ -25,7 +25,7 @@ export default function Botones() {
   const { hasAccess } = useBotonesViewModel();
 
   return (
-    <div className="flex flex-col space-y-4 p-6 mx-auto">
+    <div className="flex flex-col space-y-4 mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 xl:grid-cols-4">
         {hasAccess("crear olimpiada") && (
           <div className="relative">

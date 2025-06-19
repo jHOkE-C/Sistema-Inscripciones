@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
 import { getInscritosPorLista } from "@/models/api/postulantes";
-
+import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import NotFoundPage from "@/views/404";
 import ReturnComponent from "@/components/ReturnComponent";
@@ -55,6 +55,7 @@ export default function Page() {
     if (notFound) return <NotFoundPage />;
     return (
         <>
+            <Header/>
             <ReturnComponent />
             <div className="flex justify-center w-full min-h-full pt-4">
                 <div className="w-5/6 mx-auto ">

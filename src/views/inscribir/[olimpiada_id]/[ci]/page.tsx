@@ -48,12 +48,12 @@ const Page = () => {
     <Header />
     <ReturnComponent to="/" />
     <div className="flex flex-col min-h-screen items-center">    
-      <div className="flex flex-col items-center justify-center w-full p-4 max-w-6xl">
+      <div className="flex flex-col items-center justify-center w-full">
         <h2 className="text-3xl font-bold text-center">
           Bienvenido a la Olimpiada {olimpiada?.nombre}
         </h2>
-        <Pasos />
-        <div className="w-full p-4  mx-auto my-auto gap-3 flex flex-col">
+        <div className="w-5/6">
+          <Pasos />
           <ButtonsGrid buttons={buttons}>
             <InscribirPostulante olimpiada={olimpiada} />
             <InscribirExcel

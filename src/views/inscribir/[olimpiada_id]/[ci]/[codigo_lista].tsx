@@ -59,8 +59,8 @@ export default function Page() {
     return (
         <>
             <ReturnComponent />
-            <div className="min-h-screen py-5">
-                <div className="container mx-auto ">
+            <div className="w-full flex justify-center min-h-screen py-5">
+                <div className="w-5/6 py-4 mx-auto">
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold text-center">

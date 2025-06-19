@@ -23,6 +23,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useCodigoListaViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/listas/usarCodigoListaViewModel";
+import Header  from "@/components/Header";
 
 export default function Page() {
     const {
@@ -44,6 +45,7 @@ export default function Page() {
 
     return (
         <>
+            <Header/>
             <ReturnComponent />
             <div className="flex min-h-screen py-4 justify-center">
                 <div className="w-5/6 mx-auto">
