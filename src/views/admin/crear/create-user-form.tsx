@@ -12,15 +12,12 @@ export function CreateUserForm() {
     setShowPassword,
     showConfirmPassword,
     setShowConfirmPassword,
-    form,
-    onSubmit,
-  } = useCrearUsuario();
-
-  const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
-  } = form;
+    errors,
+    isValid,
+    onSubmit,
+  } = useCrearUsuario();
 
   return (
     <div>
@@ -36,7 +33,7 @@ export function CreateUserForm() {
             maxLength={30}
             {...register("username", {
               setValueAs: (value) =>
-                typeof value === "string" ? value.toLowerCase().slice(0, 30) : "",
+          typeof value === "string" ? value.toLowerCase().slice(0, 30) : "",
             })}
             className={errors.username ? "border-red-500" : ""}
             onInput={(e) => {
