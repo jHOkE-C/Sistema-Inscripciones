@@ -8,8 +8,8 @@ export const useOlimpiada = (
 ) => {
   return useQuery<Olimpiada, Error>({
     queryKey: ["olimpiada", olimpiadaId],
-    staleTime: 1000 * 60 * 2, // 2 minutos sin marcarse como "stale"
-    gcTime: 1000 * 60 * 2, // 2 minutos antes de purgar el cache
+    staleTime: 1000 * 60 * 60, // 2 minutos sin marcarse como "stale"
+    gcTime: 1000 * 60 * 60, // 2 minutos antes de purgar el cache
     refetchOnWindowFocus: false,
     queryFn: async () => {
       const response = await request<Olimpiada>(

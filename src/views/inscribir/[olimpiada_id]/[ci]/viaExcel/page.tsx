@@ -114,7 +114,7 @@ const Page = () => {
             <CardContent className="space-y-5 justify-between">
               <div className="flex justify-between">
                 {olimpiada && (
-                  <Suspense fallback={<div>Cargando plantilla...</div>}>
+                  <Suspense fallback={<Loading />}>
                     <DescargarPlantilla olimpiada={olimpiada} />
                   </Suspense>
                 )}

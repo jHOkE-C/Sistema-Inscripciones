@@ -15,12 +15,6 @@ export default defineConfig({
             ext: '.gz',
             deleteOriginFile: false,
         }),
-
-        compression({
-            algorithm: 'brotliCompress',
-            ext: '.br',
-            deleteOriginFile: false,
-        })
     ],
     resolve: {
         alias: {
