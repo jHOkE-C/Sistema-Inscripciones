@@ -24,7 +24,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alertDialog";
 import DialogPostulante from "@/components/DialogPostulante";
-import { usarCodigoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/useCodigoViewModel";
+import { useCodigoViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/agregar/useCodigoViewModel";
 
 export default function Page() {
     const {
@@ -34,7 +34,7 @@ export default function Page() {
         editar,
         onSubmit,
         terminarRegistro
-    } = usarCodigoViewModel();
+    } = useCodigoViewModel();
 
     if (loading) return <Loading />;
     if (notFound) return <NotFoundPage />;
