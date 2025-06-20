@@ -112,7 +112,7 @@ export default function ResponsableCard({ data }: Data) {
                         </TableCell>
                         <TableCell>{lista.fecha_creacion}</TableCell>
                         <TableCell>
-                          <Link to={`/consultar-estado/${lista.codigo_lista}`}>
+                          <Link to={`/consultarEstado/${lista.codigo_lista}`}>
                             <Button>Ver Inscripción</Button>
                           </Link>
                         </TableCell>

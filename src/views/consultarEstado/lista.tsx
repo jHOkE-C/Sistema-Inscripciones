@@ -24,7 +24,7 @@ export default function Lista() {
   return (
     <>
       <div className=" py-5">
-        <Link to="/consultar-estado">
+        <Link to="/consultarEstado">
           <Button variant="secondary">
             <ChevronLeft className=" h-4 w-4" />
             Volver

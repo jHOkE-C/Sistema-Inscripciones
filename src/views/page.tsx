@@ -118,7 +118,7 @@ const PageHome = () => {
 
                             {/* Enhanced buttons */}
                             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                                <Link to="/consultar-estado">
+                                <Link to="/consultarEstado">
                                     <Button
                                         size="lg"
                                         className="text-base px-10 py-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 rounded-full"
