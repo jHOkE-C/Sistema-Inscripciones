@@ -1042,9 +1042,9 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
         <div key={i} className="flex m-0 items-center ">
           <div
             className={cn(
-              "flex items-center justify-center w-8 h-8 rounded-full border-3 m-0",
+              "flex items-center justify-center w-8 h-8 rounded-full border-3 m-0 font-bold",
               i === currentStep
-                ? "border-primary bg-primary text-foreground"
+                ? "border-primary bg-primary text-primary-foreground "
                 : "border-foreground "
             )}
           >
