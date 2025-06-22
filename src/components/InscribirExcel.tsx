@@ -34,7 +34,9 @@ import { useUbicacion } from "@/viewModels/context/UbicacionContext";
 import { useCategorias } from "@/viewModels/context/CategoriasContext";
 import FileUpload from "./fileUpload";
 import { newValidarFila } from "@/viewModels/usarVistaModelo/inscribir/excel/validations";
-import DescargarPlantilla from "./DescargarPlantilla";
+import { lazy, Suspense } from 'react';
+
+const DescargarPlantilla = lazy(() => import("./DescargarPlantilla"));
 
 interface FileUploadModalProps {
   maxFiles?: number;
@@ -302,7 +304,9 @@ export const IncribirExcel = ({
                   Para empezar, descarga la plantilla oficial:
                 </p>
                 <div className="flex items-center justify-center">
-                  <DescargarPlantilla olimpiada={olimpiada} />
+                  <Suspense fallback={<div>Cargando plantilla...</div>}>
+                    <DescargarPlantilla olimpiada={olimpiada} />
+                  </Suspense>
                 </div>
               </div>
             </DialogDescription>

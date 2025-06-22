@@ -15,12 +15,6 @@ export default defineConfig({
             ext: '.gz',
             deleteOriginFile: false,
         }),
-
-        compression({
-            algorithm: 'brotliCompress',
-            ext: '.br',
-            deleteOriginFile: false,
-        })
     ],
     resolve: {
         alias: {
@@ -28,7 +22,7 @@ export default defineConfig({
         },
     },
     build: {
-
+        target: ['chrome90', 'firefox88', 'edge90', 'safari15'],
         sourcemap: false,
 
         rollupOptions: {
@@ -38,6 +32,7 @@ export default defineConfig({
                     vendor: ['react', 'react-dom'],
                     router: ['react-router-dom'],
                     ui: ['lucide-react'],
+                    excel: ['@/viewModels/utils/excel'],
                 },
             },
         },

@@ -160,7 +160,7 @@ export default function Page() {
                                 {filteredAssociatedAreas.map((area) => (
                                     <TableRow
                                         key={area.id}
-                                        className="hover:bg-gray-50"
+                                        className=""
                                     >
                                         <TableCell>{area.nombre}</TableCell>
                                         <TableCell className="text-right">

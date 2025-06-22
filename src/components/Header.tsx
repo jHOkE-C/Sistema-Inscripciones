@@ -54,11 +54,7 @@ const Header = ({ rutas = [] }: navigation) => {
               {ruta.nombre}
             </Link>
           ))}
-          {user && (
-            <Link to="/admin" className="text-sm font-medium hover:underline">
-              Administración
-            </Link>
-          )}
+   
           {user && (
             <button
               onClick={() => {

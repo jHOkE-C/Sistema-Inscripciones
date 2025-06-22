@@ -14,8 +14,10 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import OrdenPago from "../ordenPago";
-import DescargarPlantilla from "@/components/DescargarPlantilla";
+import { lazy, Suspense } from 'react';
 import { useOlimpiada } from "@/models/getCacheResponsable/useOlimpiadas";
+
+const DescargarPlantilla = lazy(() => import("@/components/DescargarPlantilla"));
 const Page = () => {
   const [data, setData] = useState<ListaPostulantes[]>([]);
   const [openFormResponsable, setOpenFormResponsable] = useState(false);
@@ -111,7 +113,11 @@ const Page = () => {
             </CardTitle>
             <CardContent className="space-y-5 justify-between">
               <div className="flex justify-between">
-                {olimpiada && <DescargarPlantilla olimpiada={olimpiada} />}
+                {olimpiada && (
+                  <Suspense fallback={<Loading />}>
+                    <DescargarPlantilla olimpiada={olimpiada} />
+                  </Suspense>
+                )}
                 {/* <InscribirExcel /> */}
               </div>
               <DataTable goToCode columns={columnsWithActions} data={data} />

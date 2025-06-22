@@ -7,8 +7,10 @@ import ButtonsGrid from "@/components/ButtonsGrid";
 import InscribirPostulante from "../../../../components/InscribirPostulante";
 import ShareUrl from "../../compartir";
 import OlimpiadaNoEnCurso from "@/components/OlimpiadaNoEnCurso";
-import InscribirExcel from "@/components/InscribirExcel";
+import { lazy, Suspense } from 'react';
 import Header from "@/components/Header";
+
+const InscribirExcel = lazy(() => import("@/components/InscribirExcel"));
 import Pasos from "./pasos";
 import { usePageViewModel } from "@/viewModels/usarVistaModelo/inscribir/olimpiada/usarPageViewModel";
 
@@ -56,10 +58,12 @@ const Page = () => {
             <Pasos />
             <ButtonsGrid buttons={buttons}>
               <InscribirPostulante olimpiada={olimpiada} />
-              <InscribirExcel
-                olimpiada={olimpiada}
-                onSubmit={() => fetchData()}
-              />
+              <Suspense fallback={<div>Cargando Excel...</div>}>
+                <InscribirExcel
+                  olimpiada={olimpiada}
+                  onSubmit={() => fetchData()}
+                />
+              </Suspense>
             </ButtonsGrid>
           </div>
           <ShareUrl />
